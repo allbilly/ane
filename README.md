@@ -9,7 +9,7 @@ compile https://github.com/eiln/ane/blob/main/bindings/python/dylib/Makefile and
 uv venv --python=3.11 && source .venv/bin/activate
 uv pip install https://github.com/eiln/anecc.git#subdirectory=anecc https://github.com/eiln/ane.git#subdirectory=bindings/python/python
 anecc sum.hwx -o sum.ane
-python run_sum.py ./sum.ane 
+python run.py ./sum.ane 
 
 ## Parse hwx
 
