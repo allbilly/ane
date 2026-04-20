@@ -14,142 +14,22 @@ python run.py ./sum.ane
 ## Parse hwx
 
 python hwx_parsing.py sum.hwx -s 4
-```
---- HWX Parse Report ---
-Architecture: H13 (A14/M1)
-Instruction Set Version: 7
-      [ANE Task 0 @ 0x0]
-        TID: 0x0000 NID: 0x00 ExeCycles: 1058
-        NextPtr: 0x00000000 NextSize: 0
-        --- Common (0x0000) ---
-        1 x 1 x 64 (FLOAT16) -> 1 x 1 x 64 (FLOAT16)
-        ConvCfg: K=1x1 S=1x1 P=0x0
-        GroupConvCfg: Groups=1 UnicastEn=0 ElemMult=0 UnicastCin=1
-        Cfg: ActiveNE=0 SmallSrc=0 ShPref=0 ShMin=0 ShMax=0 AccDB=0
-        TaskInfo: TID=0x0000 Q=0 NID=0x00
-        --- L2 (0x4800) ---
-        L2Cfg: InputReLU=0 PaddingMode=0
-        L2 SourceCfg: Type=2 Dep=0 Fmt=1 Intrlv=1 CmpV=0 OffCh=0
-        L2 Src1: Base=0x00000 ChanStride=0x00010 RowStride=0x00420
-        L2 ResultCfg: Type=2 Bfr=2 Fmt=1 Intrlv=1 CmpV=0 OffCh=0
-        --- Planar Engine (0x8800) ---
-        PECfg: En=0 OpMode=0 ReluEn=0 Cond=0 FirstSrc=0 SecondSrc=2
-        PEBiasScale: Bias=0x0000 Scale=0x3c00
-        PEPreScale: 0x0000 PEFinalScale: 0x3f800000
-        --- Neural Engine (0xC800) ---
-        NE MACCfg: OpMode=0 NLMode=0 KernelMode=0 BiasMode=0 BP=0
-        NE KernelCfg: Fmt=INT8 PalEn=0 PalBits=0 SparseFmt=0 Reuse=0
-        NE MatrixVectorBias: 0x0000
-        NE AccBias: 0x0000 Shift=0
-        NE PostScale: 0x0000 RightShift=0
-        --- TileDMASrc (0x13800) ---
-        Src1DMAConfig: En=1 CacheHint=8 DepMode=3
-        Src1Strides: Base=0x00000 Row=0x00040 Plane=0x00040 Depth=0x01000 Group=0x00000
-        Src1Fmt: FmtMode=1 Trunc=3 Shift=0 MemFmt=2 OffCh=0 Intrlv=1 CmpV=0
-        --- TileDMADst (0x17800) ---
-        DstDMAConfig: En=1 CacheHint=12 L2BfrMode=0 BypassEOW=0
-        DstStrides: Base=0x00000 Row=0x00040 Plane=0x00040 Depth=0x01000 Group=0x00000
-        --- KernelDMASrc (0x1F800) ---
-        --- HW Block Register State ---
-        [0x00000] Common Module:
-          0x00000: 0x00010001 (InDim)
-          0x00004: 0x00000001 (pad0)
-          0x00008: 0x0000002a (ChCfg)
-          0x0000c: 0x00000040 (Cin)
-          0x00010: 0x00000040 (Cout)
-          0x00014: 0x00010001 (OutDim)
-          0x00018: 0x00000001 (pad1)
-          0x0001c: 0x5000a021 (ConvCfg)
-          0x00020: 0x00002041 (pad2)
-          0x00024: 0x00010001 (GroupConvCfg)
-          0x00028: 0x00000001 (TileCfg)
-          0x0002c: 0x00000004 (pad3)
-          0x00030: 0x00000000 (pad4)
-          0x00034: 0x00000033 (Cfg)
-          0x00038: 0x00000000 (TaskInfo)
-          0x0003c: 0x00000000 (DPE)
-        [0x04800] L2 Cache Control:
-          0x04800: 0x00000000 (L2Cfg)
-          0x04804: 0x01500172 (SourceCfg)
-          0x04808: 0x00000000 (SourceBase)
-          0x0480c: 0x00000010 (SourceChannelStride)
-          0x04810: 0x00000420 (SourceRowStride)
-          0x04814: 0x00000400 (pad0)
-          0x04818: 0x00000400 (pad1)
-          0x0481c: 0x00000440 (pad2)
-          0x04820: 0x00000010 (pad3)
-          0x04824: 0x00000420 (pad4)
-          0x04828: 0x00000400 (pad5)
-          0x0482c: 0x00000400 (pad6)
-          0x04830: 0x0050017a (ResultCfg)
-          0x04834: 0x00000860 (ResultBase)
-          0x04838: 0x00000000 (ConvResultChannelStride)
-          0x0483c: 0x00000000 (ConvResultRowStride)
-          0x04840: 0x00000000
-          0x04844: 0x00000000
-        [0x08800] Planar Engine (PE):
-          0x08800: 0x00080000 (Cfg)
-          0x08804: 0x3c000000 (BiasScale)
-          0x08808: 0x3c000000 (PreScale)
-          0x0880c: 0x3f800000 (FinalScale)
-        [0x0C800] Neural Engine (NE):
-          0x0c800: 0x00000000 (KernelCfg)
-          0x0c804: 0x00000000 (MACCfg)
-          0x0c808: 0x00000000 (MatrixVectorBias)
-          0x0c80c: 0x00000000 (AccBias)
-          0x0c810: 0x00000000 (PostScale)
-        [0x13800] TileDMA Source:
-          0x13800: 0x00033881 (DMAConfig)
-          0x13804: 0x00033880 (pad0)
-          0x13808: 0x00000000 (BaseAddr)
-          0x1380c: 0x00000040 (RowStride)
-          0x13810: 0x00000040 (PlaneStride)
-          0x13814: 0x00001000 (DepthStride)
-          0x13818: 0x00000000 (GroupStride)
-          0x1381c: 0x00000000 (pad1)
-          0x13820: 0x00000040 (pad2)
-          0x13824: 0x00000040 (pad3)
-          0x13828: 0x00001000 (pad4)
-          0x1382c: 0x00000000 (pad5)
-          0x13830: 0x00000000 (pad6)
-          0x13834: 0x00000000 (pad7)
-          0x13838: 0x01002031 (Fmt)
-          0x1383c: 0x00002030 (pad8)
-          0x13840: 0x00000000 (pad9)
-          0x13844: 0x00000000 (pad10)
-          0x13848: 0x00000000 (pad11)
-          0x1384c: 0x00000000 (pad12)
-          0x13850: 0x00000000 (PixelOffset0)
-          0x13854: 0x00000000 (PixelOffset1)
-          0x13858: 0x00000000 (PixelOffset2)
-          0x1385c: 0x00000000 (PixelOffset3)
-          0x13860: 0x00000000
-          0x13864: 0x00000000
-          0x13868: 0x00000000
-          0x1386c: 0x00000000
-        [0x17800] TileDMA Destination:
-          0x17800: 0x040000c1 (DMAConfig)
-          0x17804: 0x00000000 (BaseAddr)
-          0x17808: 0x00000040 (RowStride)
-          0x1780c: 0x00000040 (PlaneStride)
-          0x17810: 0x00001000 (DepthStride)
-          0x17814: 0x00000000 (GroupStride)
-          0x17818: 0x01002031 (Fmt)
-        [0x1F800] KernelDMA Source:
-          0x1f800: 0x00000000 (Unknown)
-          0x1f804: 0x00000000 (Unknown)
-          0x1f808: 0x00000000 (CoeffDMAConfig)
-          0x1f80c: 0x00000000 (CoeffBaseAddr)
-          0x1f810: 0x00000000 (CoeffBfrSize)
-          0x1f814: 0x00000000
-          0x1f818: 0x00000000
-          0x1f81c: 0x00000000
-          ...
-```
 
 sum.hwx is from https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/ops
 
 mul.hwx if from MacOS VM (fill in version later) running on M1 macbook air 
+
+# Add vs Mul
+
+| Offset | sum.cmd | mul.cmd | Register | Field | Description |
+|--------|---------|---------|---------|-------|-------------|
+| 0x20   | 0x66    | 0xa5    | Common @ 0x20 | pad2 | Unused padding field |
+| 0x218  | 0x00    | 0x10    | TileDMA Src | RowStride | Operand stride config |
+| 0x228  | 0x00    | 0x10    | TileDMA Src | PlaneStride | Operand stride config |
+| 0x220  | 0x00    | 0x04    | L2 ResultBase | - | Result buffer address |
+| 0x270  | 0x00    | 0x30    | NE MACCfg | OpMode | **Operation: ADD → MUL** |
+
+**Main difference**: At offset 0x270, the NE MACCfg OpMode changes from `0x00` (ADD/sum) to `0x30` (MUL/mul). This switches the operation from accumulation to multiplication.
 
 
 # Reference
