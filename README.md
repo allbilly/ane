@@ -1,8 +1,14 @@
-# Apple ANE running on asahi
+# Apple ANE running on Asahi
+
+Tested on Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k
 
 ## Run hwx
 
-anecc sum.hwx -o delme.ane
+compile https://github.com/eiln/ane/blob/main/bindings/python/dylib/Makefile and the cp libane_python.so to /usr/lib/
+
+uv venv --python=3.11 && source .venv/bin/activate
+uv pip install https://github.com/eiln/anecc.git#subdirectory=anecc https://github.com/eiln/ane.git#subdirectory=bindings/python/python
+anecc sum.hwx -o sum.ane
 python run_sum.py ./sum.ane 
 
 ## Parse hwx

@@ -1,7 +1,7 @@
 import sys, numpy as np
-from ane import Model  
+from ane import model  
 
-model = Model(sys.argv[1])
+model = model(sys.argv[1])
 a = np.ones((1, 64, 1, 1), dtype=np.float16)
 b = np.full((1, 64, 1, 1), 2, dtype=np.float16)
 
