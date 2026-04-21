@@ -4,6 +4,8 @@ Tested on Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k
 
 ## Generate hwx
 
+### option 1 on Macos
+
 sum.hwx is from https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/ops
 
 mul.hwx if from MacOS Monterey VM (v12.4 21F79) running on M4 macbook air 
@@ -44,6 +46,50 @@ mlmodel.save('test.mlmodel')
 ```bash
 ./coreml2hwx /Users/mac/tinygrad/extra/accel/ane/1_build/mul.mlmodel
 cp /tmp/hwx_output/mul/model.hwx ./mul.hwx
+```
+
+### option 2 on Github action
+
+```
+name: ANE Model Generation
+
+on: [push]
+
+jobs:
+  generate-and-convert:
+    runs-on: macos-13 # Or macos-14 for Apple Silicon
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install numpy coremltools
+
+      - name: Generate MLModel
+        run: |
+          python3 your_script.py # Runs your provided Python code
+
+      - name: Run coreml2hwx
+        run: |
+          # Ensure coreml2hwx is executable
+          chmod +x ./path/to/coreml2hwx
+          # Convert the model
+          ./path/to/coreml2hwx test.mlmodel 
+          # Move output to a convenient place
+          mkdir -p output
+          cp /tmp/hwx_output/test/model.hwx ./output/model.hwx
+
+      - name: Upload HWX Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hwx-model
+          path: ./output/model.hwx
+
 ```
 
 ## Run hwx
