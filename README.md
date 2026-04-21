@@ -12,6 +12,7 @@ mul.hwx if from MacOS Monterey VM (v12.4 21F79) running on M4 macbook air
 
 ```bash
 python gen_mlmodel.py
+git clone https://github.com/freedomtan/coreml_to_ane_hwx && cd coreml_to_ane_hwx && make && mv ./coreml2hwx ../ && cd ../
 ./coreml2hwx ./test.mlmodel
 cp /tmp/hwx_output/mul/model.hwx ./mul.hwx
 ```
