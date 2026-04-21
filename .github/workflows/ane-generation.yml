@@ -3,6 +3,7 @@ name: ANE Model Generation
 on:
   push:
     branches: [macos-buildhwx]
+  workflow_dispatch: # Allows manual triggering from the Actions tab
 
 jobs:
   generate-and-convert:
