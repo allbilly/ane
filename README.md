@@ -2,7 +2,7 @@
 
 Tested on Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k
 
-## Generate hwx
+## 1. Generate hwx
 
 ### option 1 on Macos
 
@@ -12,9 +12,11 @@ mul.hwx if from MacOS Monterey VM (v12.4 21F79) running on M4 macbook air
 
 ```bash
 python gen_mlmodel.py
-./coreml2hwx /Users/mac/tinygrad/extra/accel/ane/1_build/mul.mlmodel
+./coreml2hwx ./test.mlmodel
 cp /tmp/hwx_output/mul/model.hwx ./mul.hwx
 ```
+
+more ops on https://github.com/eiln/ane-ex/blob/main/sources.md
 
 ### option 2 on Github action
 
@@ -23,20 +25,20 @@ Macos14 is used as as macos12 was no longer supported
 - go to branch "macos_buildhwx" and modify mode in builder.add_elementwise
 - go to actions/runs/_runid_/ -> Artifacts -> download and unzip
 
-## Run hwx
+## 2. Run hwx
 
 ```bash
 compile https://github.com/eiln/ane/blob/main/bindings/python/dylib/Makefile and the cp libane_python.so to /usr/lib/
 
 uv venv --python=3.11 && source .venv/bin/activate
 uv pip install https://github.com/eiln/anecc.git#subdirectory=anecc https://github.com/eiln/ane.git#subdirectory=bindings/python/python
-anecc sum.hwx -o sum.ane
-python run.py ./sum.ane 
+anecc hwx/sum.hwx -o hwx/sum.ane
+python run.py ./hwx/sum.ane 
 ```
 
-## Parse hwx
+## 3. Parse hwx
 
-python hwx_parsing.py sum.hwx -s 4
+python parse.py hwx/sum.hwx 
 
 # Add vs Mul
 
