@@ -18,10 +18,10 @@ cp /tmp/hwx_output/mul/model.hwx ./mul.hwx
 
 ### option 2 on Github action
 
-macos14 as macos12 was no longer supported
-go to branch "macos_buildhwx" and make a commit
-go to github storage, download hwx
-
+Macos14 is used as as macos12 was no longer supported
+- gihub action config at .github/workflows/ane-generation.yml
+- go to branch "macos_buildhwx" and modify mode in builder.add_elementwise
+- go to actions/runs/_runid_/ -> Artifacts -> download and unzip
 
 ## Run hwx
 
