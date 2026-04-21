@@ -10,87 +10,18 @@ sum.hwx is from https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/an
 
 mul.hwx if from MacOS Monterey VM (v12.4 21F79) running on M4 macbook air 
 
-```
-import numpy as np
-import coremltools as ct
-from coremltools.models import datatypes
-from coremltools.models.neural_network import NeuralNetworkBuilder
-
-# KxK GEMM with bias
-K = 64
-
-input_features = [('image', datatypes.Array(K))]
-input_features2 = [('image2', datatypes.Array(K))]
-output_features = [('probs', datatypes.Array(K))]
-
-weights = np.zeros((K, K)) + 3
-bias = np.ones(K)
-
-builder = NeuralNetworkBuilder(input_features+input_features2, output_features)
-
-#builder.add_inner_product(name='ip_layer', W=weights, b=None, input_channels=K, output_channels=K, has_bias=False, input_name='image', output_name='med')
-#builder.add_inner_product(name='ip_layer_2', W=weights, b=None, input_channels=3, output_channels=3, has_bias=False, input_name='med', output_name='probs')
-builder.add_elementwise(name='element', input_names=['image', 'image2'], output_name='probs', mode='MULTIPLY')
-#builder.add_bias(name='bias', b=bias, input_name='med', output_name='probs', shape_bias=(K,))
-#builder.add_activation(name='act_layer', non_linearity='SIGMOID', input_name='med', output_name='probs')
-
-# compile the spec
-mlmodel = ct.models.MLModel(builder.spec)
-
-# trigger the ANE!
-out = mlmodel.predict({"image": np.zeros(K, dtype=np.float32)+1, "image2": np.zeros(K, dtype=np.float32)+2})
-print(out)
-mlmodel.save('test.mlmodel')
-```
-
 ```bash
+python gen_mlmodel.py
 ./coreml2hwx /Users/mac/tinygrad/extra/accel/ane/1_build/mul.mlmodel
 cp /tmp/hwx_output/mul/model.hwx ./mul.hwx
 ```
 
 ### option 2 on Github action
 
-```
-name: ANE Model Generation
+macos14 as macos12 was no longer supported
+go to branch "macos_buildhwx" and make a commit
+go to github storage, download hwx
 
-on: [push]
-
-jobs:
-  generate-and-convert:
-    runs-on: macos-13 # Or macos-14 for Apple Silicon
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install Dependencies
-        run: |
-          pip install numpy coremltools
-
-      - name: Generate MLModel
-        run: |
-          python3 your_script.py # Runs your provided Python code
-
-      - name: Run coreml2hwx
-        run: |
-          # Ensure coreml2hwx is executable
-          chmod +x ./path/to/coreml2hwx
-          # Convert the model
-          ./path/to/coreml2hwx test.mlmodel 
-          # Move output to a convenient place
-          mkdir -p output
-          cp /tmp/hwx_output/test/model.hwx ./output/model.hwx
-
-      - name: Upload HWX Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: hwx-model
-          path: ./output/model.hwx
-
-```
 
 ## Run hwx
 

@@ -1,0 +1,39 @@
+name: ANE Model Generation
+
+on:
+  push:
+    branches: [macos-buildhwx]
+
+jobs:
+  generate-and-convert:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install numpy coremltools
+
+      - name: Generate MLModel
+        run: |
+          python3 gen_mlmodel.py
+
+      - name: Run coreml2hwx
+        run: |
+          git clone https://github.com/freedomtan/coreml_to_ane_hwx
+          make
+          chmod +x ./coreml2hwx
+          ./coreml2hwx test.mlmodel
+          mkdir -p output
+          cp /tmp/hwx_output/test/model.hwx ./output/model.hwx
+
+      - name: Upload HWX Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hwx-model
+          path: ./output/model.hwx
