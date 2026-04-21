@@ -26,15 +26,13 @@ jobs:
 
       - name: Run coreml2hwx
         run: |
-          git clone https://github.com/freedomtan/coreml_to_ane_hwx
+          git clone https://github.com/freedomtan/coreml_to_ane_hwx && cd coreml_to_ane_hwx
           make
           chmod +x ./coreml2hwx
-          ./coreml2hwx test.mlmodel
-          mkdir -p output
-          cp /tmp/hwx_output/test/model.hwx ./output/model.hwx
+          ./coreml2hwx ../test.mlmodel
 
       - name: Upload HWX Artifact
         uses: actions/upload-artifact@v4
         with:
           name: hwx-model
-          path: ./output/model.hwx
+          path: /tmp/hwx_output/test/model.hwx
