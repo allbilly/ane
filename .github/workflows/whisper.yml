@@ -20,25 +20,35 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install numpy coremltools
+          pip install "numpy<2" "coremltools<7" "torch<2.5" huggingface-hub
 
-      - name: Download Whisper tiny CoreML model
+      - name: Download Whisper tiny PyTorch model
         run: |
           cd allbilly_ane
-          wget -O ggml-tiny-encoder.mlmodelc.zip https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny-encoder.mlmodelc.zip
-          unzip -o ggml-tiny-encoder.mlmodelc.zip
+          hf download openai/whisper-tiny --local-dir ./models/whisper-tiny
 
-      - name: Run mlmodelc2hwx
+      - name: Clone whisper.cpp for converter
         run: |
           cd allbilly_ane
-          git clone https://github.com/freedomtan/coreml_to_ane_hwx
-          cd coreml_to_ane_hwx
-          make
-          chmod +x ./mlmodelc2hwx
-          ./mlmodelc2hwx ../ggml-tiny-encoder.mlmodelc
+          git clone --depth 1 https://github.com/ggerganov/whisper.cpp.git whisper-cpp
 
-      - name: Upload HWX Artifact
+      - name: Convert PyTorch to CoreML
+        run: |
+          cd allbilly_ane/whisper-cpp
+          pip install openai-whisper ane_transformers
+          # Patch converter to follow coreml101.md - remove extra params and save as .mlmodel
+          # coreml101 says: don't pass convert_to, minimum_deployment_target, etc
+          sed -i '' 's/convert_to=None if quantize else "mlprogram"/convert_to=None/g' models/convert-whisper-to-coreml.py
+          sed -i '' 's/convert_to="mlprogram"/convert_to=None/g' models/convert-whisper-to-coreml.py
+          # Also patch save extension to .mlmodel
+          sed -i '' 's/\.mlpackage/.mlmodel/g' models/convert-whisper-to-coreml.py
+          python models/convert-whisper-to-coreml.py --model tiny
+          ls -la models/
+
+      - name: Upload CoreML Model
         uses: actions/upload-artifact@v4
         with:
-          name: whisper-tiny-encoder-hwx
-          path: /tmp/hwx_output/*/model.hwx
+          name: whisper-tiny-encoder-mlmodel
+          path: |
+            allbilly_ane/whisper-cpp/models/*.mlmodel
+
