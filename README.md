@@ -4,7 +4,7 @@ Tested on Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k
 
 ## 1. Generate hwx
 
-### option 1 on Macos
+### option 1 on MacOS 12.4
 
 sum.hwx is from https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/ops
 
@@ -20,9 +20,11 @@ cp /tmp/hwx_output/mul/model.hwx ./mul.hwx
 more ops on https://github.com/eiln/ane-ex/blob/main/sources.md
 
 ### option 2 on Github action
+Not working now
+Note: sadly macos14 is the oldest macos version on gh action, which is not yet supported by anecc 
+https://docs.github.com/en/actions/reference/runners/github-hosted-runners
 
-Macos14 is used as as macos12 was no longer supported
-- gihub action config at .github/workflows/ane-generation.yml
+Check the gihub action config at .github/workflows/ane-generation.yml
 - go to branch "macos_buildhwx" and modify mode in builder.add_elementwise
 - go to actions/runs/_runid_/ -> Artifacts -> download and unzip
 
