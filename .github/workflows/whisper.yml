@@ -64,5 +64,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: whisper-tiny-encoder-hwx
-          path: |
-            allbilly_ane/coreml_to_ane_hwx/*.hwx
+          path: /tmp/hwx_output/coreml-encoder-tiny/model.hwx
