@@ -52,16 +52,17 @@ jobs:
           path: |
             allbilly_ane/whisper-cpp/models/*.mlmodel
 
-      - name: Run coreml2hwx
+- name: Run coreml2hwx
         run: |
+          cd allbilly_ane
           git clone https://github.com/freedomtan/coreml_to_ane_hwx && cd coreml_to_ane_hwx
           make
           chmod +x ./coreml2hwx
-          ./coreml2hwx ../whisper-cpp/models/*.mlmodel
+          ./coreml2hwx ../whisper-cpp/models/coreml-encoder-tiny.mlmodel
 
       - name: Upload HWX Artifact
         uses: actions/upload-artifact@v4
         with:
           name: whisper-tiny-encoder-hwx
           path: |
-            allbilly_ane/*.hwx
+            allbilly_ane/coreml_to_ane_hwx/*.hwx
