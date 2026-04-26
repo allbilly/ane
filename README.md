@@ -30,23 +30,11 @@ Check the gihub action config at .github/workflows/ane-generation.yml
 - go to branch "macos_buildhwx" and modify mode in builder.add_elementwise
 - go to actions/runs/_runid_/ -> Artifacts -> download and unzip
 
-## 2. Run hwx
-
-```bash
-compile https://github.com/eiln/ane/blob/main/bindings/python/dylib/Makefile and the cp libane_python.so to /usr/lib/
-
-uv venv --python=3.11 && source .venv/bin/activate
-uv pip install https://github.com/eiln/anecc.git#subdirectory=anecc https://github.com/eiln/ane.git#subdirectory=bindings/python/python
-anecc hwx/sum.hwx -o hwx/sum.ane
-python run.py ./hwx/sum.ane 
-```
-
-## 3. Parse hwx
+## 2. Parse hwx
 
 python parse.py hwx/sum.hwx 
 
-# Add vs Mul
-
+Add vs Mul
 | Offset | sum.cmd | mul.cmd | Register | Field | Description |
 |--------|---------|---------|---------|-------|-------------|
 | 0x20   | 0x66    | 0xa5    | Common @ 0x20 | pad2 | Unused padding field |
@@ -57,6 +45,187 @@ python parse.py hwx/sum.hwx
 
 **Main difference**: At offset 0x270, the NE MACCfg OpMode changes from `0x00` (ADD/sum) to `0x30` (MUL/mul). This switches the operation from accumulation to multiplication.
 
+## 3. Convert and run ane 
+
+```bash
+compile https://github.com/eiln/ane/blob/main/bindings/python/dylib/Makefile and the cp libane_python.so to /usr/lib/
+
+uv venv --python=3.11 && source .venv/bin/activate
+uv pip install https://github.com/eiln/anecc.git#subdirectory=anecc https://github.com/eiln/ane.git#subdirectory=bindings/python/python
+anecc hwx/sum.hwx -o hwx/sum.ane
+python run.py ./hwx/sum.ane 
+```
+
+## 4. Dump IOCTL and BO
+
+### Dump IOCTL
+```bash
+sudo bpftrace -e '
+tracepoint:syscalls:sys_enter_ioctl /args->cmd == 0xc0186441/ { printf("ANE BO_INIT\n"); }
+tracepoint:syscalls:sys_enter_ioctl /args->cmd == 0xc0086442/ { printf("ANE BO_FREE\n"); }
+tracepoint:syscalls:sys_enter_ioctl /args->cmd == 0xc0986443/ { printf("ANE SUBMIT\n"); }'
+
+Attaching 3 probes...
+ANE BO_INIT
+ANE BO_INIT
+ANE BO_INIT
+ANE BO_INIT
+ANE BO_INIT
+ANE SUBMIT
+ANE BO_FREE
+ANE BO_FREE
+ANE BO_FREE
+ANE BO_FREE
+ANE BO_FREE
+```
+
+### Dump IOCTL submit
+
+You can use bpftrace to dump ioctl submit content
+
+```bash
+sudo bpftrace -e '
+struct drm_ane_submit {
+    unsigned long long tsk_size;  // 對應 __u64 / uint64
+    unsigned int td_count;        // 對應 __u32 / uint32
+    unsigned int td_size;
+    unsigned int handles[1];      // 先用 1 或具體數字，bpftrace 不支援 ANE_TILE_COUNT 變數
+    unsigned int btsp_handle;
+    unsigned int pad;
+};
+
+tracepoint:syscalls:sys_enter_ioctl 
+/args->cmd == 0xc0986443/ 
+{
+    $s = (struct drm_ane_submit *)args->arg;
+    printf("ANE SUBMIT: tsk_size=%llu, td_count=%u, td_size=%u, btsp_handle=%u\n", 
+           $s->tsk_size, $s->td_count, $s->td_size, $s->btsp_handle);
+}'
+
+ANE SUBMIT: tsk_size=628, td_count=1, td_size=628, btsp_handle=0
+```
+
+but i modified the kernel driver directly to print the dump.
+https://github.com/allbilly/libane
+
+```
+ANE NN {
+  fd=3
+  data=0xaaab63898000
+  anec={size=17024 td_size=628 td_count=1 tsk_size=628 krn_size=16384 src_count=2 dst_count=1}
+  btsp_chan={map=0xfffece008000 size=16384 handle=5 offset=4295049216}
+  chans=[
+    00: {map=0xfffece7d0000 size=32768 handle=1 offset=4294967296},
+    01: {map=(nil) size=0 handle=0 offset=0},
+    02: {map=(nil) size=0 handle=0 offset=0},
+    03: {map=(nil) size=0 handle=0 offset=0},
+    04: {map=0xfffece7cc000 size=16384 handle=2 offset=4295000064},
+    05: {map=0xfffece1dc000 size=16384 handle=3 offset=4295016448},
+    06: {map=0xfffece00c000 size=16384 handle=4 offset=4295032832},
+    07: {map=(nil) size=0 handle=0 offset=0},
+    08: {map=(nil) size=0 handle=0 offset=0},
+    09: {map=(nil) size=0 handle=0 offset=0},
+    10: {map=(nil) size=0 handle=0 offset=0},
+    11: {map=(nil) size=0 handle=0 offset=0},
+    12: {map=(nil) size=0 handle=0 offset=0},
+    13: {map=(nil) size=0 handle=0 offset=0},
+    14: {map=(nil) size=0 handle=0 offset=0},
+    15: {map=(nil) size=0 handle=0 offset=0},
+    16: {map=(nil) size=0 handle=0 offset=0},
+    17: {map=(nil) size=0 handle=0 offset=0},
+    18: {map=(nil) size=0 handle=0 offset=0},
+    19: {map=(nil) size=0 handle=0 offset=0},
+    20: {map=(nil) size=0 handle=0 offset=0},
+    21: {map=(nil) size=0 handle=0 offset=0},
+    22: {map=(nil) size=0 handle=0 offset=0},
+    23: {map=(nil) size=0 handle=0 offset=0},
+    24: {map=(nil) size=0 handle=0 offset=0},
+    25: {map=(nil) size=0 handle=0 offset=0},
+    26: {map=(nil) size=0 handle=0 offset=0},
+    27: {map=(nil) size=0 handle=0 offset=0},
+    28: {map=(nil) size=0 handle=0 offset=0},
+    29: {map=(nil) size=0 handle=0 offset=0},
+    30: {map=(nil) size=0 handle=0 offset=0},
+    31: {map=(nil) size=0 handle=0 offset=0}
+  ]
+}
+ANE SUBMIT {
+  tsk_size=628
+  td_count=1
+  td_size=628
+  btsp_handle=5
+  pad=0
+  handles=[1, 0, 0, 0, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+}
+CMD_BUF (handle[0]) (size=628):
+  0000: 00 00 00 02 00 00 00 00 22 04 00 00 00 00 00 00
+  0010: 6a f8 ff 00 00 00 00 00 00 98 00 30 00 00 00 00
+  0020: 66 49 02 00 00 00 00 00 00 f8 01 f4 00 00 00 00
+  0030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0040: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0050: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0060: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0090: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  00a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  00b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  00c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  00d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  00e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  00f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0110: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0120: 00 00 00 00 00 00 00 3c 01 00 01 00 01 00 00 00
+  0130: 2a 00 00 00 40 00 00 00 40 00 00 00 01 00 01 00
+  0140: 01 00 00 00 21 a0 00 50 41 20 00 00 01 00 01 00
+  0150: 01 00 00 00 04 00 00 00 00 00 00 00 33 00 00 00
+  0160: 00 00 00 00 00 00 00 00 00 38 01 6c 81 38 03 00
+  0170: 80 38 03 00 00 00 00 00 40 00 00 00 40 00 00 00
+  0180: 00 10 00 00 00 00 00 00 00 00 00 00 40 00 00 00
+  0190: 40 00 00 00 00 10 00 00 00 00 00 00 00 00 00 00
+  01a0: 00 00 00 00 31 20 00 01 30 20 00 00 00 00 00 00
+  01b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  01c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  01d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 48 00 44
+  01e0: 00 00 00 00 72 01 50 01 00 00 00 00 10 00 00 00
+  01f0: 20 04 00 00 00 04 00 00 00 04 00 00 40 04 00 00
+  0200: 10 00 00 00 20 04 00 00 00 04 00 00 00 04 00 00
+  0210: 7a 01 50 00 60 08 00 00 00 00 00 00 00 00 00 00
+  0220: 00 00 00 00 00 00 00 00 00 88 00 0c 00 00 08 00
+  0230: 00 00 00 3c 00 00 00 3c 00 00 80 3f 00 c8 00 10
+  0240: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0250: 00 00 00 00 00 78 01 18 c1 00 00 04 00 00 00 00
+  0260: 40 00 00 00 40 00 00 00 00 10 00 00 00 00 00 00
+  0270: 31 20 00 01
+(1, 64, 1, 1) float16
+[[[[5.]]
+    ...
+  [[5.]]]] 
+```
+
+### Dump GEM
+```
+handle[0]=1 → BO for tile/buffer index 0 (where the command/weights live)
+handle[4]=2 → BO for output tile (dst 0)
+handle[5]=3 → BO for input 0
+handle[6]=4 → BO for input 1
+
+python3 /home/asahi/ane-ex/dump.py /tmp/sum_cmd.bin \
+  --decode-cmd --cmd-sbs-compact-grouped
+
+python3 /home/asahi/ane-ex/dump.py /tmp/sum_weights.bin --dtype fp16 --count 64
+
+
+python3 /home/asahi/ane-ex/dump.py /tmp/ane_bo_04_post.bin --dtype fp16 --tile 1,64,1,1,64,64 --count 8
+[3. 3. 3. 3. 3. 3. 3. 3.]
+
+python3 /home/asahi/ane-ex/dump.py /tmp/ane_bo_05.bin --dtype fp16 --tile 1,64,1,1,64,64 --count 8
+[1. 1. 1. 1. 1. 1. 1. 1.]
+
+python3 /home/asahi/ane-ex/dump.py /tmp/ane_bo_06.bin --dtype fp16 --tile 1,64,1,1,64,64 --count 8
+[2. 2. 2. 2. 2. 2. 2. 2.]
+```
 
 # Reference
 https://github.com/freedomtan/coreml_to_ane_hwx
