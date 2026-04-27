@@ -71,6 +71,21 @@ def submit_task(fd, tsk_size, td_count, td_size, handles, btsp_handle):
         req.handles[i] = handles[i] if i < len(handles) else 0
     return ioctl(fd, DRM_IOCTL_ANE_SUBMIT, req)
 
+class H13TaskHeader:
+    def __init__(self, tid=0, nid=0x40, exe_cycles=1058, next_ptr=0):
+        self.words = [
+            tid | (nid << 16) | (1 << 25),  # w0: tid[15:0], nid[23:16], bit25
+            0,                                # w1: next_size in upper 16 bits
+            exe_cycles,                       # w2
+            0, 0x00fff86a, 0, 0x30009800,    # w3-w6
+            next_ptr,                         # w7
+            0x00024966, 0,                    # w8-w9
+        ]
+
+    def pack_into(self, buf, offset=0):
+        for i, w in enumerate(self.words):
+            struct.pack_into('<I', buf, offset + i * 4, w)
+
 commands = {
     # --- Common (0x0000) ---
     reg.InDim: 0x10001, reg.pad0: 1, reg.ChCfg: 0x2a, reg.Cin: 0x40, reg.Cout: 0x40,
@@ -111,8 +126,13 @@ def make_from_segments(size, segments):
         buf[offset:offset + length] = data
     return buf
 
+hdr = H13TaskHeader(tid=0, nid=0x40, exe_cycles=1058)
+hdr_seg = bytearray(44)
+hdr.pack_into(hdr_seg, 0)
+struct.pack_into('<I', hdr_seg, 0x28, (61 << 26) | 0x1F800)  # KernelDMA stream header
+
 BTSP_BUF = make_from_segments(0x4000, [
-    (2, 42, bytes.fromhex('40020000000022040000000000006af8ff00000000000098003000000000664902000000000000f801f4')),
+    (2, 42, bytes(hdr_seg[2:44])),
     (295, 131, bytes.fromhex('3c01000100010000002a0000004000000040000000010001000100000021a0005041200000010001000100000004000000000000003300000000000000000000000038016c8138030080380300000000004000000040000000001000000000000000000000400000004000000000100000000000000000000000000000312000013020')),
     (477, 57, bytes.fromhex('4800440000000072015001000000001000000020040000000400000004000040040000100000002004000000040000000400007a0150006008')),
     (553, 23, bytes.fromhex('88000c000008000000003c0000003c0000803f00c80010')),

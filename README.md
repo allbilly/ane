@@ -47,6 +47,111 @@ Add vs Mul (verified empirically, see examples/min_add.py → min_mul.py)
 
 Other byte differences (0x20, 0x184, 0x198, 0x218, 0x22c/MSB, 0x26d) exist in the .hwx files but are **not required** for the operation to work.
 
+Add vs Relu (verified empirically, see examples/add.py → examples/relu_from_add.py)
+
+### Data path difference
+| | add | relu |
+|---|---|---|
+| Source | TileDMA (two inputs via SrcDMAConfig=0x33881) | L2 cache (single input via L2Cfg/ SourceCfg) |
+| Compute | PE/NE ALU (PECfg=0x80000, scales non-zero) | Conv pipeline only (PECfg=0, all scales=0) |
+| Destination | TileDMA | TileDMA (same) |
+
+### Registers that changed (BTSP_BUF offsets, little-endian u32)
+
+**Common section** (all must change together for relu C=1 single-channel config):
+| Offset | Register | add | relu | Notes |
+|--------|----------|-----|------|-------|
+| 0x128 | InDim | 0x00010001 | 0x0001004d | Input dimensions |
+| 0x130 | ChCfg | 0x2a | 0x22 | Channel config |
+| 0x134 | Cin | 0x40 (64) | 0x01 (1) | Input channels |
+| 0x138 | Cout | 0x40 (64) | 0x01 (1) | Output channels |
+| 0x13c | OutDim | 0x00010001 | 0x0001004d | Output dimensions |
+| 0x14c | GroupConvCfg | 0x10001 | 0x14001 | Group conv |
+| 0x154 | pad3 | 4 | 0 | Mode select |
+| 0x15c | Cfg | 0x33 | 0x04010101 | Config flags |
+| 0x160 | TaskInfo | 0 | 0x00100000 | Task info |
+
+**Data source** (switch from TileDMA → L2 path):
+| Offset | Register | add | relu | Notes |
+|--------|----------|-----|------|-------|
+| 0x16c | SrcDMAConfig | 0x33881 | 0 | **Disable TileDMA source** |
+| 0x170 | Srcpad0 | 0x33880 | 0x00500172 | Repurposed as L2 source cfg |
+| 0x178-0x184 | SrcRow/Plane/Depth/GroupStride | 0x40/0x40/0x1000/0 | 0xa0/0xa0/0xa0/0xa0 | Stale orphaned values |
+| 0x18c-0x1a8 | Srcpad2-4/Fmt/pad8 | varied | 0 | Cleared |
+| 0x1e0 | L2Cfg | 0 | **0x6c013800** | **Enable L2 source path** |
+| 0x1e4 | SourceCfg | 0x01500172 | **0x33881** | L2 source config |
+| 0x1e8 | SourceBase | 0 | **0x8880** | L2 source base addr |
+| 0x1f0 | SourceRowStride | 0x420 | **0xc0** | L2 row stride (192) |
+| 0x1f4-0x1f8 | L2pad0/1 | 0x400 | **0xc0** | L2 sizes (192) |
+| 0x210 | ResultCfg | 0x0050017a | 0 | Disable result path |
+| 0x214 | ResultBase | 0x860 | 0 | Clear result base |
+| 0x21c | ConvResultRowStride | 0 | 0x01002031 | Repurposed |
+
+**PE → disabled** (relu runs in conv pipeline, not PE):
+| Offset | Register | add | relu | Notes |
+|--------|----------|-----|------|-------|
+| 0x22c | PECfg | 0x80000 | **0** | **Disable PE** |
+| 0x230 | BiasScale | 0x3c000000 | **0** | |
+| 0x234 | PreScale | 0x3c000000 | **0** | |
+| 0x238 | FinalScale | 0x3f800000 | **0** | |
+
+**Destination** (TileDMA, stride changed for C=1):
+| Offset | Register | add | relu | Notes |
+|--------|----------|-----|------|-------|
+| 0x260 | DstRowStride | 0x40 | **0xc0** | 192 bytes |
+| 0x264 | DstPlaneStride | 0x40 | **0xc0** | |
+| 0x268 | DstDepthStride | 0x1000 | **0xc0** | |
+| 0x270 | DstFmt | 0x01002031 | **0x01302031** | Bit 20 set |
+
+**BTSP program code** (instruction bytes changed):
+| Offset | add | relu | Notes |
+|--------|-----|------|-------|
+| 0x01b | 66 49 02 00 | 25 40 02 01 | Program header entry point |
+| 0x1b5 | 00 | 88 | Program instruction |
+| 0x1b7 | 00 | 0c | |
+| 0x1c9-0x1cc | 00 | c8 10 80 | |
+| 0x1d0 | 00 | 0c | |
+| 0x1d2 | 00 | 11 | |
+| 0x1dd | 48 | 3c | |
+| 0x225 | 00 | 01 | |
+
+**Key insight**: Unlike add→mul (same BTSP program, 2 register changes), **add→relu requires changing the BTSP firmware program itself + ~25 critical registers**. Relu uses a fundamentally different data path (L2→Conv pipeline instead of TileDMA→PE).
+
+### Experimental results (one-register-at-a-time revert from working relu config)
+
+Each test: start from full relu config, revert ONE register group to add value, check if relu still works.
+
+**Don't-care registers** (relu still works with add's value):
+| Register | offset | add | relu | Verdict |
+|----------|--------|-----|------|---------|
+| `ChCfg`  | 0x130  | 0x2a | 0x22 | **relu works either way** |
+| `Cin`    | 0x134  | 64   | 1    | **relu works either way** |
+
+**Wrong output but no ANE crash** (size/dimension mismatch):
+| Register | offset | add → relu | Verdict |
+|----------|--------|------------|---------|
+| `InDim`  | 0x128  | 0x10001 → 0x1004d | FAIL (zeros) |
+| `OutDim` | 0x13c  | 0x10001 → 0x1004d | FAIL (zeros) |
+
+**Critical registers** (ANE HANGs when reverted to add value):
+`Cout` (0x138), `GroupConvCfg` (0x14c), `pad3` (0x154), `Cfg` (0x15c), `TaskInfo` (0x160),
+`L2Cfg` (0x1e0), `SourceCfg` (0x1e4), `SourceBase` (0x1e8), `SourceChStride` (0x1ec), `SourceRowStride` (0x1f0),
+`L2pad0-6` (0x1f4-0x20c), `ResultCfg` (0x210), `ResultBase` (0x214), `ConvResultRowStride` (0x21c),
+`PECfg` (0x22c), `BiasScale` (0x230), `PreScale` (0x234), `FinalScale` (0x238),
+`SrcDMAConfig` (0x16c), `Srcpad0` (0x170), `SrcRow/Plane/Depth/GroupStride` (0x178-0x184),
+`Srcpad2-4` (0x18c-0x194), `SrcFmt` (0x1a4), `Srcpad8` (0x1a8),
+`DstRowStride` (0x260), `DstPlaneStride` (0x264), `DstDepthStride` (0x268), `DstFmt` (0x270)
+
+### Why add→relu is different from add→mul
+
+| Aspect | add→mul | add→relu |
+|--------|---------|----------|
+| BTSP program | **Same** firmware | **Different** firmware (program code bytes changed) |
+| Data path | TileDMA→PE→TileDMA | **L2→Conv→TileDMA** |
+| PE used? | Yes (bit 2 toggles add↔mul) | **No (PECfg=0 disables PE entirely)** |
+| Number of inputs | 2 | 1 |
+| Minimum register changes | **2** (PECfg, MACCfg) | **~25** plus BTSP program code |
+
 ## 3. Convert and run ane 
 
 ```bash
