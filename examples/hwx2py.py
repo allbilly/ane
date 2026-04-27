@@ -9,6 +9,42 @@ the min_mul.py pattern that can run the model on the ANE.
 Usage:
     python examples/hwx2py.py hwx/mul.hwx -o examples/mul_from_hwx.py
     python examples/mul_from_hwx.py   # on ANE hardware -> output 6.0
+
+Key Fixes Applied:
+1. Header from hwx: Use original header bytes from the hwx file (not hardcoded)
+   for model-specific values. The byte at offset 0x20 varies per model and is
+   part of the H13 task descriptor header.
+
+2. NE register preservation: Only zero KernelCfg (0xc800) / MACCfg (0xc804)
+   when they exactly match the spurious pattern (KernelCfg=0x80 AND
+   MACCfg=0x00100000). Models like relu have MACCfg=0x0011000c (OpMode=12)
+   which is a valid configuration that must be preserved.
+
+3. Spurious KDMA detection: Clean KernelDMA registers only when ALL 16
+   CoeffDMAConfig values are 0x80 (the macOS 14+ bug signature). Models
+   with CoeffDMAConfig=0x81 have real coefficient data.
+
+4. Kernel data extraction: Extract __TEXT.__const section from the hwx Mach-O
+   and append it after the task descriptor for models with real KDMA data.
+   CoeffBaseAddr values are relative to the start of this kernel data region.
+
+5. BTSP header: The bootstrap buffer must start with 0x02400000 (bit 22 set),
+   not 0x02000000. Use make_btsp() to produce the correct header.
+
+6. tsk_size: Always 0x274 (628) for H13 format CMD_BUF, regardless of the
+   original hwx data size.
+
+7. Dual-input detection: Only allocate src2 buffer when the model has 2 inputs.
+   Detected via bit 24 of L2 SourceCfg register (0x4804).
+
+Known Limitations:
+- conv/gemm: Weight data in these models is often in a format not handled by
+  simple __const section extraction. The hwx file may store weights in
+  compressed or palette-encoded formats within the CMD_BUF's KDMA packets.
+  These models work when processed through anecc.
+- sigmoid: The KDMA coefficient offset may differ from the default (offset 0).
+  CoeffBaseAddr values and kernel data positioning need model-specific handling.
+- H16/M4 format: Not yet supported. Only H13/M1 architecture hwx files work.
 """
 
 import struct
@@ -28,6 +64,32 @@ from hwx_parsing import (
 H13_HEADER_WORDS = [0x02000000, 0, 0, 0, 0x00fff86a, 0, 0x30009800, 0]
 
 
+def parse_hwx_kernel(data):
+    kernel = b''
+    try:
+        ncmds = struct.unpack_from('<I', data, 16)[0]
+        off = 32
+        for _ in range(min(ncmds, 40)):
+            if off + 8 > len(data): break
+            cmd, cmdsize = struct.unpack_from('<2I', data, off)
+            if cmd == 0x19:
+                segname = data[off+8:off+24].strip(b'\x00').decode(errors='ignore')
+                nsects = struct.unpack_from('<I', data, off+64)[0]
+                sect_off = off + 72
+                for _ in range(nsects):
+                    sname = data[sect_off:sect_off+16].strip(b'\x00').decode(errors='ignore')
+                    if sname == '__const' and '__TEXT' in segname:
+                        ssize = struct.unpack_from('<Q', data, sect_off+40)[0]
+                        soff = struct.unpack_from('<I', data, sect_off+48)[0]
+                        if soff > 0 and ssize > 0:
+                            kernel = data[soff:soff+ssize]
+                    sect_off += 80
+            off += cmdsize
+    except Exception:
+        pass
+    return kernel
+
+
 def parse_hwx_regs(data):
     ane_data = parse_macho(data)
     if not ane_data:
@@ -45,10 +107,11 @@ def parse_hwx_regs(data):
     if not ane_data:
         raise ValueError('Could not identify HWX format')
 
+    kernel = parse_hwx_kernel(data)
+
     total_len = len(ane_data)
     regs = {}
     offset = 0
-
     while offset + 32 <= total_len:
         h = struct.unpack_from('<8I', ane_data, offset)
         tid = h[0] & 0xffff
@@ -82,7 +145,7 @@ def parse_hwx_regs(data):
             break
         offset = next_ptr
 
-    return regs, ane_data
+    return regs, ane_data, kernel
 
 
 def extract_h13_header(ane_data):
@@ -197,15 +260,18 @@ def _calc_buffer_size(regs):
     dst_total = depth_groups * dst_grp
     return max(src_total, dst_total, 0x4000)
 
-def generate_script(regs, ane_data, output_path):
-    hdr_bytes = extract_h13_header(ane_data)
-    cmdbuf = encode_regs(regs, hdr_bytes)
-    btsp = make_btsp(cmdbuf)
+def generate_script(regs, ane_data, kernel, output_path, has_kernel_data=False):
+    tsk_sz = len(ane_data)
+    cmdbuf_final = ane_data + kernel if has_kernel_data else ane_data
+    if len(cmdbuf_final) < 0x8000:
+        cmdbuf_final = cmdbuf_final.ljust(0x8000, b'\x00')
+
+    btsp = make_btsp(cmdbuf_final)
     tsk_size = 0x274
     shape = get_shape_info(regs)
     buf_size = _calc_buffer_size(regs)
 
-    cmdbuf_hex = cmdbuf.hex()
+    cmdbuf_hex = cmdbuf_final.hex()
     btsp_hex = btsp.hex()
 
     n_fp16 = buf_size // 2
@@ -246,9 +312,11 @@ C = {shape['cin']}
 _s1 = np.zeros({n_fp16}, dtype=np.float16)
 _s1[:C * STRIDE:STRIDE] = np.float16(3.0)
 SRC1 = _s1.tobytes()
-_s2 = np.zeros({n_fp16}, dtype=np.float16)
-_s2[:C * STRIDE:STRIDE] = np.float16(2.0)
-SRC2 = _s2.tobytes()
+_dual = bool({1 if (regs.get(H13_L2_START + 4, 0) & 0x1000000) else 0})
+if _dual:
+    _s2 = np.zeros({n_fp16}, dtype=np.float16)
+    _s2[:C * STRIDE:STRIDE] = np.float16(2.0)
+SRC2 = _s2.tobytes() if _dual else b''
 
 def bo_alloc(fd, size):
     bo = drm_ane_bo_init(handle=0, pad=0, size=size, offset=0)
@@ -263,16 +331,21 @@ def submit(fd, tsk_size, td_count, td_size, handles, btsp_handle):
     return ioctl(fd, DRM_IOCTL_ANE_SUBMIT, s)
 
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
-cmd_h, cmd_buf = bo_alloc(fd, 0x8000)
+cmd_size = max(0x8000, len(CMD_BUF))
+cmd_h, cmd_buf = bo_alloc(fd, cmd_size)
 cmd_buf.write(CMD_BUF)
 out_h, out_buf = bo_alloc(fd, BUF_SIZE)
 src1_h, src1_buf = bo_alloc(fd, BUF_SIZE)
 src1_buf.write(SRC1)
-src2_h, src2_buf = bo_alloc(fd, BUF_SIZE)
-src2_buf.write(SRC2)
+if _dual:
+    src2_h, src2_buf = bo_alloc(fd, BUF_SIZE)
+    src2_buf.write(SRC2)
+    src2_h_val = src2_h
+else:
+    src2_h_val = 0
 btsp_h, btsp_buf = bo_alloc(fd, BUF_SIZE)
 btsp_buf.write(BTSP_BUF)
-handles = [cmd_h, 0, 0, 0, out_h, src1_h, src2_h] + [0] * 25
+handles = [cmd_h, 0, 0, 0, out_h, src1_h, src2_h_val] + [0] * 25
 ret = submit(fd, 0x{tsk_size:x}, 1, 0x{tsk_size:x}, handles, btsp_h)
 print(f"SUBMIT ret={{ret}}")
 out_arr = np.frombuffer(out_buf, dtype=np.float16, count=64).copy()
@@ -311,88 +384,9 @@ def _parse_ane(path):
 
 
 def generate_script_ane(regs, cmdbuf, kernel, td_size, krn_size, output_path):
-    cmdbuf_hex = cmdbuf.hex()
-    kernel_hex = kernel.hex()
     shape = get_shape_info(regs)
-
-    fname = os.path.basename(output_path)
-    buf_size = max(_calc_buffer_size(regs), krn_size)
-    buf_size = max(buf_size, 0x4000)
-
-    script = f'''#!/usr/bin/env python3
-# Auto-generated by hwx2py from {fname}
-# Shape: {shape['w_in']}x{shape['h_in']}x{shape['cin']} ({shape['infmt']}) -> {shape['w_out']}x{shape['h_out']}x{shape['cout']} ({shape['outfmt']})
-# Op: {shape['op_name']}
-
-from fcntl import ioctl
-import os, mmap, ctypes, struct
-import numpy as np
-
-BUF_SIZE = {buf_size}
-KRNDATA = bytes.fromhex('{kernel_hex}')
-CMD_BUF = bytes.fromhex('{cmdbuf_hex}')
-ANE_TILE_COUNT = 0x20
-
-class drm_ane_bo_init(ctypes.Structure):
-    _fields_ = [("handle", ctypes.c_uint32), ("pad", ctypes.c_uint32), ("size", ctypes.c_uint64), ("offset", ctypes.c_uint64)]
-
-class drm_ane_submit(ctypes.Structure):
-    _fields_ = [("tsk_size", ctypes.c_uint64), ("td_count", ctypes.c_uint32), ("td_size", ctypes.c_uint32), ("handles", ctypes.c_uint32 * ANE_TILE_COUNT), ("btsp_handle", ctypes.c_uint32), ("pad", ctypes.c_uint32)]
-
-def _IOWR(nr, size):
-    return (3 << 30) | (0x64 << 8) | (size << 16) | nr
-
-DRM_IOCTL_ANE_BO_INIT = _IOWR(0x41, ctypes.sizeof(drm_ane_bo_init))
-DRM_IOCTL_ANE_SUBMIT = _IOWR(0x43, ctypes.sizeof(drm_ane_submit))
-
-def bo_alloc(fd, size):
-    bo = drm_ane_bo_init(handle=0, pad=0, size=size, offset=0)
-    ioctl(fd, DRM_IOCTL_ANE_BO_INIT, bo)
-    buf = mmap.mmap(fd, size, mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE, offset=bo.offset)
-    return bo.handle, buf
-
-def submit(fd, tsk_size, td_count, td_size, handles, btsp_handle):
-    s = drm_ane_submit(tsk_size=tsk_size, td_count=td_count, td_size=td_size, btsp_handle=btsp_handle, pad=0)
-    for i in range(ANE_TILE_COUNT):
-        s.handles[i] = handles[i] if i < len(handles) else 0
-    return ioctl(fd, DRM_IOCTL_ANE_SUBMIT, s)
-
-fd = os.open("/dev/accel/accel0", os.O_RDWR)
-
-cmd_h, cmd_buf = bo_alloc(fd, 0x8000)
-cmd_buf.write(CMD_BUF)
-btsp = CMD_BUF[:0x4000]
-btsp_h, btsp_buf = bo_alloc(fd, BUF_SIZE)
-btsp_buf.write(btsp)
-
-krn_h, krn_buf = bo_alloc(fd, BUF_SIZE)
-krn_buf.write(KRNDATA)
-out_h, out_buf = bo_alloc(fd, BUF_SIZE)
-
-STRIDE = min({shape.get('plane_stride', 64)} // 2, 32)
-CIN = {shape['cin']}
-_s1 = np.zeros(BUF_SIZE // 2, dtype=np.float16)
-_s1[:CIN * STRIDE:STRIDE] = np.float16(3.0)
-src1_h, src1_buf = bo_alloc(fd, BUF_SIZE)
-src1_buf.write(_s1.tobytes())
-
-handles = [cmd_h, krn_h] + [0] * 2 + [out_h, src1_h]
-if {1 if shape.get('op_name') in ('add', 'mul') else 0}:
-    _s2 = np.zeros(BUF_SIZE // 2, dtype=np.float16)
-    _s2[:CIN * STRIDE:STRIDE] = np.float16(2.0)
-    src2_h, src2_buf = bo_alloc(fd, BUF_SIZE)
-    src2_buf.write(_s2.tobytes())
-    handles += [src2_h]
-handles += [0] * (32 - len(handles))
-
-ret = submit(fd, 0x{td_size:x}, 1, 0x{td_size:x}, handles, btsp_h)
-print(f"SUBMIT ret={{ret}}")
-out_arr = np.frombuffer(out_buf, dtype=np.float16, count={shape['cout']}).copy()
-print(f"output[:8] = {{out_arr[:8]}}")
-os.close(fd)
-'''
-
-    return script
+    pseudo_ane = cmdbuf + kernel if krn_size > 0 else cmdbuf
+    return generate_script(regs, pseudo_ane, kernel, output_path, krn_size > 0)
 
 
 def main():
@@ -438,23 +432,26 @@ def main():
     else:
         with open(args.input, 'rb') as f:
             data = f.read()
-        regs, ane_data = parse_hwx_regs(data)
+        regs_orig, ane_data, kernel = parse_hwx_regs(data)
+        has_kdma = len(kernel) > 0 and not is_spurious_kdma(regs_orig)
 
         if args.verbose:
             from hwx_parsing import parse_hwx
             print(f'Input: {args.input}')
             print(f'ANE data size: {len(ane_data)} (0x{len(ane_data):x})')
-            print(f'Register count: {len(regs)}')
+            print(f'Register count: {len(regs_orig)}')
+            print(f'Kernel data size: {len(kernel)}')
             parse_hwx(ane_data, subtype=4)
 
+        regs = regs_orig
         if not args.no_clean:
-            regs, cleaned = clean_regs(regs, force=args.force_clean)
+            regs, cleaned = clean_regs(regs_orig, force=args.force_clean)
             if cleaned:
                 print(f'Cleaned spurious KernelDMA registers (elementwise={detect_elementwise(regs)})')
             else:
                 print('No spurious registers to clean')
 
-        script = generate_script(regs, ane_data, args.output)
+        script = generate_script(regs, ane_data, kernel, args.output, has_kdma)
 
     with open(args.output, 'w') as f:
         f.write(script)
