@@ -3,6 +3,7 @@ import os
 import mmap
 import ctypes
 import struct
+import numpy as np
 
 ANE_TILE_COUNT = 0x20
 
@@ -144,12 +145,15 @@ try:
     # Handle 1 is already allocated above with size 0x8000
     # Now allocate handles 2, 3, 4 for data buffers with size 0x4000 and load from dumps
     bo_handles = [1]  # Handle 1 is the command buffer
+    dst_offset = 0
     dump_files = ['/tmp/ane_bo_04.bin', '/tmp/ane_bo_05.bin', '/tmp/ane_bo_06.bin']
     for i, dump_file in enumerate(dump_files, start=2):
         bo_init_args = drm_ane_bo_init(handle=0, pad=0, size=0x4000, offset=0)
         ioctl(fd, DRM_IOCTL_ANE_BO_INIT, bo_init_args)
         bo_handles.append(bo_init_args.handle)
         print(f"Allocated data buffer {i}: handle={bo_init_args.handle}, size=0x4000, offset=0x{bo_init_args.offset:x}")
+        if i == 2:
+            dst_offset = bo_init_args.offset
         
         # Load data from dump file
         buf = mmap.mmap(fd, 0x4000, mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE, offset=bo_init_args.offset)
@@ -188,6 +192,10 @@ try:
     )
     print(f"DRM_IOCTL_ANE_SUBMIT: SUCCESS")
     print(f"  ret={ret}")
+    out_buf = mmap.mmap(fd, 0x4000, mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE, offset=dst_offset)
+    out = np.frombuffer(out_buf, dtype=np.float16, count=64).reshape(1, 64, 1, 1)
+    print(out.shape, out.dtype)
+    print(out[0][0])
 except OSError as e:
     print(f"DRM_IOCTL_ANE_SUBMIT: FAILED - {e}")
 
