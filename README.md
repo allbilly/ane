@@ -1,6 +1,10 @@
 # Apple ANE running on Asahi
 
-Tested on Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/allbilly/ane)
+
+Tested on 
+- Asahi Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k
+- Asahi Linux fedora 6.19.11+ built from https://github.com/allbilly/linux/commit/52d22304e89d2995bfa2e678153feffba5dff23a
 
 ## 1. Generate hwx
 
@@ -19,12 +23,9 @@ cp /tmp/hwx_output/test/model.hwx ./mul.hwx
 
 more ops on https://github.com/eiln/ane-ex/blob/main/sources.md
 
-### on Github action
-```
-Not working now
-Note: sadly macos14 is the oldest macos version on gh action, which is not yet supported by anecc 
+### on Github action (Not working now)
+sadly macos14 is the oldest macos version on gh action, which is not yet supported by anecc 
 https://docs.github.com/en/actions/reference/runners/github-hosted-runners
-```
 
 Check the gihub action config at .github/workflows/ane-generation.yml
 - go to branch "macos_buildhwx" and modify mode in builder.add_elementwise
@@ -109,7 +110,7 @@ ANE SUBMIT: tsk_size=628, td_count=1, td_size=628, btsp_handle=0
 but i modified the kernel driver directly to print the dump.
 https://github.com/allbilly/libane
 
-```
+```bash
 ANE NN {
   fd=3
   data=0xaaab63898000
@@ -205,8 +206,8 @@ CMD_BUF (handle[0]) (size=628):
   [[5.]]]] 
 ```
 
-### Dump GEM
-```
+### Dump BO
+```bash
 handle[0]=1 → BO for tile/buffer index 0 (where the command/weights live)
 handle[4]=2 → BO for output tile (dst 0)
 handle[5]=3 → BO for input 0
@@ -229,5 +230,8 @@ python3 /home/asahi/ane-ex/dump.py /tmp/ane_bo_06.bin --dtype fp16 --tile 1,64,1
 ```
 
 # Reference
-https://github.com/freedomtan/coreml_to_ane_hwx
-https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/
+- https://github.com/eiln/linux
+- https://github.com/eiln/ane
+- https://github.com/eiln/anecc
+- https://github.com/freedomtan/coreml_to_ane_hwx
+- https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/
