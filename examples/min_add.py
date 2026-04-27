@@ -35,11 +35,30 @@ DRM_IOCTL_ANE_BO_INIT = _IOWR(0x41, ctypes.sizeof(drm_ane_bo_init))
 DRM_IOCTL_ANE_BO_FREE = _IOWR(0x42, ctypes.sizeof(drm_ane_bo_free))
 DRM_IOCTL_ANE_SUBMIT = _IOWR(0x43, ctypes.sizeof(drm_ane_submit))
 
+# Register offset constants (CMD_BUF byte offsets, H13/M1 hwx_parsing)
+InDim=0x128; pad0=0x12c; ChCfg=0x130; Cin=0x134; Cout=0x138; OutDim=0x13c; pad1=0x140
+ConvCfg=0x144; pad2=0x148; GroupConvCfg=0x14c; TileCfg=0x150; pad3=0x154; pad4=0x158
+Cfg=0x15c; TaskInfo=0x160; DPE=0x164
+SrcDMAConfig=0x16c; Srcpad0=0x170; SrcBaseAddr=0x174; SrcRowStride=0x178
+SrcPlaneStride=0x17c; SrcDepthStride=0x180; SrcGroupStride=0x184; Srcpad1=0x188
+Srcpad2=0x18c; Srcpad3=0x190; Srcpad4=0x194; Srcpad5=0x198; Srcpad6=0x19c
+Srcpad7=0x1a0; SrcFmt=0x1a4; Srcpad8=0x1a8; Srcpad9=0x1ac; Srcpad10=0x1b0
+Srcpad11=0x1b4; Srcpad12=0x1b8; PixelOffset0=0x1bc; PixelOffset1=0x1c0
+PixelOffset2=0x1c4; PixelOffset3=0x1c8
+L2Cfg=0x1e0; SourceCfg=0x1e4; SourceBase=0x1e8; SourceChannelStride=0x1ec
+SourceRowStride=0x1f0; L2pad0=0x1f4; L2pad1=0x1f8; L2pad2=0x1fc; L2pad3=0x200
+L2pad4=0x204; L2pad5=0x208; L2pad6=0x20c; ResultCfg=0x210; ResultBase=0x214
+ConvResultChannelStride=0x218; ConvResultRowStride=0x21c
+PECfg=0x22c; BiasScale=0x230; PreScale=0x234; FinalScale=0x238
+KernelCfg=0x240; MACCfg=0x244; MatrixVectorBias=0x248; AccBias=0x24c; PostScale=0x250
+DstDMAConfig=0x258; DstBaseAddr=0x25c; DstRowStride=0x260; DstPlaneStride=0x264
+DstDepthStride=0x268; DstGroupStride=0x26c; DstFmt=0x270
+
 def make_buf(size, segments):
     buf = bytearray(size)
     for offset, length, data in segments:
         buf[offset:offset+length] = data
-    return bytes(buf)
+    return buf
 
 CMD_BUF = make_buf(0x8000, [
     (3, 41, b'\x02\x00\x00\x00\x00"\x04\x00\x00\x00\x00\x00\x00j\xf8\xff\x00\x00\x00\x00\x00\x00\x98\x000\x00\x00\x00\x00fI\x02\x00\x00\x00\x00\x00\x00\xf8\x01\xf4'),

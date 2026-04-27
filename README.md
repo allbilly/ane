@@ -34,16 +34,17 @@ Check the gihub action config at .github/workflows/ane-generation.yml
 
 python parse.py hwx/sum.hwx 
 
-Add vs Mul
-| Offset | sum.cmd | mul.cmd | Register | Field | Description |
-|--------|---------|---------|---------|-------|-------------|
-| 0x20   | 0x66    | 0xa5    | Common @ 0x20 | pad2 | Unused padding field |
-| 0x218  | 0x00    | 0x10    | TileDMA Src | RowStride | Operand stride config |
-| 0x228  | 0x00    | 0x10    | TileDMA Src | PlaneStride | Operand stride config |
-| 0x220  | 0x00    | 0x04    | L2 ResultBase | - | Result buffer address |
-| 0x270  | 0x00    | 0x30    | NE MACCfg | OpMode | **Operation: ADD → MUL** |
+Add vs Mul (verified empirically, see examples/min_add.py → min_mul.py)
+| Constant | CMD_BUF offset | sum | mul | HW Register | Field | Description |
+|----------|----------------|-----|-----|------------|-------|-------------|
+| `MACCfg` | 0x244 | 0x00 | 0x30 | NE MACCfg (0xC804) | KernelMode, BiasMode | **ADD→MUL** |
+| `PECfg`  | 0x22c | 0x00 | 0x04 | PE Cfg (0x8800) | OpMode bit 2 | Enables multiply mode |
 
-**Main difference**: At offset 0x270, the NE MACCfg OpMode changes from `0x00` (ADD/sum) to `0x30` (MUL/mul). This switches the operation from accumulation to multiplication.
+**Key changes** (only 2 bytes needed in both CMD_BUF and BTSP_BUF):
+- `CMD_BUF[MACCfg] = 0x30` — NE KernelMode=1, BiasMode=1
+- `CMD_BUF[PECfg] = (CMD_BUF[PECfg] & ~0x04) | 0x04` — PE OpMode=1
+
+Other byte differences (0x20, 0x184, 0x198, 0x218, 0x22c/MSB, 0x26d) exist in the .hwx files but are **not required** for the operation to work.
 
 ## 3. Convert and run ane 
 
