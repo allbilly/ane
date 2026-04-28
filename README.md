@@ -50,11 +50,12 @@ Other byte differences (0x20, 0x184, 0x198, 0x218, 0x22c/MSB, 0x26d) exist in th
 Add vs Relu (verified empirically, see examples/add.py → examples/relu_from_add.py)
 
 ### Data path difference
-| | add | relu |
-|---|---|---|
-| Source | TileDMA (two inputs via SrcDMAConfig=0x33881) | L2 cache (single input via L2Cfg/ SourceCfg) |
-| Compute | PE/NE ALU (PECfg=0x80000, scales non-zero) | Conv pipeline only (PECfg=0, all scales=0) |
-| Destination | TileDMA | TileDMA (same) |
+| | add | relu (raw firmware) | relu (L2-style layout) |
+|---|---|---|---|
+| Source | TileDMA (two inputs via SrcDMAConfig=0x33881) | TileDMA (single input via SrcDMAConfig=0x33881) | TileDMA via L2 bank stream header (L2Cfg=0x6c013800) |
+| Compute | PE/NE ALU (PECfg=0x80000, scales non-zero) | Conv pipeline only (PECfg=0, all scales=0) | Conv pipeline only (PECfg=0) |
+| Destination | TileDMA | TileDMA (L2 result staging) | TileDMA |
+| Firmware | PE-based | Conv pipeline (relu.hwx) | Conv pipeline (built from segments) |
 
 ### Registers that changed (BTSP_BUF offsets, little-endian u32)
 
@@ -71,21 +72,27 @@ Add vs Relu (verified empirically, see examples/add.py → examples/relu_from_ad
 | 0x15c | Cfg | 0x33 | 0x04010101 | Config flags |
 | 0x160 | TaskInfo | 0 | 0x00100000 | Task info |
 
-**Data source** (switch from TileDMA → L2 path):
-| Offset | Register | add | relu | Notes |
-|--------|----------|-----|------|-------|
-| 0x16c | SrcDMAConfig | 0x33881 | 0 | **Disable TileDMA source** |
-| 0x170 | Srcpad0 | 0x33880 | 0x00500172 | Repurposed as L2 source cfg |
-| 0x178-0x184 | SrcRow/Plane/Depth/GroupStride | 0x40/0x40/0x1000/0 | 0xa0/0xa0/0xa0/0xa0 | Stale orphaned values |
-| 0x18c-0x1a8 | Srcpad2-4/Fmt/pad8 | varied | 0 | Cleared |
-| 0x1e0 | L2Cfg | 0 | **0x6c013800** | **Enable L2 source path** |
-| 0x1e4 | SourceCfg | 0x01500172 | **0x33881** | L2 source config |
-| 0x1e8 | SourceBase | 0 | **0x8880** | L2 source base addr |
-| 0x1f0 | SourceRowStride | 0x420 | **0xc0** | L2 row stride (192) |
-| 0x1f4-0x1f8 | L2pad0/1 | 0x400 | **0xc0** | L2 sizes (192) |
-| 0x210 | ResultCfg | 0x0050017a | 0 | Disable result path |
-| 0x214 | ResultBase | 0x860 | 0 | Clear result base |
-| 0x21c | ConvResultRowStride | 0 | 0x01002031 | Repurposed |
+**Data source — raw firmware** (relu.hwx uses TileDMA source, same as add; `relu_l2.py` uses an alternative L2-based register layout):
+| Offset | Register | add | relu (raw fw) | relu (L2-style) | Notes |
+|--------|----------|-----|------|------|-------|
+| 0x16c | SrcDMAConfig | 0x33881 | **0x33881** | **0** | Raw fw: TileDMA on; L2-style: off |
+| 0x170 | Srcpad0 | 0x33880 | **0x8880** | **0x00500172** | Repurposed in L2-style |
+| 0x178 | SrcRowStride | 0x40 | **0xc0** | **0xa0** | Stale in L2-style |
+| 0x17c | SrcPlaneStride | 0x40 | **0xc0** | **0xa0** | |
+| 0x180 | SrcDepthStride | 0x1000 | **0xc0** | **0xa0** | |
+| 0x184 | SrcGroupStride | 0 | 0 | **0xa0** | |
+| 0x1a4 | SrcFmt | 0x01002031 | **0x01002031** | **0** | |
+| 0x1e0 | L2Cfg | 0 | 0 | **0x6c013800** | L2-style: stream header→TileDMA Src |
+| 0x1e4 | SourceCfg | 0x01500172 | 0x00500172 | **0x33881** | |
+| 0x1e8 | SourceBase | 0 | 0 | **0x8880** | |
+| 0x1f0 | SourceRowStride | 0x420 | 0xa0 | **0xc0** | |
+
+**L2 result staging** (needed by conv pipeline in raw firmware):
+| Offset | Register | add | relu (raw fw) | relu (L2-style) | Notes |
+|--------|----------|-----|------|------|-------|
+| 0x210 | ResultCfg | 0x0050017a | **0x0050017a** | **0** | Raw fw: L2 result enabled |
+| 0x214 | ResultBase | 0x860 | **0xa0** | **0** | |
+| 0x21c | ConvResultRowStride | 0 | **0** | **0x01002031** | Repurposed in L2-style |
 
 **PE → disabled** (relu runs in conv pipeline, not PE):
 | Offset | Register | add | relu | Notes |
@@ -115,7 +122,7 @@ Add vs Relu (verified empirically, see examples/add.py → examples/relu_from_ad
 | 0x1dd | 48 | 3c | |
 | 0x225 | 00 | 01 | |
 
-**Key insight**: Unlike add→mul (same BTSP program, 2 register changes), **add→relu requires changing the BTSP firmware program itself + ~25 critical registers**. Relu uses a fundamentally different data path (L2→Conv pipeline instead of TileDMA→PE).
+**Key insight**: Unlike add→mul (same BTSP program, 2 register changes), **add→relu requires changing the BTSP firmware program itself + ~25 critical registers**. Relu uses a conv pipeline (not PE) but still sources data via TileDMA — the L2 is used as intermediate result staging, not as input source.
 
 ### Experimental results (one-register-at-a-time revert from working relu config)
 
@@ -147,10 +154,13 @@ Each test: start from full relu config, revert ONE register group to add value, 
 | Aspect | add→mul | add→relu |
 |--------|---------|----------|
 | BTSP program | **Same** firmware | **Different** firmware (program code bytes changed) |
-| Data path | TileDMA→PE→TileDMA | **L2→Conv→TileDMA** |
+| Data path | TileDMA→PE→TileDMA | **TileDMA→Conv→TileDMA** |
 | PE used? | Yes (bit 2 toggles add↔mul) | **No (PECfg=0 disables PE entirely)** |
 | Number of inputs | 2 | 1 |
+| L2 role | — | Internal pipeline staging (ResultCfg) |
 | Minimum register changes | **2** (PECfg, MACCfg) | **~25** plus BTSP program code |
+
+**Note**: The `relu_from_add.py` example uses an alternative register layout where TileDMA source is configured via the L2 bank's stream header (`L2Cfg=0x6c013800`) instead of the direct TileDMA Src registers. Both approaches (`relu_dma.py` raw firmware, `relu_l2.py` L2-style) work standalone — no L2 priming needed.
 
 Relu vs Conv (verified empirically, see examples/relu_from_add.py → examples/conv_from_relu.py)
 
@@ -158,10 +168,11 @@ Relu vs Conv (verified empirically, see examples/relu_from_add.py → examples/c
 
 | | relu | conv |
 |---|---|---|
-| Source | L2 cache (L2Cfg=0x6c013800, SourceCfg=0x33881) | TileDMA (SrcDMAConfig=0x33881) |
+| Source | TileDMA (SrcDMAConfig=0x33881) | TileDMA (SrcDMAConfig=0x33881) |
 | Kernel weights | None (KernelCfg=0, MACCfg=0) | **3×3 depthwise** (KernelCfg=0x82, MACCfg=0x101c00) |
 | Compute | Conv pipeline, no weights (Cfg=0x04010101) | Conv pipeline with weights (Cfg=0x04144405) |
 | Destination | TileDMA (DstDMAConfig=0x040000c1) | TileDMA (DstDMAConfig=0xc1) |
+| L2 result staging | Enabled (ResultCfg=0x50017a) | Enabled (ResultCfg=0x500172) |
 | Channels | 1 | 3 |
 
 ### Register differences (relu → conv)
@@ -179,31 +190,28 @@ Relu vs Conv (verified empirically, see examples/relu_from_add.py → examples/c
 | 0x134 | Cin | 1 | 3 | **Input channels 1→3** |
 | 0x138 | Cout | 1 | 3 | **Output channels 1→3** |
 
-**Data source path change (L2 → TileDMA)**:
-| Offset | Register | relu | conv | Notes |
-|--------|----------|------|------|-------|
-| 0x16c | SrcDMAConfig | 0 | 0x33881 | **Enable TileDMA source** |
-| 0x170 | Srcpad0 | 0x00500172 | 0x8880 | Repurposed |
-| 0x178 | SrcRowStride | 0xa0 | 0x40 | TileDMA row stride (64) |
-| 0x17c | SrcPlaneStride | 0xa0 | 0x40 | |
-| 0x180 | SrcDepthStride | 0xa0 | 0xc0 | |
-| 0x184 | SrcGroupStride | 0xa0 | 0 | |
-| 0x1a4 | SrcFmt | 0 | 0x01002031 | Source format |
-| 0x1e0 | L2Cfg | 0x6c013800 | **0** | **Disable L2 source** |
-| 0x1e4 | SourceCfg | 0x33881 | 0x500172 | L2 source→conv kernel cfg |
-| 0x1e8 | SourceBase | 0x8880 | 0 | Clear L2 base |
-| 0x1ec | SourceChannelStride | 0 | 0x10 | L2 channel stride (16) |
-| 0x1f0 | SourceRowStride | 0xc0 | 0x30 | L2 row stride (48) |
-| 0x1f4 | L2pad0 | 0xc0 | 0x30 | L2 size |
-| 0x1f8 | L2pad1 | 0xc0 | 0x30 | L2 size |
+**Data source (both use TileDMA; relu L2-style → conv direct)**:
+| Offset | Register | relu (raw fw) | relu (L2-style) | conv | Notes |
+|--------|----------|------|------|------|-------|
+| 0x16c | SrcDMAConfig | 0x33881 | 0 | 0x33881 | Raw fw uses TileDMA directly |
+| 0x170 | Srcpad0 | 0x8880 | 0x00500172 | 0x8880 | |
+| 0x178 | SrcRowStride | 0xc0 | 0xa0 | 0x40 | |
+| 0x1a4 | SrcFmt | 0x01002031 | 0 | 0x01002031 | |
+| 0x1e0 | L2Cfg | 0 | 0x6c013800 | 0 | L2-style uses stream header |
+| 0x1e4 | SourceCfg | 0x500172 | 0x33881 | 0x500172 | |
+| 0x1e8 | SourceBase | 0 | 0x8880 | 0 | |
+| 0x1ec | SourceChannelStride | 0xa0 | 0 | 0x10 | |
+| 0x1f0 | SourceRowStride | 0xa0 | 0xc0 | 0x30 | |
+| 0x1f4 | L2pad0 | 0xa0 | 0xc0 | 0x30 | |
+| 0x1f8 | L2pad1 | 0xa0 | 0xc0 | 0x30 | |
 
-**Conv result path (enabled for conv)**:
-| Offset | Register | relu | conv | Notes |
-|--------|----------|------|------|-------|
-| 0x210 | ResultCfg | 0 | 0x500172 | **Enable result path** |
-| 0x214 | ResultBase | 0 | 0x30 | Result base |
-| 0x218 | ConvResultChannelStride | 0 | 0x10 | Ch stride (16 bytes) |
-| 0x21c | ConvResultRowStride | 0x01002031 | 0x30 | Row stride (48 bytes) |
+**L2 result path**:
+| Offset | Register | relu (raw fw) | relu (L2-style) | conv | Notes |
+|--------|----------|------|------|------|-------|
+| 0x210 | ResultCfg | 0x50017a | 0 | 0x500172 | Raw fw: L2 result staging active |
+| 0x214 | ResultBase | 0xa0 | 0 | 0x30 | |
+| 0x218 | ConvResultChannelStride | 0 | 0 | 0x10 | |
+| 0x21c | ConvResultRowStride | 0 | 0x01002031 | 0x30 | |
 
 **NE kernel config (only conv uses)**:
 | Offset | Register | relu | conv | Notes |
@@ -487,14 +495,27 @@ asahi@fedora:~/allbilly_ane$ python run.py ./hwx/relu.ane
 
 ### Via direct register programming
 
+Relu uses TileDMA source + conv pipeline (Family 2). Three examples demonstrate different approaches:
+
+**1. Raw firmware** (`examples/relu_dma.py`): Uses the relu.hwx firmware as-is with TileDMA source registers. Works standalone with no L2 priming.
+
 ```bash
-asahi@fedora:~/allbilly_ane$ python examples/relu_from_hwx.py
-output = [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+asahi@fedora:~/allbilly_ane$ python examples/relu_dma.py
+output = [0. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+expected relu = [0. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+```
 
+(Input: element 0=-3.0, element 1=5.0; relu: `[-3 → 0, 5 → 5, ...]`)
+
+**2. From add** (`examples/relu_from_add.py`): Derived from the add.py firmware structure, uses an **alternative L2-style register layout** where `L2Cfg=0x6c013800` acts as a stream header redirecting to TileDMA Src bank. Works standalone.
+
+```bash
 asahi@fedora:~/allbilly_ane$ python examples/relu_from_add.py
-output =  [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+output =  [3. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
 expected relu =  [3. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
@@ -502,22 +523,23 @@ expected relu =  [3. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
 ```
 
-The `relu_from_add.py` example reads input via L2 cache (`L2Cfg=0x6c013800`, `SourceBase=0x8880`). The L2 must be primed — run a TileDMA-based program (like `conv_from_hwx.py` or `add.py`) first to populate it:
+(Input: element 0=3.0, element 1=5.0; both positive → pass through)
+
+**3. L2-style standalone** (`examples/relu_l2.py`): Clean standalone version of the L2-style approach. Firmware built from raw hex segments instead of raw .hwx file. Works standalone.
 
 ```bash
-asahi@fedora:~/allbilly_ane$ python examples/conv_from_hwx.py && python examples/relu_from_add.py
-submit returned: 0
-Total output values: 8192, non-zero count: 3
-Non-zero indices: [ 0 32 64]
-Non-zero values: [12.  6. 12.]
-output =  [3. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+asahi@fedora:~/allbilly_ane$ python examples/relu_l2.py
+output = [0. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+expected relu = [0. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
 ```
 
-(Input: elements 0=3.0, 1=5.0; relu: [3.0, 5.0, 0, ...] — negatives clamped, positives pass through)
+**Key insight about the L2-style layout**: The `L2Cfg` register value `0x6c013800` is actually a **stream header** encoding `stream_header(0x13800, 28)` — it redirects the next 28 register writes to the TileDMA Src bank (hardware address 0x13800). This is not "L2 source" but rather an alternative programming path to configure TileDMA. The BTSP firmware program writes a stream header to L2 bank's first register, which then chains to TileDMA Src configuration.
 
-The `anecc`-compiled version handles L2 priming automatically and works stand-alone.
+All three methods work standalone — no L2 priming needed.
 
 # 8. How to run GEMM (Matrix Multiply)
 
@@ -695,15 +717,18 @@ A structured summary of register differences across all ANE operations.
 | 0x14c | GroupConvCfg | 0x10001 | 0x10001 | **0x14001** | 0x10001 | 0x10001 | **0x14001** | **0x14001** |
 | 0x15c | Cfg | 0x33 | 0x33 | **0x04010101** | **0x04144405** | **0x00244405** | **0x04211101** | **0x04010101** |
 | 0x160 | TaskInfo | 0 | 0 | **0x100000** | **0x100000** | **0x100000** | **0x100000** | **0x100000** |
-| 0x16c | SrcDMAConfig | 0x33881 | 0x33881 | **0** | **0x33881** | **0x33881** | **0x33881** | **0x33881** |
-| 0x1e0 | L2Cfg | 0 | 0 | **0x6c013800** | 0 | 0 | 0 | 0 |
-| 0x1e4 | SourceCfg | 0x01500172 | 0x01500172 | **0x33881** | 0x500172 | 0x500172 | **0x172** | 0x500172 |
-| 0x210 | ResultCfg | 0x0050017a | 0x0050017a | **0** | **0x500172** | **0x500172** | **0x17a** | **0x50017a** |
+| 0x16c | SrcDMAConfig | 0x33881 | 0x33881 | **0x33881**ᵃ | **0x33881** | **0x33881** | **0x33881** | **0x33881** |
+| 0x1e0 | L2Cfg | 0 | 0 | **0**ᵃ | 0 | 0 | 0 | 0 |
+| 0x1e4 | SourceCfg | 0x01500172 | 0x01500172 | **0x00500172**ᵃ | 0x500172 | 0x500172 | **0x172** | 0x500172 |
+| 0x210 | ResultCfg | 0x0050017a | 0x0050017a | **0x0050017a**ᵃ | **0x500172** | **0x500172** | **0x17a** | **0x50017a** |
 | 0x22c | PECfg | **0x80000** | **0x80004** | **0** | **0** | **0** | **0** | **0** |
-| 0x240 | KernelCfg | 0 | 0 | 0 | **0x82** | **0x82** | **0x82** | **0x82** |
-| 0x244 | MACCfg | 0 | **0x30** | 0 | **0x101c00** | **0x101c00** | **0x101c00** | **0x101c00** |
-| 0x258 | DstDMAConfig | 0x040000c1 | 0x040000c1 | **0x040000c1** | **0xc1** | **0xc1** | **0xc1** | **0xc1** |
-| 0x270 | DstFmt | 0x01002031 | 0x01002031 | **0x01302031** | **0x01302031** | **0x01302031** | 0x01002031 | **0x01302031** |
+| 0x240 | KernelCfg | 0 | 0 | 0ᵃ | **0x82** | **0x82** | **0x82** | **0x82** |
+| 0x244 | MACCfg | 0 | **0x30** | 0ᵃ | **0x101c00** | **0x101c00** | **0x101c00** | **0x101c00** |
+| 0x258 | DstDMAConfig | 0x040000c1 | 0x040000c1 | **0x040000c1**ᵃ | **0xc1** | **0xc1** | **0xc1** | **0xc1** |
+| 0x270 | DstFmt | 0x01002031 | 0x01002031 | **0x01302031**ᵃ | **0x01302031** | **0x01302031** | 0x01002031 | **0x01302031** |
+
+ᵃ Relu values from raw relu.hwx firmware. An alternative L2-style register layout (`relu_l2.py`) uses `L2Cfg=0x6c013800`, `SrcDMAConfig=0`, `ResultCfg=0`.
+
 
 ### Operation Families
 
@@ -716,21 +741,19 @@ A structured summary of register differences across all ANE operations.
 **Family 2: Conv pipeline, TileDMA source** (separate firmware per model)
 | Op | Cfg | Cin | Cout | KernelCfg | Notes |
 |----|-----|-----|------|-----------|-------|
+| Relu | 0x04010101 | 1 | 1 | — | TileDMA→Conv→TileDMA, L2 result staging ✓ |
 | Conv | 0x04144405 | 3 | 3 | 0x82 | 1×1 pointwise, [12,12,12] ✓ |
 | GeMM | 0x00244405 | 512 | 512 | 0x82 | 512×512 matmul, inj 0.5→128 ✓ |
 | Concat | 0x04211101 | 16 | 16 | 0x82 | 2 inputs concat, [2.0,...] ✓ |
 | Sigmoid | 0x04010101 | 1 | 1 | 0x82 | Sigmoid(3) ≈ 0.9526 ✓ |
 
-**Family 3: Conv pipeline, L2 source**
-| Op | L2Cfg | SrcDMAConfig | SourceCfg | Notes |
-|----|-------|-------------|-----------|-------|
-| Relu | 0x6c013800 | 0 | 0x33881 | L2→Conv→TileDMA, needs L2 priming |
+Relu also has an **alternative register layout** (used by `relu_from_add.py` / `relu_l2.py`) where TileDMA source is configured via the L2 bank's stream header register (`L2Cfg=0x6c013800`) instead of direct SrcDMAConfig. Both layouts are equivalent: TileDMA sources data, conv pipeline processes it, results stage through L2, TileDMA outputs.
 
 ### Key Patterns
 
 1. **PE vs Conv pipeline**: PECfg=0 disables PE, routing through conv pipeline. All elementwise (add/mul) use PE at 0x80000/0x80004; all others disable PE.
 
-2. **TileDMA vs L2 source**: SrcDMAConfig=0x33881 enables TileDMA source. L2Cfg=0x6c013800 enables L2 source. Only relu uses L2; all others use TileDMA.
+2. **TileDMA source**: All operations use TileDMA source (`SrcDMAConfig=0x33881` for direct, or `L2Cfg=0x6c013800` stream header for indirect). The conv pipeline internally uses L2 for result staging (`ResultCfg` non-zero).
 
 3. **KDMA kernel weights**: KernelCfg=0x82 + MACCfg=0x101c00 = kernel loading pattern (Fmt=FLOAT16, Palettized=off). Relu and add/mul have no kernel. Conv/GeMM/Concat/Sigmoid all load KDMA weights. The weight data in `.ane` files has a 12-byte leading zero header before the first coefficient for channel 0.
 
@@ -748,7 +771,7 @@ A structured summary of register differences across all ANE operations.
 |-----------|-------|--------|---------------|-------|
 | **Add** | ✓ | ✓ | ✓ `add.py` | PE-based, 2 inputs |
 | **Mul** | ✓ | ✓ | ✓ `add.py mul` | Same firmware, 2 reg changes |
-| **Relu** | ✓ | ✓ | ✓ `relu.py` (needs L2 prime) | L2 source needs priming |
+| **Relu** | ✓ | ✓ | ✓ `relu.py` (TileDMA src), `relu_dma.py` (structured), `relu_l2.py` (L2-style), `relu_from_add.py` | Conv pipeline, TileDMA source, no L2 priming needed |
 | **Conv** | ✓ | ✓ | ✓ `conv.py` | 1×1 pointwise, [12,12,12] ✓ |
 | **Sigmoid** | ✓ | ✓ | ✓ `sigmoid_from_hwx.py` | sigmoid(3) ≈ 0.9526 ✓ |
 | **GeMM** | ✓ | ✓ | ✓ `gemm.py` (inj weights) | Inj 0.5 weights → 128 ✓ |

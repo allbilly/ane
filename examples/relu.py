@@ -100,7 +100,6 @@ commands = {
     reg.DstFmt: 0x01302031,
 }
 
-# L2 source path — run conv.py first to prime L2 cache, then run this
 ane_data = bytes.fromhex(
     '000000020000000022040000000000006af8ff00000000000098003000000000'
     '254002010000000000f801f40000000000000000800000008000000080000000'
@@ -662,4 +661,3 @@ ret = submit_task(fd, 0x274, 1, 0x274, [cmd_handle, 0, 0, 0, out_handle, src1_ha
 os.close(fd)
 output = np.frombuffer(out_map, dtype=np.float16, count=64).copy()
 print("output =", output)
-print("NOTE: relu reads input via L2 cache. Run conv.py first to prime L2, then run relu.py")
