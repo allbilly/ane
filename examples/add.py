@@ -7,6 +7,12 @@ ANE_TILE_COUNT = 0x20
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
 
 class reg:  # register offset 
+    # --- Task Descriptor (0x0000) ---
+    W0, W1, W2 = 0x00, 0x04, 0x08
+    W3, W4, W5, W6 = 0x0c, 0x10, 0x14, 0x18
+    W7, W8, W9 = 0x1c, 0x20, 0x24
+    KernelDMA = 0x28
+
     # --- Common (0x0000) ---
     InDim, pad0, ChCfg, Cin, Cout = 0x128, 0x12c, 0x130, 0x134, 0x138
     OutDim, pad1, ConvCfg, pad2 = 0x13c, 0x140, 0x144, 0x148
@@ -73,21 +79,6 @@ def submit_task(fd, tsk_size, td_count, td_size, handles, btsp_handle):
         req.handles[i] = handles[i] if i < len(handles) else 0
     return ioctl(fd, DRM_IOCTL_ANE_SUBMIT, req)
 
-class H13TaskHeader:
-    def __init__(self, tid=0, nid=0x40, exe_cycles=1058, next_ptr=0):
-        self.words = [
-            tid | (nid << 16) | (1 << 25),  # w0: tid[15:0], nid[23:16], bit25
-            0,                              # w1: next_size in upper 16 bits
-            exe_cycles,                     # w2
-            0, 0x00fff86a, 0, 0x30009800,   # w3-w6
-            next_ptr,                       # w7
-            0x00024966, 0,                  # w8-w9
-        ]
-
-    def pack_into(self, buf, offset=0):
-        for i, w in enumerate(self.words):
-            struct.pack_into('<I', buf, offset + i * 4, w)
-
 def make_from_segments(size, segments):
     buf = bytearray(size)
     for offset, length, data in segments:
@@ -104,13 +95,17 @@ def build_seg(seg_off, seg_len, word_packs):
         struct.pack_into('<I', tmp, boff, val)
     return bytes(tmp[seg_off:seg_off + seg_len])
 
-hdr = H13TaskHeader(tid=0, nid=0x40, exe_cycles=1058)
-hdr_seg = bytearray(44)
-hdr.pack_into(hdr_seg, 0)
-struct.pack_into('<I', hdr_seg, 0x28, (61 << 26) | 0x1F800)  # KernelDMA stream header
-
 BTSP_BUF = make_from_segments(0x4000, [
-    (2, 42, bytes(hdr_seg[2:44])),
+    (0, 44, build_seg(0, 44, [
+        (reg.W0, 0x02400000),
+        (reg.W1, 0),
+        (reg.W2, 1058),
+        (reg.W3, 0), (reg.W4, 0x00fff86a),
+        (reg.W5, 0), (reg.W6, 0x30009800),
+        (reg.W7, 0),
+        (reg.W8, 0x00024966), (reg.W9, 0),
+        (reg.KernelDMA, stream_header(0x1F800, 62)),
+    ])),
     (295, 131, build_seg(0x127, 131, [
         # Common HEADER
         (0x124, stream_header(0x00000, 16)),                          
