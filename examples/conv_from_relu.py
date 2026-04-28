@@ -1,10 +1,6 @@
 from fcntl import ioctl
 import os, mmap, ctypes, struct
 import numpy as np
-import sys; sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from hwx_parsing import parse_macho
-
-ANE_TILE_COUNT = 0x20
 
 class reg:
     InDim, pad0, ChCfg, Cin, Cout = 0x128, 0x12c, 0x130, 0x134, 0x138
@@ -25,6 +21,8 @@ class reg:
     SrcFmt, Srcpad8 = 0x1a4, 0x1a8
     DstDMAConfig, DstBaseAddr, DstRowStride = 0x258, 0x25c, 0x260
     DstPlaneStride, DstDepthStride, DstGroupStride, DstFmt = 0x264, 0x268, 0x26c, 0x270
+
+ANE_TILE_COUNT = 0x20
 
 class drm_ane_bo_init(ctypes.Structure):
     _fields_ = [
@@ -84,18 +82,13 @@ commands = {
 }
 
 # --- Build CMD_BUF from conv.hwx firmware + kernel weights ---
-with open('hwx/tinygrad/conv.hwx', 'rb') as f:
-    data = f.read()
-ane_data = parse_macho(data)
-
-kernel_hex = ('00000000000000000000000000400040004000000'
-    '0000000000000000000000000000000000000000000000000000000000000000000'
-    '0000000000000000000000000000000000000000004000400040000000000000000'
-    '0000000000000000000000000000000000000000000000000000000000000000000'
-    '0000000000000000000000000000000000000000400040004000000000000000000'
-    '0000000000000000000000000000000000000000000000000000000000000000000'
-    '0000000000000000')
-kernel = bytes.fromhex(kernel_hex)
+# Load from compiled .ane (anecc handles KDMA kernel data properly)
+with open('hwx/conv.ane', 'rb') as f:
+    ane = f.read()
+hdr = struct.unpack_from('<8I', ane, 0)
+td_size = hdr[2]; krn_size = hdr[6]
+ane_data = ane[0x1000:0x1000 + td_size]
+kernel = ane[0x1000 + td_size:0x1000 + td_size + krn_size]
 
 CMD_BUF = bytearray(ane_data + kernel)
 CMD_BUF += b'\x00' * (32768 - len(CMD_BUF))
