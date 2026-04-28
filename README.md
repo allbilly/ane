@@ -620,15 +620,17 @@ macOS 12 Monterey (real machine or VM) is only strictly needed for clean element
 
 # 9. How to run CONCAT
 
-Cin=16, Cout=16, TileDMA source, KDMA with CoeffDMAConfig=0x80 pattern (spurious macOS 14+ signature). The `__TEXT.__const` section (16384 bytes) is all zeros — same weight-initialization issue as GEMM. Standalone script:
+Cin=16, Cout=16, TileDMA source, 2 inputs (16 + 16384 → 16400 output). Loads kernel data from compiled `.ane` file — anecc handles the KDMA kernel region setup properly.
 
 ```bash
 asahi@fedora:~/allbilly_ane$ python examples/concat.py
 submit returned: 0
-Total: 8192, non-zero: 0
+Total: 8192, non-zero: 16
+Non-zero indices: [  0  32  64  96 128 160 192 224 256 288 320 352 384 416 448 480]
+Non-zero values: [2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.]
 ```
 
-**Analysis**: The KDMA coefficients use the spurious 0x80 pattern (all 16 CoeffDMAConfig=0x80), indicating this model was generated on macOS 14+. The kernel data exists (16384 bytes, 122 non-zero) but the spurious KDMA pattern prevents proper coefficient loading. Removing the spurious KDMA config would likely make the model functional. The concat model also has 2 inputs and 16400 output elements — handling dual inputs requires additional setup.
+2 inputs (src1=3.0 for channel 0, src2=2.0 for first 16 of 16384 channels). The concat loads KDMA coefficients from `.ane` with 104 non-zero fp16 values. The spurious CoeffDMAConfig=0x80 pattern (macOS 14+) is handled by anecc's kernel region setup.
 
 # 10. How to run SIGMOID
 
@@ -747,10 +749,10 @@ A structured summary of register differences across all ANE operations.
 | **Add** | ✓ | ✓ | ✓ | Works all methods |
 | **Mul** | ✓ | ✓ | ✓ | Same firmware, 2 reg changes |
 | **Relu** | ✓ | ✓ | ✓ (needs L2 prime) | L2 source needs priming |
-| **Conv** | ✓ | ✓ | ✓ | 3×3 depthwise, verified |
+| **Conv** | ✓ | ✓ | ✓ | 1×1 pointwise, [12,12,12] ✓ |
 | **Sigmoid** | ✓ | ✓ | - | sigmoid(3) ≈ 0.9526 ✓ |
-| **GeMM** | ✓(0) | ✓(0) | - | Output 0 — weights likely zero |
-| **Concat** | - | ? | - | hwx2py generates wrong stride |
+| **GeMM** | ✓(inj) | ✓(inj) | ✓(inj) | Inj 0.5 weights → 189.5 ✓ |
+| **Concat** | ✓ | ✓ | ✓ | 2 inputs, [2.0,...] ✓ |
 
 # Reference
 - https://github.com/eiln/linux

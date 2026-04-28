@@ -54,13 +54,6 @@ commands = {
     reg.ConvResultChannelStride: 0, reg.ConvResultRowStride: 0,
     reg.PECfg: 0, reg.BiasScale: 0, reg.PreScale: 0, reg.FinalScale: 0,
     reg.KernelCfg: 0x80, reg.MACCfg: 0x10000c, reg.MatrixVectorBias: 0, reg.AccBias: 0, reg.PostScale: 0x3c00,
-    reg.SrcDMAConfig: 0x33881, reg.Srcpad0: 0x8880, reg.SrcBaseAddr: 0,
-    reg.SrcRowStride: 0x40, reg.SrcPlaneStride: 0x40, reg.SrcDepthStride: 0x400,
-    reg.SrcGroupStride: 0, reg.Srcpad2: 0, reg.Srcpad3: 0, reg.Srcpad4: 0,
-    reg.SrcFmt: 0x1002031, reg.Srcpad8: 0,
-    reg.DstDMAConfig: 0x40000c1, reg.DstBaseAddr: 0x100000, reg.DstRowStride: 0x40,
-    reg.DstPlaneStride: 0x40, reg.DstDepthStride: 0x100400, reg.DstGroupStride: 0,
-    reg.DstFmt: 0x1302031,
 }
 
 with open('hwx/concat.ane', 'rb') as f:
@@ -81,6 +74,7 @@ for offset, value in commands.items():
 
 BUF_SIZE = 0x4000
 C = 16
+C2 = 16384
 STRIDE = 32
 
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
@@ -91,10 +85,15 @@ src1_handle, src1_map = allocate_buffer(fd, BUF_SIZE)
 src1 = np.zeros(BUF_SIZE // 2, dtype=np.float16)
 src1[:C * STRIDE:STRIDE] = np.float16(3.0)
 src1_map.write(src1.tobytes()); src1_map.close()
+# Second input: 16384 channels
+src2_handle, src2_map = allocate_buffer(fd, BUF_SIZE)
+src2 = np.zeros(BUF_SIZE // 2, dtype=np.float16)
+src2[:C2 * 1:1] = np.float16(2.0)
+src2_map.write(src2.tobytes()); src2_map.close()
 btsp_handle, btsp_map = allocate_buffer(fd, BUF_SIZE)
 btsp_map.write(bytes(BTSP_BUF)); btsp_map.close()
 
-handles = [cmd_handle, 0, 0, 0, out_handle, src1_handle, 0] + [0] * 25
+handles = [cmd_handle, 0, 0, 0, out_handle, src1_handle, src2_handle] + [0] * 25
 ret = submit_task(fd, 0x274, 1, 0x274, handles, btsp_handle)
 print(f"submit returned: {ret}")
 out = np.frombuffer(out_map, dtype=np.float16).copy(); out_map.close()
