@@ -137,7 +137,10 @@ C = 3
 
 out_handle, out_map = allocate_buffer(fd, BUF_SIZE)
 src1_handle, src1_map = allocate_buffer(fd, BUF_SIZE)
+cmd_handle, cmd_map = allocate_buffer(fd, 32768)
+cmd_map.write(bytes(CMD_BUF)); cmd_map.close()
 btsp_handle, btsp_map = allocate_buffer(fd, BUF_SIZE)
+btsp_map.write(bytes(BTSP_BUF)); btsp_map.close()
 
 src1 = np.zeros(BUF_SIZE // 2, dtype=np.float16)
 src1[0] = np.float16(1.0)
@@ -145,11 +148,9 @@ src1[STRIDE] = np.float16(2.0)
 src1[STRIDE * 2] = np.float16(3.0)
 src1_map.write(src1.tobytes()); src1_map.close()
 
-btsp_map.write(BTSP_BUF)
-
 ret = submit_task(
     fd=fd, tsk_size=0x274, td_count=1, td_size=0x274,
-    handles=[btsp_handle, 0, 0, 0, out_handle, src1_handle, 0] + [0] * 25,
+    handles=[cmd_handle, 0, 0, 0, out_handle, src1_handle, 0] + [0] * 25,
     btsp_handle=btsp_handle,
 )
 os.close(fd)

@@ -116,7 +116,7 @@ src1_handle, src1_map = allocate_buffer(fd, BUF_SIZE)
 src1 = np.zeros(BUF_SIZE // 2, dtype=np.float16)
 src1[:C * STRIDE:STRIDE] = np.float16(1.0)
 src1_map.write(src1.tobytes()); src1_map.close()
-btsp_handle, btsp_map = allocate_buffer(fd, BUF_SIZE)
+btsp_handle, btsp_map = allocate_buffer(fd, 0x4000)
 btsp_map.write(bytes(BTSP_BUF)); btsp_map.close()
 
 handles = [cmd_handle, 0, 0, 0, out_handle, src1_handle, 0] + [0] * 25
