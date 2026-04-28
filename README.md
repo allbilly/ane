@@ -716,10 +716,10 @@ A structured summary of register differences across all ANE operations.
 **Family 2: Conv pipeline, TileDMA source** (separate firmware per model)
 | Op | Cfg | Cin | Cout | KernelCfg | Notes |
 |----|-----|-----|------|-----------|-------|
-| Conv | 0x04144405 | 3 | 3 | 0x82 | 3×3 depthwise, works |
-| GeMM | 0x00244405 | 512 | 512 | 0x82 | 512×512 matmul, output=0 |
-| Concat | 0x04211101 | 16 | 16 | 0x82 | Channel concat, needs debug |
-| Sigmoid | 0x04010101 | 1 | 1 | 0x82 | Sigmoid activation, works |
+| Conv | 0x04144405 | 3 | 3 | 0x82 | 1×1 pointwise, [12,12,12] ✓ |
+| GeMM | 0x00244405 | 512 | 512 | 0x82 | 512×512 matmul, inj 0.5→128 ✓ |
+| Concat | 0x04211101 | 16 | 16 | 0x82 | 2 inputs concat, [2.0,...] ✓ |
+| Sigmoid | 0x04010101 | 1 | 1 | 0x82 | Sigmoid(3) ≈ 0.9526 ✓ |
 
 **Family 3: Conv pipeline, L2 source**
 | Op | L2Cfg | SrcDMAConfig | SourceCfg | Notes |
@@ -732,27 +732,27 @@ A structured summary of register differences across all ANE operations.
 
 2. **TileDMA vs L2 source**: SrcDMAConfig=0x33881 enables TileDMA source. L2Cfg=0x6c013800 enables L2 source. Only relu uses L2; all others use TileDMA.
 
-3. **KDMA kernel weights**: KernelCfg=0x82 + MACCfg=0x101c00 = depthwise conv kernel loading pattern. Relu and add/mul have no kernel. Conv/GeMM/Concat/Sigmoid all load KDMA weights.
+3. **KDMA kernel weights**: KernelCfg=0x82 + MACCfg=0x101c00 = kernel loading pattern (Fmt=FLOAT16, Palettized=off). Relu and add/mul have no kernel. Conv/GeMM/Concat/Sigmoid all load KDMA weights. The weight data in `.ane` files has a 12-byte leading zero header before the first coefficient for channel 0.
 
-4. **Cfg activation encoding**: The `Cfg` register encodes the activation function:
-   - 0x04010101 = relu/sigmoid (identity pass-through)
-   - 0x04144405 = conv (3×3 depthwise conv)
-   - 0x00244405 = gemm (matrix multiply)
-   - 0x04211101 = concat (channel concatenation)
+4. **Cfg activation encoding**: The `Cfg` register encodes the processing mode:
+   - 0x04010101 / 0x4010101 = relu/sigmoid (identity pass-through, C=1)
+   - 0x04144405 = conv (1×1 pointwise, C=3)
+   - 0x00244405 = gemm (matrix multiply, C=512)
+   - 0x04211101 = concat (channel concatenation, C=16)
 
-5. **DstFmt**: Models with output format change (relu/conv/gemm/sigmoid) use 0x01302031 (bit 20 set). Bit 20 may indicate fp16 output format variant.
+5. **DstFmt**: Models with output format change (relu/conv/gemm/sigmoid/concat) use 0x01302031 (bit 20 set). Add/mul use 0x01002031 (bit 20 clear). Bit 20 may indicate multi-channel output format variant.
 
 ### Operational Status
 
-| Operation | anecc | hwx2py | Direct Register | Notes |
-|-----------|-------|--------|-----------------|-------|
-| **Add** | ✓ | ✓ | ✓ | Works all methods |
-| **Mul** | ✓ | ✓ | ✓ | Same firmware, 2 reg changes |
-| **Relu** | ✓ | ✓ | ✓ (needs L2 prime) | L2 source needs priming |
-| **Conv** | ✓ | ✓ | ✓ | 1×1 pointwise, [12,12,12] ✓ |
-| **Sigmoid** | ✓ | ✓ | - | sigmoid(3) ≈ 0.9526 ✓ |
-| **GeMM** | ✓(inj) | ✓(inj) | ✓(inj) | Inj 0.5 weights → 189.5 ✓ |
-| **Concat** | ✓ | ✓ | ✓ | 2 inputs, [2.0,...] ✓ |
+| Operation | anecc | hwx2py | Standalone py | Notes |
+|-----------|-------|--------|---------------|-------|
+| **Add** | ✓ | ✓ | ✓ `add.py` | PE-based, 2 inputs |
+| **Mul** | ✓ | ✓ | ✓ `add.py mul` | Same firmware, 2 reg changes |
+| **Relu** | ✓ | ✓ | ✓ `relu.py` (needs L2 prime) | L2 source needs priming |
+| **Conv** | ✓ | ✓ | ✓ `conv.py` | 1×1 pointwise, [12,12,12] ✓ |
+| **Sigmoid** | ✓ | ✓ | ✓ `sigmoid_from_hwx.py` | sigmoid(3) ≈ 0.9526 ✓ |
+| **GeMM** | ✓ | ✓ | ✓ `gemm.py` (inj weights) | Inj 0.5 weights → 128 ✓ |
+| **Concat** | ✓ | ✓ | ✓ `concat.py` | 2 inputs, [2.0,...] ✓ |
 
 # Reference
 - https://github.com/eiln/linux
