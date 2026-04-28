@@ -3,17 +3,26 @@ import os, mmap, ctypes, struct
 import numpy as np
 import sys
 
+STRIDE = 32  # element stride between channels (SrcRowStride / sizeof(float16))
 ANE_TILE_COUNT = 0x20
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
 
-class reg:  # register offset 
+class reg:  # register offset
     # --- Task Descriptor (0x0000) ---
     W0, W1, W2 = 0x00, 0x04, 0x08
     W3, W4, W5, W6 = 0x0c, 0x10, 0x14, 0x18
     W7, W8, W9 = 0x1c, 0x20, 0x24
     KernelDMA = 0x28
 
-    # --- Common (0x0000) ---
+    # --- Stream Headers ---
+    CommonStream = 0x124  # stream_header(0x00000, 16)
+    SrcStream = 0x168     # stream_header(0x13800, 28)
+    L2Stream = 0x1DC      # stream_header(0x04800, 18)
+    PEStream = 0x228      # stream_header(0x08800, 4)
+    NEStream = 0x23C      # stream_header(0x0C800, 5)
+    DstStream = 0x254     # stream_header(0x17800, 7)
+
+    # --- Common (0x0124) ---
     InDim, pad0, ChCfg, Cin, Cout = 0x128, 0x12c, 0x130, 0x134, 0x138
     OutDim, pad1, ConvCfg, pad2 = 0x13c, 0x140, 0x144, 0x148
     GroupConvCfg, TileCfg, pad3, pad4, Cfg = 0x14c, 0x150, 0x154, 0x158, 0x15c
@@ -92,7 +101,7 @@ def build_seg(seg_off, seg_len, word_packs):
     max_off = max(boff for boff, _ in word_packs) if word_packs else 0
     tmp = bytearray(max(max_off + 4, seg_off + seg_len + 4))
     for boff, val in word_packs:
-        struct.pack_into('<I', tmp, boff, val)
+        pack_reg(tmp, boff, val)
     return bytes(tmp[seg_off:seg_off + seg_len])
 
 def pack_reg(buf, offset, value):
@@ -113,26 +122,29 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
     (292, 136, build_seg(0x124, 136, [
         # Common HEADER
-        (0x124, stream_header(0x00000, 16)),
-        (reg.InDim, 0x10001), 
+        (reg.CommonStream, stream_header(0x00000, 16)),
+        (reg.InDim, 0x10001),
         (reg.OutDim, 0x10001),
         (reg.ChCfg, 0x2a),
-        (reg.Cin, 0x40), 
-        (reg.Cout, 0x40), 
-        (reg.pad0, 1), 
-        (reg.pad1, 1), 
+        (reg.Cin, 0x40),
+        (reg.Cout, 0x40),
+        (reg.pad0, 1),
+        (reg.pad1, 1),
         (reg.pad2, 0x2041),
         (reg.pad3, 4),
-        (reg.pad4, 0), 
-        (reg.ConvCfg, 0x5000a021), 
-        (reg.GroupConvCfg, 0x10001), 
-        (reg.TileCfg, 1), 
-        (reg.Cfg, 0x33), 
-        (reg.TaskInfo, 0), 
+        (reg.pad4, 0),
+        (reg.ConvCfg, 0x5000a021),
+        (reg.GroupConvCfg, 0x10001),
+        (reg.TileCfg, 1),
+        (reg.Cfg,  # PE elementwise (add/mul): 0x33
+            (3 << 0) | # pad0=3
+            (0 << 2) | # small_src_mode=0
+            (6 << 3)), # pad1=6 
+        (reg.TaskInfo, 0),
         (reg.DPE, 0),
 
         # TileDMA Src HEADER
-        (0x168, stream_header(0x13800, 28)),                          
+        (reg.SrcStream, stream_header(0x13800, 28)),
         (reg.SrcDMAConfig, 0x33881), 
         (reg.Srcpad0, 0x33880), 
         (reg.SrcBaseAddr, 0),
@@ -152,7 +164,7 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
     (477, 57, build_seg(0x1DD, 57, [
         # L2 HEADER
-        (0x1DC, stream_header(0x04800, 18)),                     
+        (reg.L2Stream, stream_header(0x04800, 18)),
         (reg.L2Cfg, 0), 
         (reg.SourceCfg, 0x01500172), 
         (reg.SourceBase, 0),
@@ -170,14 +182,14 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
     (553, 43, build_seg(0x229, 43, [
         # PE HEADER
-        (0x228, stream_header(0x08800, 4)),
+        (reg.PEStream, stream_header(0x08800, 4)),
         (reg.PECfg, 0x80000),
         (reg.BiasScale, 0x3c000000),
         (reg.PreScale, 0x3c000000),
         (reg.FinalScale, 0x3f800000),
 
         # NE HEADER
-        (0x23C, stream_header(0x0C800, 5)),
+        (reg.NEStream, stream_header(0x0C800, 5)),
         (reg.KernelCfg, 0),
         (reg.MACCfg, 0),
         (reg.MatrixVectorBias, 0),
@@ -186,7 +198,7 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
     (597, 31, build_seg(0x255, 31, [
         # TileDMA Dst HEADER
-        (0x254, stream_header(0x17800, 7)),                       
+        (reg.DstStream, stream_header(0x17800, 7)),
         (reg.DstDMAConfig, 0x040000c1), 
         (reg.DstBaseAddr, 0), 
         (reg.DstRowStride, 0x40),
@@ -203,8 +215,8 @@ if len(sys.argv) > 1 and sys.argv[1] == "mul":
 
 input_a = np.zeros(8192, dtype=np.float16)
 input_b = np.zeros(8192, dtype=np.float16)
-input_a[:0x40 * 32:32] = 3.0
-input_b[:0x40 * 32:32] = 2.0
+input_a[:reg.Cin * STRIDE:STRIDE] = 3.0
+input_b[:reg.Cin * STRIDE:STRIDE] = 2.0
 
 out_handle, out_map = allocate_buffer(fd, 0x4000)
 src1_handle, src1_map = allocate_buffer(fd, 0x4000)
