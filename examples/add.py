@@ -126,17 +126,60 @@ def make_from_segments(size, segments):
         buf[offset:offset + length] = data
     return buf
 
+def stream_header(hw_addr, num_words):
+    return ((num_words - 1) << 26) | hw_addr
+
+def build_seg(seg_off, seg_len, word_packs):
+    max_off = max(boff for boff, _ in word_packs) if word_packs else 0
+    tmp = bytearray(max(max_off + 4, seg_off + seg_len + 4))
+    for boff, val in word_packs:
+        struct.pack_into('<I', tmp, boff, val)
+    return bytes(tmp[seg_off:seg_off + seg_len])
+
 hdr = H13TaskHeader(tid=0, nid=0x40, exe_cycles=1058)
 hdr_seg = bytearray(44)
 hdr.pack_into(hdr_seg, 0)
 struct.pack_into('<I', hdr_seg, 0x28, (61 << 26) | 0x1F800)  # KernelDMA stream header
 
+seg2 = build_seg(0x127, 131, [
+    (0x124, stream_header(0x00000, 16)),                          # Common HEADER
+    (0x128, 0x10001), (0x12c, 1), (0x130, 0x2a),                  # InDim, pad0, ChCfg
+    (0x134, 0x40), (0x138, 0x40), (0x13c, 0x10001),               # Cin, Cout, OutDim
+    (0x140, 1), (0x144, 0x5000a021), (0x148, 0x2041),             # pad1, ConvCfg, pad2
+    (0x14c, 0x10001), (0x150, 1), (0x154, 4),                     # GroupConvCfg, TileCfg, pad3
+    (0x158, 0), (0x15c, 0x33), (0x160, 0), (0x164, 0),            # pad4, Cfg, TaskInfo, DPE
+    (0x168, stream_header(0x13800, 28)),                          # TileDMA Src HEADER
+    (0x16c, 0x33881), (0x170, 0x33880), (0x174, 0),               # DMAConfig, pad0, BaseAddr
+    (0x178, 0x40), (0x17c, 0x40), (0x180, 0x1000),                # RowStride, PlaneStride, DepthStride
+    (0x184, 0), (0x188, 0),                                       # GroupStride, pad1
+    (0x18c, 0x40), (0x190, 0x40), (0x194, 0x1000),                # pad2, pad3, pad4
+    (0x198, 0), (0x19c, 0), (0x1a0, 0),                           # pad5, pad6, pad7
+    (0x1a4, 0x01002031), (0x1a8, 0x2030),                         # Fmt, pad8
+])
+
 BTSP_BUF = make_from_segments(0x4000, [
     (2, 42, bytes(hdr_seg[2:44])),
-    (295, 131, bytes.fromhex('3c01000100010000002a0000004000000040000000010001000100000021a0005041200000010001000100000004000000000000003300000000000000000000000038016c8138030080380300000000004000000040000000001000000000000000000000400000004000000000100000000000000000000000000000312000013020')),
-    (477, 57, bytes.fromhex('4800440000000072015001000000001000000020040000000400000004000040040000100000002004000000040000000400007a0150006008')),
-    (553, 23, bytes.fromhex('88000c000008000000003c0000003c0000803f00c80010')),
-    (597, 31, bytes.fromhex('780118c1000004000000004000000040000000001000000000000031200001')),
+    (295, 131, seg2),
+    (477, 57, build_seg(0x1DD, 57, [
+        (0x1DC, stream_header(0x04800, 18)),                      # L2 HEADER
+        (0x1E0, 0), (0x1E4, 0x01500172), (0x1E8, 0),              # L2Cfg, SourceCfg, SourceBase
+        (0x1EC, 0x10), (0x1F0, 0x420),                            # SourceChannelStride, SourceRowStride
+        (0x1F4, 0x400), (0x1F8, 0x400), (0x1FC, 0x440),           # pad0, pad1, pad2
+        (0x200, 0x10), (0x204, 0x420), (0x208, 0x400),            # pad3, pad4, pad5
+        (0x20C, 0x400), (0x210, 0x0050017a), (0x214, 0x860),      # pad6, ResultCfg, ResultBase
+    ])),
+    (553, 23, build_seg(0x229, 23, [
+        (0x228, stream_header(0x08800, 4)),                       # PE HEADER
+        (0x22C, 0x80000), (0x230, 0x3c000000),                    # PECfg, BiasScale
+        (0x234, 0x3c000000), (0x238, 0x3f800000),                 # PreScale, FinalScale
+        (0x23C, stream_header(0x0C800, 5)),                       # NE HEADER
+    ])),
+    (597, 31, build_seg(0x255, 31, [
+        (0x254, stream_header(0x17800, 7)),                       # TileDMA Dst HEADER
+        (0x258, 0x040000c1), (0x25C, 0), (0x260, 0x40),           # DMAConfig, BaseAddr, RowStride
+        (0x264, 0x40), (0x268, 0x1000), (0x26C, 0),               # PlaneStride, DepthStride, GroupStride
+        (0x270, 0x01002031),                                      # Fmt
+    ])),
 ])
 if len(sys.argv)>1 and sys.argv[1]=="mul":
     commands[reg.PECfg] = (0x80000 & ~0x04) | 0x04

@@ -45,6 +45,16 @@ Known Limitations:
 - sigmoid: The KDMA coefficient offset may differ from the default (offset 0).
   CoeffBaseAddr values and kernel data positioning need model-specific handling.
 - H16/M4 format: Not yet supported. Only H13/M1 architecture hwx files work.
+
+Conv output is 0
+The root cause was that the KDMA coefficients were stored in the __TEXT.__const section 
+of the hwx file but the script only embedded the register-config portion of the CMD_BUF. 
+The ANE's KDMA hardware reads weight data from an address relative to the end of the task descriptor (offset 628). 
+Without that data at the correct offset, the ANE loaded zeros → output was all zeros.
+The fix: use the raw ane_data from the hwx (which includes both the register packets and 
+the KDMA config) and append the 192-byte kernel data (the 9 float16 2.0 weights) right 
+after the 628-byte task descriptor. The combined 820-byte buffer is handle0, matching anecc's layout.
+
 """
 
 import struct

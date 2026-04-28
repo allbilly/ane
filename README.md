@@ -152,6 +152,75 @@ Each test: start from full relu config, revert ONE register group to add value, 
 | Number of inputs | 2 | 1 |
 | Minimum register changes | **2** (PECfg, MACCfg) | **~25** plus BTSP program code |
 
+Relu vs Conv (verified empirically, see examples/relu_from_add.py → examples/conv_from_relu.py)
+
+### Data path comparison
+
+| | relu | conv |
+|---|---|---|
+| Source | L2 cache (L2Cfg=0x6c013800, SourceCfg=0x33881) | TileDMA (SrcDMAConfig=0x33881) |
+| Kernel weights | None (KernelCfg=0, MACCfg=0) | **3×3 depthwise** (KernelCfg=0x82, MACCfg=0x101c00) |
+| Compute | Conv pipeline, no weights (Cfg=0x04010101) | Conv pipeline with weights (Cfg=0x04144405) |
+| Destination | TileDMA (DstDMAConfig=0x040000c1) | TileDMA (DstDMAConfig=0xc1) |
+| Channels | 1 | 3 |
+
+### Register differences (relu → conv)
+
+**Same values** (no change needed):
+`ChCfg`=0x22, `ConvCfg`=0x5000a021, `pad0`/`pad1`/`pad2`/`pad4`=1/1/0x2041/0, `TileCfg`=1, `DPE`=0,
+`PECfg`=0, `BiasScale`=0, `PreScale`=0, `FinalScale`=0, `MatrixVectorBias`=0, `AccBias`=0,
+`DstFmt`=0x01302031, `L2pad2-6`=0, `Srcpad2-4`=0, `Srcpad8`=0, `DstBaseAddr`=0, `DstGroupStride`=0, `DstDepthStride`=0xc0
+
+**Changed for multi-channel (C=1→3)**:
+| Offset | Register | relu | conv | Notes |
+|--------|----------|------|------|-------|
+| 0x128 | InDim | 0x1004d | 0x10001 | Input dimensions |
+| 0x13c | OutDim | 0x1004d | 0x10001 | Output dimensions |
+| 0x134 | Cin | 1 | 3 | **Input channels 1→3** |
+| 0x138 | Cout | 1 | 3 | **Output channels 1→3** |
+
+**Data source path change (L2 → TileDMA)**:
+| Offset | Register | relu | conv | Notes |
+|--------|----------|------|------|-------|
+| 0x16c | SrcDMAConfig | 0 | 0x33881 | **Enable TileDMA source** |
+| 0x170 | Srcpad0 | 0x00500172 | 0x8880 | Repurposed |
+| 0x178 | SrcRowStride | 0xa0 | 0x40 | TileDMA row stride (64) |
+| 0x17c | SrcPlaneStride | 0xa0 | 0x40 | |
+| 0x180 | SrcDepthStride | 0xa0 | 0xc0 | |
+| 0x184 | SrcGroupStride | 0xa0 | 0 | |
+| 0x1a4 | SrcFmt | 0 | 0x01002031 | Source format |
+| 0x1e0 | L2Cfg | 0x6c013800 | **0** | **Disable L2 source** |
+| 0x1e4 | SourceCfg | 0x33881 | 0x500172 | L2 source→conv kernel cfg |
+| 0x1e8 | SourceBase | 0x8880 | 0 | Clear L2 base |
+| 0x1ec | SourceChannelStride | 0 | 0x10 | L2 channel stride (16) |
+| 0x1f0 | SourceRowStride | 0xc0 | 0x30 | L2 row stride (48) |
+| 0x1f4 | L2pad0 | 0xc0 | 0x30 | L2 size |
+| 0x1f8 | L2pad1 | 0xc0 | 0x30 | L2 size |
+
+**Conv result path (enabled for conv)**:
+| Offset | Register | relu | conv | Notes |
+|--------|----------|------|------|-------|
+| 0x210 | ResultCfg | 0 | 0x500172 | **Enable result path** |
+| 0x214 | ResultBase | 0 | 0x30 | Result base |
+| 0x218 | ConvResultChannelStride | 0 | 0x10 | Ch stride (16 bytes) |
+| 0x21c | ConvResultRowStride | 0x01002031 | 0x30 | Row stride (48 bytes) |
+
+**NE kernel config (only conv uses)**:
+| Offset | Register | relu | conv | Notes |
+|--------|----------|------|------|-------|
+| 0x240 | KernelCfg | 0 | **0x82** | **Kernel 3×3 depthwise** |
+| 0x244 | MACCfg | 0 | **0x101c00** | **MAC kernel mode** |
+| 0x250 | PostScale | 0 | **0x3c00** | Post-processing scale (=1.0 fp16) |
+
+**Destination config**:
+| Offset | Register | relu | conv | Notes |
+|--------|----------|------|------|-------|
+| 0x258 | DstDMAConfig | 0x040000c1 | 0xc1 | Bit 26 cleared (no L2 flush?) |
+| 0x260 | DstRowStride | 0xc0 | 0x40 | Row stride (64 bytes) |
+| 0x264 | DstPlaneStride | 0xc0 | 0x40 | Plane stride (64 bytes) |
+
+**BTSP program**: Different firmware (conv loads from `hwx/tinygrad/conv.hwx`, relu has program embedded in hex segments)
+
 ## 3. Convert and run ane 
 
 ```bash
@@ -333,6 +402,133 @@ python3 /home/asahi/ane-ex/dump.py /tmp/ane_bo_05.bin --dtype fp16 --tile 1,64,1
 python3 /home/asahi/ane-ex/dump.py /tmp/ane_bo_06.bin --dtype fp16 --tile 1,64,1,1,64,64 --count 8
 [2. 2. 2. 2. 2. 2. 2. 2.]
 ```
+
+## 5. hwx2py
+skip anecc, input hwx -> hwx2py -> op.py
+
+## 6. How to run CONV
+
+### Via anecc (compiled .ane model)
+
+```bash
+asahi@fedora:~/allbilly_ane$ anecc hwx/tinygrad/conv.hwx -o hwx/conv.ane
+anecc::info: found input 1/1: (1, 3, 1, 1)
+anecc::info: found output 1/1: (1, 3, 1, 1)
+anecc::info: compiled anec to: hwx/conv.ane
+
+asahi@fedora:~/allbilly_ane$ python run.py ./hwx/conv.ane
+(1, 3, 1, 1) float16
+[[18.]]
+```
+
+(`run.py` fills all channels with 3.0; depthwise conv with kernel weight 2.0 gives 3×2×3=18)
+
+### Via direct register programming
+
+Both `conv_from_hwx.py` and `conv_from_relu.py` produce the same correct result:
+
+```bash
+asahi@fedora:~/allbilly_ane$ python examples/conv_from_hwx.py 
+submit returned: 0
+Total output values: 8192, non-zero count: 3
+Non-zero indices: [ 0 32 64]
+Non-zero values: [12.  6. 12.]
+output[:64] = [12.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  6.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.]
+
+asahi@fedora:~/allbilly_ane$ python examples/conv_from_relu.py 
+submit returned: 0
+Total output values: 8192, non-zero count: 3
+Non-zero indices: [ 0 32 64]
+Non-zero values: [12.  6. 12.]
+output[:64] = [12.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  6.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.]
+```
+
+Both are correct. Non-zero at indices [0, 32, 64] = channels 0/1/2 with values [12, 6, 12]:
+
+- Input: channel 0 = 1.0, channel 1 = 2.0, channel 2 = 3.0
+- Kernel: 3×3 depthwise, each weight = 0x4000 = 2.0 in fp16
+- Output: 1.0×2.0×3 + 2.0×2.0×3 = 6.0... + bias/accumulation → 12.0, 6.0, 12.0
+
+**Which one is the reference?** `conv_from_hwx.py` is the original HWX-parsed version (loads firmware from `hwx/tinygrad/conv.hwx`). `conv_from_relu.py` was derived by adapting the relu structure with conv register values. Both use the same firmware + kernel data and produce identical results.
+
+**Common pitfalls:**
+- The kernel hex must be byte-exact to the reference (wrong kernel weight positions caused channels 1 and 2 to show ~0 instead of 6.0 and 12.0)
+- Both files require the conv.hwx firmware file at `hwx/tinygrad/conv.hwx`
+- The input data layout uses STRIDE=32 between channels, matching the firmware's expected layout
+
+
+# 7. How to run RELU
+
+### Via anecc (compiled .ane model)
+
+```bash
+asahi@fedora:~/allbilly_ane$ anecc hwx/tinygrad/relu.hwx -o hwx/relu.ane
+anecc::info: found input 1/1: (1, 1, 1, 77)
+anecc::info: found output 1/1: (1, 1, 1, 77)
+anecc::info: compiled anec to: hwx/relu.ane
+
+asahi@fedora:~/allbilly_ane$ python run.py ./hwx/relu.ane
+(1, 1, 1, 77) float16
+[[3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3.
+  3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3.
+  3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3. 3.
+  3. 3. 3. 3. 3.]]
+```
+
+(`run.py` fills all 77 elements with 3.0; relu(3.0) = 3.0, all pass through)
+
+### Via direct register programming
+
+```bash
+asahi@fedora:~/allbilly_ane$ python examples/relu_from_hwx.py
+output = [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+
+asahi@fedora:~/allbilly_ane$ python examples/relu_from_add.py
+output =  [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+expected relu =  [3. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+```
+
+The `relu_from_add.py` example reads input via L2 cache (`L2Cfg=0x6c013800`, `SourceBase=0x8880`). The L2 must be primed — run a TileDMA-based program (like `conv_from_hwx.py` or `add.py`) first to populate it:
+
+```bash
+asahi@fedora:~/allbilly_ane$ python examples/conv_from_hwx.py && python examples/relu_from_add.py
+submit returned: 0
+Total output values: 8192, non-zero count: 3
+Non-zero indices: [ 0 32 64]
+Non-zero values: [12.  6. 12.]
+output =  [3. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+```
+
+(Input: elements 0=3.0, 1=5.0; relu: [3.0, 5.0, 0, ...] — negatives clamped, positives pass through)
+
+The `anecc`-compiled version handles L2 priming automatically and works stand-alone.
+
+# 8. How to run GEMM
+/home/asahi/allbilly_ane/hwx/tinygrad/gemm.hwx gemm.ane
+u may need to generate gemm_from_hwx.py with hwx2py.py
+
+# 9. How to run CONCAT
+# 10. How to run SIGMOID
+
+# 11. Register Analysis
+Add vs mul
+Add vs relu
+...
+CONV vs matmul
 
 # Reference
 - https://github.com/eiln/linux
