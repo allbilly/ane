@@ -75,11 +75,11 @@ class H13TaskHeader:
     def __init__(self, tid=0, nid=0x40, exe_cycles=1058, next_ptr=0):
         self.words = [
             tid | (nid << 16) | (1 << 25),  # w0: tid[15:0], nid[23:16], bit25
-            0,                                # w1: next_size in upper 16 bits
-            exe_cycles,                       # w2
-            0, 0x00fff86a, 0, 0x30009800,    # w3-w6
-            next_ptr,                         # w7
-            0x00024966, 0,                    # w8-w9
+            0,                              # w1: next_size in upper 16 bits
+            exe_cycles,                     # w2
+            0, 0x00fff86a, 0, 0x30009800,   # w3-w6
+            next_ptr,                       # w7
+            0x00024966, 0,                  # w8-w9
         ]
 
     def pack_into(self, buf, offset=0):

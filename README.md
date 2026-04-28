@@ -765,6 +765,30 @@ Relu also has an **alternative register layout** (used by `relu_from_add.py` / `
 
 5. **DstFmt**: Models with output format change (relu/conv/gemm/sigmoid/concat) use 0x01302031 (bit 20 set). Add/mul use 0x01002031 (bit 20 clear). Bit 20 may indicate multi-channel output format variant.
 
+### Family 2 Cross-Operation: sigmoid↔relu via MACCfg bits 16/17
+
+Just as Family 1 (PE-based) has a **1-bit toggle** `PECfg[2]` to switch add↔mul, Family 2 (Conv pipeline) has a **complementary bit pair** `MACCfg[16:17]` to switch relu↔sigmoid:
+
+| Register | Bits | Family 1 (PE) | Family 2 (Conv pipeline) |
+|----------|------|---------------|--------------------------|
+| `PECfg[2]` | 0x4 | add (0) ↔ mul (1) | — |
+| `MACCfg[16]` | 0x10000 | — | relu mode |
+| `MACCfg[17]` | 0x20000 | — | sigmoid mode |
+
+Both sigmoid and relu share the same firmware program (entry `25400201`). The MACCfg register selects which processing the NE applies:
+
+| MACCfg value | bit20 | bit17 | bit16 | bits2,3 | Mode |
+|---|---|---|---|---|---|
+| 0x0012000c | ✓ | ✓ | — | ✓ | Sigmoid (KDMA table lookup) |
+| 0x0011000c | ✓ | — | ✓ | ✓ | Relu (pass-through, clamp negative) |
+| 0x0002000c | — | ✓ | — | ✓ | Sigmoid-like (reduced precision) |
+| 0x0000000c | — | — | — | ✓ | Pass-through (no activation) |
+| 0x00000000 | — | — | — | — | **Broken** (garbage: 744.0) |
+
+The relu firmware needs sigmoid KDMA kernel data appended to function as sigmoid. Neither Cfg nor any other register controls this toggle — only MACCfg.
+
+**All experimental scripts** in `experimental/` document the complete test methodology.
+
 ### Operational Status
 
 | Operation | anecc | hwx2py | Standalone py | Notes |
@@ -776,6 +800,76 @@ Relu also has an **alternative register layout** (used by `relu_from_add.py` / `
 | **Sigmoid** | ✓ | ✓ | ✓ `sigmoid_from_hwx.py` | sigmoid(3) ≈ 0.9526 ✓ |
 | **GeMM** | ✓ | ✓ | ✓ `gemm.py` (inj weights) | Inj 0.5 weights → 128 ✓ |
 | **Concat** | ✓ | ✓ | ✓ `concat.py` | 2 inputs, [2.0,...] ✓ |
+
+# 12. Minimal Register Change Analysis
+
+Systematic experimental results from `experimental/test_minimal_regs.py`, `experimental/test_sig_to_relu.py`, `experimental/test_family2_cross.py`.
+
+## 12.1 Minimal Change Matrix
+
+For each pair (base→target), the table shows how many register changes are truly needed vs how many register differences exist in the raw configs. "Needed" means reverting that register to the base value causes the output to change from target to base behavior.
+
+### Same firmware (sigmoid/relu family, entry `25400201`)
+
+| Pair | Total reg diffs | Needed | Don't-care | Minimal change |
+|------|----|---------|------------|----------------|
+| sigmoid→relu | 1 | 1 | 0 | `MACCfg`: 0x0012000c → 0x0011000c (bit17 off, bit16 on) |
+| relu→sigmoid | 1 | 1 | 0 | `MACCfg`: 0x0011000c → 0x0012000c (bit16 off, bit17 on) + KDMA kernel |
+
+### Cross-firmware (different BTSP programs)
+
+| Pair | Base firmware entry | Result |
+|------|-------------------|--------|
+| conv→relu | `25400203` | **HANG** — different BTSP program |
+| conv→sigmoid | `25400203` | **HANG** |
+| sigmoid→conv | `25400201` | **HANG** |
+
+The BTSP firmware program is hardcoded with specific data flow operations. Register overrides alone cannot bridge different firmware families.
+
+## 12.2 MACCfg Bit Field (NE Engine Config)
+
+Systematic bit-sweep on sigmoid firmware (input=3.0):
+
+| MACCfg | bit20 | bit17 | bit16 | bits2,3 | Output | Mode |
+|--------|-------|-------|-------|--------|--------|------|
+| 0x0012000c | 1 | 1 | 0 | 1 | 0.9526 | Sigmoid (table lookup) |
+| 0x0011000c | 1 | 0 | 1 | 1 | 3.0000 | Relu (pass-through) |
+| 0x0010000c | 1 | 0 | 0 | 1 | 3.0000 | Pass-through (no activation) |
+| 0x0002000c | 0 | 1 | 0 | 1 | 0.9995 | Partial sigmoid |
+| 0x0001000c | 0 | 0 | 1 | 1 | 3.0000 | Pass-through |
+| 0x0000000c | 0 | 0 | 0 | 1 | 3.0000 | Pass-through |
+| 0x00000000 | 0 | 0 | 0 | 0 | 744.0 | **Broken** |
+
+**Key findings:**
+- `bit20 (0x100000)` = NE core enable (must be set for correct operation)
+- `bits2,3 (0x0c)` = ALU/format mode (must be set)
+- `bit17 (0x20000)` = sigmoid/KMDA table lookup mode
+- `bit16 (0x10000)` = relu pass-through with negative clamping
+- `MACCfg=0` breaks the NE engine entirely (garbage 744.0)
+
+## 12.3 Cfg Register: Does NOT Control Op Mode
+
+Cfg was tested with 5 different values on sigmoid firmware. All produced identical sigmoid output:
+
+| Cfg value | Source op | Output | Verdict |
+|-----------|-----------|--------|---------|
+| 0x04010101 | relu/sigmoid | 0.9526 | Same |
+| 0x04144405 | conv | 0.9526 | Same |
+| 0x04211101 | concat | 0.9526 | Same |
+| 0x00244405 | gemm | 0.9526 | Same |
+| 0x00000000 | zero | 0.9526 | Same |
+
+Cfg register controls activation post-processing parameters, not the fundamental op mode. The op mode is determined by MACCfg (within same firmware) or by the BTSP firmware program (cross-firmware).
+
+## 12.4 Comparison: Family 1 vs Family 2 Mode Toggles
+
+| Aspect | Family 1 (PE) | Family 2 (Conv pipeline) |
+|--------|---------------|--------------------------|
+| Same firmware ops | add ↔ mul | relu ↔ sigmoid |
+| Toggle register | PECfg | MACCfg |
+| Toggle bits | `PECfg[2]` (0x4) | `MACCfg[16:17]` (0x10000/0x20000) |
+| Firmware entry | Same (`66 49 02 00`) | Same (`25 40 02 01`) |
+| Other ops | — | conv/gemm/concat = different firmware |
 
 # Reference
 - https://github.com/eiln/linux
