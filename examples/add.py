@@ -95,20 +95,25 @@ def build_seg(seg_off, seg_len, word_packs):
         struct.pack_into('<I', tmp, boff, val)
     return bytes(tmp[seg_off:seg_off + seg_len])
 
+def pack_reg(buf, offset, value):
+    struct.pack_into('<I', buf, offset, value)
+
 BTSP_BUF = make_from_segments(0x4000, [
     (0, 44, build_seg(0, 44, [
         (reg.W0, 0x02400000),
         (reg.W1, 0),
         (reg.W2, 1058),
-        (reg.W3, 0), (reg.W4, 0x00fff86a),
-        (reg.W5, 0), (reg.W6, 0x30009800),
+        (reg.W3, 0), 
+        (reg.W4, 0x00fff86a),
+        (reg.W5, 0), 
+        (reg.W6, 0x30009800),
         (reg.W7, 0),
         (reg.W8, 0x00024966), (reg.W9, 0),
         (reg.KernelDMA, stream_header(0x1F800, 62)),
     ])),
-    (295, 131, build_seg(0x127, 131, [
+    (292, 136, build_seg(0x124, 136, [
         # Common HEADER
-        (0x124, stream_header(0x00000, 16)),                          
+        (0x124, stream_header(0x00000, 16)),
         (reg.InDim, 0x10001), 
         (reg.OutDim, 0x10001),
         (reg.ChCfg, 0x2a),
@@ -163,16 +168,21 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.ResultCfg, 0x0050017a), 
         (reg.ResultBase, 0x860),
     ])),
-    (553, 23, build_seg(0x229, 23, [
+    (553, 43, build_seg(0x229, 43, [
         # PE HEADER
-        (0x228, stream_header(0x08800, 4)),                       
-        (reg.PECfg, 0x80000), 
+        (0x228, stream_header(0x08800, 4)),
+        (reg.PECfg, 0x80000),
         (reg.BiasScale, 0x3c000000),
-        (reg.PreScale, 0x3c000000), 
+        (reg.PreScale, 0x3c000000),
         (reg.FinalScale, 0x3f800000),
-        
+
         # NE HEADER
-        (0x23C, stream_header(0x0C800, 5)),                       
+        (0x23C, stream_header(0x0C800, 5)),
+        (reg.KernelCfg, 0),
+        (reg.MACCfg, 0),
+        (reg.MatrixVectorBias, 0),
+        (reg.AccBias, 0),
+        (reg.PostScale, 0),
     ])),
     (597, 31, build_seg(0x255, 31, [
         # TileDMA Dst HEADER
@@ -187,17 +197,14 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
 ])
 
-# update register to turn ADD into MUL
-commands = {}
-if len(sys.argv)>1 and sys.argv[1]=="mul":
-    commands[reg.PECfg] = (0x80000 & ~0x04) | 0x04
-    commands[reg.MACCfg] = 0x30
-for offset, value in commands.items():
-    struct.pack_into('<I', BTSP_BUF, offset, value)
+if len(sys.argv) > 1 and sys.argv[1] == "mul":
+    pack_reg(BTSP_BUF, reg.PECfg, (0x80000 & ~0x04) | 0x04)
+    pack_reg(BTSP_BUF, reg.MACCfg, 0x30)
 
-# why 2017?
-input_a = np.zeros(8192, dtype=np.float16); input_a[:2017:32] = 3.0
-input_b = np.zeros(8192, dtype=np.float16); input_b[:2017:32] = 2.0
+input_a = np.zeros(8192, dtype=np.float16)
+input_b = np.zeros(8192, dtype=np.float16)
+input_a[:0x40 * 32:32] = 3.0
+input_b[:0x40 * 32:32] = 2.0
 
 out_handle, out_map = allocate_buffer(fd, 0x4000)
 src1_handle, src1_map = allocate_buffer(fd, 0x4000)
