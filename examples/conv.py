@@ -112,15 +112,15 @@ def pack_reg(buf, offset, value):
     struct.pack_into('<I', buf, offset, value)
 
 # Kernel data: 3x3 1x1 conv, all weights=2.0
-kernel_hex = (
-    '0000000000000000000000000040004000400000000000000000000000000000'
-    '0000000000000000000000000000000000000000000000000000000000000000'
-    '0000000000000000000000000040004000400000000000000000000000000000'
-    '0000000000000000000000000000000000000000000000000000000000000000'
-    '0000000000000000000000000040004000400000000000000000000000000000'
-    '0000000000000000000000000000000000000000000000000000000000000000'
-)
-kernel = bytes.fromhex(kernel_hex)
+# Kernel data: 3 channels × 3 channels 1x1 conv, all weights=2.0
+# Layout: each output channel occupies 64 bytes (12 bytes pad, 3×fp16, rest pad)
+KERNEL_STRIDE = 0x40
+kernel = bytearray(C * KERNEL_STRIDE)
+w = np.float16(2.0).view(np.uint16).item()
+for oc in range(C):
+    off = oc * KERNEL_STRIDE + 12
+    struct.pack_into('<HHH', kernel, off, w, w, w)
+kernel = bytes(kernel)
 
 BTSP_BUF = make_from_segments(0x4000, [
     # ── Task Descriptor ──────────────────────────────────────────────

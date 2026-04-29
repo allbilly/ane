@@ -4,27 +4,34 @@ import numpy as np
 
 STRIDE = 32
 C = 512
+HALF_ONE = 0x3C00  # float16(1.0) encoding
+DMA_EOL = 0x80000000   # DMA descriptor: end-of-list marker
+DMA_ACTIVE = 0x40000000  # DMA descriptor: active buffer
 ANE_TILE_COUNT = 0x20
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
 
-class reg:
+class reg:  # register offset
+    # --- Task Descriptor (0x0000) ---
     W0, W1, W2 = 0x00, 0x04, 0x08
     W3, W4, W5, W6 = 0x0c, 0x10, 0x14, 0x18
     W7, W8, W9 = 0x1c, 0x20, 0x24
     KernelDMA = 0x28
 
-    CommonStream = 0x124
-    SrcStream = 0x168
-    L2Stream = 0x1DC
-    PEStream = 0x228
-    NEStream = 0x23C
-    DstStream = 0x254
+    # --- Stream Headers ---
+    CommonStream = 0x124  # stream_header(0x00000, 16)
+    SrcStream = 0x168     # stream_header(0x13800, 28)
+    L2Stream = 0x1DC      # stream_header(0x04800, 18)
+    PEStream = 0x228      # stream_header(0x08800, 4)
+    NEStream = 0x23C      # stream_header(0x0C800, 5)
+    DstStream = 0x254     # stream_header(0x17800, 7)
 
+    # --- Common (0x0124) ---
     InDim, pad0, ChCfg, Cin, Cout = 0x128, 0x12c, 0x130, 0x134, 0x138
     OutDim, pad1, ConvCfg, pad2 = 0x13c, 0x140, 0x144, 0x148
     GroupConvCfg, TileCfg, pad3, pad4, Cfg = 0x14c, 0x150, 0x154, 0x158, 0x15c
     TaskInfo, DPE = 0x160, 0x164
 
+    # --- L2 (0x4800) ---
     L2Cfg, SourceCfg, SourceBase = 0x1e0, 0x1e4, 0x1e8
     SourceChannelStride, SourceRowStride = 0x1ec, 0x1f0
     L2pad0, L2pad1, L2pad2 = 0x1f4, 0x1f8, 0x1fc
@@ -32,17 +39,22 @@ class reg:
     ResultCfg, ResultBase = 0x210, 0x214
     ConvResultChannelStride, ConvResultRowStride = 0x218, 0x21c
 
+    # --- PE (0x8800) ---
     PECfg, BiasScale, PreScale, FinalScale = 0x22c, 0x230, 0x234, 0x238
 
+    # --- NE (0xC800) ---
     KernelCfg, MACCfg, MatrixVectorBias, AccBias, PostScale = 0x240, 0x244, 0x248, 0x24c, 0x250
 
+    # --- TileDMA Src (0x13800) ---
     SrcDMAConfig, Srcpad0, SrcBaseAddr = 0x16c, 0x170, 0x174
     SrcRowStride, SrcPlaneStride, SrcDepthStride = 0x178, 0x17c, 0x180
     SrcGroupStride, Srcpad1 = 0x184, 0x188
     Srcpad2, Srcpad3, Srcpad4 = 0x18c, 0x190, 0x194
     Srcpad5, Srcpad6, Srcpad7 = 0x198, 0x19c, 0x1a0
     SrcFmt, Srcpad8 = 0x1a4, 0x1a8
+    SrcPadStream = 0x1AC    # TileDMA Src stream padding
 
+    # --- TileDMA Dst (0x17800) ---
     DstDMAConfig, DstBaseAddr, DstRowStride = 0x258, 0x25c, 0x260
     DstPlaneStride, DstDepthStride, DstGroupStride, DstFmt = 0x264, 0x268, 0x26c, 0x270
 
@@ -99,30 +111,43 @@ def build_seg(seg_off, seg_len, word_packs):
 def pack_reg(buf, offset, value):
     struct.pack_into('<I', buf, offset, value)
 
-def pack_le_words(words):
-    return struct.pack('<' + 'I' * len(words), *words)
+def le_to_be(v):
+    return struct.unpack('>I', struct.pack('<I', v))[0]
 
-TD_BUF = make_from_segments(0x4000, [
+def build_cmd_buf(template):
+    kernel_offset = 0x274
+    kernel_size = 524288
+    weights = np.full(kernel_size // 2, np.float16(0.5), dtype=np.float16)
+    buf = bytearray(template)
+    buf.extend(b'\x00' * (32768 - len(template)))
+    buf[kernel_offset:kernel_offset + len(weights.tobytes())] = weights.tobytes()
+    return buf
+
+# Firmware DMA words: 62 big-endian words converted from LE-trick values
+_fw_le = [0x40, 0] + [0x81]*16 + [i * 0x8000 for i in range(16)] + [0x8000]*16 + [0x80]*4 + [0]*8
+_fw_be = struct.pack('>' + 'I' * 62, *[le_to_be(v) for v in _fw_le])
+
+BTSP_BUF = make_from_segments(0x4000, [
     # ── Task Descriptor ──────────────────────────────────────────────
     (0, 44, build_seg(0, 44, [
-        (reg.W0,  # tid=0, nid=0, eon=1
+        (reg.W0,  # tid=0, nid=0x40, eon=1
             (0 << 0) |      # tid=0
-            (0 << 16) |     # nid=0
+            (0x40 << 16) |  # nid=64
             (1 << 25)),     # eon=1
         (reg.W1, 0),  # next_size
         (reg.W2, 1058),  # exe_cycles
         (reg.W3, 0),
-        (reg.W4, 0x00fff86a),  # debug_log_events
+        (reg.W4,  # debug_log_events
+            (0xFFF86A)       # event mask [23:0], pad=0
+        ),
         (reg.W5, 0),
         (reg.W6,  # flags: next_priority=38
-            (38 << 10) |
-            (3 << 28)),
+            (38 << 10) |    # next_priority=38
+            (3 << 28)),     # pad bits
         (reg.W7, 0),  # next_ptr
-        (reg.W8,  # base_ene: rbase0=5, rbe0=1, wbase=36, el0_en=1
+        (reg.W8,  # base_ene: gemm mode, rbase0=5, rbe0=1, wbase=36, el0_en=1
             (5) |          # rbase0=5
             (1 << 5) |     # rbe0=1
-            (0 << 6) |     # rbase1=0
-            (0 << 11) |    # rbe1=0
             (36 << 12) |   # wbase=36
             (1 << 24) |    # el0_en=1
             (1 << 26)),    # gemm flag
@@ -131,33 +156,29 @@ TD_BUF = make_from_segments(0x4000, [
     ])),
 
     # ── Firmware DMA context ─────────────────────────────────────────
-    (0x2C, 0xF8, pack_le_words(
-        [0x40, 0] + [0x81]*16
-        + [i * 0x8000 for i in range(16)]
-        + [0x8000]*16 + [0x80]*4 + [0]*7
-    )),
+    (0x2C, 0xF8, _fw_be),
 
     # ── Common + TileDMA Src ─────────────────────────────────────────
     (292, 184, build_seg(0x124, 184, [
         (reg.CommonStream, stream_header(0x00000, 16)),
         (reg.InDim,  # h_in=1, w_in=1
             (1 << 16) | 1),
-        (reg.pad0, 1),
+        (reg.OutDim,  # h_out=1, w_out=1
+            (1 << 16) | 1),
         (reg.ChCfg,  # infmt=fp16, outfmt=fp16
             (2) | (2 << 4)),
         (reg.Cin, C),
         (reg.Cout, C),
-        (reg.OutDim,  # h_out=1, w_out=1
-            (1 << 16) | 1),
+        (reg.pad0, 1),
         (reg.pad1, 1),
-        (reg.ConvCfg, 0x5000b421),  # gemm conv config
         (reg.pad2, 0x2041),  # reserved
-        (reg.GroupConvCfg, 0x00010001),
-        (reg.TileCfg, 1),
         (reg.pad3, 0),
         (reg.pad4, 0),
+        (reg.ConvCfg, 0x5000b421),  # gemm conv config
+        (reg.GroupConvCfg, 0x00010001),
+        (reg.TileCfg, 1),
         (reg.Cfg, 0x00244405),  # gemm pipeline config
-        (reg.TaskInfo, 0x100000),
+        (reg.TaskInfo, (1 << 20)),  # enable
         (reg.DPE, 0),
 
         # TileDMA Src HEADER
@@ -165,9 +186,9 @@ TD_BUF = make_from_segments(0x4000, [
         (reg.SrcDMAConfig,  # en=1, cache_hint=8, reuse=8, noreuse=3, dep=3
             (1) |          # en=1
             (8 << 4) |     # cache_hint=8
-            (8 << 8) |     # reuse=8
-            (3 << 12) |    # noreuse=3
-            (3 << 16)),    # dep=3
+            (8 << 8) |     # cache_hint_reuse=8
+            (3 << 12) |    # cache_hint_noreuse=3
+            (3 << 16)),    # dep_mode=3
         (reg.Srcpad0, 0x8880),  # reserved
         (reg.SrcBaseAddr, 0),
         (reg.SrcRowStride, 0x40),
@@ -181,13 +202,13 @@ TD_BUF = make_from_segments(0x4000, [
         (reg.Srcpad5, 0),
         (reg.Srcpad6, 0),
         (reg.Srcpad7, 0),
-        (reg.Srcpad8, 0),
+        (reg.Srcpad8, 0),  # reserved
         (reg.SrcFmt,  # source data format
             (1) |          # fmt_mode=1
             (3 << 4) |     # truncate=3
             (2 << 12) |    # mem_fmt=2
             (1 << 24)),    # interleave=1
-        (0x1AC, 0x00000100),  # TileDMA Src stream padding
+        (reg.SrcPadStream, 0x00000100),  # TileDMA Src stream padding
     ])),
 
     # ── L2 ───────────────────────────────────────────────────────────
@@ -226,7 +247,7 @@ TD_BUF = make_from_segments(0x4000, [
         (reg.MACCfg, 0x00101c00),  # gemm exp MAC op
         (reg.MatrixVectorBias, 0),
         (reg.AccBias, 0),
-        (reg.PostScale, 0x3c00),  # fp16(1.0)
+        (reg.PostScale, HALF_ONE),  # fp16(1.0) as post-scale
     ])),
 
     # ── TileDMA Dst ──────────────────────────────────────────────────
@@ -249,24 +270,14 @@ TD_BUF = make_from_segments(0x4000, [
     ])),
 ])
 
-# Build CMD_BUF: TD + kernel weights + padding
-kernel_offset = 0x274
-kernel_size = 524288
-weights = np.full(kernel_size // 2, np.float16(0.5), dtype=np.float16)
-CMD_BUF = bytearray(TD_BUF)
-CMD_BUF.extend(b'\x00' * (32768 - len(CMD_BUF)))
-CMD_BUF[kernel_offset:kernel_offset + len(weights.tobytes())] = weights.tobytes()
-
-BTSP_BUF = bytearray(TD_BUF[:0x4000])
-BTSP_BUF[2] = 0x40
-
-BUF_SIZE = 0x4000
+# Build CMD_BUF with gemm weights (524288 bytes of fp16 0.5)
+CMD_BUF = build_cmd_buf(BTSP_BUF)
 
 cmd_handle, cmd_map = allocate_buffer(fd, len(CMD_BUF))
 cmd_map.write(bytes(CMD_BUF)); cmd_map.close()
-out_handle, out_map = allocate_buffer(fd, BUF_SIZE)
-src1_handle, src1_map = allocate_buffer(fd, BUF_SIZE)
-src1 = np.zeros(BUF_SIZE // 2, dtype=np.float16)
+out_handle, out_map = allocate_buffer(fd, 0x4000)
+src1_handle, src1_map = allocate_buffer(fd, 0x4000)
+src1 = np.zeros(0x4000 // 2, dtype=np.float16)
 src1[:C * STRIDE:STRIDE] = np.float16(1.0)
 src1_map.write(src1.tobytes()); src1_map.close()
 btsp_handle, btsp_map = allocate_buffer(fd, 0x4000)
