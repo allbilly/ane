@@ -126,6 +126,8 @@ Add vs Relu (verified empirically, see examples/add.py → examples/relu_from_ad
 
 **Key insight**: Unlike add→mul (same BTSP program, 2 register changes), **add→relu requires changing the BTSP firmware program itself + ~25 critical registers**. Relu uses a conv pipeline (not PE) but still sources data via TileDMA — the L2 is used as intermediate result staging, not as input source.
 
+> **Note**: The raw-hex-offset experiment `experimental/test_regs_one_by_one.py` is superseded by the structured register analysis in [§13](#13-structured-register-analysis) below. Results are kept here for reference.
+
 ### Experimental results (one-register-at-a-time revert from working relu config)
 
 Each test: start from full relu config, revert ONE register group to add value, check if relu still works.
@@ -267,7 +269,7 @@ ANE BO_FREE
 
 ### Dump IOCTL submit
 
-You can use bpftrace to dump ioctl submit content
+You can use bpftrace to dump ioctl submit content. Most ops use `td_count=1` (single tile). The only exception is `concat.py` which chains 2 tiles and uses `td_count=2`.
 
 ```bash
 sudo bpftrace -e '
@@ -288,7 +290,8 @@ tracepoint:syscalls:sys_enter_ioctl
            $s->tsk_size, $s->td_count, $s->td_size, $s->btsp_handle);
 }'
 
-ANE SUBMIT: tsk_size=628, td_count=1, td_size=628, btsp_handle=0
+ANE SUBMIT (single-tile, e.g. add/relu): tsk_size=628, td_count=1, td_size=628, btsp_handle=0
+ANE SUBMIT (multi-tile, e.g. concat):   tsk_size=1396, td_count=2, td_size=628, btsp_handle=5
 ```
 
 but i modified the kernel driver directly to print the dump.
@@ -527,10 +530,10 @@ expected relu =  [3. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
 
 (Input: element 0=3.0, element 1=5.0; both positive → pass through)
 
-**3. L2-style standalone** (`experimental/relu_l2.py`): Clean standalone version of the L2-style approach. Firmware built from raw hex segments instead of raw .hwx file. Works standalone.
+**3. L2-source standalone** (`examples/relu_l2.py`): Uses L2 cache controller for input data sourcing instead of TileDMA. The SrcStream header at host `0x168` is re-routed from ANE `0x13800` (TileDMA Src) to ANE `0x04800` (L2). No firmware modules loaded. PE/NE disabled — the conv pipeline naturally clamps negative inputs to zero (ReLU behavior is in hardware, not software). The `np.maximum` in the Python script only computes the expected output for comparison.
 
 ```bash
-asahi@fedora:~/allbilly_ane$ python experimental/relu_l2.py
+asahi@fedora:~/allbilly_ane$ python examples/relu_l2.py
 output = [0. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
@@ -539,9 +542,24 @@ expected relu = [0. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
 ```
 
-**Key insight about the L2-style layout**: The `L2Cfg` register value `0x6c013800` is actually a **stream header** encoding `stream_header(0x13800, 28)` — it redirects the next 28 register writes to the TileDMA Src bank (hardware address 0x13800). This is not "L2 source" but rather an alternative programming path to configure TileDMA. The BTSP firmware program writes a stream header to L2 bank's first register, which then chains to TileDMA Src configuration.
+**Key architectural difference vs TileDMA source** (`relu.py`): `relu_l2.py` re-routes the SrcStream at host offset `0x168` to point to ANE `0x04800` (L2 cache controller) instead of `0x13800` (TileDMA Src engine). The L2's `SourceCfg`/`SourceBase`/`SourceRowStride` registers (placed at the re-routed TileDMA Src region `0x16C-0x1AC`) handle input data sourcing. No firmware modules are loaded (all-zero FW DMA context at `0x2C`). PE and NE are fully disabled — the conv pipeline naturally clamps negative inputs to zero without NE activation.
 
-All three methods work standalone — no L2 priming needed.
+### TileDMA vs L2: which is better?
+
+| Aspect | TileDMA (`relu.py`) | L2 (`relu_l2.py`) |
+|--------|---------------------|--------------------|
+| Firmware loaded | Yes (DMA_ACTIVE entries) | None (all-zero KDMA) |
+| Pipeline stages | TileDMA→Conv→PE→NE→L2→Dst | L2→Conv→Dst |
+| Startup time | Longer (firmware init) | Instant |
+| NE ReLU | Hardware via MACCfg bit 16 | Conv pipeline clamps negatives |
+| Code complexity | 320 lines, structured registers | 113 lines, hex blob |
+| Flexibility | Multi-input, advanced strides | Single sequential source |
+
+**L2 is better for simple pass-through ops** (relu, identity) — no firmware loading, shorter pipeline, fewer registers. The conv pipeline naturally clamps negatives to zero without NE.
+
+**TileDMA is better for complex ops** (conv, gemm, concat) needing multi-input, kernel weights, or advanced addressing patterns.
+
+There is no `elementwise_l2.py` — elementwise add needs PE/NE active for actual computation (summing two inputs), which defeats the purpose of the L2 approach. The L2 vs TileDMA comparison is fully demonstrated by `relu.py` vs `relu_l2.py`.
 
 # 8. How to run GEMM (Matrix Multiply)
 
@@ -646,15 +664,23 @@ macOS 12 Monterey (real machine or VM) is only strictly needed for clean element
 
 Cin=16, Cout=16, TileDMA source, 2 inputs (16 + 16384 → 16400 output). Loads kernel data from compiled `.ane` file — anecc handles the KDMA kernel region setup properly.
 
+**Concat is the only multi-tile example** — all others (`add`, `relu`, `conv`, `gemm`, `sigmoid`) use `td_count=1`. Concat chains 2 task descriptors via `W7=0x300` (next_ptr) and requires `td_count=2` with `tsk_size=0x574` (total size of both tiles) in the submit call. Using `td_count=1` causes tile 2 to be silently skipped.
+
 ```bash
 asahi@fedora:~/allbilly_ane$ python examples/concat.py
 submit returned: 0
-Total: 8192, non-zero: 16
-Non-zero indices: [  0  32  64  96 128 160 192 224 256 288 320 352 384 416 448 480]
-Non-zero values: [2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.]
+Total output channels: 16400
+First 4 (tile1, src2→2.0): [2. 2. 2. 2.]
+Channels 16380-16383 (tile1): [2. 2. 2. 2.]
+Channels 16384-16387 (tile2, src1→3.0): [3. 3. 3. 3.]
+Last 4 (tile2): [3. 3. 3. 3.]
+All 2.0 (tile1): True
+All 3.0 (tile2): True
 ```
 
-2 inputs (src1=3.0 for channel 0, src2=2.0 for first 16 of 16384 channels). The concat loads KDMA coefficients from `.ane` with 104 non-zero fp16 values. The spurious CoeffDMAConfig=0x80 pattern (macOS 14+) is handled by anecc's kernel region setup.
+2 inputs (src1=3.0 for 16 channels, src2=2.0 for 16384 channels). Tile 1 processes src2 (rbase0=6), tile 2 processes src1 (rbase0=5). Both write to different offsets in the output buffer via DstBaseAddr (tile1=0, tile2=0x100000). Buffer sizes must be large enough for stride-based access (1MB+ for 16384 channels × stride 64).
+
+The spurious CoeffDMAConfig=0x80 pattern (macOS 14+) is handled by anecc's kernel region setup.
 
 # 10. How to run SIGMOID
 
@@ -797,7 +823,7 @@ The relu firmware needs sigmoid KDMA kernel data appended to function as sigmoid
 |-----------|-------|--------|---------------|-------|
 | **Add** | ✓ | ✓ | ✓ `add.py` | PE-based, 2 inputs |
 | **Mul** | ✓ | ✓ | ✓ `add.py mul` | Same firmware, 2 reg changes |
-| **Relu** | ✓ | ✓ | ✓ `relu.py` (TileDMA src), `relu_dma.py` (structured), `relu_l2.py` (L2-style), `relu_from_add.py` | Conv pipeline, TileDMA source, no L2 priming needed |
+| **Relu** | ✓ | ✓ | ✓ `relu.py` (TileDMA src), `relu_l2.py` (L2 cache src), `relu_from_add.py` | Conv pipeline, TileDMA or L2 source, no L2 priming needed |
 | **Conv** | ✓ | ✓ | ✓ `conv.py` | 1×1 pointwise, [12,12,12] ✓ |
 | **Sigmoid** | ✓ | ✓ | ✓ `sigmoid_from_hwx.py` | sigmoid(3) ≈ 0.9526 ✓ |
 | **GeMM** | ✓ | ✓ | ✓ `gemm.py` (inj weights) | Inj 0.5 weights → 128 ✓ |
@@ -872,6 +898,161 @@ Cfg register controls activation post-processing parameters, not the fundamental
 | Toggle bits | `PECfg[2]` (0x4) | `MACCfg[16:17]` (0x10000/0x20000) |
 | Firmware entry | Same (`66 49 02 00`) | Same (`25 40 02 01`) |
 | Other ops | — | conv/gemm/concat = different firmware |
+
+# 13. Structured Register Analysis
+
+Structured analysis using the fully-decoded register infrastructure from `examples/*.py`. Unlike the raw-hex experiments in earlier sections, this analysis uses the named register objects (`reg` class), stream headers, and `build_seg`/`pack_reg` helpers from the example files.
+
+The experiment script `experimental/test_structured_regs.py` runs all 4 phases. Results below require ANE hardware (`/dev/accel/accel0`).
+
+## 13.1 Cross-Operation Register Comparison
+
+Register values extracted from each example's `BTSP_BUF`. Marked values differ from the baseline (add).
+
+| Address | Register | add | relu | sigmoid |
+|---------|----------|-----|------|---------|
+| 0x128 | InDim | 0x00010001 | **0x0001004d** | **0x0001004d** |
+| 0x12c | pad0 | 1 | 1 | 1 |
+| 0x130 | ChCfg | 0x2a | **0x22** | **0x22** |
+| 0x134 | Cin | 64 | **1** | **1** |
+| 0x138 | Cout | 64 | **1** | **1** |
+| 0x13c | OutDim | 0x00010001 | **0x0001004d** | **0x0001004d** |
+| 0x140 | pad1 | 1 | 1 | 1 |
+| 0x144 | ConvCfg | 0x5000a021 | 0x5000a021 | **0x5000a021** |
+| 0x148 | pad2 | 0x2041 | 0x2041 | 0x2041 |
+| 0x14c | GroupConvCfg | 0x10001 | **0x14001** | **0x14001** |
+| 0x150 | TileCfg | 1 | 1 | 1 |
+| 0x154 | pad3 | 4 | **0** | **0** |
+| 0x158 | pad4 | 0 | 0 | 0 |
+| 0x15c | Cfg | 0x33 | **0x04010101** | **0x04010101** |
+| 0x160 | TaskInfo | 0 | **0x00100000** | **0x00100000** |
+| 0x164 | DPE | 0 | 0 | 0 |
+| 0x16c | SrcDMAConfig | 0x33881 | 0x33881 | 0x33881 |
+| 0x170 | Srcpad0 | 0x33880 | **0x8880** | **0x8880** |
+| 0x174 | SrcBaseAddr | 0 | 0 | 0 |
+| 0x178 | SrcRowStride | 0x40 | **0xc0** | **0xc0** |
+| 0x17c | SrcPlaneStride | 0x40 | **0xc0** | **0xc0** |
+| 0x180 | SrcDepthStride | 0x1000 | **0xc0** | **0xc0** |
+| 0x184 | SrcGroupStride | 0 | 0 | 0 |
+| 0x188 | Srcpad1 | 0 | 0 | 0 |
+| 0x18c | Srcpad2 | 0x40 | **0** | **0** |
+| 0x190 | Srcpad3 | 0x40 | **0** | **0** |
+| 0x194 | Srcpad4 | 0x1000 | **0** | **0** |
+| 0x198 | Srcpad5 | 0 | 0 | 0 |
+| 0x19c | Srcpad6 | 0 | 0 | 0 |
+| 0x1a0 | Srcpad7 | 0 | 0 | 0 |
+| 0x1a4 | SrcFmt | 0x01002031 | 0x01002031 | 0x01002031 |
+| 0x1a8 | Srcpad8 | 0x2030 | **0** | **0** |
+| 0x1e0 | L2Cfg | 0 | 0 | 0 |
+| 0x1e4 | SourceCfg | 0x01500172 | **0x00500172** | **0x00500172** |
+| 0x1e8 | SourceBase | 0 | 0 | 0 |
+| 0x1ec | SourceChannelStride | 0x10 | **0xa0** | **0xa0** |
+| 0x1f0 | SourceRowStride | 0x420 | **0xa0** | **0xa0** |
+| 0x1f4 | L2pad0 | 0x400 | **0xa0** | **0xa0** |
+| 0x1f8 | L2pad1 | 0x400 | **0xa0** | **0xa0** |
+| 0x1fc | L2pad2 | 0x440 | **0** | **0** |
+| 0x200 | L2pad3 | 0x10 | **0** | **0** |
+| 0x204 | L2pad4 | 0x420 | **0** | **0** |
+| 0x208 | L2pad5 | 0x400 | **0** | **0** |
+| 0x20c | L2pad6 | 0x400 | **0** | **0** |
+| 0x210 | ResultCfg | 0x0050017a | **0x0050017a** | **0x0050017a** |
+| 0x214 | ResultBase | 0x860 | **0xa0** | **0xa0** |
+| 0x218 | ConvResultChannelStride | 0 | 0 | 0 |
+| 0x21c | ConvResultRowStride | 0 | 0 | 0 |
+| 0x22c | PECfg | **0x80000** | **0** | **0** |
+| 0x230 | BiasScale | **0x3c000000** | **0** | **0** |
+| 0x234 | PreScale | **0x3c000000** | **0** | **0** |
+| 0x238 | FinalScale | **0x3f800000** | **0** | **0** |
+| 0x240 | KernelCfg | 0 | **0x80** | **0x80** |
+| 0x244 | MACCfg | 0 | **0x0011000c** | **0x0012000c** |
+| 0x248 | MatrixVectorBias | 0 | 0 | 0 |
+| 0x24c | AccBias | 0 | 0 | 0 |
+| 0x250 | PostScale | 0 | **0x3c00** | **0x3c00** |
+| 0x258 | DstDMAConfig | 0x040000c1 | **0x040000c1** | **0x040000c1** |
+| 0x25c | DstBaseAddr | 0 | 0 | 0 |
+| 0x260 | DstRowStride | 0x40 | **0xc0** | **0xc0** |
+| 0x264 | DstPlaneStride | 0x40 | **0xc0** | **0xc0** |
+| 0x268 | DstDepthStride | 0x1000 | **0xc0** | **0xc0** |
+| 0x26c | DstGroupStride | 0 | 0 | 0 |
+| 0x270 | DstFmt | 0x01002031 | **0x01302031** | **0x01302031** |
+
+## 13.2 Register Diff Counts by Pair
+
+| | add | relu | sigmoid |
+|---|-----|------|---------|
+| **add** | — | 29 | 30 |
+| **relu** | 29 | — | 1 |
+| **sigmoid** | 30 | 1 | — |
+
+**Same-firmware pair**: relu ↔ sigmoid (1 register diff: `MACCfg` — entry 0x25400201)
+**Cross-firmware**: add ↔ relu/sigmoid (29-30 register diffs — different firmware programs)
+
+## 13.3 Register-by-Register Live vs Don't-Care
+
+For the relu ↔ sigmoid pair (same firmware, entry 0x25400201), each of the 1 differing registers tested:
+
+| Register | RelU Value | Sigmoid Value | Revert Result |
+|----------|-----------|---------------|---------------|
+| MACCfg (0x244) | 0x0011000c | 0x0012000c | **NEEDED** — output reverts to base mode |
+
+**Result**: `MACCfg` bits 16/17 are the sole toggle between relu and sigmoid. No other register changes needed.
+
+## 13.4 MACCfg Comprehensive Bitfield Map
+
+| MACCfg | Description | Output | Verdict |
+|--------|-------------|--------|---------|
+| 0x0012000c | Sigmoid (bit17, bit20) | 0.9526 | sigmoid |
+| 0x0011000c | Relu (bit16, bit20) | 3.0000 | passthru |
+| 0x0010000c | Passthru (bit20 only) | 3.0000 | passthru |
+| 0x0002000c | Partial sig (bit17 only) | ~0.9995 | partial sigmoid |
+| 0x0001000c | Relu-like (bit16 only) | 3.0000 | passthru |
+| 0x0000000c | No activation (bits 2-3 only) | 3.0000 | passthru |
+| 0x00000000 | All zero | ~744.0 | **BROKEN** |
+
+**Bit map:**
+
+| Bits | Mask | Function |
+|------|------|----------|
+| [1:0] | 0x3 | ALU thread/core select |
+| [3:2] | 0xc | ALU format mode (elementwise fp16) |
+| [5:4] | 0x30 | kernel_mode, bias_mode (add=0x00, mul=0x30) |
+| [11:8] | 0xf00 | op_mode for PE-based ops (12=relu, 13=exp) |
+| [16] | 0x10000 | Relu pass-through (clamp negative to 0) |
+| [17] | 0x20000 | Sigmoid table lookup (requires KDMA kernel data) |
+| [20] | 0x100000 | NE core enable (**MUST be set**; without it: broken output) |
+
+## 13.5 Cfg Register Analysis
+
+Cfg register was tested with all known values on sigmoid firmware. All produced identical sigmoid output:
+
+| Cfg | Description | Output | Verdict |
+|-----|-------------|--------|---------|
+| 0x04010101 | Sigmoid default | 0.9526 | sigmoid |
+| 0x04144405 | Conv Cfg | 0.9526 | sigmoid |
+| 0x04211101 | Concat Cfg | 0.9526 | sigmoid |
+| 0x00244405 | GeMM Cfg | 0.9526 | sigmoid |
+| 0x00000000 | Zero | 0.9526 | sigmoid |
+
+**Bit map:**
+
+| Bit | Mask | Function |
+|-----|------|----------|
+| 0 | 0x00000001 | pad0 — padding/layout flag |
+| 8 | 0x00000100 | conv_mode — enables conv pipeline processing |
+| 16 | 0x00010000 | dst_mode — output format/destination mode |
+| 26 | 0x04000000 | enable — master enable for the block |
+
+**Key finding**: Cfg controls **activation post-processing parameters**, not the fundamental operation mode. The op mode is determined by MACCfg (within the same firmware family) or by the BTSP firmware program (cross-firmware).
+
+## 13.6 Operation Families Summary
+
+| Family | Entry | Members | Data Path | Toggle Register |
+|--------|-------|---------|-----------|----------------|
+| 1 (PE) | 0x66490200 | add/mul/max/min/sq | TileDMA → PE → TileDMA | PECfg[2] + MACCfg[4:5] |
+| 2a (Conv) | 0x25400201 | relu/sigmoid | TileDMA → Conv → TileDMA | MACCfg[16:17] |
+| 2b (Conv) | 0x25400203 | conv/gemm/concat | TileDMA → Conv+KDMA → TileDMA | Different firmware |
+
+**Cross-firmamily register-only conversion is NOT possible** — different BTSP firmware programs encode different data flow operations. The attempt causes ANE HANG.
 
 # Reference
 - https://github.com/eiln/linux
