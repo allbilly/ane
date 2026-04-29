@@ -5,7 +5,9 @@ import sys
 
 STRIDE = 32
 CHANNELS = 0x4000
-BUF_SIZE = 0x4000
+BUF_SIZE = 0x4000       # baseline 16KB for src1, btsp
+SRC2_BUF_SIZE = 0x100000  # 1MB for 16384 channels × stride 64
+OUT_BUF_SIZE = 0x200000   # 2MB for 16400 output channels
 HALF_ONE = 0x3C00
 DMA_EOL = 0x80000000
 DMA_ACTIVE = 0x40000000
@@ -116,47 +118,19 @@ BTSP_BUF = make_from_segments(0x4000, [
             (0 << 0) |      # tid=0
             (0x40 << 16)    # nid=64
         ),
-        (reg.W1, 0x009c0000),  # next_size
+        (reg.W1, 0x009c0000),  # next_size: (0x274 - 0x2c) << 16 = 0x9c0000
         (reg.W2, 1024),  # exe_cycles
         (reg.W3, 0),
-        (reg.W4, 0x68),  # debug_log_events
+        (reg.W4,  # debug_log_events
+            (0x68)           # event mask [23:0]
+        ),
         (reg.W5, 0),
         (reg.W6,  # flags: next_priority=38
             (38 << 10) |    # next_priority=38
             (3 << 28)       # pad bits
         ),
         (reg.W7, 0x300),  # next_ptr → tile 2 at offset 0x300
-        (reg.W8, 0x05824026),  # base_ene: rbase0=6, rbe0=1, wbase=0, wbe=1, el0_en=1, +reserved
-        (reg.W9, 0),
-        (reg.KernelDMA, stream_header(0x1F800, 62)),
-    ])),
-
-    # ── Tile 1: Firmware DMA context ─────────────────────────────────
-    (0x2C, 0xF8, struct.pack('>' + 'I' * 62,
-        *([0]*2 + [DMA_EOL]*16 + [0]*16 + [DMA_ACTIVE]*16 + [DMA_EOL]*4 + [0]*8))),
-
-    # ═══════════════════════════════════════════════════════════════════
-    # Tile 2: processes 16-wide src2, writes to DstBaseAddr=0x100000
-    # ═══════════════════════════════════════════════════════════════════
-
-    # ── Tile 2: Task Descriptor ──────────────────────────────────────
-    (0x300, 44, build_seg(0, 44, [
-        (reg.W0,  # tid=1, nid=0x100, eon=1
-            (1 << 0) |      # tid=1
-            (0x100 << 16) | # nid=256
-            (1 << 25)       # eon=1
-        ),
-        (reg.W1, 0),  # next_size
-        (reg.W2, 1058),  # exe_cycles
-        (reg.W3, 0),
-        (reg.W4, 0x6a),  # debug_log_events
-        (reg.W5, 0),
-        (reg.W6,  # flags: next_priority=38
-            (38 << 10) |    # next_priority=38
-            (3 << 28)       # pad bits
-        ),
-        (reg.W7, 0),  # next_ptr (no successor)
-        (reg.W8, 0x05024025),  # base_ene: rbase0=5, rbe0=1, wbase=0, wbe=1, el0_en=1, +reserved
+        (reg.W8, 0x05824026),  # base_ene: rbase0=6 (src2), rbe0=1, wbase=4 (output), wbe=1, el0_en=1, +reserved bits
         (reg.W9, 0),
         (reg.KernelDMA, stream_header(0x1F800, 62)),
     ])),
@@ -179,20 +153,16 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.W1, 0),  # next_size
         (reg.W2, 1058),  # exe_cycles
         (reg.W3, 0),
-        (reg.W4, 0x6a),  # debug_log_events
+        (reg.W4,  # debug_log_events
+            (0x6a)           # event mask [23:0]
+        ),
         (reg.W5, 0),
         (reg.W6,  # flags: next_priority=38
             (38 << 10) |    # next_priority=38
             (3 << 28)       # pad bits
         ),
         (reg.W7, 0),  # next_ptr (no successor)
-        (reg.W8,  # base_ene: rbase0=5, rbe0=1, wbase=36, wbe=1, el0_en=1
-            (5) |          # rbase0=5
-            (1 << 5) |     # rbe0=1
-            (36 << 12) |   # wbase=36
-            (1 << 17) |    # wbe=1
-            (1 << 24)      # el0_en=1
-        ),
+        (reg.W8, 0x05024025),  # base_ene: rbase0=5 (src1), rbe0=1, wbase=4 (output), wbe=1, el0_en=1
         (reg.W9, 0),
         (reg.KernelDMA, stream_header(0x1F800, 62)),
     ])),
@@ -242,7 +212,7 @@ BTSP_BUF = make_from_segments(0x4000, [
             (8 << 8) |     # cache_hint_reuse=8
             (3 << 12) |    # cache_hint_noreuse=3
             (3 << 16)),    # dep_mode=3
-        (reg.Srcpad0, 0x8880),  # TileDMA Src pad, same as SrcDMAConfig with en=0
+        (reg.Srcpad0, 0x8880),  # TileDMA Src pad: same value as SrcDMAConfig with en=0
         (reg.SrcRowStride, 0x40),    # 64 bytes
         (reg.SrcPlaneStride, 0x40),  # same
         (reg.SrcDepthStride, 0x400), # 16 * 64 = 1024 = Cin * SrcRowStride
@@ -251,10 +221,10 @@ BTSP_BUF = make_from_segments(0x4000, [
             (3 << 4) |     # truncate=3
             (2 << 12) |    # mem_fmt=2
             (1 << 24)),    # interleave=1
-        (reg.SrcPadStream, 0x100),  # TileDMA Src stream padding
+        (reg.SrcPadStream, 0x00000100),  # TileDMA Src stream padding
     ])),
 
-    # ── Tile 2: L2 ──────────────────────────────────────────────────
+    # ── Tile 2: L2 ───────────────────────────────────────────────────
     (0x4DC, 68, build_seg(0x1DC, 68, [
         (reg.L2Stream, stream_header(0x04800, 18)),
         (reg.L2Cfg, 0),
@@ -366,8 +336,8 @@ BTSP_BUF = make_from_segments(0x4000, [
             (3 << 4) |     # truncate=3
             (2 << 12) |    # mem_fmt=2
             (1 << 24)),    # interleave=1
-        (reg.Srcpad8, 0),
-        (reg.SrcPadStream, 0x100),  # TileDMA Src stream padding
+        (reg.Srcpad8, 0),  # reserved
+        (reg.SrcPadStream, 0x00000100),  # TileDMA Src stream padding
     ])),
 
     # ── Tile 1: L2 ───────────────────────────────────────────────────
@@ -448,25 +418,30 @@ if len(sys.argv) > 1 and sys.argv[1] == "exp":
 
 C1 = 16
 C2 = 16384
+COUT = C1 + C2  # 16400
 
-out_handle, out_map = allocate_buffer(fd, BUF_SIZE)
+out_handle, out_map = allocate_buffer(fd, OUT_BUF_SIZE)
 src1_handle, src1_map = allocate_buffer(fd, BUF_SIZE)
 src1 = np.zeros(BUF_SIZE // 2, dtype=np.float16)
 src1[:C1 * STRIDE:STRIDE] = np.float16(3.0)
 src1_map.write(src1.tobytes()); src1_map.close()
-src2_handle, src2_map = allocate_buffer(fd, BUF_SIZE)
-src2 = np.zeros(BUF_SIZE // 2, dtype=np.float16)
-src2[:C2 * 1:1] = np.float16(2.0)
+src2_handle, src2_map = allocate_buffer(fd, SRC2_BUF_SIZE)
+src2 = np.zeros(SRC2_BUF_SIZE // 2, dtype=np.float16)
+src2[:C2 * STRIDE:STRIDE] = np.float16(2.0)
 src2_map.write(src2.tobytes()); src2_map.close()
 btsp_handle, btsp_map = allocate_buffer(fd, BUF_SIZE)
 btsp_map.write(bytes(BTSP_BUF)); btsp_map.close()
 
 handles = [btsp_handle, 0, 0, 0, out_handle, src1_handle, src2_handle] + [0] * 25
-ret = submit_task(fd, 0x274, 1, 0x274, handles, btsp_handle)
+ret = submit_task(fd, 0x574, 2, 0x274, handles, btsp_handle)
 print(f"submit returned: {ret}")
-out = np.frombuffer(out_map, dtype=np.float16).copy(); out_map.close()
-non_zero = np.where(out != 0)[0]
-print(f"Total: {len(out)}, non-zero: {len(non_zero)}")
-if len(non_zero) > 0:
-    print(f"Non-zero values: {out[non_zero[:20]]}")
+out = np.frombuffer(out_map, dtype=np.float16, count=COUT * STRIDE).copy(); out_map.close()
+out_ch = out[::STRIDE][:COUT]
+print(f"Total output channels: {len(out_ch)}")
+print(f"First 4 (tile1, src2→2.0): {out_ch[:4]}")
+print(f"Channels 16380-16383 (tile1): {out_ch[C2-4:C2]}")
+print(f"Channels 16384-16387 (tile2, src1→3.0): {out_ch[C2:C2+4]}")
+print(f"Last 4 (tile2): {out_ch[-4:]}")
+print(f"All 2.0 (tile1): {np.all(out_ch[:C2] == np.float16(2.0))}")
+print(f"All 3.0 (tile2): {np.all(out_ch[C2:] == np.float16(3.0))}")
 os.close(fd)

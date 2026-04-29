@@ -137,7 +137,7 @@ BTSP_BUF = make_from_segments(0x4000, [
             (0 << 11) |    # rbe1=0
             (36 << 12) |   # wbase=36
             (1 << 24)),    # reserved
-        (reg.W9, 0),
+        (reg.W9, 0x21),
         (reg.KernelDMA, stream_header(0x1F800, 62)),
     ])),
 
