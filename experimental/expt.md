@@ -514,6 +514,70 @@ DstPlaneStride(0x40), DstDepthStride(op-specific), DstFmt
 | TaskInfo | UNNEEDED | — | ESSENTIAL(0x100000) | — | — | — | NE task enable |
 | ChCfg | ESSENTIAL(0x2A) | — | ESSENTIAL(0x22) | — | — | — | Format |
 
+### Implementation
+
+Script: `experimental/test_min_regs.py`
+
+The script builds BTSP_BUF for each op using the same `make_from_segments`/`build_seg` patterns as `examples/*.py`. Each op definition includes:
+- `name`: op name
+- `buf`: the working BTSP_BUF
+- `inputs`: test input array
+- `check`: lambda to validate output
+- `regs`: auto-extracted from BTSP_BUF (non-zero registers only)
+- `n_src_bufs`: 1 or 2 (elementwise ops use 2 input buffers)
+- `input_stride`/`read_stride`: element placement in buffer (1=contiguous for conv pipeline, 32=stride-interleaved for PE/L2 pipeline)
+- `gemm_mode`: separate CMD_BUF + kernel data pattern
+
+Phase 1 automatically skips 24 zero-valued registers (confirmed dead by expt1/expt2). Phase 2 sets each non-zero register to 0 and runs the op, recording the result.
+
+### Results (Phase 2 — Relu)
+
+| Register | Value | Result |
+|----------|-------|--------|
+| InDim | 0x1004d | **ESSENTIAL** — zeroing zeros output (wrong dimensions) |
+| ChCfg | 0x22 | **ESSENTIAL** — zeroing gives ADD-like pass-through (no format) |
+| PostScale | 0x3c00 | **ESSENTIAL** — zeroing zeros output scale |
+| DstDMAConfig | 0x40000c1 | **ESSENTIAL** — DMA disabled, no output |
+| Cin | 1 | UNNEEDED |
+| pad2 | 0x2041 | UNNEEDED |
+| Cfg | 0x04010101 | UNNEEDED |
+| TaskInfo | 0x100000 | UNNEEDED |
+| Srcpad0 | 0x8880 | UNNEEDED |
+| SrcRowStride | 0xc0 | UNNEEDED (1-ch) |
+| SrcPlaneStride | 0xc0 | UNNEEDED (1-ch) |
+| SrcDepthStride | 0xc0 | UNNEEDED (1-ch) |
+| SrcPadStream | 0x100 | UNNEEDED |
+| SourceCfg | 0x00500172 | UNNEEDED |
+| SourceRowStride | 0xa0 | UNNEEDED (1-ch) |
+| L2pad0 | 0xa0 | UNNEEDED |
+| L2pad1 | 0xa0 | UNNEEDED |
+| ResultBase | 0xa0 | UNNEEDED |
+| KernelCfg | 0x80 | UNNEEDED — firmware handles relu, not NE? |
+| DstRowStride | 0xc0 | UNNEEDED (1-ch) |
+| DstPlaneStride | 0xc0 | UNNEEDED (1-ch) |
+| DstDepthStride | 0xc0 | UNNEEDED (1-ch) |
+| pad0 | 1 | HANG |
+| Cout | 1 | HANG |
+| OutDim | 0x1004d | HANG |
+| pad1 | 1 | HANG |
+| ConvCfg | 0x5000a021 | HANG |
+| GroupConvCfg | 0x14001 | HANG |
+| TileCfg | 1 | HANG |
+| SrcDMAConfig | 0x33881 | HANG |
+| SrcFmt | 0x01002031 | HANG |
+| SourceChannelStride | 0xa0 | HANG |
+| ResultCfg | 0x0050017a | HANG |
+| MACCfg | 0x0011000c | HANG |
+| DstFmt | 0x01302031 | HANG |
+
+**Key findings (relu):**
+1. Only **4 registers are ESSENTIAL**: InDim, ChCfg, PostScale, DstDMAConfig
+2. **KernelCfg (0x80) is UNNEEDED** — surprising! The NE enable bit may not gate data flow in this firmware
+3. **Cfg (0x04010101) is UNNEEDED** — the pipeline config is burned into the firmware program
+4. All stride registers are UNNEEDED for 1-channel ops
+5. 14 registers HANG when zeroed — these are config/format registers that must have *some* valid value (not necessarily the specific baseline value)
+6. 18 registers are truly UNNEEDED — zeroing produces identical correct output
+
 ### Run
 
 ```bash
