@@ -1,0 +1,57 @@
+name: Generate atan2 and sqrt HWX
+
+on:
+  push:
+    branches: [macos-buildhwx]
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install numpy coremltools torch
+
+      - name: Generate atan2 MLModel
+        run: |
+          python3 gen_atan2_mlmodel.py
+
+      - name: Generate sqrt MLModel
+        run: |
+          python3 gen_sqrt_mlmodel.py
+
+      - name: Build coreml2hwx
+        run: |
+          cd coreml_to_ane_hwx
+          make
+          chmod +x ./coreml2hwx
+
+      - name: Convert atan2 to HWX
+        run: |
+          ./coreml_to_ane_hwx/coreml2hwx atan2.mlmodel
+
+      - name: Convert sqrt to HWX
+        run: |
+          ./coreml_to_ane_hwx/coreml2hwx sqrt.mlmodel
+
+      - name: Copy HWX files to repo
+        run: |
+          mkdir -p hwx
+          cp /tmp/hwx_output/atan2/model.hwx hwx/atan2.hwx
+          cp /tmp/hwx_output/sqrt/model.hwx hwx/sqrt.hwx
+
+      - name: Upload HWX Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hwx-models
+          path: |
+            hwx/atan2.hwx
+            hwx/sqrt.hwx
