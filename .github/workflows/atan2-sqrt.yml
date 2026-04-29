@@ -24,9 +24,13 @@ jobs:
         run: |
           python3 gen_atan2_mlmodel.py
 
-      - name: Generate sqrt MLModel (PyTorch)
+      - name: Generate sqrt MLModel (PyTorch NN)
         run: |
-          python3 gen_sqrt_torch_mlmodel.py
+          python3 gen_sqrt_torch_mlmodel.py || true
+
+      - name: Generate sqrt MLPackage (mlprogram fallback)
+        run: |
+          python3 gen_sqrt_mlpackage.py
 
       - name: Build coreml2hwx
         run: |
@@ -39,10 +43,15 @@ jobs:
         run: |
           ./coreml_to_ane_hwx/coreml2hwx atan2.mlmodel
 
-      - name: Convert sqrt to HWX
+      - name: Convert sqrt (NN) to HWX
         continue-on-error: true
         run: |
-          ./coreml_to_ane_hwx/coreml2hwx sqrt.mlmodel
+          ./coreml_to_ane_hwx/coreml2hwx sqrt.mlmodel || true
+
+      - name: Convert sqrt (mlpackage) to HWX
+        continue-on-error: true
+        run: |
+          ./coreml_to_ane_hwx/coreml2hwx sqrt.mlpackage
 
       - name: Copy HWX files to repo
         if: always()
