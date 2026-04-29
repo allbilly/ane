@@ -2,34 +2,38 @@ from fcntl import ioctl
 import os, mmap, ctypes, struct
 import numpy as np
 
-STRIDE = 96
-ST = STRIDE * 2
-CHANNELS = 1
-W = 77
-HALF_ONE = 0x3C00  # not used (NE disabled), kept for symmetry
-DMA_EOL = 0x80000000
-DMA_ACTIVE = 0x40000000
+STRIDE = 96     # element stride between elements (SrcRowStride / sizeof(float16))
+CHANNELS = 1     # Cin = Cout = 1 (single-element conv pipeline)
+W = 77           # input/output width (w_in = w_out = 77)
+ST = STRIDE * 2  # buffer stride in bytes (SrcRowStride = 192)
+HALF_ONE = 0x3C00  # float16(1.0) encoding (not used — NE disabled)
+DMA_EOL = 0x80000000   # DMA descriptor: end-of-list marker
+DMA_ACTIVE = 0x40000000  # DMA descriptor: active buffer
 ANE_TILE_COUNT = 0x20
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
 
-class reg:
+class reg:  # register offset
+    # --- Task Descriptor (0x0000) ---
     W0, W1, W2 = 0x00, 0x04, 0x08
     W3, W4, W5, W6 = 0x0c, 0x10, 0x14, 0x18
     W7, W8, W9 = 0x1c, 0x20, 0x24
     KernelDMA = 0x28
 
-    CommonStream = 0x124
-    SrcStream = 0x168
-    L2Stream = 0x1DC
-    PEStream = 0x228
-    NEStream = 0x23C
-    DstStream = 0x254
+    # --- Stream Headers ---
+    CommonStream = 0x124  # stream_header(0x00000, 16)
+    SrcStream = 0x168     # stream_header(0x04800, 18) — re-routed to L2!
+    L2Stream = 0x1DC      # stream_header(0x04800, 18)
+    PEStream = 0x228      # stream_header(0x08800, 4)
+    NEStream = 0x23C      # stream_header(0x0C800, 5)
+    DstStream = 0x254     # stream_header(0x17800, 7)
 
+    # --- Common (0x0124) ---
     InDim, pad0, ChCfg, Cin, Cout = 0x128, 0x12c, 0x130, 0x134, 0x138
     OutDim, pad1, ConvCfg, pad2 = 0x13c, 0x140, 0x144, 0x148
     GroupConvCfg, TileCfg, pad3, pad4, Cfg = 0x14c, 0x150, 0x154, 0x158, 0x15c
     TaskInfo, DPE = 0x160, 0x164
 
+    # --- L2 (0x4800) ---
     L2Cfg, SourceCfg, SourceBase = 0x1e0, 0x1e4, 0x1e8
     SourceChannelStride, SourceRowStride = 0x1ec, 0x1f0
     L2pad0, L2pad1, L2pad2 = 0x1f4, 0x1f8, 0x1fc
@@ -37,17 +41,22 @@ class reg:
     ResultCfg, ResultBase = 0x210, 0x214
     ConvResultChannelStride, ConvResultRowStride = 0x218, 0x21c
 
+    # --- PE (0x8800) ---
     PECfg, BiasScale, PreScale, FinalScale = 0x22c, 0x230, 0x234, 0x238
+
+    # --- NE (0xC800) ---
     KernelCfg, MACCfg, MatrixVectorBias, AccBias, PostScale = 0x240, 0x244, 0x248, 0x24c, 0x250
 
+    # --- TileDMA Src (0x13800) ---
     SrcDMAConfig, Srcpad0, SrcBaseAddr = 0x16c, 0x170, 0x174
     SrcRowStride, SrcPlaneStride, SrcDepthStride = 0x178, 0x17c, 0x180
     SrcGroupStride, Srcpad1 = 0x184, 0x188
     Srcpad2, Srcpad3, Srcpad4 = 0x18c, 0x190, 0x194
     Srcpad5, Srcpad6, Srcpad7 = 0x198, 0x19c, 0x1a0
     SrcFmt, Srcpad8 = 0x1a4, 0x1a8
-    SrcPadStream = 0x1AC
+    SrcPadStream = 0x1AC    # TileDMA Src stream padding
 
+    # --- TileDMA Dst (0x17800) ---
     DstDMAConfig, DstBaseAddr, DstRowStride = 0x258, 0x25c, 0x260
     DstPlaneStride, DstDepthStride, DstGroupStride, DstFmt = 0x264, 0x268, 0x26c, 0x270
 
@@ -98,11 +107,12 @@ def build_seg(seg_off, seg_len, word_packs):
     max_off = max(boff for boff, _ in word_packs) if word_packs else 0
     tmp = bytearray(max(max_off + 4, seg_off + seg_len + 4))
     for boff, val in word_packs:
-        struct.pack_into('<I', tmp, boff, val)
+        pack_reg(tmp, boff, val)
     return bytes(tmp[seg_off:seg_off + seg_len])
 
 def pack_reg(buf, offset, value):
     struct.pack_into('<I', buf, offset, value)
+
 
 # Key difference from relu.py: SrcStream at host 0x168 points to ANE 0x04800
 # (L2 cache controller) instead of 0x13800 (TileDMA Src engine).
@@ -111,119 +121,164 @@ def pack_reg(buf, offset, value):
 # Firmware program bytes embedded in this buffer (non-zero bytes outside
 # standard register regions). In relu.py, these come from FW DMA loading.
 BTSP_BUF = make_from_segments(0x4000, [
-    # Task Descriptor
+    # ── Task Descriptor ──────────────────────────────────────────────
     (0, 44, build_seg(0, 44, [
-        (reg.W0,
-            (0 << 0) |
-            (0x40 << 16) |
-            (1 << 25)),
-        (reg.W1, 0),
-        (reg.W2, 1058),
+        (reg.W0,  # tid=0, nid=0x40, eon=1
+            (0 << 0) |      # tid=0
+            (0x40 << 16) |  # nid=64
+            (1 << 25)),     # eon=1
+        (reg.W1, 0),  # next_size
+        (reg.W2, 1058),  # exe_cycles
         (reg.W3, 0),
-        (reg.W4, 0xFFF86A),
+        (reg.W4,  # debug_log_events
+            (0xFFF86A)       # event mask [23:0], pad=0
+        ),
         (reg.W5, 0),
-        (reg.W6,
-            (38 << 10) |
-            (3 << 28)),
-        (reg.W7, 0),
-        (reg.W8,
-            (5) |
-            (1 << 5) |
-            (0 << 6) |
-            (0 << 11) |
-            (36 << 12) |
-            (1 << 24)),
+        (reg.W6,  # flags: next_priority=38
+            (38 << 10) |    # next_priority=38
+            (3 << 28)),     # pad bits
+        (reg.W7, 0),  # next_ptr
+        (reg.W8,  # base_ene: rbase0=5, rbe0=1, rbase1=0, rbe1=0, wbase=36, wbe=0
+            (5) |          # rbase0=5
+            (1 << 5) |     # rbe0=1
+            (0 << 6) |     # rbase1=0
+            (0 << 11) |    # rbe1=0
+            (36 << 12) |   # wbase=36
+            (1 << 24)),    # reserved
         (reg.W9, 0),
         (reg.KernelDMA, stream_header(0x1F800, 62)),
     ])),
 
-    # Firmware DMA context (all zeros — no firmware modules loaded)
-    (0x2C, 0xF8, b'\x00' * 0xF8),
+    # ── Firmware DMA context ─────────────────────────────────────────
 
-    # Common stream (host 0x124, ANE 0x00000)
+    # ── Common ───────────────────────────────────────────────────────
     (292, 68, build_seg(0x124, 68, [
         (reg.CommonStream, stream_header(0x00000, 16)),
-        (reg.InDim, (1 << 16) | W),
-        (reg.OutDim, (1 << 16) | W),
-        (reg.ChCfg, (2) | (2 << 4)),
-        (reg.Cin, CHANNELS), (reg.Cout, CHANNELS),
-        (reg.pad0, 1), (reg.pad1, 1), (reg.pad2, 0x2041),
-        (reg.pad3, 0), (reg.pad4, 0),
-        (reg.ConvCfg,
-            (1) | (1 << 5) | (5 << 13) | (0 << 17) |
-            (1 << 28) | (1 << 30)),
-        (reg.GroupConvCfg, (1) | (1 << 14) | (1 << 16)),
+        (reg.InDim,  # h_in=1, w_in=W
+            (1 << 16) | W),
+        (reg.OutDim,  # h_out=1, w_out=W
+            (1 << 16) | W),
+        (reg.ChCfg,  # infmt=fp16, outfmt=fp16
+            (2) |          # infmt=fp16
+            (2 << 4)),     # outfmt=fp16
+        (reg.Cin, CHANNELS),
+        (reg.Cout, CHANNELS),
+        (reg.pad0, 1),
+        (reg.pad1, 1),
+        (reg.pad2, 0x2041),  # reserved
+        (reg.pad3, 0),
+        (reg.pad4, 0),
+        (reg.ConvCfg,  # kw=1, kh=1, sx=5, sy=0, ox=1, oy=1
+            (1) |          # kw=1
+            (1 << 5) |     # kh=1
+            (5 << 13) |    # sx=5
+            (0 << 17) |    # sy=0
+            (1 << 28) |    # ox=1
+            (1 << 30)),    # oy=1
+        (reg.GroupConvCfg,  # num_groups=1, unicast_en=1, unicast_cin=1
+            (1) |          # num_groups=1
+            (1 << 14) |    # unicast_en=1
+            (1 << 16)),    # unicast_cin=1
         (reg.TileCfg, 1),
-        (reg.Cfg, (1 << 0) | (1 << 8) | (1 << 16) | (1 << 26)),
+        (reg.Cfg,  # conv pipeline: pad0=1, conv_mode=1, dst_mode=1, enable=1
+            (1 << 0) |      # pad0=1
+            (1 << 8) |      # conv_mode=1
+            (1 << 16) |     # dst_mode=1
+            (1 << 26)),     # enable=1
         (reg.TaskInfo, (1 << 20)),
         (reg.DPE, 0),
     ])),
-
-    # L2 Source stream re-routed: SrcStream at 0x168 → ANE 0x04800 (L2)
+    # ── L2 Source (SrcStream → ANE 0x04800) ──────────────────────────
     (360, 72, build_seg(0x168, 72, [
         (reg.SrcStream, stream_header(0x04800, 18)),
         (reg.SrcDMAConfig, 0),
-        (reg.Srcpad0,
-            (2) | (1 << 4) | (1 << 5) | (1 << 6) | (1 << 8) |
-            (1 << 20) | (1 << 22)),
+        (reg.Srcpad0,  # L2 SourceCfg: type=2, fmt=1, alias=both
+            (2) |          # type=2
+            (1 << 4) |     # alias_conv_src=1
+            (1 << 5) |     # alias_conv_rslt=1
+            (1 << 6) |     # fmt=1
+            (1 << 8) |     # interleave=1
+            (1 << 20) |    # alias_planar_src=1
+            (1 << 22)),    # alias_planar_rslt=1
         (reg.SrcBaseAddr, 0),
-        (reg.SrcRowStride, 0xa0), (reg.SrcPlaneStride, 0xa0),
-        (reg.SrcDepthStride, 0xa0), (reg.SrcGroupStride, 0xa0),
-        (reg.Srcpad1, 0), (reg.Srcpad2, 0), (reg.Srcpad3, 0),
-        (reg.Srcpad4, 0), (reg.Srcpad5, 0),
-        (reg.Srcpad6,
-            (2) | (2 << 2) | (1 << 4) | (1 << 5) | (1 << 6) | (1 << 8) |
-            (1 << 20) | (1 << 22)),
+        (reg.SrcRowStride, 0xa0),
+        (reg.SrcPlaneStride, 0xa0),
+        (reg.SrcDepthStride, 0xa0),
+        (reg.SrcGroupStride, 0xa0),
+        (reg.Srcpad1, 0),
+        (reg.Srcpad2, 0),
+        (reg.Srcpad3, 0),
+        (reg.Srcpad4, 0),
+        (reg.Srcpad5, 0),
+        (reg.Srcpad6,  # L2 ResultCfg: type=2, bfrmode=2, alias=both
+            (2) |          # type=2
+            (2 << 2) |     # bfrmode=2
+            (1 << 4) |     # alias_conv_src=1
+            (1 << 5) |     # alias_conv_rslt=1
+            (1 << 6) |     # fmt=1
+            (1 << 8) |     # interleave=1
+            (1 << 20) |    # alias_planar_src=1
+            (1 << 22)),    # alias_planar_rslt=1
         (reg.Srcpad7, 0xa0),
-        (reg.SrcFmt, 0), (reg.Srcpad8, 0),
+        (reg.SrcFmt, 0),
+        (reg.Srcpad8, 0),
     ])),
 
-    # L2 section (host 0x1DC)
+    # ── L2 ───────────────────────────────────────────────────────────
     (476, 68, build_seg(0x1DC, 68, [
         (reg.L2Stream, 0x00003c00),
-        (reg.L2Cfg, 0x6c013800), (reg.SourceCfg, 0x33881),
-        (reg.SourceBase, 0x8880), (reg.SourceChannelStride, 0),
-        (reg.SourceRowStride, ST), (reg.L2pad0, ST), (reg.L2pad1, ST),
-        (reg.L2pad2, 0), (reg.L2pad3, 0), (reg.L2pad4, 0),
-        (reg.L2pad5, 0), (reg.L2pad6, 0),
-        (reg.ResultCfg, 0), (reg.ResultBase, 0),
+        (reg.L2Cfg, 0x6c013800),
+        (reg.SourceCfg, 0x33881),
+        (reg.SourceBase, 0x8880),
+        (reg.SourceChannelStride, 0),
+        (reg.SourceRowStride, ST),
+        (reg.L2pad0, ST),
+        (reg.L2pad1, ST),
+        (reg.L2pad2, 0),
+        (reg.L2pad3, 0),
+        (reg.L2pad4, 0),
+        (reg.L2pad5, 0),
+        (reg.L2pad6, 0),
+        (reg.ResultCfg, 0),
+        (reg.ResultBase, 0),
         (reg.ConvResultChannelStride, 0),
         (reg.ConvResultRowStride, 0x01002031),
-    ])),
-
-    # PE + NE (disabled — all zeros, no stream headers)
-    (552, 44, build_seg(0x228, 44, [
-        (reg.PEStream, 0), (reg.PECfg, 0), (reg.BiasScale, 0),
-        (reg.PreScale, 0), (reg.FinalScale, 0),
-        (reg.NEStream, 0), (reg.KernelCfg, 0), (reg.MACCfg, 0),
-        (reg.MatrixVectorBias, 0), (reg.AccBias, 0), (reg.PostScale, 0),
-    ])),
-
-    # TileDMA Dst (output stream, host 0x254, ANE 0x17800)
-    (596, 32, build_seg(0x254, 32, [
-        (reg.DstStream, stream_header(0x17800, 7)),
-        (reg.DstDMAConfig, (1) | (12 << 4) | (1 << 26)),
-        (reg.DstBaseAddr, 0),
-        (reg.DstRowStride, ST), (reg.DstPlaneStride, ST),
-        (reg.DstDepthStride, ST), (reg.DstGroupStride, 0),
-        (reg.DstFmt,
-            (1) | (3 << 4) | (2 << 12) |
-            (1 << 13) | (3 << 20) | (1 << 24)),
     ])),
 
     # Firmware program bytes (8 non-zero bytes at offsets between stream
     # sections). These are BTSP firmware instructions embedded in the buffer,
     # replacing the KDMA-loaded firmware modules used in relu.py.
-    (0x1B4, 4, struct.pack('<I', 0x0c008800)),  # LE: 00 88 00 0c
-    (0x1C8, 4, struct.pack('<I', 0x1000c800)),  # LE: 00 c8 00 10
-    (0x1CC, 4, struct.pack('<I', 0x00000080)),  # LE: 80 00 00 00
-    (0x1D0, 4, struct.pack('<I', 0x0011000c)),  # LE: 0c 00 11 00
-    (0x224, 4, struct.pack('<I', 0x00000100)),  # LE: 00 01 00 00
+    (436, 4, struct.pack('<I', 0x0c008800)),  # LE: 00 88 00 0c
+    (456, 4, struct.pack('<I', 0x1000c800)),  # LE: 00 c8 00 10
+    (460, 4, struct.pack('<I', 0x00000080)),  # LE: 80 00 00 00
+    (464, 4, struct.pack('<I', 0x0011000c)),  # LE: 0c 00 11 00
+    (548, 4, struct.pack('<I', 0x00000100)),  # LE: 00 01 00 00
+
+    # ── PE + NE (disabled) ───────────────────────────────────────────
+
+    # ── TileDMA Dst ──────────────────────────────────────────────────
+    (596, 32, build_seg(0x254, 32, [
+        (reg.DstStream, stream_header(0x17800, 7)),
+        (reg.DstDMAConfig,  # en=1, cache_hint=12
+            (1) |          # en=1
+            (12 << 4) |    # cache_hint=12
+            (1 << 26)),    # reserved bit
+        (reg.DstBaseAddr, 0),
+        (reg.DstRowStride, ST),
+        (reg.DstPlaneStride, ST),
+        (reg.DstDepthStride, ST),
+        (reg.DstGroupStride, 0),
+        (reg.DstFmt,  # destination data format
+            (1) |          # fmt_mode=1
+            (3 << 4) |     # truncate=3
+            (2 << 12) |    # mem_fmt=2
+            (1 << 13) |    # bank_split=1
+            (3 << 20) |    # bank=3
+            (1 << 24)),    # interleave=1
+    ])),
 ])
 
-input_a = np.zeros(8192, dtype=np.float16)
-input_a[0] = -3.0
-input_a[1] = 5.0
+input_a = np.tile(np.array([-3.0, 5.0, -3.0, 5.0], dtype=np.float16), 2048)
 
 out_handle, out_map = allocate_buffer(fd, 0x4000)
 src1_handle, src1_map = allocate_buffer(fd, 0x4000)

@@ -143,7 +143,7 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
 
     # ── Firmware DMA context ─────────────────────────────────────────
-    (0x2C, 0xF8, struct.pack('>' + 'I' * 62,
+    (44, 248, struct.pack('>' + 'I' * 62,
         *([0]*2 + [DMA_EOL]*16 + [0]*16 + [DMA_ACTIVE]*16 + [DMA_EOL]*4 + [0]*8))),
 
     # ── Common + TileDMA Src ─────────────────────────────────────────
@@ -294,9 +294,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "exp":
         (1 << 16) |     # non_linear_mode=1
         (1 << 20))      # reserved
 
-input_a = np.zeros(8192, dtype=np.float16)
-input_a[0] = -3.0
-input_a[1] = 5.0
+input_a = np.tile(np.array([-3.0, 5.0, -3.0, 5.0], dtype=np.float16), 2048)
 
 out_handle, out_map = allocate_buffer(fd, 0x4000)
 src1_handle, src1_map = allocate_buffer(fd, 0x4000)
