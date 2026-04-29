@@ -108,11 +108,12 @@ Switching is as simple as: `python add.py` → ADD, `python add.py mul` → MUL.
 
 `coreml2hwx` generates `.hwx` files on macOS. macOS 12 produces clean files; macOS 14+ and 26+ produce files with register differences that break elementwise operations.
 
-| Source | macOS Ver | .hwx size | .ane size | tsk_size | Works? | Raw Output | Fixed Via hwx2py |
-|--------|-----------|-----------|-----------|----------|--------|------------|------------------|
-| macOS 12 VM (M4) | 12.4 | 49152 | 21120 | 628 | ✓ | 6.0 | — |
-| macOS 14 VM | 14.x | 49152 | 21120 | 628 | ✗ | 0.0 | ✓ 6.0 |
-| macOS 26 M1 | 26.x | 65536 | 20992 | 504 | ✗ | 0.0 | ✓ 6.0 |
+| Source | macOS Ver | .hwx size | .ane size | tsk_size | TD count | Works? | Raw Output | Fixed Via hwx2py |
+|--------|-----------|-----------|-----------|----------|----------|--------|------------|------------------|
+| macOS 12 VM (M4) | 12.4 | 49152 | 21120 | 628 | 1 | ✓ | 6.0 | — |
+| macOS 14 VM | 14.x | 49152 | 21120 | 628 | 1 | ✗ | 0.0 | ✓ 6.0 |
+| macOS 26 M1 | 26.x | 65536 | 20992 | 504 | 1 | ✗ | 0.0 | ✓ 6.0 |
+| atan2 (macOS 14 CI) | 14.x | 65536 | 10176 | 6004 | 8 | ✗ | 0.0 | ✗ — see below |
 
 ### Register-level differences (macOS 12 vs macOS 14 vs macOS 26)
 
@@ -193,8 +194,29 @@ The only case needing macOS 12 is if you want **visually clean** elementwise `.h
 | `hwx/mul_macos14.hwx` | Raw (no clean) | 0.0 | ✗ — ANE loads garbage coefficients |
 | `hwx/mul_macos26_m1.hwx` | hwx2py --clean | 6.0 | ✓ |
 | `hwx/mul_macos26_m1.hwx` | Raw (no clean) | 0.0 | ✗ — same KernelDMA issue |
+| `hwx/atan2_macos14.hwx` | hwx2py --clean | 0.0 | ✗ — multi-task, see below |
+| `hwx/atan2_macos14.hwx` | anecc -f | 0.0 | ✗ — 7 scratch buffers detected |
 | `examples/add.py` (hand-written) | Direct | 6.0 | ✓ Reference |
 | `examples/add.py mul` | Direct | 6.0 | ✓ Reference |
+
+### Multi-Task Models (atan2)
+
+atan2 is decomposed by the ANE compiler into **8 chained task descriptors** (vs 1 for simple elementwise ops):
+
+| Task | TID | OpMode | PECfg | MACCfg | Role |
+|------|-----|--------|-------|--------|------|
+| 0 | 0 | — | 0 | 0x00101c0c | atan2 prep (NE OpMode=12) |
+| 1 | 1 | — | 0 | 0x00101c0c | atan2 prep (NE OpMode=12) |
+| 2 | 2 | — | 0 | 0x00101c0c | atan2 prep (NE OpMode=12) |
+| 3 | 3 | — | 0 | 0x00101c00 | weighted coeff (KDMA 0x81) |
+| 4 | 4 | 1 (mul) | 0x00080004 | 0x00100000 | elementwise multiply |
+| 5 | 5 | 0 (add) | 0x00080000 | 0x00100000 | elementwise add |
+| 6 | 6 | 1 (mul) | 0x00080004 | 0x00100000 | elementwise multiply |
+| 7 | 7 | 0 (add) | 0x00080000 | 0x00000000 | elementwise add (final) |
+
+The 8-TD pipeline means the model has 7 input buffers (tiles[5..11]) in `anecc` — 2 real (x, y) + 5 scratch. hwx2py preserves all task descriptors in CMD_BUF but its generated script hardcodes single-task params. Running with correct submit params (`tsk_size=0x1774, td_count=8, td_size=0x274`) and proper buffer layout still produces 0.0.
+
+**Caveat:** hwx2py's `--clean` only modifies the in-memory `regs` dict — the generated CMD_BUF still contains the original raw packets including spurious KDMA. For single-task elementwise models this doesn't matter (mul/elwise ignores garbage KDMA on actual hardware). For atan2, Task 3 has a **real** KDMA coefficient load (CoeffDMAConfig[0]=0x81) that may not be embedded correctly by macOS 14's `coreml2hwx`. The anecc `-f` flag also produces 0.0, confirming this is likely a firmware/compatibility issue with the atan2 op decomposition.
 
 ## Root Cause: macOS 14+ adds spurious KernelDMA coefficient configs
 
