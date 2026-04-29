@@ -7,6 +7,7 @@ C = 512
 HALF_ONE = 0x3C00  # float16(1.0) encoding
 DMA_EOL = 0x80000000   # DMA descriptor: end-of-list marker
 DMA_ACTIVE = 0x40000000  # DMA descriptor: active buffer
+KERNEL_WEIGHT_ADDR = 0x81000000  # firmware DMA src addr for kernel weights
 ANE_TILE_COUNT = 0x20
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
 
@@ -111,7 +112,7 @@ def build_seg(seg_off, seg_len, word_packs):
 def pack_reg(buf, offset, value):
     struct.pack_into('<I', buf, offset, value)
 
-def le_to_be(v):
+def _be32(v):
     return struct.unpack('>I', struct.pack('<I', v))[0]
 
 def build_cmd_buf(template):
@@ -122,10 +123,6 @@ def build_cmd_buf(template):
     buf.extend(b'\x00' * (32768 - len(template)))
     buf[kernel_offset:kernel_offset + len(weights.tobytes())] = weights.tobytes()
     return buf
-
-# Firmware DMA words: 62 big-endian words converted from LE-trick values
-_fw_le = [0x40, 0] + [0x81]*16 + [i * 0x8000 for i in range(16)] + [0x8000]*16 + [0x80]*4 + [0]*8
-_fw_be = struct.pack('>' + 'I' * 62, *[le_to_be(v) for v in _fw_le])
 
 BTSP_BUF = make_from_segments(0x4000, [
     # ── Task Descriptor ──────────────────────────────────────────────
@@ -155,8 +152,16 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.KernelDMA, stream_header(0x1F800, 62)),
     ])),
 
-    # ── Firmware DMA context ─────────────────────────────────────────
-    (0x2C, 0xF8, _fw_be),
+    # ── Firmware DMA context (62 big-endian words) ──────────────────────
+    #   [0] kernel weight reads: DMA_ACTIVE, 0, KERNEL_WEIGHT_ADDR × 16
+    #   [1] output tile scatter addrs: _be32(i * 0x8000) for i=0..15
+    #   [2] output writes: _be32(0x8000) × 16, DMA_EOL × 4 + zeros
+    (0x2C, 0xF8, struct.pack('>' + 'I' * 62,
+        *([DMA_ACTIVE, 0]
+          + [KERNEL_WEIGHT_ADDR]*16
+          + [_be32(i * 0x8000) for i in range(16)]
+          + [_be32(0x8000)]*16
+          + [DMA_EOL]*4 + [0]*8))),
 
     # ── Common + TileDMA Src ─────────────────────────────────────────
     (292, 184, build_seg(0x124, 184, [
@@ -275,7 +280,7 @@ CMD_BUF = build_cmd_buf(BTSP_BUF)
 
 cmd_handle, cmd_map = allocate_buffer(fd, len(CMD_BUF))
 cmd_map.write(bytes(CMD_BUF)); cmd_map.close()
-out_handle, out_map = allocate_buffer(fd, 0x4000)
+out_handle, out_map = allocate_buffer(fd, 0x8000)
 src1_handle, src1_map = allocate_buffer(fd, 0x4000)
 src1 = np.zeros(0x4000 // 2, dtype=np.float16)
 src1[:C * STRIDE:STRIDE] = np.float16(1.0)
@@ -286,6 +291,9 @@ btsp_map.write(bytes(BTSP_BUF)); btsp_map.close()
 handles = [cmd_handle, 0, 0, 0, out_handle, src1_handle, 0] + [0] * 25
 ret = submit_task(fd, 0x274, 1, 0x274, handles, btsp_handle)
 print(f"submit returned: {ret}")
-out = np.frombuffer(out_map, dtype=np.float16, count=64).copy(); out_map.close()
-print(f"output[:64] = {out}")
+out = np.frombuffer(out_map, dtype=np.float16, count=C * STRIDE).reshape(C, STRIDE)[:, 0].copy(); out_map.close()
+print("output[:64] =", out[:64])
 os.close(fd)
+
+expected = np.full(C, np.float16(256 * 0.5))
+print("expected[:64] =", expected[:64])
