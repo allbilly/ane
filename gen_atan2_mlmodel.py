@@ -13,6 +13,7 @@ model = Atan2().eval()
 
 input = [torch.rand(1024, 2048), torch.rand(1024, 2048)]
 trace = torch.jit.trace(model, input)
-mlmodel = ct.convert(trace, inputs=[ct.TensorType(name="x", shape=input[0].shape),
-                                   ct.TensorType(name="y", shape=input[1].shape)])
+mlmodel = ct.convert(trace, convert_to="neuralnetwork",
+                    inputs=[ct.TensorType(name="x", shape=input[0].shape),
+                            ct.TensorType(name="y", shape=input[1].shape)])
 mlmodel.save('atan2.mlmodel')

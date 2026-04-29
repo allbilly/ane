@@ -6,5 +6,5 @@ def sqrt(x):
     x = mb.sqrt(x=x)
     return x
 
-mlmodel = ct.convert(sqrt)
+mlmodel = ct.convert(sqrt, convert_to="neuralnetwork")
 mlmodel.save('sqrt.mlmodel')
