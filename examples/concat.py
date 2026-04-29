@@ -126,13 +126,37 @@ BTSP_BUF = make_from_segments(0x4000, [
             (3 << 28)       # pad bits
         ),
         (reg.W7, 0x300),  # next_ptr → tile 2 at offset 0x300
-        (reg.W8,  # base_ene: rbase0=6, rbe0=1, wbase=36, wbe=1, el0_en=1
-            (6) |          # rbase0=6
-            (1 << 5) |     # rbe0=1
-            (36 << 12) |   # wbase=36
-            (1 << 17) |    # wbe=1
-            (1 << 24)      # el0_en=1
+        (reg.W8, 0x05824026),  # base_ene: rbase0=6, rbe0=1, wbase=0, wbe=1, el0_en=1, +reserved
+        (reg.W9, 0),
+        (reg.KernelDMA, stream_header(0x1F800, 62)),
+    ])),
+
+    # ── Tile 1: Firmware DMA context ─────────────────────────────────
+    (0x2C, 0xF8, struct.pack('>' + 'I' * 62,
+        *([0]*2 + [DMA_EOL]*16 + [0]*16 + [DMA_ACTIVE]*16 + [DMA_EOL]*4 + [0]*8))),
+
+    # ═══════════════════════════════════════════════════════════════════
+    # Tile 2: processes 16-wide src2, writes to DstBaseAddr=0x100000
+    # ═══════════════════════════════════════════════════════════════════
+
+    # ── Tile 2: Task Descriptor ──────────────────────────────────────
+    (0x300, 44, build_seg(0, 44, [
+        (reg.W0,  # tid=1, nid=0x100, eon=1
+            (1 << 0) |      # tid=1
+            (0x100 << 16) | # nid=256
+            (1 << 25)       # eon=1
         ),
+        (reg.W1, 0),  # next_size
+        (reg.W2, 1058),  # exe_cycles
+        (reg.W3, 0),
+        (reg.W4, 0x6a),  # debug_log_events
+        (reg.W5, 0),
+        (reg.W6,  # flags: next_priority=38
+            (38 << 10) |    # next_priority=38
+            (3 << 28)       # pad bits
+        ),
+        (reg.W7, 0),  # next_ptr (no successor)
+        (reg.W8, 0x05024025),  # base_ene: rbase0=5, rbe0=1, wbase=0, wbe=1, el0_en=1, +reserved
         (reg.W9, 0),
         (reg.KernelDMA, stream_header(0x1F800, 62)),
     ])),
@@ -208,7 +232,7 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1 << 8) |      # conv_mode=1
             (1 << 12) |     # reserved
             (1 << 16) |     # dst_mode=1
-            (1 << 18) |     # reserved
+            (1 << 21) |     # reserved
             (1 << 26)),     # enable=1
         (reg.TaskInfo, (1 << 20)),  # enable
         (reg.SrcStream, stream_header(0x13800, 28)),
@@ -313,7 +337,7 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1 << 8) |      # conv_mode=1
             (1 << 12) |     # reserved
             (1 << 16) |     # dst_mode=1
-            (1 << 18) |     # reserved
+            (1 << 21) |     # reserved
             (1 << 26)),     # enable=1
         (reg.TaskInfo, (1 << 20)),  # enable
         (reg.DPE, 0),
