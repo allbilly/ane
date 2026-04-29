@@ -5,6 +5,7 @@ import sys
 
 STRIDE = 96     # element stride between elements (SrcRowStride / sizeof(float16))
 CHANNELS = 1     # Cin = Cout = 1 (single-element conv pipeline)
+W = 77           # input/output width (w_in = w_out = 77)
 ST = STRIDE * 2  # buffer stride in bytes (SrcRowStride = 192)
 HALF_ONE = 0x3C00  # float16(1.0) encoding
 DMA_EOL = 0x80000000   # DMA descriptor: end-of-list marker
@@ -123,7 +124,9 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.W1, 0),  # next_size
         (reg.W2, 1058),  # exe_cycles
         (reg.W3, 0),
-        (reg.W4, 0x00fff86a),  # debug_log_events
+        (reg.W4,  # debug_log_events
+            (0xFFF86A)       # event mask [23:0], pad=0
+        ),
         (reg.W5, 0),
         (reg.W6,  # flags: next_priority=38
             (38 << 10) |    # next_priority=38
@@ -146,10 +149,10 @@ BTSP_BUF = make_from_segments(0x4000, [
     # ── Common + TileDMA Src ─────────────────────────────────────────
     (292, 184, build_seg(0x124, 184, [
         (reg.CommonStream, stream_header(0x00000, 16)),
-        (reg.InDim,  # h_in=1, w_in=77
-            (1 << 16) | 77),
-        (reg.OutDim,  # h_out=1, w_out=77
-            (1 << 16) | 77),
+        (reg.InDim,  # h_in=1, w_in=W
+            (1 << 16) | W),
+        (reg.OutDim,  # h_out=1, w_out=W
+            (1 << 16) | W),
         (reg.ChCfg,  # infmt=fp16, outfmt=fp16
             (2) |          # infmt=fp16
             (2 << 4)),     # outfmt=fp16
@@ -188,7 +191,7 @@ BTSP_BUF = make_from_segments(0x4000, [
             (8 << 8) |     # cache_hint_reuse=8
             (3 << 12) |    # cache_hint_noreuse=3
             (3 << 16)),    # dep_mode=3
-        (reg.Srcpad0, 0x8880),  # reserved
+        (reg.Srcpad0, 0x8880),  # TileDMA Src pad2: same value as SrcDMAConfig with en=0
         (reg.SrcBaseAddr, 0),
         (reg.SrcRowStride, ST),           # 192 bytes
         (reg.SrcPlaneStride, ST),         # same
@@ -241,7 +244,7 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1 << 8) |     # interleave=1
             (1 << 20) |    # alias_planar_src=1
             (1 << 22)),    # alias_planar_rslt=1
-        (reg.ResultBase, 0xa0),   # 160 bytes
+        (reg.ResultBase, 0xa0),   # L2 result base: 160 bytes (= SourceRowStride)
         (reg.ConvResultChannelStride, 0),
         (reg.ConvResultRowStride, 0),
     ])),
@@ -253,7 +256,10 @@ BTSP_BUF = make_from_segments(0x4000, [
         # NE HEADER
         (reg.NEStream, stream_header(0x0C800, 5)),
         (reg.KernelCfg, (1 << 7)),          # NE enable
-        (reg.MACCfg, 0x11000c),             # MAC op: relu-like
+        (reg.MACCfg,  # NE MAC op: op_mode=12 (elementwise), non_linear_mode=1 (relu)
+            (12) |          # op_mode=12
+            (1 << 16) |     # non_linear_mode=1
+            (1 << 20)),     # reserved
         (reg.MatrixVectorBias, 0),
         (reg.AccBias, 0),
         (reg.PostScale, HALF_ONE),          # fp16(1.0) as post-scale
@@ -283,7 +289,10 @@ BTSP_BUF = make_from_segments(0x4000, [
 
 if len(sys.argv) > 1 and sys.argv[1] == "exp":
     pack_reg(BTSP_BUF, reg.KernelCfg, (1 << 7) | (1 << 9))  # NE enable + bit9
-    pack_reg(BTSP_BUF, reg.MACCfg, 0x11000d)                # MAC op: exp-like
+    pack_reg(BTSP_BUF, reg.MACCfg,  # NE MAC op: op_mode=13 (exp)
+        (13) |          # op_mode=13
+        (1 << 16) |     # non_linear_mode=1
+        (1 << 20))      # reserved
 
 input_a = np.zeros(8192, dtype=np.float16)
 input_a[0] = -3.0
@@ -306,6 +315,6 @@ ret = submit_task(
 )
 os.close(fd)
 
-output = np.frombuffer(out_map, dtype=np.float16, count=64).copy()
+output = np.frombuffer(out_map, dtype=np.float16, count=W * CHANNELS).copy()
 print("output =", output)
 print("expected relu =", np.maximum(0, input_a[:64]))

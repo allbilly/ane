@@ -120,7 +120,9 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.W1, 0),  # next_size
         (reg.W2, 1058),  # exe_cycles
         (reg.W3, 0),
-        (reg.W4, 0x00fff86a),  # debug_log_events
+        (reg.W4,  # debug_log_events
+            (0xFFF86A)       # event mask [23:0], pad=0
+        ),
         (reg.W5, 0),
         (reg.W6,  # flags: next_priority=38
             (38 << 10) |    # next_priority=38
@@ -138,7 +140,7 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
 
     # ── Common + TileDMA Src ─────────────────────────────────────────
-    (292, 136, build_seg(0x124, 136, [
+    (292, 184, build_seg(0x124, 184, [
         (reg.CommonStream, stream_header(0x00000, 16)),
         (reg.InDim,  # h_in=1, w_in=1
             (1 << 16) | 1),
@@ -163,7 +165,8 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1 << 28) |    # ox=1
             (1 << 30)),    # oy=1
         (reg.GroupConvCfg,  # num_groups=1, unicast_cin=1
-            (1 << 16) | 1),
+            (1) |          # num_groups=1
+            (1 << 16)),    # unicast_cin=1
         (reg.TileCfg, 1),
         (reg.Cfg,  # PE elementwise pipeline (add/mul): 0x33
             (3 << 0) |  # pad0=3
@@ -180,7 +183,7 @@ BTSP_BUF = make_from_segments(0x4000, [
             (8 << 8) |     # cache_hint_reuse=8
             (3 << 12) |    # cache_hint_noreuse=3
             (3 << 16)),    # dep_mode=3
-        (reg.Srcpad0, 0x33880),  # reserved
+        (reg.Srcpad0, 0x33880),  # TileDMA Src pad2: same value as SrcDMAConfig with en=0
         (reg.SrcBaseAddr, 0),
         (reg.SrcRowStride, STRIDE * 2),                # 64 bytes = 32 float16
         (reg.SrcPlaneStride, STRIDE * 2),              # same
@@ -202,7 +205,7 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
 
     # ── L2 ───────────────────────────────────────────────────────────
-    (477, 57, build_seg(0x1DD, 57, [
+    (476, 68, build_seg(0x1DC, 68, [
         (reg.L2Stream, stream_header(0x04800, 18)),
         (reg.L2Cfg, 0),
         (reg.SourceCfg,  # L2 source config: type=2, fmt=1, alias=both
@@ -237,7 +240,7 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
 
     # ── PE + NE ──────────────────────────────────────────────────────
-    (553, 43, build_seg(0x229, 43, [
+    (552, 44, build_seg(0x228, 44, [
         (reg.PEStream, stream_header(0x08800, 4)),
         (reg.PECfg, (2 << 18)),  # second_source=2 (L2 result); add mode
         (reg.BiasScale, (HALF_ONE << 16)),  # bias=0, scale=fp16(1.0)
@@ -253,7 +256,7 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
 
     # ── TileDMA Dst ──────────────────────────────────────────────────
-    (597, 31, build_seg(0x255, 31, [
+    (596, 32, build_seg(0x254, 32, [
         (reg.DstStream, stream_header(0x17800, 7)),
         (reg.DstDMAConfig,  # en=1, cache_hint=12
             (1) |          # en=1
@@ -273,8 +276,12 @@ BTSP_BUF = make_from_segments(0x4000, [
 ])
 
 if len(sys.argv) > 1 and sys.argv[1] == "mul":
-    pack_reg(BTSP_BUF, reg.PECfg, (2 << 18) | (1 << 2))  # second_source=2, op_mode=1 (mul)
-    pack_reg(BTSP_BUF, reg.MACCfg, 0x30)  # NE MAC op: multiply mode
+    pack_reg(BTSP_BUF, reg.PECfg,  # PE cfg: second_source=2, op_mode=1 (mul)
+        (2 << 18) |     # second_source=2 (L2 result)
+        (1 << 2))       # op_mode[2]=1 (multiply)
+    pack_reg(BTSP_BUF, reg.MACCfg,  # NE MAC op: kernel_mode=1, bias_mode=1 (multiply)
+        (1 << 4) |      # kernel_mode=1
+        (1 << 5))       # bias_mode=1
 
 input_a = np.zeros(8192, dtype=np.float16)
 input_b = np.zeros(8192, dtype=np.float16)
@@ -300,6 +307,7 @@ ret = submit_task(
 )
 os.close(fd)
 
-output = np.frombuffer(out_map, dtype=np.float16, count=64).copy()
+output = np.frombuffer(out_map, dtype=np.float16, count=CHANNELS * STRIDE).reshape(CHANNELS, STRIDE)[:, 0].copy()
 print("output =", output)
-print("expected add =", (input_a + input_b)[:64])
+expected = (input_a[:CHANNELS * STRIDE] + input_b[:CHANNELS * STRIDE]).reshape(CHANNELS, STRIDE)[:, 0]
+print("expected add =", expected)

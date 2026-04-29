@@ -9,4 +9,4 @@ if m.src_count > 1:
 else:
     out = m.predict([a])[0]
 print(out.shape, out.dtype)
-print(out[0][0])
+print(out[0])
