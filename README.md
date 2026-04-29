@@ -2,9 +2,11 @@
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/allbilly/ane)
 
-Tested on 
-- Asahi Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k
-- Asahi Linux fedora 6.19.11+ built from https://github.com/allbilly/linux/commit/52d22304e89d2995bfa2e678153feffba5dff23a
+- Tested on 
+  - Asahi Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k
+  - Asahi Linux fedora 6.19.11+ built from [my fork of fairy-dust](https://github.com/allbilly/linux/commit/52d22304e89d2995bfa2e678153feffba5dff23a)
+- some scripts in experimental are from [freedomtan/coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx)
+- Thanks for the prior work from [geohotz](https://github.com/geohot) [eiln](https://github.com/eiln) [freedomtan](https://github.com/freedomtan)
 
 ## 1. Generate hwx
 
@@ -497,10 +499,10 @@ asahi@fedora:~/allbilly_ane$ python run.py ./hwx/relu.ane
 
 Relu uses TileDMA source + conv pipeline (Family 2). Three examples demonstrate different approaches:
 
-**1. Raw firmware** (`examples/relu_dma.py`): Uses the relu.hwx firmware as-is with TileDMA source registers. Works standalone with no L2 priming.
+**1. Raw firmware** (`examples/relu.py`): Uses the relu.hwx firmware as-is with TileDMA source registers. Works standalone with no L2 priming.
 
 ```bash
-asahi@fedora:~/allbilly_ane$ python examples/relu_dma.py
+asahi@fedora:~/allbilly_ane$ python examples/relu.py
 output = [0. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
@@ -511,10 +513,10 @@ expected relu = [0. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 
 
 (Input: element 0=-3.0, element 1=5.0; relu: `[-3 → 0, 5 → 5, ...]`)
 
-**2. From add** (`examples/relu_from_add.py`): Derived from the add.py firmware structure, uses an **alternative L2-style register layout** where `L2Cfg=0x6c013800` acts as a stream header redirecting to TileDMA Src bank. Works standalone.
+**2. From add** (`experimental/relu_from_add.py`): Derived from the add.py firmware structure, uses an **alternative L2-style register layout** where `L2Cfg=0x6c013800` acts as a stream header redirecting to TileDMA Src bank. Works standalone.
 
 ```bash
-asahi@fedora:~/allbilly_ane$ python examples/relu_from_add.py
+asahi@fedora:~/allbilly_ane$ python experimental/relu_from_add.py
 output =  [3. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
@@ -525,10 +527,10 @@ expected relu =  [3. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
 
 (Input: element 0=3.0, element 1=5.0; both positive → pass through)
 
-**3. L2-style standalone** (`examples/relu_l2.py`): Clean standalone version of the L2-style approach. Firmware built from raw hex segments instead of raw .hwx file. Works standalone.
+**3. L2-style standalone** (`experimental/relu_l2.py`): Clean standalone version of the L2-style approach. Firmware built from raw hex segments instead of raw .hwx file. Works standalone.
 
 ```bash
-asahi@fedora:~/allbilly_ane$ python examples/relu_l2.py
+asahi@fedora:~/allbilly_ane$ python experimental/relu_l2.py
 output = [0. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
  0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]

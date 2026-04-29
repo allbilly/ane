@@ -3,7 +3,9 @@ import os, mmap, ctypes, struct
 import numpy as np
 import sys
 
-STRIDE = 32  # element stride between channels (SrcRowStride / sizeof(float16))
+STRIDE = 32    # element stride between channels (SrcRowStride / sizeof(float16))
+CHANNELS = 0x40  # Cin = Cout = 64
+HALF_ONE = 0x3C00  # float16(1.0) encoding
 ANE_TILE_COUNT = 0x20
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
 
@@ -27,7 +29,7 @@ class reg:  # register offset
     OutDim, pad1, ConvCfg, pad2 = 0x13c, 0x140, 0x144, 0x148
     GroupConvCfg, TileCfg, pad3, pad4, Cfg = 0x14c, 0x150, 0x154, 0x158, 0x15c
     TaskInfo, DPE = 0x160, 0x164
-    
+
     # --- L2 (0x4800) ---
     L2Cfg, SourceCfg, SourceBase = 0x1e0, 0x1e4, 0x1e8
     SourceChannelStride, SourceRowStride = 0x1ec, 0x1f0
@@ -41,7 +43,7 @@ class reg:  # register offset
 
     # --- NE (0xC800) ---
     KernelCfg, MACCfg, MatrixVectorBias, AccBias, PostScale = 0x240, 0x244, 0x248, 0x24c, 0x250
-    
+
     # --- TileDMA Src (0x13800) ---
     SrcDMAConfig, Srcpad0, SrcBaseAddr = 0x16c, 0x170, 0x174
     SrcRowStride, SrcPlaneStride, SrcDepthStride = 0x178, 0x17c, 0x180
@@ -49,6 +51,7 @@ class reg:  # register offset
     Srcpad2, Srcpad3, Srcpad4 = 0x18c, 0x190, 0x194
     Srcpad5, Srcpad6, Srcpad7 = 0x198, 0x19c, 0x1a0
     SrcFmt, Srcpad8 = 0x1a4, 0x1a8
+    SrcPadStream = 0x1AC    # TileDMA Src stream padding
 
     # --- TileDMA Dst (0x17800) ---
     DstDMAConfig, DstBaseAddr, DstRowStride = 0x258, 0x25c, 0x260
@@ -108,115 +111,175 @@ def pack_reg(buf, offset, value):
     struct.pack_into('<I', buf, offset, value)
 
 BTSP_BUF = make_from_segments(0x4000, [
+    # ── Task Descriptor ──────────────────────────────────────────────
     (0, 44, build_seg(0, 44, [
-        (reg.W0, 0x02400000),
-        (reg.W1, 0),
-        (reg.W2, 1058),
-        (reg.W3, 0), 
-        (reg.W4, 0x00fff86a),
-        (reg.W5, 0), 
-        (reg.W6, 0x30009800),
-        (reg.W7, 0),
-        (reg.W8, 0x00024966), (reg.W9, 0),
+        (reg.W0,  # tid=0, nid=0x40, eon=1
+            (0 << 0) |      # tid=0
+            (0x40 << 16) |  # nid=64
+            (1 << 25)),     # eon=1
+        (reg.W1, 0),  # next_size
+        (reg.W2, 1058),  # exe_cycles
+        (reg.W3, 0),
+        (reg.W4, 0x00fff86a),  # debug_log_events
+        (reg.W5, 0),
+        (reg.W6,  # flags: next_priority=38
+            (38 << 10) |    # next_priority=38
+            (3 << 28)),     # pad bits
+        (reg.W7, 0),  # next_ptr
+        (reg.W8,  # base_ene: rbase0=6, rbe0=1, rbase1=5, rbe1=1, wbase=4, wbe=1
+            (6) |          # rbase0=6
+            (1 << 5) |     # rbe0=1
+            (5 << 6) |     # rbase1=5
+            (1 << 11) |    # rbe1=1
+            (4 << 12) |    # wbase=4
+            (1 << 17)),    # wbe=1
+        (reg.W9, 0),
         (reg.KernelDMA, stream_header(0x1F800, 62)),
     ])),
+
+    # ── Common + TileDMA Src ─────────────────────────────────────────
     (292, 136, build_seg(0x124, 136, [
-        # Common HEADER
         (reg.CommonStream, stream_header(0x00000, 16)),
-        (reg.InDim, 0x10001),
-        (reg.OutDim, 0x10001),
-        (reg.ChCfg, 0x2a),
-        (reg.Cin, 0x40),
-        (reg.Cout, 0x40),
+        (reg.InDim,  # h_in=1, w_in=1
+            (1 << 16) | 1),
+        (reg.OutDim,  # h_out=1, w_out=1
+            (1 << 16) | 1),
+        (reg.ChCfg,  # infmt=fp16, pad0=2, outfmt=fp16
+            (2) |          # infmt=fp16
+            (2 << 2) |     # pad0=2
+            (2 << 4)),     # outfmt=fp16
+        (reg.Cin, CHANNELS),
+        (reg.Cout, CHANNELS),
         (reg.pad0, 1),
         (reg.pad1, 1),
-        (reg.pad2, 0x2041),
+        (reg.pad2, 0x2041),  # reserved
         (reg.pad3, 4),
         (reg.pad4, 0),
-        (reg.ConvCfg, 0x5000a021),
-        (reg.GroupConvCfg, 0x10001),
+        (reg.ConvCfg,  # kw=1, kh=1, sx=1, sy=1, ox=1, oy=1
+            (1) |          # kw=1
+            (1 << 5) |     # kh=1
+            (1 << 13) |    # sx=1
+            (1 << 15) |    # sy=1
+            (1 << 28) |    # ox=1
+            (1 << 30)),    # oy=1
+        (reg.GroupConvCfg,  # num_groups=1, unicast_cin=1
+            (1 << 16) | 1),
         (reg.TileCfg, 1),
-        (reg.Cfg,  # PE elementwise (add/mul): 0x33
-            (3 << 0) | # pad0=3
-            (0 << 2) | # small_src_mode=0
-            (6 << 3)), # pad1=6 
+        (reg.Cfg,  # PE elementwise pipeline (add/mul): 0x33
+            (3 << 0) |  # pad0=3
+            (0 << 2) |  # small_src_mode=0
+            (6 << 3)),  # pad1=6
         (reg.TaskInfo, 0),
         (reg.DPE, 0),
 
         # TileDMA Src HEADER
         (reg.SrcStream, stream_header(0x13800, 28)),
-        (reg.SrcDMAConfig, 0x33881), 
-        (reg.Srcpad0, 0x33880), 
+        (reg.SrcDMAConfig,  # en=1, cache_hint=8, reuse=8, noreuse=3, dep=3
+            (1) |          # en=1
+            (8 << 4) |     # cache_hint=8
+            (8 << 8) |     # cache_hint_reuse=8
+            (3 << 12) |    # cache_hint_noreuse=3
+            (3 << 16)),    # dep_mode=3
+        (reg.Srcpad0, 0x33880),  # reserved
         (reg.SrcBaseAddr, 0),
-        (reg.SrcRowStride, 0x40), 
-        (reg.SrcPlaneStride, 0x40), 
-        (reg.SrcDepthStride, 0x1000),
-        (reg.SrcGroupStride, 0), 
+        (reg.SrcRowStride, STRIDE * 2),                # 64 bytes = 32 float16
+        (reg.SrcPlaneStride, STRIDE * 2),              # same
+        (reg.SrcDepthStride, CHANNELS * STRIDE * 2),   # 64*32*2 = 0x1000
+        (reg.SrcGroupStride, 0),
         (reg.Srcpad1, 0),
-        (reg.Srcpad2, 0x40), 
-        (reg.Srcpad3, 0x40), 
-        (reg.Srcpad4, 0x1000),
-        (reg.Srcpad5, 0), 
-        (reg.Srcpad6, 0), 
+        (reg.Srcpad2, STRIDE * 2),                     # 64
+        (reg.Srcpad3, STRIDE * 2),                     # 64
+        (reg.Srcpad4, CHANNELS * STRIDE * 2),          # 0x1000
+        (reg.Srcpad5, 0),
+        (reg.Srcpad6, 0),
         (reg.Srcpad7, 0),
-        (reg.Srcpad8, 0x2030),
-        (reg.SrcFmt, 0x01002031), 
+        (reg.Srcpad8, 0x2030),  # reserved
+        (reg.SrcFmt,  # source data format
+            (1) |          # fmt_mode=1
+            (3 << 4) |     # truncate=3
+            (2 << 12) |    # mem_fmt=2
+            (1 << 24)),    # interleave=1
     ])),
-    (477, 57, build_seg(0x1DD, 57, [
-        # L2 HEADER
-        (reg.L2Stream, stream_header(0x04800, 18)),
-        (reg.L2Cfg, 0), 
-        (reg.SourceCfg, 0x01500172), 
-        (reg.SourceBase, 0),
-        (reg.SourceChannelStride, 0x10), 
-        (reg.SourceRowStride, 0x420),
-        (reg.L2pad0, 0x400), 
-        (reg.L2pad1, 0x400), 
-        (reg.L2pad2, 0x440),
-        (reg.L2pad3, 0x10), 
-        (reg.L2pad4, 0x420), 
-        (reg.L2pad5, 0x400),
-        (reg.L2pad6, 0x400), 
-        (reg.ResultCfg, 0x0050017a), 
-        (reg.ResultBase, 0x860),
-    ])),
-    (553, 43, build_seg(0x229, 43, [
-        # PE HEADER
-        (reg.PEStream, stream_header(0x08800, 4)),
-        (reg.PECfg, 0x80000),
-        (reg.BiasScale, 0x3c000000),
-        (reg.PreScale, 0x3c000000),
-        (reg.FinalScale, 0x3f800000),
 
-        # NE HEADER
+    # ── L2 ───────────────────────────────────────────────────────────
+    (477, 57, build_seg(0x1DD, 57, [
+        (reg.L2Stream, stream_header(0x04800, 18)),
+        (reg.L2Cfg, 0),
+        (reg.SourceCfg,  # L2 source config: type=2, fmt=1, alias=both
+            (2) |          # type=2
+            (1 << 4) |     # alias_conv_src=1
+            (1 << 5) |     # alias_conv_rslt=1
+            (1 << 6) |     # fmt=1
+            (1 << 8) |     # interleave=1
+            (1 << 20) |    # alias_planar_src=1
+            (1 << 22) |    # alias_planar_rslt=1
+            (1 << 24)),    # reserved bit
+        (reg.SourceBase, 0),
+        (reg.SourceChannelStride, 0x10),   # 16 bytes
+        (reg.SourceRowStride, 0x420),      # 1056 bytes (stride=66 in 16B units)
+        (reg.L2pad0, 0x400),   # reserved
+        (reg.L2pad1, 0x400),   # reserved
+        (reg.L2pad2, 0x440),   # reserved
+        (reg.L2pad3, 0x10),    # = SourceChannelStride
+        (reg.L2pad4, 0x420),   # = SourceRowStride
+        (reg.L2pad5, 0x400),   # reserved
+        (reg.L2pad6, 0x400),   # reserved
+        (reg.ResultCfg,  # L2 result config: type=2, bfrmode=2, alias=both
+            (2) |          # type=2
+            (2 << 2) |     # bfrmode=2
+            (1 << 4) |     # alias_conv_src=1
+            (1 << 5) |     # alias_conv_rslt=1
+            (1 << 6) |     # fmt=1
+            (1 << 8) |     # interleave=1
+            (1 << 20) |    # alias_planar_src=1
+            (1 << 22)),    # alias_planar_rslt=1
+        (reg.ResultBase, 0x860),  # 2144 bytes
+    ])),
+
+    # ── PE + NE ──────────────────────────────────────────────────────
+    (553, 43, build_seg(0x229, 43, [
+        (reg.PEStream, stream_header(0x08800, 4)),
+        (reg.PECfg, (2 << 18)),  # second_source=2 (L2 result); add mode
+        (reg.BiasScale, (HALF_ONE << 16)),  # bias=0, scale=fp16(1.0)
+        (reg.PreScale, (HALF_ONE << 16)),   # pre_scale=0
+        (reg.FinalScale, 0x3f800000),     # fp32(1.0)
+
         (reg.NEStream, stream_header(0x0C800, 5)),
         (reg.KernelCfg, 0),
-        (reg.MACCfg, 0),
+        (reg.MACCfg, 0),  # add mode; 0x30 = mul mode
         (reg.MatrixVectorBias, 0),
         (reg.AccBias, 0),
         (reg.PostScale, 0),
     ])),
+
+    # ── TileDMA Dst ──────────────────────────────────────────────────
     (597, 31, build_seg(0x255, 31, [
-        # TileDMA Dst HEADER
         (reg.DstStream, stream_header(0x17800, 7)),
-        (reg.DstDMAConfig, 0x040000c1), 
-        (reg.DstBaseAddr, 0), 
-        (reg.DstRowStride, 0x40),
-        (reg.DstPlaneStride, 0x40), 
-        (reg.DstDepthStride, 0x1000), 
+        (reg.DstDMAConfig,  # en=1, cache_hint=12
+            (1) |          # en=1
+            (12 << 4) |    # cache_hint=12
+            (1 << 26)),    # reserved bit
+        (reg.DstBaseAddr, 0),
+        (reg.DstRowStride, STRIDE * 2),
+        (reg.DstPlaneStride, STRIDE * 2),
+        (reg.DstDepthStride, CHANNELS * STRIDE * 2),
         (reg.DstGroupStride, 0),
-        (reg.DstFmt, 0x01002031),
+        (reg.DstFmt,  # destination data format
+            (1) |          # fmt_mode=1
+            (3 << 4) |     # truncate=3
+            (2 << 12) |    # mem_fmt=2
+            (1 << 24)),    # interleave=1
     ])),
 ])
 
 if len(sys.argv) > 1 and sys.argv[1] == "mul":
-    pack_reg(BTSP_BUF, reg.PECfg, (0x80000 & ~0x04) | 0x04)
-    pack_reg(BTSP_BUF, reg.MACCfg, 0x30)
+    pack_reg(BTSP_BUF, reg.PECfg, (2 << 18) | (1 << 2))  # second_source=2, op_mode=1 (mul)
+    pack_reg(BTSP_BUF, reg.MACCfg, 0x30)  # NE MAC op: multiply mode
 
 input_a = np.zeros(8192, dtype=np.float16)
 input_b = np.zeros(8192, dtype=np.float16)
-input_a[:reg.Cin * STRIDE:STRIDE] = 3.0
-input_b[:reg.Cin * STRIDE:STRIDE] = 2.0
+input_a[:CHANNELS * STRIDE:STRIDE] = 3.0
+input_b[:CHANNELS * STRIDE:STRIDE] = 2.0
 
 out_handle, out_map = allocate_buffer(fd, 0x4000)
 src1_handle, src1_map = allocate_buffer(fd, 0x4000)
@@ -238,4 +301,5 @@ ret = submit_task(
 os.close(fd)
 
 output = np.frombuffer(out_map, dtype=np.float16, count=64).copy()
-print("output = ", output)
+print("output =", output)
+print("expected add =", (input_a + input_b)[:64])

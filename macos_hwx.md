@@ -1,243 +1,311 @@
 # macOS HWX Compatibility
 
-## Background
+## Reference: `examples/add.py` — Complete Register Breakdown
 
-`coreml2hwx` runs on macOS to convert CoreML models to `.hwx` format, which is then compiled to `.ane` by `anecc`. Different macOS versions produce different `.hwx` files.
+`examples/add.py` is the authoritative reference for ALL register values needed to run ADD and MUL on the ANE. It directly programs every register via `build_seg()` and `BTSP_BUF`, bypassing `anecc` entirely.
 
-## Test Results
-
-| Source | macOS Ver | .hwx size | .ane size | tsk_size | Works? | Output |
-|--------|-----------|-----------|-----------|----------|--------|--------|
-| macOS 12 VM (M4) | 12.4 | 49152 | 21120 | 628 | ✓ | 6.0 |
-| macOS 14 VM | 14.x | 49152 | 21120 | 628 | ✗ | 0.0 |
-| macOS 26 M1 | 26.x | 65536 | 20992 | 504 | ✗ | 0.0 |
-
-## Root Cause: macOS 14+ adds KernelDMA coefficient configs
-
-The macOS 12 `coreml2hwx` generates **minimal** hwx files with only the essential register writes for elementwise operations. macOS 14+ generates files with **extra KernelDMA coefficient configuration**.
-
-### CMD_BUF comparison (key differences)
-
-| Offset | macOS 12 | macOS 14 | Register | Effect |
-|--------|----------|----------|----------|--------|
-| 0x020 | `a5 49` | `64 69` | Common pad2 | Unused |
-| 0x030-0x06f | all zeros | `0x80` filled | KernelDMA Coeff DMA configs | Extra coefficient channels |
-| 0x240 (KernelCfg) | `0x00` | `0x80` | NE KernelCfg | **KernelDMA enabled** |
-| 0x244 (MACCfg) | `0x00000000` | `0x00100000` | NE MACCfg | **Wrong KernelMode/BiasMode** |
-
-### Why macOS 14 fails
-
-The macOS 14+ hwx configures KernelDMA with 16 coefficient channels (all pointing to base address 0x80 with size 0x80), even though **elementwise add/mul has no coefficients**. The NE is told to load coefficients via DMA (`KernelCfg=0x80`), but there's nothing to load and the base addresses are garbage. This causes the ANE to compute with zero coefficients → output is 0.0.
-
-The NE MACCfg value `0x00100000` also sets different kernel/bias modes compared to the clean `0x00000000` from macOS 12, further changing behavior.
-
-### macOS 26 M4
-
-The macOS 26 M1 hwx uses a **different task descriptor format** (tsk_size=504 vs 628, M4/H16 architecture). It has the same extra KernelDMA config problem plus a different register layout.
-
-## Options to Fix
-
-But is the info in `hwx_parsing.py` enough for preprocessing?
-
-**Yes**, `hwx_parsing.py` already has everything needed:
-- Full register name tables for both H13 (M1) and H16 (M4+) architectures
-- Packet decoder for both H13 and H16 task descriptor formats
-- `report_hwx_state_json()` extracts register state to a clean `{addr, val, name}` JSON dict
-- The block start addresses and register counts are all known constants
-
-What's missing is only the **reverse encoder** — a function that takes a register-value dict and re-encodes it back into the hwx binary using the same packet format. This is mechanical: iterate sorted register addresses, group contiguous runs, emit header+(data words) packets.
-
-However, a **blanket "zero all KernelDMA" preprocessor is risky** because:
-- Convolution ops legitimately need KernelDMA for loading weights
-- Only elementwise ops (add/mul with K=1x1, groups=1) should have KernelDMA stripped
-- Without macOS 12 reference samples for EVERY op type (conv, pooling, activation, etc.), we can't know which KernelDMA configs are real vs spurious
-- The heuristic "all CoeffDMAConfig have identical suspicious value 0x80 → strip" is fragile
-
-### Option B: Fix anecc (recommended, but requires upstream change)
-
-`anecc` is the right place for this logic because it already:
-- Knows the op type from the CoreML model metadata
-- Knows whether coefficients/weights are present
-- Can decide op-by-op: "this is elementwise with no weights → skip KernelDMA"
-
-The fix in `anecc` would be: before writing the cmd buf, if the model is elementwise (no kernel data), zero out KernelDMA registers and reset NE KernelCfg/MACCfg to clean values. This is clean, op-aware, and doesn't need macOS 12 reference data.
-
-### Option C: Use macOS 12 only (not viable)
-
-macOS 12 GitHub runner is discontinued. Running a macOS 12 VM is fragile and inelegant.
-
-## Re-evaluation: Do we need anecc at all?
-
-`min_add.py` proves we don't need `anecc` to run a model on the ANE — we just need:
-1. **CMD_BUF** bytes (header + register packets)
-2. **BTSP** bytes (bootstrap microcode)
-3. **Metadata** (tsk_size, td_size, td_count, handle layout)
-
-All of these can be extracted from any `.hwx` file. `hwx_parsing.py` has:
-- ✅ Header parser (TID, NID, sizes, next_ptr)
-- ✅ Register stream decoder (both H13/H16 packet formats)
-- ✅ Register name tables
-- ❌ Missing: CMD_BUF encoder, BTSP extractor, shape metadata extractor
-
-But we already know the missing pieces from our reverse-engineering:
-- **CMD_BUF format**: 40-byte header + register packets (packet header = count<<26 | addr, followed by data words) + zero padding
-- **BTSP**: same register packets as CMD_BUF, shifted by 1 byte in first segment
-- **Packet encoding**: H13 (count in bits 31:26, addr/4 in bits 25:0, packed data) — already implemented in `min_add.py`'s `make_buf` segments
-- **Shapes**: extracted from Common registers (InDim, Cin, Cout, OutDim)
-
-## New option: Build the CMD_BUF converter directly
-
-Instead of fixing `anecc`, build a tool that:
-1. Parses `.hwx` with `hwx_parsing.py` → register values dict + task header
-2. Optionally filters spurious registers (KernelDMA for elementwise ops)
-3. Encodes register values → CMD_BUF using the known packet format
-4. Synthesizes BTSP from same register data
-5. Runs on ANE via `bo_alloc` + `ane_submit` (the `min_add.py` pattern)
-
-This avoids needing `anecc` entirely. The only missing piece is register-value → CMD_BUF encoding, which is mechanical from the known packet format. `hwx_parsing.py` already has `report_hwx_state_json()` for extracting register state; adding an `encode_task()` function that goes back to binary is ~50 lines of Python.
-
-## Implementation plan: hwx2py converter
-
-Build `examples/hwx2py.py` that reads a `.hwx` file and generates a self-contained Python script to run the model on the ANE. Follows the `min_add.py` pattern.
-
-### Phase 1: macOS 12 baseline (H13, tsk_size=628)
-
-Test with `mul.hwx` → generate `mul_from_hwx.py` that produces output 6.0.
+### Register Map (H13 architecture, BTSP_BUF offsets)
 
 ```
-hwx2py.py hwx/mul.hwx -o examples/mul_from_hwx.py
-python examples/mul_from_hwx.py  →  output[0] = 6.0
+OFFSET  BANK+OFF  NAME            ADD val     MUL val     Description
+------  --------  ----            -------     -------     -----------
+0x000   TD+0x00   W0 (TID/NID)    0x02000040  0x02000040  tid=0, nid=0x40, eon=1
+0x004   TD+0x04   W1              0           0           next_size
+0x008   TD+0x08   W2 (exe_cycles) 0x00000422  0x00000422  exe_cycles=1058
+0x00c   TD+0x0c   W3              0           0
+0x010   TD+0x10   W4              0x00fff86a  0x00fff86a  debug_log_events
+0x014   TD+0x14   W5              0           0
+0x018   TD+0x18   W6 (flags)      0x30009800  0x30009800  next_priority=38
+0x01c   TD+0x1c   W7 (next_ptr)   0           0
+0x020   TD+0x20   W8 (base_ene)   0x00008621  0x00008621  rbase0=6,rbe0=1,rbase1=5,rbe1=1,wbase=4,wbe=1
+0x024   TD+0x24   W9              0           0
+0x028   TD+0x28   KernelDMA       strm(1F800,62) same    stream_header(0x1F800, 62)
+---     ---       ---             ---         ---         ---
+0x124   TD+0x124  CommonStream    strm(0,16)  same       stream_header(0x00000, 16)
+0x128   Common+0  InDim           0x00010001  0x00010001  h=1, w=1
+0x12c   Common+4  pad0            1           1
+0x130   Common+8  ChCfg           0x2a        0x2a        infmt=fp16, pad0=2, outfmt=fp16
+0x134   Common+c  Cin             0x40        0x40        Cin=64
+0x138   Common+10 Cout            0x40        0x40        Cout=64
+0x13c   Common+14 OutDim          0x00010001  0x00010001  h_out=1, w_out=1
+0x140   Common+18 pad1            1           1
+0x144   Common+1c ConvCfg         0x5000a021  0x5000a021  kw=1, kh=1, sx=1, sy=1
+0x148   Common+20 pad2            0x2041      0x2041      reserved
+0x14c   Common+24 GroupConvCfg    0x00010001  0x00010001  groups=1, unicast_cin=1
+0x150   Common+28 TileCfg         1           1
+0x154   Common+2c pad3            4           4
+0x158   Common+30 pad4            0           0
+0x15c   Common+34 Cfg             0x33        0x33        PE elementwise mode
+0x160   Common+38 TaskInfo        0           0
+0x164   Common+3c DPE             0           0
+---     ---       ---             ---         ---         ---
+0x168   TD+0x168  SrcStream       strm(13800,28) same    stream_header(0x13800, 28)
+0x16c   TDMASrc+0 SrcDMAConfig    0x00033881  0x00033881  en=1, cache_hint=8, reuse=8, noreuse=3, dep=3
+0x170   TDMASrc+4 Srcpad0         0x00033880  0x00033880  reserved
+0x174   TDMASrc+8 SrcBaseAddr     0           0
+0x178   TDMASrc+c SrcRowStride    0x40        0x40        64 bytes = 32 fp16
+0x17c   TDMASrc+10 SrcPlaneStride 0x40        0x40        same
+0x180   TDMASrc+14 SrcDepthStride 0x1000      0x1000      64*32*2 = 0x1000
+0x184   TDMASrc+18 SrcGroupStride 0           0
+0x188   TDMASrc+1c Srcpad1        0           0
+0x18c   TDMASrc+20 Srcpad2        0x40        0x40
+0x190   TDMASrc+24 Srcpad3        0x40        0x40
+0x194   TDMASrc+28 Srcpad4        0x1000      0x1000
+0x198   TDMASrc+2c Srcpad5        0           0
+0x19c   TDMASrc+30 Srcpad6        0           0
+0x1a0   TDMASrc+34 Srcpad7        0           0
+0x1a4   TDMASrc+38 SrcFmt         0x01002031  0x01002031  fmt_mode=1, trunc=3, mem_fmt=2, intrlv=1
+0x1a8   TDMASrc+3c Srcpad8        0x00002030  0x00002030  reserved
+---     ---       ---             ---         ---         ---
+0x1dd   TD+0x1dd  L2Stream        strm(4800,18) same     stream_header(0x04800, 18)
+0x1e0   L2+0      L2Cfg           0           0
+0x1e4   L2+4      SourceCfg       0x01500172  0x01500172  type=2, alias=both, fmt=1, intrlv=1
+0x1e8   L2+8      SourceBase      0           0
+0x1ec   L2+c      SourceChanStr   0x10        0x10        16 bytes
+0x1f0   L2+10     SourceRowStr    0x420       0x420       1056 bytes (stride=66 in 16B units)
+0x1f4   L2+14     L2pad0          0x400       0x400       reserved
+0x1f8   L2+18     L2pad1          0x400       0x400       reserved
+0x1fc   L2+1c     L2pad2          0x440       0x440       reserved
+0x200   L2+20     L2pad3          0x10        0x10        = SourceChannelStride
+0x204   L2+24     L2pad4          0x420       0x420       = SourceRowStride
+0x208   L2+28     L2pad5          0x400       0x400       reserved
+0x20c   L2+2c     L2pad6          0x400       0x400       reserved
+0x210   L2+30     ResultCfg       0x0050017a  0x0050017a  type=2, bfrmode=2, alias=both, fmt=1
+0x214   L2+34     ResultBase      0x860       0x860       2144 bytes
+---     ---       ---             ---         ---         ---
+0x229   TD+0x229  PEStream        strm(8800,4) same       stream_header(0x08800, 4)
+0x22c   PE+0      PECfg           0x00080000  0x00080004  **bit 2 = 0→ADD, 1→MUL**
+0x230   PE+4      BiasScale       0x3c000000  0x3c000000  bias=0, scale=fp16(1.0)
+0x234   PE+8      PreScale        0x3c000000  0x3c000000  pre_scale=0
+0x238   PE+c      FinalScale      0x3f800000  0x3f800000  fp32(1.0)
+---     ---       ---             ---         ---         ---
+0x23c   TD+0x23c  NEStream        strm(C800,5) same       stream_header(0x0C800, 5)
+0x240   NE+0      KernelCfg       0           0           **No kernel DMA**
+0x244   NE+4      MACCfg          0           0x30        **0=ADD, 0x30=MUL**
+0x248   NE+8      MatrixVecBias   0           0
+0x24c   NE+c      AccBias         0           0
+0x250   NE+10     PostScale       0           0
+---     ---       ---             ---         ---         ---
+0x255   TD+0x255  DstStream       strm(17800,7) same      stream_header(0x17800, 7)
+0x258   TDMADst+0 DstDMAConfig    0x040000c1  0x040000c1  en=1, cache_hint=12
+0x25c   TDMADst+4 DstBaseAddr     0           0
+0x260   TDMADst+8 DstRowStride    0x40        0x40
+0x264   TDMADst+c DstPlaneStride  0x40        0x40
+0x268   TDMADst+10 DstDepthStride 0x1000      0x1000
+0x26c   TDMADst+14 DstGroupStride 0           0
+0x270   TDMADst+18 DstFmt         0x01002031  0x01002031
 ```
 
-**Steps:**
-1. **Parse hwx**: Use `hwx_parsing.py` pipeline:
-   - `parse_macho()` to extract ANE data section from the binary
-   - H13 format: read task header (offset 0): 8 words → TID, sizes, next_ptr
-   - Register stream at offset+40: decode packets (hdr → count, addr, data words)
-   - Collect all register values in a `{addr: value}` dict
+**Only 2 register differences between ADD and MUL:**
+| Register | Offset | ADD | MUL | Effect |
+|----------|--------|-----|-----|--------|
+| `PECfg`  | 0x22c  | 0x00080000 | 0x00080004 | PE OpMode bit 2 |
+| `MACCfg` | 0x244  | 0x00000000 | 0x00000030 | NE KernelMode=1, BiasMode=1 |
 
-2. **Extract metadata** from Common registers:
-   - InDim=0x000: W, H
-   - Cin=0x00c, Cout=0x010: channels
-   - OutDim=0x014: output W, H
-   - ChCfg=0x008: input/output format
-   - tsk_size/task_size: from header
+Switching is as simple as: `python add.py` → ADD, `python add.py mul` → MUL.
 
-3. **Clean registers** (strip spurious KernelDMA for elementwise):
-   - Detect elementwise: ConvCfg K=1×1, GroupConvCfg groups=1
-   - If elementwise: zero NE KernelCfg(0xC800), NE MACCfg(0xC804)
-   - Zero KernelDMA coeff configs (0x1F808+, H13) if all are suspicious 0x80
-   - Set PE OpMode based on mul vs add detection
+## macOS-Generated HWX Compatibility
 
-4. **Encode CMD_BUF** (H13 format):
-   ```
-   HEADER = struct.pack('<8I', 0x02000000, 0, tsk_size, 0, 0x00fff86a, 0, 0x30009800, 0)
-   padding_8 = b'\x00' * 8  # bytes between header and register stream
-   
-   # Register packets: iterate sorted addrs, group contiguous runs
-   for run in contiguous_runs(sorted(regs.keys())):
-       count = len(run) - 1
-       addr = run[0]  # HW byte address
-       hdr = (count << 26) | addr
-       packets += struct.pack('<I', hdr)
-       packets += struct.pack(f'<{len(run)}I', *[regs[a] for a in run])
-   
-   CMD_BUF = HEADER + padding_8 + packets
-   CMD_BUF += b'\x00' * (0x8000 - len(CMD_BUF))
-   ```
+`coreml2hwx` generates `.hwx` files on macOS. macOS 12 produces clean files; macOS 14+ and 26+ produce files with register differences that break elementwise operations.
 
-5. **Synthesize BTSP**:
-   - Same as CMD_BUF but truncated to 0x4000 (or copy from CMD_BUF)
+| Source | macOS Ver | .hwx size | .ane size | tsk_size | Works? | Raw Output | Fixed Via hwx2py |
+|--------|-----------|-----------|-----------|----------|--------|------------|------------------|
+| macOS 12 VM (M4) | 12.4 | 49152 | 21120 | 628 | ✓ | 6.0 | — |
+| macOS 14 VM | 14.x | 49152 | 21120 | 628 | ✗ | 0.0 | ✓ 6.0 |
+| macOS 26 M1 | 26.x | 65536 | 20992 | 504 | ✗ | 0.0 | ✓ 6.0 |
 
-6. **Generate Python output**:
-   - Write `bo_alloc()`, `submit()` functions (copy from `min_mul.py`)
-   - Embed CMD_BUF and BTSP as bytearray literals
-   - Include data buffer setup (inputs = 3.0, 2.0)
-   - Include all named register offset constants from `min_add.py`
+### Register-level differences (macOS 12 vs macOS 14 vs macOS 26)
 
-### Phase 2: macOS 14 (H13, extra KernelDMA)
+Compared using `python3 hwx_parsing.py hwx/mul_macosNN.hwx -j`:
 
-Test with `mul_macos14.hwx` → with register cleaning, should output 6.0.
+| Register | macOS 12 | macOS 14 | macOS 26 | Block |
+|----------|----------|----------|----------|-------|
+| KernelCfg (0xC800) | 0x00000000 | **0x00000080** | **0x00000080** | NE |
+| MACCfg (0xC804) | 0x00000000 | **0x00100000** | **0x00100000** | NE |
+| CoeffDMAConfig[0..15] | all 0x00 | **all 0x80** | **all 0x80** | KernelDMA |
+| CoeffBaseAddr[0..15] | all 0x00 | **all 0x80** | **all 0x80** | KernelDMA |
+| CoeffBfrSize[0..15] | all 0x00 | **all 0x40/0x80** | **all 0x40/0x80** | KernelDMA |
+| TD byte 0x20 | 0xa549 | **0x6449** | **0x6449** | TD header |
 
-**Changes vs Phase 1:**
-- Register cleaning is critical: macOS 14 has `KernelCfg=0x80`, `MACCfg=0x00100000`, 16 coefficient channels at 0x80
-- Apply cleaning heuristics:
-  - If CoeffBaseAddr[0..15] are all identical non-zero values → strip them
-  - If KernelCfg has non-zero with no actual kernel → zero it
-  - Common header at offset 0x20 will differ (`64 69` vs `a5 49`) — handle automatically since we encode from register values
+macOS 14 and 26 share the same spurious pattern: 16 coefficient channels configured with garbage values, NE told to load via DMA (KernelCfg=0x80), and wrong MAC mode (MACCfg=0x00100000).
 
-### Phase 3: macOS 26 M4 (H16, different format)
+macOS 26 also uses a different task size (504 vs 628), suggesting an updated `coreml2hwx` that generates different tsk_size.
 
-Test with `mul_macos26_m1.hwx` → with H16 support, should output 6.0.
+## Running macOS 14/26 HWX Files
 
-**Changes vs Phase 1:**
-- H16 task header: 10 words (40 bytes), different fields
-- H16 register packets: different encoding!
-  ```python
-  hdr = words[w_idx]; w_idx += 1
-  is_masked = (hdr >> 31) & 1
-  word_addr = hdr & 0x7fff  # 15 bits
-  if not is_masked:  # contiguous write
-      num_regs = (hdr >> 15) & 0x3f
-      for j in range(num_regs + 1):
-          regs[word_addr + j] = data
-  else:  # masked write
-      mask = (hdr >> 15) & 0xffff
-      regs[word_addr] = first_data
-      for bit in 0..15: if mask bit set → regs[word_addr + bit + 1] = data
-  ```
-- CMD_BUF header: different format (tsk_size=504)
-- Register layout: different block addresses (H16: Common=0x0, L2=0x4100, PE=0x4500, NE=0x4900, TileDMA_Src=0x4D00, TileDMA_Dst=0x5100, KernelDMA=0x5500)
-- Need H16 register names from `get_m4_reg_name()`
+### Method 1: Via `hwx2py` with auto-clean (recommended for elementwise)
 
-### Phase 4: Generalize
+The `experimental/hwx2py.py` script detects the spurious KernelDMA pattern (`all 16 CoeffDMAConfig == 0x80`), strips all KernelDMA registers, and resets `KernelCfg`/`MACCfg` to 0:
 
-- Merge all phases into a single `hwx2py.py` that detects architecture (H13 vs H16) and handles both
-- Add command-line options: `--strip-kdma`, `--set-op add|mul`
+```bash
+# macOS 14 mul.hwx → running script
+python experimental/hwx2py.py hwx/mul_macos14.hwx -o experimental/mul14_from_hwx.py
+python experimental/mul14_from_hwx.py
+# → output[0] = 6.0
 
-### Technical details for CMD_BUF encoding
-
-**H13 header** (reconstructed from dump):
-```
-words[0] = 0x02000000  # TID=0, flags
-words[1] = 0x00000000
-words[2] = tsk_size    # e.g. 0x274 = 628
-words[3] = 0x00000000
-words[4] = 0x00fff86a
-words[5] = 0x00000000
-words[6] = 0x30009800
-words[7] = 0x00000000
+# macOS 26 mul.hwx → running script  
+python experimental/hwx2py.py hwx/mul_macos26_m1.hwx -o experimental/mul26_from_hwx.py
+python experimental/mul26_from_hwx.py
+# → output[0] = 6.0
 ```
 
-**Register packet encoding** (H13):
-```
-header = (count << 26) | byte_address  # byte_address = first register's HW addr
-data = consecutive register values as u32 words
+What `hwx2py --clean` does internally:
+1. Detects elementwise op: `ConvCfg K=1×1` and `GroupConvCfg groups=1`
+2. Detects spurious KDMA: all `CoeffDMAConfig[0..15] == 0x80`
+3. Deletes all KernelDMA registers (`0x1F800` range)
+4. If `KernelCfg==0x80` and `MACCfg==0x00100000`: resets both to `0`
+5. Re-encodes cleaned register state into CMD_BUF + BTSP
+
+### Method 2: Via `anecc` (works for all ops including weighted)
+
+`anecc` properly handles KernelDMA setup regardless of macOS version:
+
+```bash
+anecc hwx/mul_macos14.hwx -o hwx/mul_macos14.ane
+python run.py ./hwx/mul_macos14.ane
+# → should produce 6.0 (anecc fixes KDMA internally)
 ```
 
-**Contiguous run detection**:
+### Method 3: Manual register patching
+
+For elementwise ops, the fix is just 2 register writes in the CMD_BUF:
+
 ```python
-regs = sorted(regs.items())  # (addr, value) pairs
-i = 0
-while i < len(regs):
-    start = regs[i][0]
-    run = [regs[i][1]]
-    j = i + 1
-    while j < len(regs) and regs[j][0] == regs[j-1][0] + 4:
-        run.append(regs[j][1])
-        j += 1
-    # Emit run
-    count = len(run) - 1
-    hdr = (count << 26) | start
-    # ... pack
-    i = j
+# Patch CMD_BUF at specific offsets (H13, tsk_size=628):
+CMD_BUF[0x240:0x244] = struct.pack('<I', 0)  # KernelCfg = 0
+CMD_BUF[0x244:0x248] = struct.pack('<I', 0)  # MACCfg = 0 (ADD)
+# For MUL:
+CMD_BUF[0x244:0x248] = struct.pack('<I', 0x30)  # MACCfg = 0x30
 ```
 
-**BTSP**: Copy first 0x4000 bytes of CMD_BUF. The BTSP and CMD_BUF share the same register data; `anecc` just replicates it.
+### Method 4: GitHub Actions (macOS 14 runners)
 
-### Verification plan
+The `.github/workflows/ane-generation.yml` uses macOS 14 runners. For **weighted ops** (GEMM, Conv, Sigmoid), the KDMA data is real (`CoeffDMAConfig=0x81`) and works correctly through `anecc`. For **elementwise ops** (Add, Mul), the spurious KDMA entries are harmless noise — the weights section is empty, `anecc` strips them, and the output is unaffected.
 
-1. `python examples/hwx2py.py hwx/mul.hwx -o /tmp/test.py && python /tmp/test.py` → output 6.0
-2. `python examples/hwx2py.py hwx/mul_macos14.hwx -o /tmp/test.py && python /tmp/test.py` → output 6.0
-3. `python examples/hwx2py.py hwx/mul_macos26_m1.hwx -o /tmp/test.py && python /tmp/test.py` → output 6.0
-4. `python examples/hwx2py.py hwx/sum.hwx -o /tmp/test.py && python /tmp/test.py` → output 5.0
+The only case needing macOS 12 is if you want **visually clean** elementwise `.hwx` files without any KDMA noise.
+
+### Experimental Results
+
+| Input HWX | Method | Output | Status |
+|-----------|--------|--------|--------|
+| `hwx/mul.hwx` (macOS 12) | hwx2py | 6.0 | ✓ |
+| `hwx/mul_macos14.hwx` | hwx2py --clean | 6.0 | ✓ |
+| `hwx/mul_macos14.hwx` | Raw (no clean) | 0.0 | ✗ — ANE loads garbage coefficients |
+| `hwx/mul_macos26_m1.hwx` | hwx2py --clean | 6.0 | ✓ |
+| `hwx/mul_macos26_m1.hwx` | Raw (no clean) | 0.0 | ✗ — same KernelDMA issue |
+| `examples/add.py` (hand-written) | Direct | 6.0 | ✓ Reference |
+| `examples/add.py mul` | Direct | 6.0 | ✓ Reference |
+
+## Root Cause: macOS 14+ adds spurious KernelDMA coefficient configs
+
+macOS 12 `coreml2hwx` generates minimal hwx files with only essential register writes for elementwise operations. macOS 14+ generates files with **extra KernelDMA coefficient configuration**:
+
+- `NE KernelCfg = 0x80`: tells NE to load coefficients via DMA
+- `NE MACCfg = 0x00100000`: sets wrong KernelMode/BiasMode
+- `CoeffDMAConfig[0..15] = 0x80`: 16 coefficient channels configured
+- `CoeffBaseAddr[0..15] = 0x80`: all pointing to garbage address
+- `CoeffBfrSize[0..15] = 0x40/0x80`: garbage buffer sizes
+
+Elementwise add/mul has **no coefficients**, so the ANE computes with zero coefficients → output is 0.0.
+
+## Whisper Encoder/Decoder: Mixed-Op HWX Pipeline
+
+The `.github/workflows/whisper.yml` generates Whisper encoder HWX on macOS 14. The model is a transformer with **mixed operation types** — not just simple elementwise add/mul but a pipeline of different ops chained together:
+
+### Whisper Model Ops Breakdown
+
+| Op | Encoder | Decoder | ANE Support | KDMA needed |
+|----|---------|---------|-------------|-------------|
+| Conv1d | 2 (strided) | 0 | ✓ (spatial conv) | ✓ weights |
+| GEMM (QKV, MLP) | 12 | 18 | ✓ (inner_product) | ✓ weights |
+| GELU | 3 | 3 | **?** (may need LUT) | ✓ LUT data |
+| LayerNorm | 3 | 3 | **?** (ANE may not support) | — |
+| Softmax | 2 | 4 | **?** (cross-attention) | — |
+| Elementwise add | 3 | 3 | ✓ | ✗ no weights |
+| Elementwise mul | 3 | 3 | ✓ | ✗ no weights |
+| Reshape/Transpose | implicit | implicit | ✓ (in firmware) | — |
+
+**Total**: ~30+ operations per forward pass, many chained via task descriptors.
+
+### Does hwx2py work for Whisper? No, not yet.
+
+The current `experimental/hwx2py.py` has multiple gaps for Whisper-scale models:
+
+| Gap | Current behavior | Whisper needs |
+|-----|-----------------|---------------|
+| **Task chaining** | `parse_hwx_regs()` skips `next_ptr` — only reads first task | Whisper HWX has **multiple chained tasks** connected via next_ptr. Need to parse ALL tasks and emit them sequentially in CMD_BUF |
+| **H16/M4 format** | Only H13 (M1) supported | macOS 14+ `coreml2hwx` may generate H16 format for newer HWX. H16 has different packet encoding (masked writes), different register layout, different header |
+| **KDMA cleaning heuristic** | `is_spurious_kdma()` strips if ALL 16 CoeffDMAConfig==0x80 | Whisper has **legitimate KDMA** for Conv1d/GEMM (CoeffDMAConfig=0x81). The heuristic must check **per-task**, not globally. Conv1d needs KDMA; elementwise in same pipeline does not |
+| **Multi-task BTSP** | Copies first 0x4000 bytes of CMD_BUF | Each task needs its own BTSP, or a combined BTSP covering all tasks. The `make_btsp()` function needs to handle task offsets |
+| **Kernel data extraction** | Only reads `__TEXT.__const` — simplistic | Whisper has large weight matrices (GEMM layers). Need to extract all kernel data sections and place them at correct offsets relative to each task's descriptor |
+| **Shape metadata** | Hardcoded for 1x1 elementwise | Need to handle arbitrary input/output shapes, multiple tensors, multi-dimensional batch dimensions |
+| **Buffer sizing** | `_calc_buffer_size()` uses TileDMA depth/group strides | Whisper has variable-size buffers per task. Buffer size must accommodate all tasks' max requirements |
+| **Handle allocation** | Fixed: `[cmd_h, 0,0,0, out_h, src1_h, src2_h]` | Multi-task models need per-task CMD_BUF buffers, input/output buffers for intermediate tensors between tasks |
+
+### What updates hwx2py needs for Whisper
+
+**Phase 1: Multi-task parsing and re-encoding**
+```python
+# Current: reads one task
+regs, ane_data, kernel = parse_hwx_regs(data)
+
+# Needed: read all chained tasks
+tasks = parse_all_tasks(data)  # follows next_ptr chain
+for task in tasks:
+    regs = decode_packets(task.data)
+    # Apply per-task KDMA cleaning:
+    #   if has_real_kernel(task) → preserve KDMA
+    #   if elementwise with spurious 0x80 → strip KDMA
+    encode_task(task.header, regs)
+# Concatenate all encoded tasks into one CMD_BUF
+```
+
+**Phase 2: H16 format support**
+```python
+# Current: H13 only
+packet: count=(hdr>>26)&0x3f, addr=(hdr&0x3ffffff)>>2
+
+# Needed: detect format from header, handle both
+if hdr & 0x80000000:  # H16 masked write
+    mask = (hdr >> 15) & 0xffff
+    word_addr = hdr & 0x7fff
+else:
+    # H13 or H16 contiguous write
+    ...
+```
+
+**Phase 3: Kernel data layout**
+```python
+# Current: dumps ane_data + kernel as one flat buffer
+cmdbuf_final = ane_data + kernel
+
+# Needed: place kernel data at correct per-task offsets
+# ANE expects: for each task descriptor at offset X,
+#   kernel data referenced by CoeffBaseAddr lives at X + task_size + channel_offset
+for task in tasks:
+    if task.has_kernel:
+        offset = task.task_descriptor_offset + task.task_size
+        cmdbuf[offset:offset+len(kernel)] = kernel
+```
+
+**Phase 4: Multi-buffer IO**
+```python
+# Current: 1 CMD + 1 OUT + 1 SRC1 + 1 SRC2
+handles = [cmd_h, 0,0,0, out_h, src1_h, src2_h] + [0]*25
+
+# Needed: allocate buffer per tile index per task
+# Some intermediate outputs become next task's inputs
+# Need to track the tensor-to-buffer mapping across tasks
+```
+
+### Current workaround: anecc
+
+For now, Whisper HWX must go through `anecc`:
+```bash
+# Generated by GitHub Actions (whisper.yml), then on Asahi:
+anecc whisper-encoder.hwx -o whisper-encoder.ane
+anecc whisper-decoder.hwx -o whisper-decoder.ane  
+python run.py ./whisper-encoder.ane
+```
+
+`anecc` handles multi-task chaining, KDMA layout, and buffer management. `hwx2py` fills the gap for simple single-task models where `anecc` fails (elementwise with spurious KDMA). For complex models, `anecc` is still the reliable path.
