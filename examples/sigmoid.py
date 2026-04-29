@@ -4,10 +4,14 @@ import numpy as np
 
 ST = 0xc0  # buffer stride in bytes (192 = 96 float16 elements)
 HALF_ONE = 0x3C00  # float16(1.0) encoding
+DMA_EOL = 0x80000000   # DMA descriptor: end-of-list marker
+DMA_ACTIVE = 0x40000000  # DMA descriptor: active buffer
 ANE_TILE_COUNT = 0x20
+W = 77
+CHANNELS = 1
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
 
-class reg:
+class reg:  # register offset
     # --- Task Descriptor (0x0000) ---
     W0, W1, W2 = 0x00, 0x04, 0x08
     W3, W4, W5, W6 = 0x0c, 0x10, 0x14, 0x18
@@ -139,21 +143,21 @@ BTSP_BUF = make_from_segments(0x4000, [
 
     # ── Firmware DMA context ─────────────────────────────────────────
     (0x2C, 0xF8, struct.pack('>' + 'I' * 62,
-        *([0x40000000, 0] + [0x81000000] + [0x80000000]*15 + [0]*16
-          + [0x80000000] + [0x40000000]*15 + [0x80000000]*4 + [0]*8))),
+        *([DMA_ACTIVE, 0] + [0x81000000] + [DMA_EOL]*15 + [0]*16
+          + [DMA_EOL] + [DMA_ACTIVE]*15 + [DMA_EOL]*4 + [0]*8))),
 
     # ── Common + TileDMA Src ─────────────────────────────────────────
     (292, 184, build_seg(0x124, 184, [
         (reg.CommonStream, stream_header(0x00000, 16)),
-        (reg.InDim,  # h_in=1, w_in=77
-            (1 << 16) | 77),
-        (reg.OutDim,  # h_out=1, w_out=77
-            (1 << 16) | 77),
+        (reg.InDim,  # h_in=1, w_in=W
+            (1 << 16) | W),
+        (reg.OutDim,  # h_out=1, w_out=W
+            (1 << 16) | W),
         (reg.ChCfg,  # infmt=fp16, outfmt=fp16
             (2) |          # infmt=fp16
             (2 << 4)),     # outfmt=fp16
-        (reg.Cin, 1),
-        (reg.Cout, 1),
+        (reg.Cin, CHANNELS),
+        (reg.Cout, CHANNELS),
         (reg.pad0, 1),
         (reg.pad1, 1),
         (reg.pad2, 0x2041),  # reserved
@@ -179,6 +183,7 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.TaskInfo, (1 << 20)),
         (reg.DPE, 0),
 
+        # TileDMA Src HEADER
         (reg.SrcStream, stream_header(0x13800, 28)),
         (reg.SrcDMAConfig,  # en=1, cache_hint=8, reuse=8, noreuse=3, dep=3
             (1) |          # en=1
@@ -199,7 +204,7 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.Srcpad5, 0),
         (reg.Srcpad6, 0),
         (reg.Srcpad7, 0),
-        (reg.Srcpad8, 0),
+        (reg.Srcpad8, 0),  # reserved
         (reg.SrcFmt,  # source data format
             (1) |          # fmt_mode=1
             (3 << 4) |     # truncate=3
@@ -251,9 +256,9 @@ BTSP_BUF = make_from_segments(0x4000, [
         # NE HEADER
         (reg.NEStream, stream_header(0x0C800, 5)),
         (reg.KernelCfg, (1 << 7)),          # NE enable
-        (reg.MACCfg,  # NE MAC op: op_mode=12 (sigmoid), non_linear=0x12
+        (reg.MACCfg,  # NE MAC op: op_mode=12 (sigmoid), non_linear_mode=2
             (12) |          # op_mode=12
-            (1 << 17) |     # non_linear_mode=2
+            (1 << 17) |     # non_linear_mode[1]=1 (mode=2, sigmoid)
             (1 << 20)),     # reserved
         (reg.MatrixVectorBias, 0),
         (reg.AccBias, 0),
@@ -326,9 +331,8 @@ BTSP_BUF = make_from_segments(0x4000, [
 ])
 
 STRIDE = 96
-C = 1
 input_a = np.zeros(8192, dtype=np.float16)
-input_a[:C * STRIDE:STRIDE] = np.float16(3.0)
+input_a[:CHANNELS * STRIDE:STRIDE] = np.float16(3.0)
 
 out_handle, out_map = allocate_buffer(fd, 0x4000)
 src1_handle, src1_map = allocate_buffer(fd, 0x4000)
@@ -348,4 +352,6 @@ ret = submit_task(
 os.close(fd)
 
 out_arr = np.frombuffer(out_map, dtype=np.float16, count=64).copy()
+expected = np.float16(1.0 / (1.0 + np.exp(-3.0)))
 print(f"output[0] = {out_arr[0]}")
+print(f"expected  = {expected}")
