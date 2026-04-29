@@ -30,6 +30,7 @@ jobs:
 
       - name: Build coreml2hwx
         run: |
+          git clone https://github.com/freedomtan/coreml_to_ane_hwx
           cd coreml_to_ane_hwx
           make
           chmod +x ./coreml2hwx
