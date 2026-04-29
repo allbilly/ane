@@ -6,7 +6,11 @@ import sys
 STRIDE = 32
 CHANNELS = 0x4000
 BUF_SIZE = 0x4000
+HALF_ONE = 0x3C00
+DMA_EOL = 0x80000000
+DMA_ACTIVE = 0x40000000
 ANE_TILE_COUNT = 0x20
+fd = os.open("/dev/accel/accel0", os.O_RDWR)
 
 class reg:
     W0, W1, W2 = 0x00, 0x04, 0x08
@@ -43,6 +47,7 @@ class reg:
     Srcpad2, Srcpad3, Srcpad4 = 0x18c, 0x190, 0x194
     Srcpad5, Srcpad6, Srcpad7 = 0x198, 0x19c, 0x1a0
     SrcFmt, Srcpad8 = 0x1a4, 0x1a8
+    SrcPadStream = 0x1AC
 
     DstDMAConfig, DstBaseAddr, DstRowStride = 0x258, 0x25c, 0x260
     DstPlaneStride, DstDepthStride, DstGroupStride, DstFmt = 0x264, 0x268, 0x26c, 0x270
@@ -100,39 +105,12 @@ def build_seg(seg_off, seg_len, word_packs):
 def pack_reg(buf, offset, value):
     struct.pack_into('<I', buf, offset, value)
 
-DMA_END = 0x80000000
-DMA_BUF = 0x40000000
-
-kernel_extra = bytes.fromhex(
-    '0000000000000000000000000000000000000000000000000000000000000000'
-    '0000000000000000000000000000000000000000000000000000000000000000'
-    '0000000000000000000000000000000000000000000000000000000000000000'
-    '0000000000000000000000000000000000000000000000000000000000000000'
-    '000000000000000000000000010000030000000022040000000000006a000000'
-    '000000000098003000000000254002050000000000f801f40000000000000000'
-    '8000000080000000800000008000000080000000800000008000000080000000'
-    '8000000080000000800000008000000080000000800000008000000080000000'
-    '0000000000000000000000000000000000000000000000000000000000000000'
-    '0000000000000000000000000000000000000000000000000000000000000000'
-    '4000000040000000400000004000000040000000400000004000000040000000'
-    '4000000040000000400000004000000040000000400000004000000040000000'
-    '8000000080000000800000008000000000000000000000000000000000000000'
-    '000000000000000000000000000000000000003c010001000100000022000000'
-    '1000000010000000010001000100000021a00050412000000140010001000000'
-    '00000000000000000111210400001000000000000038016c8138030080880000'
-    '0000000040000000400000000004000000000000000000000000000000000000'
-    '0000000000000000000000000000000031200001000000000001000000000000'
-    '0000000000000000000000000000000000000000000000000000000000000000'
-    '0000000000000000004800440000000072010000000000001000000000010000'
-    '000100000001000000000000000000000000000000000000000000007a010000'
-    '00010000000000000000000000000000000000000088000c0000000000000000'
-    '000000000000000000c80010800000000c0010000000000000000000003c0000'
-    '00780118c1000004000010004000000040000000000410000000000031203001'
-)
-
 BTSP_BUF = make_from_segments(0x4000, [
+    # ── Tile 1: Task Descriptor ──────────────────────────────────────
     (0, 44, build_seg(0, 44, [
-        (reg.W0, 0),
+        (reg.W0,  # tid=0, nid=0x40, eon=0
+            (0 << 0) |
+            (0x40 << 16)),
         (reg.W1, 0x009c0000),
         (reg.W2, 0x400),
         (reg.W3, 0),
@@ -144,15 +122,97 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.W7, 0x00000300),
         (reg.W8, 0x05824026),
         (reg.W9, 0),
-        (reg.KernelDMA, 0xf401f800),
+        (reg.KernelDMA, stream_header(0x1F800, 62)),
     ])),
 
+    # ── Tile 1: Firmware DMA context ─────────────────────────────────
     (0x2C, 0xF8, struct.pack('>' + 'I' * 62,
-        *([0]*2 + [DMA_END]*16 + [0]*16
-          + [DMA_BUF]*16 + [DMA_END]*4 + [0]*8))),
+        *([0]*2 + [DMA_EOL]*16 + [0]*16 + [DMA_ACTIVE]*16 + [DMA_EOL]*4 + [0]*8))),
 
-    (0x274, len(kernel_extra), kernel_extra),
+    # ── Tile 2: Task Descriptor ──────────────────────────────────────
+    (0x300, 44, build_seg(0, 44, [
+        (reg.W0,  # tid=1, nid=0x100, eon=1
+            (1 << 0) |
+            (0x100 << 16) |
+            (1 << 25)),
+        (reg.W1, 0),
+        (reg.W2, 1058),  # exe_cycles
+        (reg.W3, 0),
+        (reg.W4, 0x6a),
+        (reg.W5, 0),
+        (reg.W6,  # flags: next_priority=38
+            (38 << 10) |
+            (3 << 28)),
+        (reg.W7, 0),
+        (reg.W8, 0x05024025),
+        (reg.W9, 0),
+        (reg.KernelDMA, stream_header(0x1F800, 62)),
+    ])),
 
+    # ── Tile 2: Firmware DMA context ─────────────────────────────────
+    (0x32C, 0xF8, struct.pack('>' + 'I' * 62,
+        *([0]*2 + [DMA_EOL]*16 + [0]*16 + [DMA_ACTIVE]*16 + [DMA_EOL]*4 + [0]*8))),
+
+    # ── Tile 2: Common + TileDMA Src ────────────────────────────────
+    (0x424, 140, build_seg(0x124, 140, [
+        (reg.CommonStream, stream_header(0x00000, 16)),
+        (reg.InDim, (1 << 16) | 1),
+        (reg.pad0, 1),
+        (reg.ChCfg, 0x22),
+        (reg.Cin, 0x10),   # 16 channels
+        (reg.Cout, 0x10),  # 16 channels
+        (reg.OutDim, (1 << 16) | 1),
+        (reg.pad1, 1),
+        (reg.ConvCfg, 0x5000a021),
+        (reg.pad2, 0x2041),
+        (reg.GroupConvCfg, 0x00014001),
+        (reg.TileCfg, 1),
+        (reg.Cfg, 0x04211101),
+        (reg.TaskInfo, 0x00100000),
+        (reg.SrcStream, stream_header(0x13800, 28)),
+        (reg.SrcDMAConfig, 0x00033881),
+        (reg.Srcpad0, 0x00008880),
+        (reg.SrcRowStride, 0x40),
+        (reg.SrcPlaneStride, 0x40),
+        (reg.SrcDepthStride, 0x400),
+        (reg.SrcFmt, 0x01002031),
+        (reg.SrcPadStream, 0x100),
+    ])),
+
+    # ── Tile 2: L2 ──────────────────────────────────────────────────
+    (0x4DC, 68, build_seg(0x1DC, 68, [
+        (reg.L2Stream, stream_header(0x04800, 18)),
+        (reg.L2Cfg, 0),
+        (reg.SourceCfg, 0x00000172),
+        (reg.SourceChannelStride, 0x10),
+        (reg.SourceRowStride, 0x100),
+        (reg.L2pad0, 0x100),
+        (reg.L2pad1, 0x100),
+        (reg.ResultCfg, 0x0000017a),
+        (reg.ResultBase, 0x100),
+    ])),
+
+    # ── Tile 2: PE + NE ─────────────────────────────────────────────
+    (0x528, 44, build_seg(0x228, 44, [
+        (reg.PEStream, stream_header(0x08800, 4)),
+        (reg.NEStream, stream_header(0x0C800, 5)),
+        (reg.KernelCfg, (1 << 7)),
+        (reg.MACCfg, 0x0010000c),
+        (reg.PostScale, HALF_ONE),
+    ])),
+
+    # ── Tile 2: TileDMA Dst ─────────────────────────────────────────
+    (0x554, 32, build_seg(0x254, 32, [
+        (reg.DstStream, stream_header(0x17800, 7)),
+        (reg.DstDMAConfig, 0x040000c1),
+        (reg.DstBaseAddr, 0x00100000),
+        (reg.DstRowStride, 0x40),
+        (reg.DstPlaneStride, 0x40),
+        (reg.DstDepthStride, 0x00100400),
+        (reg.DstFmt, 0x01302031),
+    ])),
+
+    # ── Tile 1: Common + TileDMA Src ────────────────────────────────
     (292, 140, build_seg(0x124, 140, [
         (reg.CommonStream, stream_header(0x00000, 16)),
         (reg.InDim, (1 << 16) | 1),
@@ -188,9 +248,10 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.Srcpad7, 0),
         (reg.SrcFmt, 0x01002031),
         (reg.Srcpad8, 0),
-        (0x1AC, 0x00000100),
+        (reg.SrcPadStream, 0x00000100),
     ])),
 
+    # ── Tile 1: L2 ───────────────────────────────────────────────────
     (476, 68, build_seg(0x1DC, 68, [
         (reg.L2Stream, stream_header(0x04800, 18)),
         (reg.L2Cfg, 0),
@@ -211,6 +272,7 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.ConvResultRowStride, 0),
     ])),
 
+    # ── Tile 1: PE + NE ──────────────────────────────────────────────
     (552, 44, build_seg(0x228, 44, [
         (reg.PEStream, stream_header(0x08800, 4)),
         (reg.PECfg, 0),
@@ -218,13 +280,14 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.PreScale, 0),
         (reg.FinalScale, 0),
         (reg.NEStream, stream_header(0x0C800, 5)),
-        (reg.KernelCfg, 0x80),
+        (reg.KernelCfg, (1 << 7)),
         (reg.MACCfg, 0x0010000c),
         (reg.MatrixVectorBias, 0),
         (reg.AccBias, 0),
-        (reg.PostScale, 0x3c00),
+        (reg.PostScale, HALF_ONE),
     ])),
 
+    # ── Tile 1: TileDMA Dst ──────────────────────────────────────────
     (596, 32, build_seg(0x254, 32, [
         (reg.DstStream, stream_header(0x17800, 7)),
         (reg.DstDMAConfig, 0x040000c1),
@@ -238,19 +301,12 @@ BTSP_BUF = make_from_segments(0x4000, [
 ])
 
 if len(sys.argv) > 1 and sys.argv[1] == "exp":
-    pack_reg(BTSP_BUF, reg.KernelCfg, 0x80 | 0x200)
+    pack_reg(BTSP_BUF, reg.KernelCfg, (1 << 7) | (1 << 9))
     pack_reg(BTSP_BUF, reg.MACCfg, 0x0010000c | 1)
-
-CMD_BUF = bytearray(BTSP_BUF)
-CMD_BUF += b'\x00' * (32768 - len(CMD_BUF))
-BTSP_BUF[2] = 0x40
 
 C1 = 16
 C2 = 16384
 
-fd = os.open("/dev/accel/accel0", os.O_RDWR)
-cmd_handle, cmd_map = allocate_buffer(fd, len(CMD_BUF))
-cmd_map.write(bytes(CMD_BUF)); cmd_map.close()
 out_handle, out_map = allocate_buffer(fd, BUF_SIZE)
 src1_handle, src1_map = allocate_buffer(fd, BUF_SIZE)
 src1 = np.zeros(BUF_SIZE // 2, dtype=np.float16)
@@ -263,7 +319,7 @@ src2_map.write(src2.tobytes()); src2_map.close()
 btsp_handle, btsp_map = allocate_buffer(fd, BUF_SIZE)
 btsp_map.write(bytes(BTSP_BUF)); btsp_map.close()
 
-handles = [cmd_handle, 0, 0, 0, out_handle, src1_handle, src2_handle] + [0] * 25
+handles = [btsp_handle, 0, 0, 0, out_handle, src1_handle, src2_handle] + [0] * 25
 ret = submit_task(fd, 0x274, 1, 0x274, handles, btsp_handle)
 print(f"submit returned: {ret}")
 out = np.frombuffer(out_map, dtype=np.float16).copy(); out_map.close()
