@@ -175,12 +175,14 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1 << 14) |    # unicast_en=1
             (1 << 16)),    # unicast_cin=1
         (reg.TileCfg, 1),
-        (reg.Cfg,  # conv pipeline: conv_mode=1, dst_mode=1, enable=1
-            (1 << 0) |      # pad0=1
-            (1 << 8) |      # conv_mode=1
-            (1 << 16) |     # dst_mode=1
-            (1 << 26)),     # enable=1
-        (reg.TaskInfo, (1 << 20)),
+        # UNNEEDED (expt3): Cfg
+        # (reg.Cfg,  # conv pipeline conv_mode=1, dst_mode=1, enable=1
+        #     (1 << 0) |      # pad0=1
+        #     (1 << 8) |      # conv_mode=1
+        #     (1 << 16) |     # dst_mode=1
+        #     (1 << 26)),     # enable=1
+        # UNNEEDED (expt3): TaskInfo
+        # (reg.TaskInfo, (1 << 20)),
         (reg.DPE, 0),
 
         # TileDMA Src HEADER
@@ -191,11 +193,15 @@ BTSP_BUF = make_from_segments(0x4000, [
             (8 << 8) |     # cache_hint_reuse=8
             (3 << 12) |    # cache_hint_noreuse=3
             (3 << 16)),    # dep_mode=3
-        (reg.Srcpad0, 0x8880),  # TileDMA Src pad2: same value as SrcDMAConfig with en=0
+        # UNNEEDED (expt3): Srcpad0
+        # (reg.Srcpad0, 0x8880),
         (reg.SrcBaseAddr, 0),
-        (reg.SrcRowStride, ST),           # 192 bytes
-        (reg.SrcPlaneStride, ST),         # same
-        (reg.SrcDepthStride, ST),         # same (single channel)
+        # UNNEEDED (expt3): SrcRowStride
+        # (reg.SrcRowStride, ST),
+        # UNNEEDED (expt3): SrcPlaneStride
+        # (reg.SrcPlaneStride, ST),
+        # UNNEEDED (expt3): SrcDepthStride
+        # (reg.SrcDepthStride, ST),
         (reg.SrcGroupStride, 0),
         (reg.Srcpad1, 0),
         (reg.Srcpad2, 0),
@@ -210,26 +216,31 @@ BTSP_BUF = make_from_segments(0x4000, [
             (3 << 4) |     # truncate=3
             (2 << 12) |    # mem_fmt=2
             (1 << 24)),    # interleave=1
-        (reg.SrcPadStream, 0x00000100),  # TileDMA Src stream padding
+        # UNNEEDED (expt3): SrcPadStream
+        # (reg.SrcPadStream, 0x00000100),
     ])),
 
     # ── L2 ───────────────────────────────────────────────────────────
     (476, 68, build_seg(0x1DC, 68, [
         (reg.L2Stream, stream_header(0x04800, 18)),
         (reg.L2Cfg, 0),
-        (reg.SourceCfg,  # L2 source config: type=2, fmt=1, alias=both
-            (2) |          # type=2
-            (1 << 4) |     # alias_conv_src=1
-            (1 << 5) |     # alias_conv_rslt=1
-            (1 << 6) |     # fmt=1
-            (1 << 8) |     # interleave=1
-            (1 << 20) |    # alias_planar_src=1
-            (1 << 22)),    # alias_planar_rslt=1
+        # UNNEEDED (expt3): SourceCfg
+        # (reg.SourceCfg,  # L2 source config
+        #     (2) |          # type=2
+        #     (1 << 4) |     # alias_conv_src=1
+        #     (1 << 5) |     # alias_conv_rslt=1
+        #     (1 << 6) |     # fmt=1
+        #     (1 << 8) |     # interleave=1
+        #     (1 << 20) |    # alias_planar_src=1
+        #     (1 << 22)),    # alias_planar_rslt=1
         (reg.SourceBase, 0),
         (reg.SourceChannelStride, 0xa0),  # 160 bytes
-        (reg.SourceRowStride, 0xa0),      # 160 bytes
-        (reg.L2pad0, 0xa0),   # reserved
-        (reg.L2pad1, 0xa0),   # reserved
+        # UNNEEDED (expt3): SourceRowStride
+        # (reg.SourceRowStride, 0xa0),
+        # UNNEEDED (expt3): L2pad0
+        # (reg.L2pad0, 0xa0),
+        # UNNEEDED (expt3): L2pad1
+        # (reg.L2pad1, 0xa0),
         (reg.L2pad2, 0),   # reserved
         (reg.L2pad3, 0),
         (reg.L2pad4, 0),
@@ -244,7 +255,8 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1 << 8) |     # interleave=1
             (1 << 20) |    # alias_planar_src=1
             (1 << 22)),    # alias_planar_rslt=1
-        (reg.ResultBase, 0xa0),   # L2 result base: 160 bytes (= SourceRowStride)
+        # UNNEEDED (expt3): ResultBase
+        # (reg.ResultBase, 0xa0),
         (reg.ConvResultChannelStride, 0),
         (reg.ConvResultRowStride, 0),
     ])),
@@ -255,7 +267,8 @@ BTSP_BUF = make_from_segments(0x4000, [
 
         # NE HEADER
         (reg.NEStream, stream_header(0x0C800, 5)),
-        (reg.KernelCfg, (1 << 7)),          # NE enable
+        # UNNEEDED (expt3): KernelCfg
+        # (reg.KernelCfg, (1 << 7)),          # NE enable
         (reg.MACCfg,  # NE MAC op: op_mode=12 (sigmoid), non_linear_mode=2
             (12) |          # op_mode=12
             (1 << 17) |     # non_linear_mode[1]=1 (mode=2, sigmoid)
@@ -317,9 +330,12 @@ BTSP_BUF = make_from_segments(0x4000, [
             (12 << 4) |    # cache_hint=12
             (1 << 26)),    # reserved bit
         (reg.DstBaseAddr, 0),
-        (reg.DstRowStride, ST),
-        (reg.DstPlaneStride, ST),
-        (reg.DstDepthStride, ST),
+        # UNNEEDED (expt3): DstRowStride
+        # (reg.DstRowStride, ST),
+        # UNNEEDED (expt3): DstPlaneStride
+        # (reg.DstPlaneStride, ST),
+        # UNNEEDED (expt3): DstDepthStride
+        # (reg.DstDepthStride, ST),
         (reg.DstGroupStride, 0),
         (reg.DstFmt,  # destination data format
             (1) |          # fmt_mode=1

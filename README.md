@@ -1082,6 +1082,33 @@ Cfg register was tested with all known values on sigmoid firmware. All produced 
 | 2a (Conv) | 0x25400201 | relu/sigmoid | TileDMA → Conv → TileDMA | MACCfg[16:17] |
 | 2b (Conv) | 0x25400203 | conv/gemm/concat | TileDMA → Conv+KDMA → TileDMA | Different firmware |
 
+# 14. KernelCfg (0x240): NOT the NE Enable Switch
+
+From expt3, KernelCfg=0x80 (bit 7 set, "NE enable") showed as UNNEEDED for both relu and sigmoid — zeroing it produced identical output. This was surprising since KernelCfg is documented as the NE engine enable.
+
+### Investigation
+
+Tested on a **fresh /dev/accel/accel0** (no prior ANE access in session):
+
+| Test | KernelCfg | Output | Result |
+|------|-----------|--------|--------|
+| relu baseline | 0x80 | [0, 5, 0, 2] | Correct |
+| relu KernelCfg=0 (fresh) | 0x00 | [0, 5, 0, 2] | **Same — still works** |
+| sigmoid baseline | 0x80 | [0.007, 0.5, 0.993] | Correct |
+| sigmoid KernelCfg=0 (fresh) | 0x00 | [0.007, 0.5, 0.993] | **Same — still works** |
+| relu KernelCfg=0 AND MACCfg=0 (fresh) | 0x00 + 0x00 | HANG | MACCfg=0 is the real poison |
+
+### Root Cause
+
+**KernelCfg=0 (NE disabled) does NOT gate the NE pipeline for elementwise nonlinear ops (relu/sigmoid).** The nonlinear activation (relu clamping, sigmoid LUT) is controlled entirely by `MACCfg[17:16]` (`non_linear_mode`). KernelCfg likely gates only NE **compute** modes (matrix multiply for conv/gemm) — the `KernelCfg=0x82` needed by conv/gemm is the compute-enable pattern, not the same as the passthrough-enable pattern `KernelCfg=0x80`.
+
+This explains the expt3 test ordering artifact: in earlier runs, `MACCfg=0` was zeroed first, wedging the device before `KernelCfg` could be tested. On a clean device, `KernelCfg=0` is confirmed UNNEEDED for relu and sigmoid.
+
+### Practical Impact
+
+- **`examples_expt/relu.py` and `examples_expt/sigmoid.py`**: The `KernelCfg` line is commented out in both files (per expt3 results)
+- **conv/gemm** still need `KernelCfg=0x82` (their compute mode requires it)
+- The actual NE enable for nonlinear ops is `MACCfg[20]` (reserved bit), not `KernelCfg[7]`
 **Cross-firmamily register-only conversion is NOT possible** — different BTSP firmware programs encode different data flow operations. The attempt causes ANE HANG.
 
 # Reference

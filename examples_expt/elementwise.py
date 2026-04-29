@@ -224,9 +224,12 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.L2pad1, 0x400),   # reserved
         (reg.L2pad2, 0x440),   # reserved
         (reg.L2pad3, 0x10),    # = SourceChannelStride
-        (reg.L2pad4, 0x420),   # = SourceRowStride
-        (reg.L2pad5, 0x400),   # reserved
-        (reg.L2pad6, 0x400),   # reserved
+        # UNNEEDED (expt3): L2pad4
+        # (reg.L2pad4, 0x420),
+        # UNNEEDED (expt3): L2pad5
+        # (reg.L2pad5, 0x400),
+        # UNNEEDED (expt3): L2pad6
+        # (reg.L2pad6, 0x400),
         (reg.ResultCfg,  # L2 result config: type=2, bfrmode=2, alias=both
             (2) |          # type=2
             (2 << 2) |     # bfrmode=2
@@ -236,7 +239,8 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1 << 8) |     # interleave=1
             (1 << 20) |    # alias_planar_src=1
             (1 << 22)),    # alias_planar_rslt=1
-        (reg.ResultBase, 0x860),  # L2 result base: 2144 bytes (addr=134 in 16B units)
+        # UNNEEDED (expt3): ResultBase
+        # (reg.ResultBase, 0x860),
     ])),
 
     # ── PE + NE ──────────────────────────────────────────────────────
@@ -245,7 +249,8 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.PECfg, (2 << 18)),  # second_source=2 (L2 result); add mode
         (reg.BiasScale, (HALF_ONE << 16)),  # bias=0, scale=fp16(1.0)
         (reg.PreScale, (HALF_ONE << 16)),   # pre_scale=0
-        (reg.FinalScale, 0x3f800000),     # fp32(1.0)
+        # UNNEEDED (expt3): FinalScale
+        # (reg.FinalScale, 0x3f800000),     # fp32(1.0)
 
         (reg.NEStream, stream_header(0x0C800, 5)),
         (reg.KernelCfg, 0),
@@ -263,9 +268,12 @@ BTSP_BUF = make_from_segments(0x4000, [
             (12 << 4) |    # cache_hint=12
             (1 << 26)),    # reserved bit
         (reg.DstBaseAddr, 0),
-        (reg.DstRowStride, STRIDE * 2),
-        (reg.DstPlaneStride, STRIDE * 2),
-        (reg.DstDepthStride, CHANNELS * STRIDE * 2),
+        # UNNEEDED (expt3): DstRowStride
+        # (reg.DstRowStride, STRIDE * 2),
+        # UNNEEDED (expt3): DstPlaneStride
+        # (reg.DstPlaneStride, STRIDE * 2),
+        # UNNEEDED (expt3): DstDepthStride
+        # (reg.DstDepthStride, CHANNELS * STRIDE * 2),
         (reg.DstGroupStride, 0),
         (reg.DstFmt,  # destination data format
             (1) |          # fmt_mode=1
