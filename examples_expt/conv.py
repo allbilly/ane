@@ -203,8 +203,7 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1 << 18) |     # ???
             (1 << 20) |     # ???
             (1 << 26)),     # enable=1
-        # UNNEEDED (expt3): TaskInfo
-        # (reg.TaskInfo, (1 << 20)),  # enable
+        (reg.TaskInfo, (1 << 20)),  # enable
         (reg.DPE, 0),
 
         # TileDMA Src HEADER
@@ -215,14 +214,11 @@ BTSP_BUF = make_from_segments(0x4000, [
             (8 << 8) |     # cache_hint_reuse=8
             (3 << 12) |    # cache_hint_noreuse=3
             (3 << 16)),    # dep_mode=3
-        # UNNEEDED (expt3): Srcpad0
-        # (reg.Srcpad0, 0x8880),  # reserved
+        (reg.Srcpad0, 0x8880),  # reserved
         (reg.SrcBaseAddr, 0),
         (reg.SrcRowStride, 0x40),
-        # UNNEEDED (expt3): SrcPlaneStride
-        # (reg.SrcPlaneStride, 0x40),
-        # UNNEEDED (expt3): SrcDepthStride
-        # (reg.SrcDepthStride, 0xc0),
+        (reg.SrcPlaneStride, 0x40),
+        (reg.SrcDepthStride, 0xc0),
         (reg.SrcGroupStride, 0),
         (reg.Srcpad1, 0),
         (reg.Srcpad2, 0),
@@ -237,31 +233,26 @@ BTSP_BUF = make_from_segments(0x4000, [
             (3 << 4) |     # truncate=3
             (2 << 12) |    # mem_fmt=2
             (1 << 24)),    # interleave=1
-        # UNNEEDED (expt3): SrcPadStream
-        # (reg.SrcPadStream, 0x00000100),  # TileDMA Src stream padding
+        (reg.SrcPadStream, 0x00000100),  # TileDMA Src stream padding
     ])),
 
     # ── L2 ───────────────────────────────────────────────────────────
     (476, 76, build_seg(0x1DC, 76, [
         (reg.L2Stream, stream_header(0x04800, 18)),
         (reg.L2Cfg, 0),
-        # UNNEEDED (expt3): SourceCfg
-        # (reg.SourceCfg,  # L2 source config
-        #     (2) |          # type=2
-        #     (1 << 4) |     # alias_conv_src=1
-        #     (1 << 5) |     # alias_conv_rslt=1
-        #     (1 << 6) |     # fmt=1
-        #     (1 << 8) |     # interleave=1
-        #     (1 << 20) |    # alias_planar_src=1
-        #     (1 << 22)),    # alias_planar_rslt=1
+        (reg.SourceCfg,  # L2 source config: type=2, alias=both, fmt=1, interleave=1
+            (2) |          # type=2
+            (1 << 4) |     # alias_conv_src=1
+            (1 << 5) |     # alias_conv_rslt=1
+            (1 << 6) |     # fmt=1
+            (1 << 8) |     # interleave=1
+            (1 << 20) |    # alias_planar_src=1
+            (1 << 22)),    # alias_planar_rslt=1
         (reg.SourceBase, 0),
         (reg.SourceChannelStride, 0x10),
-        # UNNEEDED (expt3): SourceRowStride
-        # (reg.SourceRowStride, 0x30),
-        # UNNEEDED (expt3): L2pad0
-        # (reg.L2pad0, 0x30),  # reserved
-        # UNNEEDED (expt3): L2pad1
-        # (reg.L2pad1, 0x30),  # reserved
+        (reg.SourceRowStride, 0x30),
+        (reg.L2pad0, 0x30),  # reserved
+        (reg.L2pad1, 0x30),  # reserved
         (reg.L2pad2, 0),
         (reg.L2pad3, 0),
         (reg.L2pad4, 0),
@@ -275,15 +266,11 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1 << 8) |     # interleave=1
             (1 << 20) |    # alias_planar_src=1
             (1 << 22)),    # alias_planar_rslt=1
-        # UNNEEDED (expt3): ResultBase
-        # (reg.ResultBase, 0x30),
+        (reg.ResultBase, 0x30),
         (reg.ConvResultChannelStride, 0x10),
-        # UNNEEDED (expt3): ConvResultRowStride
-        # (reg.ConvResultRowStride, 0x30),
-        # UNNEEDED (expt3): L2pad7
-        # (reg.L2pad7, 0x30),  # reserved
-        # UNNEEDED (expt3): L2pad8
-        # (reg.L2pad8, 0x30),  # reserved
+        (reg.ConvResultRowStride, 0x30),
+        (reg.L2pad7, 0x30),  # reserved
+        (reg.L2pad8, 0x30),  # reserved
     ])),
 
     # ── PE + NE ──────────────────────────────────────────────────────
@@ -315,11 +302,9 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1) |          # en=1
             (12 << 4)),    # cache_hint=12
         (reg.DstBaseAddr, 0),
-        # UNNEEDED (expt3): DstRowStride
-        # (reg.DstRowStride, 0x40),
+        (reg.DstRowStride, 0x40),
         (reg.DstPlaneStride, 0x40),
-        # UNNEEDED (expt3): DstDepthStride
-        # (reg.DstDepthStride, 0xc0),
+        (reg.DstDepthStride, 0xc0),
         (reg.DstGroupStride, 0),
         (reg.DstFmt,  # destination data format (no bank_split=1 vs relu.py)
             (1) |          # fmt_mode=1

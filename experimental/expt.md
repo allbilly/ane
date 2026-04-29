@@ -329,347 +329,80 @@ All other regs            [none]          ±1 LSB insensitive; dead for this fir
 
 ---
 
-## expt3: `test_min_regs.py` — Minimal Register Set per Op
+## expt3: Minimal Register Set per Op
 
 ### Goal
-For each operation in `examples/*.py`, find the **absolute minimum set of registers** needed to produce correct output. Phase 1 eliminates registers already at value 0 (they're no-ops). Phase 2 zeroes out each remaining non-zero register one at a time to find which are truly essential.
+For each op in `examples_expt/*.py`, find which registers can be commented out while still producing correct output. Determine the **absolute minimum register set** needed.
 
-### Why This Matters
-- Identifies the "boilerplate" that must always be set vs the "personality" registers that define the op
-- Reveals cross-op register reuse potential: if two ops need the same minimal set plus one switch register, they share a firmware family
-- Documents which register writes are cargo-cult vs functional
+### Method (Simplified — Line-by-Line)
 
-### Method
+**Why this approach:** Each `examples_expt/*.py` file already has one register per line in the BTSP_BUF builder. The file opens its own fd, runs standalone, and prints expected vs actual output. This eliminates all device-state-tracking complexity from the previous `test_min_regs.py` approach — no need to track warm/cold device state, no cross-test pollution, no subprocess management.
 
-**Phase 1: Eliminate zero-valued registers**
-For each example op, enumerate every register line in its BTSP_BUF. The following registers have baseline value 0 in every example and can be omitted immediately (confirmed by expt1/expt2):
-- `SrcBaseAddr`, `DstBaseAddr` — zero base addresses (buffer handle determines location)
-- `SrcGroupStride`, `DstGroupStride` — no groups
-- `Srcpad1`, `Srcpad5`, `Srcpad6`, `Srcpad7` — confirmed dead
-- `L2pad2`–`L2pad6` — confirmed dead (expt2)
-- `L2pad7`, `L2pad8` — confirmed dead
-- `MatrixVectorBias`, `AccBias` — confirmed ±1-invariant when zero
-- `DPE` — confirmed dead
-- `pad3`, `pad4` (when zero) — confirmed don't-care when zero
-- `ConvResultChannelStride`, `ConvResultRowStride` — don't-care for 1-ch
+**Procedure for each op file:**
 
-**Phase 2: Nullify each non-zero register**
-For each remaining register that has a non-zero baseline value in the op's BTSP_BUF:
-1. Set it to 0 (or omit the write entirely)
-2. Submit the task with expected test inputs for that op
-3. Record: **OK** (output unchanged), **HANG** (device wedges), **OUTPUT_CHANGED** (wrong value), or **MODE_CHANGE** (different op behavior)
+1. Copy working `examples/{op}.py` → `examples_expt/{op}.py`
+2. For each register line in the BTSP_BUF builder (not stream headers, not TD):
+   a. Comment out the line
+   b. Run `python3 examples_expt/{op}.py`
+   c. If stdout shows correct output → keep commented (UNNEEDED)
+   d. If stdout shows wrong output or HANG → uncomment (ESSENTIAL)
+3. Skip registers that were already confirmed conditionally dead in expt1 (e.g., `pad2`, `Cin` for 1-ch ops, zero-valued pads)
+4. For HANGs, revert immediately and visually verify
 
-Registers can then be classified as:
+**Register lines to test:** Every `(reg.XXX, value)` line in the BTSP_BUF builder. Stream header lines (`reg.XStream, stream_header(...)`) are never commented out (required for task submission infrastructure).
 
-| Classification | Meaning | Example |
-|---------------|---------|---------|
-| **ESSENTIAL** | Zeroing breaks output or causes HANG | MACCfg for NE ops, PECfg for PE ops |
-| **SKIP** | Already validated as don't-care by expt1/expt2 | L2pad regs, zero-valued pad regs |
-| **CONDITIONAL** | Zeroing changes behavior but op still runs | PostScale=0 zeroes output but doesn't hang |
-| **FORMAT** | Format registers that must be valid but values are flexible | SrcFmt, DstFmt — valid value required but not a specific one |
-| **UNNEEDED** | Zeroing produces identical correct output | Cin (1-ch), stride regs (1-ch), SourceCfg (conv pipeline) |
+**Skip list (confirmed zero-valued don't-care from expt1):**
+- Zero-value registers: `SrcBaseAddr(0)`, `DstBaseAddr(0)`, `SrcGroupStride(0)`, `DstGroupStride(0)`, `DPE(0)`, `MatrixVectorBias(0)`, `AccBias(0)`
+- Zero pads: `Srcpad1=0`, `Srcpad2=0`, `Srcpad3=0`, `Srcpad4=0`, `Srcpad5=0`, `Srcpad6=0`, `Srcpad7=0`, `Srcpad8=0`, `L2pad2=0`, `L2pad3=0`, `L2pad4=0`, `L2pad5=0`, `L2pad6=0`, `L2pad7=0`, `L2pad8=0`, `pad3=0`, `pad4=0`
+- Single-channel don't-care: `ConvResultChannelStride(0)`, `ConvResultRowStride(0)` (for 1-ch ops)
 
-### Implementation Design
+### Ops to Test (6 total)
 
-Script: `experimental/test_min_regs.py`
+| Op | File | Input | Expected Output |
+|----|------|-------|-----------------|
+| relu | `examples_expt/relu.py` | [-3, 5, -1, 2] (tiled) | [0, 5, 0, 2] |
+| sigmoid | `examples_expt/sigmoid.py` | [-5, 0, 5] | [~0.007, 0.5, ~0.993] |
+| add | `examples_expt/elementwise.py` | a=3, b=2 (64-ch) | 5 (all channels) |
+| mul | `examples_expt/elementwise.py` (MACCfg=0x30) | a=3, b=2 (64-ch) | 6 (all channels) |
+| conv | `examples_expt/conv.py` | 3-ch, weights=2.0 | input × 2.0 |
+| gemm | `examples_expt/gemm.py` | 512×32, weights=0.5 | input × 0.5 |
 
-For each example op, define:
-- `name`: op name
-- `btsp_buf`: the working BTSP_BUF (imported or replicated)
-- `inputs`: test input array
-- `expected_output_func`: function to compute expected output
-- `baseline_regs`: list of `(offset, name, baseline_value)` for every register explicitly set in the BTSP_BUF
+### Results
 
-```python
-EXAMPLES = [
-    {
-        "name": "relu",
-        "src": "examples/relu.py",
-        "inputs": [-3.0, 5.0, -1.0, 2.0],
-        "expected": lambda out: abs(out[0]) < 0.01 and abs(out[1] - 5.0) < 0.01,
-        "regs": [
-            (0x128, "InDim", 0x0001004d),
-            (0x13c, "OutDim", 0x0001004d),
-            (0x130, "ChCfg", 0x22),
-            # ... all non-zero regs ...
-        ],
-        "phase1_skip": {0x134, 0x148, 0x158, 0x160, 0x164, ...},
-    },
-    # ...
-]
-```
+*To be filled in as each register line is tested.*
 
-The script reuses `experimental/ane_helpers.py` for device access and PM-resume recovery.
+#### relu.py
 
-#### Op-Specific Test Vectors
+| UNNEEDED (6) | Reason |
+|---|---|
+| W1, W2, W3, W5, W7, W9 | Zero-valued TD words — no function |
 
-| Op | Input | Output | Validation |
-|----|-------|--------|------------|
-| relu | `[-3, 5, -1, 2]` | `[0, 5, 0, 2]` | `max(0, x)` |
-| sigmoid | `[-5, 0, 5]` | `[~0.007, 0.5, ~0.993]` | LUT-dependent approximation |
-| add | `a=3, b=2` (64-ch) | `5` (per channel) | `a + b` |
-| mul | `a=3, b=2` (64-ch) | `6` (per channel) | `a * b` |
-| conv | 3-ch input | weights=2.0 output | `input * 2.0` |
-| gemm | 512-ch input | weights=0.5 output | `input * 0.5` |
-| concat tile1 | 16384-ch of 2.0 | first 16384 = 2.0 | identity pass-through |
-| concat tile2 | 16-ch of 3.0 | last 16 = 3.0 | identity pass-through |
+All other 42 register blocks are ESSENTIAL (zeroing produces wrong output).
 
-#### Register Inventory (non-zero registers per op)
+**Warm-device note**: On a device already warmed by a baseline run, 24 registers can be commented (warm UNNEEDED = above 6 + TaskInfo, SrcRowStride, SrcPlaneStride, SrcDepthStride, SrcPadStream, L2Cfg, SourceCfg, SourceBase, SourceRowStride, L2pad0, L2pad1, L2pad4, L2pad5, L2pad6, ResultBase, ConvResultChannelStride, ConvResultRowStride, KernelCfg). For standalone file compatibility, only the 6 cold-boot safe registers are commented.
 
-Grouped by firmware family:
+#### sigmoid.py
 
-**Group 1 — PE Elementwise (add/elementwise)** — registers explicitly set:
-```
-W0, W2, W4, W6, W8, KernelDMA,
-CommonStream, InDim, OutDim, ChCfg(0x2A), Cin(64), Cout(64),
-pad0, pad1, pad2, pad3(4),
-ConvCfg, GroupConvCfg(0x10001), TileCfg, Cfg(0x33),
-SrcStream, SrcDMAConfig, Srcpad0(0x33880),
-SrcRowStride(0x40), SrcPlaneStride(0x40), SrcDepthStride(0x1000),
-Srcpad2(0x40), Srcpad3(0x40), Srcpad4(0x1000), Srcpad8(0x2030), SrcFmt,
-L2Stream, SourceCfg(0x01500051),
-SourceChannelStride(0x10), SourceRowStride(0x420),
-L2pad0(0x400), L2pad1(0x400), L2pad2(0x440), L2pad3(0x10),
-L2pad4(0x420), L2pad5(0x400), L2pad6(0x400),
-ResultCfg, ResultBase(0x860),
-PEStream, PECfg, BiasScale, PreScale, FinalScale,
-NEStream, DstStream, DstDMAConfig, DstRowStride(0x40),
-DstPlaneStride(0x40), DstDepthStride(0x1000), DstFmt
-```
+| UNNEEDED (5) | Reason |
+|---|---|
+| W1, W2, W3, W5, W7 | Zero-valued TD words |
 
-**Group 2a — Conv NE Nonlinear (relu/sigmoid)** — registers explicitly set:
-```
-W0, W2, W4, W6, W8, W9(0x21), KernelDMA,
-CommonStream, InDim, OutDim, ChCfg(0x22), Cin(1), Cout(1),
-pad0(1), pad1(1), pad2(0x2041),
-ConvCfg, GroupConvCfg(0x14001), TileCfg(1), Cfg(0x04010101), TaskInfo(0x100000),
-SrcStream, SrcDMAConfig, Srcpad0(0x8880),
-SrcRowStride(0xc0), SrcPlaneStride(0xc0), SrcDepthStride(0xc0),
-SrcFmt, SrcPadStream(0x100),
-L2Stream, SourceCfg, SourceChannelStride(0xa0), SourceRowStride(0xa0),
-L2pad0(0xa0), L2pad1(0xa0), ResultCfg, ResultBase(0xa0),
-PEStream, NEStream, KernelCfg(0x80), MACCfg, PostScale(0x3c00),
-DstStream, DstDMAConfig, DstRowStride(0xc0),
-DstPlaneStride(0xc0), DstDepthStride(0xc0), DstFmt
-```
+W9 is ESSENTIAL for sigmoid (0x21 = KDMA kernel info for LUT transfer). Warm UNNEEDED = 21 registers (same as relu minus W9, ConvResultChannelStride, ConvResultRowStride).
 
-**Group 2b — Conv NE Compute (conv/gemm)** — registers explicitly set:
-```
-W0, W2, W4, W6, W8(compute), W9(0x21), KernelDMA,
-CommonStream, InDim(1x1), OutDim(1x1), ChCfg(0x22),
-Cin(3/512), Cout(3/512),
-ConvCfg(gemm-specific), GroupConvCfg(0x10001), TileCfg(1), Cfg(op-specific), TaskInfo(0x100000),
-SrcStream, SrcDMAConfig, Srcpad0(0x8880),
-SrcRowStride(0x40), SrcPlaneStride(0x40), SrcDepthStride(op-specific),
-SrcFmt, SrcPadStream(0x100),
-L2Stream, SourceCfg(0x00A00051 or 0x00500172),
-SourceChannelStride(0x10), SourceRowStride(op-specific),
-L2pad0, L2pad1, ResultCfg, ResultBase(op-specific),
-ConvResultChannelStride, ConvResultRowStride,
-L2pad7, L2pad8,
-PEStream, NEStream, KernelCfg(0x82), MACCfg(0x00101c00), PostScale(0x3c00),
-DstStream, DstDMAConfig, DstRowStride(0x40),
-DstPlaneStride(0x40), DstDepthStride(op-specific), DstFmt
-```
+#### elementwise.py
 
-### Expected Outcomes
+| UNNEEDED (6) | Reason |
+|---|---|
+| W1, W2, W3, W5, W7, W9 | Zero-valued TD words |
 
-**Registers expected to be UNNEEDED** (can zero without affecting output):
-- All L2pad, Srcpad registers (confirmed dead by expt2)
-- `DPE`, `L2Cfg` — dead on conv pipeline
-- `Cin`, `Cout` for 1-channel ops (confirmed by expt1)
-- Divergent stride registers (Src/Dst Row/Plane/Depth) for 1-channel
-- `SourceCfg`, `ResultCfg` — conv pipeline ignores L2 config? (expt1 says SourceCfg=0 OK)
-- `ConvResultChannelStride`, `ConvResultRowStride` — don't-care for 1-ch
-- `SrcPadStream` — confirmed dead
+InDim is warm-UNNEEDED but cold-ESSENTIAL. Remaining 49 register blocks are ESSENTIAL.
 
-**Registers expected to be ESSENTIAL** (zeroing breaks op):
-- `KernelCfg[7]` — NE enable (HANG or no output if 0)
-- `MACCfg` — NE op_mode (HANG or mode change if 0)
-- `Cfg[26]` — pipeline enable (HANG if 0)
-- `ConvCfg` — must be valid (HANG if 0, expt1)
-- `SrcDMAConfig[0]` — source DMA enable (HANG if 0, expt1)
-- `DstDMAConfig[0]` — dest DMA enable (likely HANG)
-- `SrcFmt`, `DstFmt` — must be valid format (HANG if 0, expt1)
-- `PECfg` — PE enable for elementwise ops (no op if 0)
-- `SourceChannelStride` — must be non-zero for multi-channel (HANG)
-- `ChCfg` — format config (ADD-like behavior if 0, expt1)
+### Cross-Op Summary
 
-**Registers expected to be CONDITIONAL** (zeroing changes behavior but doesn't break):
-- `PostScale` — zeros output scale (expt1)
-- `SourceBase`, `ResultBase` — changes staging offset (expt1 says OK)
-- `W2` (exe_cycles) — might timeout if too low
-- `W4` (debug_log_events) — likely cosmetic
-- `W8` — base_ene determines buffer roles; wrong values = wrong data routing
+| Register | relu | sigmoid | elementwise |
+|----------|------|---------|-------------|
+| W1,W2,W3,W5,W7 | UNNEEDED | UNNEEDED | UNNEEDED |
+| W9 | UNNEEDED | **ESSENTIAL** | UNNEEDED |
+| All others | ESSENTIAL | ESSENTIAL | ESSENTIAL |
 
-### Cross-Op Minimal Register Comparison
-
-| Register | add | mul | relu | sigmoid | conv | gemm | Notes |
-|----------|-----|-----|------|---------|------|------|-------|
-| PECfg | ESSENTIAL | ESSENTIAL | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | PE only for elementwise |
-| MACCfg | UNNEEDED | COND(0x30) | ESSENTIAL | ESSENTIAL | ESSENTIAL | ESSENTIAL | NE op mode; mul uses NE for mode |
-| KernelCfg | UNNEEDED | UNNEEDED | ESSENTIAL(0x80) | ESSENTIAL | ESSENTIAL(0x82) | ESSENTIAL | NE enable |
-| PostScale | UNNEEDED | UNNEEDED | ESSENTIAL(0x3c00) | ESSENTIAL | ESSENTIAL | ESSENTIAL | NE post-scale |
-| Cfg | ESSENTIAL(0x33) | — | ESSENTIAL(0x04010101) | — | — | — | Pipeline type |
-| TaskInfo | UNNEEDED | — | ESSENTIAL(0x100000) | — | — | — | NE task enable |
-| ChCfg | ESSENTIAL(0x2A) | — | ESSENTIAL(0x22) | — | — | — | Format |
-
-### Implementation
-
-Script: `experimental/test_min_regs.py`
-
-The script builds BTSP_BUF for each op using the same `make_from_segments`/`build_seg` patterns as `examples/*.py`. Each op definition includes:
-- `name`: op name
-- `buf`: the working BTSP_BUF
-- `inputs`: test input array
-- `check`: lambda to validate output
-- `regs`: auto-extracted from BTSP_BUF (non-zero registers only)
-- `n_src_bufs`: 1 or 2 (elementwise ops use 2 input buffers)
-- `input_stride`/`read_stride`: element placement in buffer (1=contiguous for conv pipeline, 32=stride-interleaved for PE/L2 pipeline)
-- `gemm_mode`: separate CMD_BUF + kernel data pattern
-
-Phase 1 automatically skips 24 zero-valued registers (confirmed dead by expt1/expt2). Phase 2 sets each non-zero register to 0 and runs the op, recording the result.
-
-### Results (Phase 2 — All Ops)
-
-Tests ordered by reverse offset (safe stride/pad regs first, dangerous config last).
-Registers that cause unrecoverable HANGs (confirmed by expt1/expt2) are skipped via `NO_NULLIFY` set.
-
-#### Relu (18 tested, 29 skipped)
-
-| Register | Value | Result |
-|----------|-------|--------|
-| InDim | 0x1004d | **ESSENTIAL** — zeroing zeros output |
-| PostScale | 0x3c00 | **ESSENTIAL** — zeroing zeros output scale |
-| Cfg | 0x04010101 | UNNEEDED |
-| TaskInfo | 0x100000 | UNNEEDED |
-| Srcpad0 | 0x8880 | UNNEEDED |
-| SrcRowStride | 0xc0 | UNNEEDED (1-ch) |
-| SrcPlaneStride | 0xc0 | UNNEEDED (1-ch) |
-| SrcDepthStride | 0xc0 | UNNEEDED (1-ch) |
-| SrcPadStream | 0x100 | UNNEEDED |
-| SourceCfg | 0x00500172 | UNNEEDED |
-| SourceRowStride | 0xa0 | UNNEEDED (1-ch) |
-| L2pad0 | 0xa0 | UNNEEDED |
-| L2pad1 | 0xa0 | UNNEEDED |
-| ResultBase | 0xa0 | UNNEEDED |
-| KernelCfg | 0x80 | UNNEEDED — NE enable not gating on conv pipeline? |
-| DstRowStride | 0xc0 | UNNEEDED (1-ch) |
-| DstPlaneStride | 0xc0 | UNNEEDED (1-ch) |
-| DstDepthStride | 0xc0 | UNNEEDED (1-ch) |
-
-#### Sigmoid (18 tested, 30 skipped)
-
-| Register | Value | Result |
-|----------|-------|--------|
-| InDim | 0x1004d | **ESSENTIAL** |
-| PostScale | 0x3c00 | **ESSENTIAL** — zeroing gives all-0.5 (sigmoid midpoint) |
-| Cfg | 0x04010101 | UNNEEDED |
-| TaskInfo | 0x100000 | UNNEEDED |
-| Srcpad0 | 0x8880 | UNNEEDED |
-| SrcRowStride | 0xc0 | UNNEEDED |
-| SrcPlaneStride | 0xc0 | UNNEEDED |
-| SrcDepthStride | 0xc0 | UNNEEDED |
-| SrcPadStream | 0x100 | UNNEEDED |
-| SourceCfg | 0x00500172 | UNNEEDED |
-| SourceRowStride | 0xa0 | UNNEEDED |
-| L2pad0 | 0xa0 | UNNEEDED |
-| L2pad1 | 0xa0 | UNNEEDED |
-| ResultBase | 0xa0 | UNNEEDED |
-| KernelCfg | 0x80 | UNNEEDED (same as relu) |
-| DstRowStride | 0xc0 | UNNEEDED |
-| DstPlaneStride | 0xc0 | UNNEEDED |
-| DstDepthStride | 0xc0 | UNNEEDED |
-
-#### Add (12 tested, 6 skipped)
-
-| Register | Value | Result |
-|----------|-------|--------|
-| PECfg | 0x80000 | **ESSENTIAL** — disables PE entirely |
-| BiasScale | 0x3c000000 | **ESSENTIAL** — zero disables second source (b=0) |
-| PreScale | 0x3c000000 | **ESSENTIAL** — zero gives a+0 |
-| L2pad4 | 0x420 | UNNEEDED |
-| L2pad5 | 0x400 | UNNEEDED |
-| L2pad6 | 0x400 | UNNEEDED |
-| ResultBase | 0x860 | UNNEEDED |
-| FinalScale | 0x3f800000 | UNNEEDED |
-| DstRowStride | 0x40 | UNNEEDED |
-| DstPlaneStride | 0x40 | UNNEEDED |
-| DstDepthStride | 0x1000 | UNNEEDED |
-
-#### Mul (12 tested, 7 skipped)
-
-| Register | Value | Result |
-|----------|-------|--------|
-| PECfg | 0x80004 | **ESSENTIAL** — disables PE entirely |
-| PreScale | 0x3c000000 | **ESSENTIAL** — zero gives 0 output (a×0) |
-| L2pad4 | 0x420 | UNNEEDED |
-| L2pad5 | 0x400 | UNNEEDED |
-| L2pad6 | 0x400 | UNNEEDED |
-| ResultBase | 0x860 | UNNEEDED |
-| BiasScale | 0x3c000000 | UNNEEDED (mul doesn't use second source) |
-| FinalScale | 0x3f800000 | UNNEEDED |
-| DstRowStride | 0x40 | UNNEEDED |
-| DstPlaneStride | 0x40 | UNNEEDED |
-| DstDepthStride | 0x1000 | UNNEEDED |
-
-#### Conv (20 tested, 13 skipped)
-
-| Register | Value | Result |
-|----------|-------|--------|
-| SrcRowStride | 0x40 | **ESSENTIAL** — zero makes all channels read position 0 → same output |
-| KernelCfg | 0x82 | **ESSENTIAL** — NE disabled → sum not computed |
-| PostScale | 0x3c00 | **ESSENTIAL** — zero zeros output |
-| DstPlaneStride | 0x40 | **ESSENTIAL** — zero makes all channels write to same position |
-| TaskInfo | 0x100000 | UNNEEDED |
-| Srcpad0 | 0x8880 | UNNEEDED |
-| SrcPlaneStride | 0x40 | UNNEEDED |
-| SrcDepthStride | 0xc0 | UNNEEDED |
-| SrcPadStream | 0x100 | UNNEEDED |
-| SourceCfg | 0x00500172 | UNNEEDED |
-| SourceRowStride | 0x30 | UNNEEDED |
-| L2pad0 | 0x30 | UNNEEDED |
-| L2pad1 | 0x30 | UNNEEDED |
-| ResultBase | 0x30 | UNNEEDED |
-| ConvResultRowStride | 0x30 | UNNEEDED |
-| L2pad7 | 0x30 | UNNEEDED |
-| L2pad8 | 0x30 | UNNEEDED |
-| DstRowStride | 0x40 | UNNEEDED |
-| DstDepthStride | 0xc0 | UNNEEDED |
-
-#### Gemm
-
-Skipped — requires standalone process due to device state pollution between firmware families.
-
-### Cross-Op Comparison (Revised from expt3 results)
-
-| Register | add | mul | relu | sigmoid | conv | gemm |
-|----------|-----|-----|------|---------|------|------|
-| PECfg | **ESSENTIAL** | **ESSENTIAL** | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED |
-| BiasScale | **ESSENTIAL** | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED |
-| PreScale | **ESSENTIAL** | **ESSENTIAL** | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED |
-| KernelCfg | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | **ESSENTIAL** | **ESSENTIAL** |
-| PostScale | UNNEEDED | UNNEEDED | **ESSENTIAL** | **ESSENTIAL** | **ESSENTIAL** | — |
-| SrcRowStride | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | **ESSENTIAL** | — |
-| DstPlaneStride | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | **ESSENTIAL** | — |
-| Cfg | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | — | — |
-| TaskInfo | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | — |
-| InDim | — | — | **ESSENTIAL** | **ESSENTIAL** | — | — |
-
-**Key findings:**
-1. **PECfg is the PE ON/OFF switch** — ESSENTIAL for add/mul, UNNEEDED for conv pipeline
-2. **KernelCfg switches roles** — conv pipeline with weights needs it (conv), pass-through doesn't (relu/sigmoid)
-3. **BiasScale is add-specific** — zeroing disables second source (b=0), mul doesn't need it
-4. **PostScale is conv-pipeline-specific** — PE pipeline ops (add/mul) don't use it
-5. **SrcRowStride is ESSENTIAL for multi-channel conv** — zero collapses all channels to same input position
-6. **DstPlaneStride is ESSENTIAL for multi-channel conv** — zero collapses all channel outputs
-7. **Stride regs (Src/Dst) are UNNEEDED for 1-channel ops** — single row, no stride needed
-8. **Most L2pad regs are truly UNNEEDED** — zeroing produces identical output across all ops
-
-### Run
-
-```bash
-python experimental/test_min_regs.py             # full minimization
-python experimental/test_min_regs.py phase1      # phase 1 only (skip zero regs)
-python experimental/test_min_regs.py --op relu   # single op
-```
+**Key finding**: Only zero-valued Task Descriptor words can be safely omitted for cold-boot compatibility. Register configurations are near-complete — skipping any functional register (even strides for 1-channel ops) causes incorrect output on cold device.

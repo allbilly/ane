@@ -1111,6 +1111,15 @@ This explains the expt3 test ordering artifact: in earlier runs, `MACCfg=0` was 
 - The actual NE enable for nonlinear ops is `MACCfg[20]` (reserved bit), not `KernelCfg[7]`
 **Cross-firmamily register-only conversion is NOT possible** — different BTSP firmware programs encode different data flow operations. The attempt causes ANE HANG.
 
+# 15 Suggestions for elementwise_appleane.py (learn from RKNPU version):
+1. Add PASS/FAIL validation with tolerance instead of just printing:
+      match = np.allclose(output, expected, atol=0.1)
+   print(f"{'PASS' if match else 'FAIL'}")
+   
+2. Add a batch test mode (--all flag or mode="all") that runs all ops and reports results, like the RKNPU version's loop.
+3. Add SUB support — the ANE PE can do a - b = a + (-b), achievable by negating the L2 source for the second operand.
+4. Use np.allclose for comparison instead of printing arrays side-by-side — makes pass/fail obvious at a glance.
+
 # Reference
 - https://github.com/eiln/linux
 - https://github.com/eiln/ane
