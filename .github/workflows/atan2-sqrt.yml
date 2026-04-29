@@ -24,10 +24,9 @@ jobs:
         run: |
           python3 gen_atan2_mlmodel.py
 
-      - name: Generate sqrt MLModel
-        continue-on-error: true
+      - name: Generate sqrt MLModel (PyTorch)
         run: |
-          python3 gen_sqrt_mlmodel.py
+          python3 gen_sqrt_torch_mlmodel.py
 
       - name: Build coreml2hwx
         run: |
