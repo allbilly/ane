@@ -3,6 +3,7 @@ import os, mmap, ctypes, struct
 import numpy as np
 
 ST = 0xc0  # buffer stride in bytes (192 = 96 float16 elements)
+HALF_ONE = 0x3C00  # float16(1.0) encoding
 ANE_TILE_COUNT = 0x20
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
 
@@ -14,12 +15,12 @@ class reg:
     KernelDMA = 0x28
 
     # --- Stream Headers ---
-    CommonStream = 0x124
-    SrcStream = 0x168
-    L2Stream = 0x1DC
-    PEStream = 0x228
-    NEStream = 0x23C
-    DstStream = 0x254
+    CommonStream = 0x124  # stream_header(0x00000, 16)
+    SrcStream = 0x168     # stream_header(0x13800, 28)
+    L2Stream = 0x1DC      # stream_header(0x04800, 18)
+    PEStream = 0x228      # stream_header(0x08800, 4)
+    NEStream = 0x23C      # stream_header(0x0C800, 5)
+    DstStream = 0x254     # stream_header(0x17800, 7)
 
     # --- Common (0x0124) ---
     InDim, pad0, ChCfg, Cin, Cout = 0x128, 0x12c, 0x130, 0x134, 0x138
@@ -48,6 +49,7 @@ class reg:
     Srcpad2, Srcpad3, Srcpad4 = 0x18c, 0x190, 0x194
     Srcpad5, Srcpad6, Srcpad7 = 0x198, 0x19c, 0x1a0
     SrcFmt, Srcpad8 = 0x1a4, 0x1a8
+    SrcPadStream = 0x1AC    # TileDMA Src stream padding
 
     # --- TileDMA Dst (0x17800) ---
     DstDMAConfig, DstBaseAddr, DstRowStride = 0x258, 0x25c, 0x260
@@ -107,83 +109,88 @@ def pack_reg(buf, offset, value):
     struct.pack_into('<I', buf, offset, value)
 
 BTSP_BUF = make_from_segments(0x4000, [
-    # Task Descriptor
+    # ── Task Descriptor ──────────────────────────────────────────────
     (0, 44, build_seg(0, 44, [
-        (reg.W0,
-            (0 << 0) |
-            (0x40 << 16) |
-            (1 << 25)),
-        (reg.W1, 0),
-        (reg.W2, 1058),
+        (reg.W0,  # tid=0, nid=0x40, eon=1
+            (0 << 0) |      # tid=0
+            (0x40 << 16) |  # nid=64
+            (1 << 25)),     # eon=1
+        (reg.W1, 0),  # next_size
+        (reg.W2, 1058),  # exe_cycles
         (reg.W3, 0),
-        (reg.W4, 0x00fff86a),
+        (reg.W4,  # debug_log_events
+            (0xFFF86A)       # event mask [23:0], pad=0
+        ),
         (reg.W5, 0),
-        (reg.W6,
-            (38 << 10) |
-            (3 << 28)),
-        (reg.W7, 0),
-        (reg.W8,
-            (5) |
-            (1 << 5) |
-            (0 << 6) |
-            (0 << 11) |
-            (36 << 12) |
-            (1 << 24)),
-        (reg.W9, 0x21),
+        (reg.W6,  # flags: next_priority=38
+            (38 << 10) |    # next_priority=38
+            (3 << 28)),     # pad bits
+        (reg.W7, 0),  # next_ptr
+        (reg.W8,  # base_ene: rbase0=5, rbe0=1, rbase1=0, rbe1=0, wbase=36, wbe=0
+            (5) |          # rbase0=5
+            (1 << 5) |     # rbe0=1
+            (0 << 6) |     # rbase1=0
+            (0 << 11) |    # rbe1=0
+            (36 << 12) |   # wbase=36
+            (1 << 24)),    # reserved
+        (reg.W9, 0),
         (reg.KernelDMA, stream_header(0x1F800, 62)),
     ])),
 
-    # Firmware DMA context
+    # ── Firmware DMA context ─────────────────────────────────────────
     (0x2C, 0xF8, struct.pack('>' + 'I' * 62,
         *([0x40000000, 0] + [0x81000000] + [0x80000000]*15 + [0]*16
           + [0x80000000] + [0x40000000]*15 + [0x80000000]*4 + [0]*8))),
 
-    # Common + TileDMA Src
+    # ── Common + TileDMA Src ─────────────────────────────────────────
     (292, 184, build_seg(0x124, 184, [
         (reg.CommonStream, stream_header(0x00000, 16)),
-        (reg.InDim,
+        (reg.InDim,  # h_in=1, w_in=77
             (1 << 16) | 77),
-        (reg.OutDim,
+        (reg.OutDim,  # h_out=1, w_out=77
             (1 << 16) | 77),
-        (reg.ChCfg,
-            (2) | (2 << 4)),
+        (reg.ChCfg,  # infmt=fp16, outfmt=fp16
+            (2) |          # infmt=fp16
+            (2 << 4)),     # outfmt=fp16
         (reg.Cin, 1),
         (reg.Cout, 1),
         (reg.pad0, 1),
         (reg.pad1, 1),
-        (reg.pad2, 0x2041),
+        (reg.pad2, 0x2041),  # reserved
         (reg.pad3, 0),
         (reg.pad4, 0),
-        (reg.ConvCfg,
-            (1) |
-            (1 << 5) |
-            (5 << 13) |
-            (0 << 17) |
-            (1 << 28) |
-            (1 << 30)),
-        (reg.GroupConvCfg,
-            (0x4001) | (1 << 16)),
+        (reg.ConvCfg,  # kw=1, kh=1, sx=5, sy=0, ox=1, oy=1
+            (1) |          # kw=1
+            (1 << 5) |     # kh=1
+            (5 << 13) |    # sx=5
+            (0 << 17) |    # sy=0
+            (1 << 28) |    # ox=1
+            (1 << 30)),    # oy=1
+        (reg.GroupConvCfg,  # num_groups=1, unicast_en=1, unicast_cin=1
+            (1) |          # num_groups=1
+            (1 << 14) |    # unicast_en=1
+            (1 << 16)),    # unicast_cin=1
         (reg.TileCfg, 1),
-        (reg.Cfg,
-            (1 << 0) |
-            (1 << 8) |
-            (1 << 16) |
-            (1 << 26)),
-        (reg.TaskInfo, 0x100000),
+        (reg.Cfg,  # conv pipeline: conv_mode=1, dst_mode=1, enable=1
+            (1 << 0) |      # pad0=1
+            (1 << 8) |      # conv_mode=1
+            (1 << 16) |     # dst_mode=1
+            (1 << 26)),     # enable=1
+        (reg.TaskInfo, (1 << 20)),
         (reg.DPE, 0),
 
         (reg.SrcStream, stream_header(0x13800, 28)),
-        (reg.SrcDMAConfig,
-            (1) |
-            (8 << 4) |
-            (8 << 8) |
-            (3 << 12) |
-            (3 << 16)),
-        (reg.Srcpad0, 0x8880),
+        (reg.SrcDMAConfig,  # en=1, cache_hint=8, reuse=8, noreuse=3, dep=3
+            (1) |          # en=1
+            (8 << 4) |     # cache_hint=8
+            (8 << 8) |     # cache_hint_reuse=8
+            (3 << 12) |    # cache_hint_noreuse=3
+            (3 << 16)),    # dep_mode=3
+        (reg.Srcpad0, 0x8880),  # TileDMA Src pad2: same value as SrcDMAConfig with en=0
         (reg.SrcBaseAddr, 0),
-        (reg.SrcRowStride, ST),
-        (reg.SrcPlaneStride, ST),
-        (reg.SrcDepthStride, ST),
+        (reg.SrcRowStride, ST),           # 192 bytes
+        (reg.SrcPlaneStride, ST),         # same
+        (reg.SrcDepthStride, ST),         # same (single channel)
         (reg.SrcGroupStride, 0),
         (reg.Srcpad1, 0),
         (reg.Srcpad2, 0),
@@ -193,48 +200,67 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.Srcpad6, 0),
         (reg.Srcpad7, 0),
         (reg.Srcpad8, 0),
-        (reg.SrcFmt,
-            (1) |
-            (3 << 4) |
-            (2 << 12) |
-            (1 << 24)),
-        (0x1AC, 0x00000100),
+        (reg.SrcFmt,  # source data format
+            (1) |          # fmt_mode=1
+            (3 << 4) |     # truncate=3
+            (2 << 12) |    # mem_fmt=2
+            (1 << 24)),    # interleave=1
+        (reg.SrcPadStream, 0x00000100),  # TileDMA Src stream padding
     ])),
 
-    # L2
+    # ── L2 ───────────────────────────────────────────────────────────
     (476, 68, build_seg(0x1DC, 68, [
         (reg.L2Stream, stream_header(0x04800, 18)),
         (reg.L2Cfg, 0),
-        (reg.SourceCfg, 0x00500172),
+        (reg.SourceCfg,  # L2 source config: type=2, fmt=1, alias=both
+            (2) |          # type=2
+            (1 << 4) |     # alias_conv_src=1
+            (1 << 5) |     # alias_conv_rslt=1
+            (1 << 6) |     # fmt=1
+            (1 << 8) |     # interleave=1
+            (1 << 20) |    # alias_planar_src=1
+            (1 << 22)),    # alias_planar_rslt=1
         (reg.SourceBase, 0),
-        (reg.SourceChannelStride, 0xa0),
-        (reg.SourceRowStride, 0xa0),
-        (reg.L2pad0, 0xa0),
-        (reg.L2pad1, 0xa0),
-        (reg.L2pad2, 0),
+        (reg.SourceChannelStride, 0xa0),  # 160 bytes
+        (reg.SourceRowStride, 0xa0),      # 160 bytes
+        (reg.L2pad0, 0xa0),   # reserved
+        (reg.L2pad1, 0xa0),   # reserved
+        (reg.L2pad2, 0),   # reserved
         (reg.L2pad3, 0),
         (reg.L2pad4, 0),
         (reg.L2pad5, 0),
         (reg.L2pad6, 0),
-        (reg.ResultCfg, 0x0050017a),
-        (reg.ResultBase, 0xa0),
+        (reg.ResultCfg,  # L2 result config: type=2, bfrmode=2, alias=both
+            (2) |          # type=2
+            (2 << 2) |     # bfrmode=2
+            (1 << 4) |     # alias_conv_src=1
+            (1 << 5) |     # alias_conv_rslt=1
+            (1 << 6) |     # fmt=1
+            (1 << 8) |     # interleave=1
+            (1 << 20) |    # alias_planar_src=1
+            (1 << 22)),    # alias_planar_rslt=1
+        (reg.ResultBase, 0xa0),   # L2 result base: 160 bytes (= SourceRowStride)
         (reg.ConvResultChannelStride, 0),
         (reg.ConvResultRowStride, 0),
     ])),
 
-    # PE + NE
+    # ── PE + NE ──────────────────────────────────────────────────────
     (552, 44, build_seg(0x228, 44, [
         (reg.PEStream, stream_header(0x08800, 4)),
 
+        # NE HEADER
         (reg.NEStream, stream_header(0x0C800, 5)),
-        (reg.KernelCfg, 0x80),
-        (reg.MACCfg, 0x0012000c),
+        (reg.KernelCfg, (1 << 7)),          # NE enable
+        (reg.MACCfg,  # NE MAC op: op_mode=12 (sigmoid), non_linear=0x12
+            (12) |          # op_mode=12
+            (1 << 17) |     # non_linear_mode=2
+            (1 << 20)),     # reserved
         (reg.MatrixVectorBias, 0),
         (reg.AccBias, 0),
-        (reg.PostScale, 0x3c00),
+        (reg.PostScale, HALF_ONE),          # fp16(1.0) as post-scale
     ])),
 
-    # Sigmoid LUT data (loaded via firmware DMA)
+    # ── Sigmoid LUT data (loaded via firmware DMA) ────────────────────
     # Each 32-bit word = low_fp16 | (high_fp16 << 16)
     # 24 words, then 32-byte gap (0x00000001 + zeros), then duplicated, then 0x00000001.
     (0x274, 228, struct.pack('<' + 'I' * 57,
@@ -278,24 +304,24 @@ BTSP_BUF = make_from_segments(0x4000, [
         0x00000001,
     )),
 
-    # TileDMA Dst
+    # ── TileDMA Dst ──────────────────────────────────────────────────
     (596, 32, build_seg(0x254, 32, [
         (reg.DstStream, stream_header(0x17800, 7)),
-        (reg.DstDMAConfig,
-            (1) |
-            (12 << 4) |
-            (1 << 26)),
+        (reg.DstDMAConfig,  # en=1, cache_hint=12
+            (1) |          # en=1
+            (12 << 4) |    # cache_hint=12
+            (1 << 26)),    # reserved bit
         (reg.DstBaseAddr, 0),
         (reg.DstRowStride, ST),
         (reg.DstPlaneStride, ST),
         (reg.DstDepthStride, ST),
         (reg.DstGroupStride, 0),
-        (reg.DstFmt,
-            (1) |
-            (3 << 4) |
-            (2 << 12) |
-            (3 << 20) |
-            (1 << 24)),
+        (reg.DstFmt,  # destination data format
+            (1) |          # fmt_mode=1
+            (3 << 4) |     # truncate=3
+            (2 << 12) |    # mem_fmt=2
+            (3 << 20) |    # bank=3
+            (1 << 24)),    # interleave=1
     ])),
 ])
 
