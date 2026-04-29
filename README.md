@@ -758,24 +758,54 @@ A structured summary of register differences across all ANE operations.
 ᵃ Relu values from raw relu.hwx firmware. An alternative L2-style register layout (`relu_l2.py`) uses `L2Cfg=0x6c013800`, `SrcDMAConfig=0`, `ResultCfg=0`.
 
 
-### Operation Families
+### Operation Grouping
 
-**Family 1: PE-based elementwise** (same BTSP firmware, only PE regs change)
-| Op | PECfg | MACCfg | Data Path |
-|----|-------|--------|-----------|
-| Add | 0x80000 | 0x00 | TileDMA→PE→TileDMA |
-| Mul | 0x80004 | 0x30 | TileDMA→PE→TileDMA |
+Operations are grouped by **firmware program** into families. Within a family, ops share the same BTSP firmware and can be converted with few register changes. Cross-family conversion requires different firmware.
 
-**Family 2: Conv pipeline, TileDMA source** (separate firmware per model)
-| Op | Cfg | Cin | Cout | KernelCfg | Notes |
-|----|-----|-----|------|-----------|-------|
-| Relu | 0x04010101 | 1 | 1 | — | TileDMA→Conv→TileDMA, L2 result staging ✓ |
-| Conv | 0x04144405 | 3 | 3 | 0x82 | 1×1 pointwise, [12,12,12] ✓ |
-| GeMM | 0x00244405 | 512 | 512 | 0x82 | 512×512 matmul, inj 0.5→128 ✓ |
-| Concat | 0x04211101 | 16 | 16 | 0x82 | 2 inputs concat, [2.0,...] ✓ |
-| Sigmoid | 0x04010101 | 1 | 1 | 0x82 | Sigmoid(3) ≈ 0.9526 ✓ |
+| Family | Pipeline | Firmware | Ops | Example Files | Switch Register | Reg Changes | Notes |
+|--------|----------|----------|-----|---------------|-----------------|-------------|-------|
+| **1 (PE)** | PE elementwise | Bare-metal (no KDMA), `66 49 02 00` | add, mul, max, min, sq | `add.py`, `elementwise.py` | `PECfg[3:2]` (op_mode) | 1 | `add↔mul` also needs `MACCfg[5:4]=0x30` |
+| **2a (NE NL)** | Conv+NE nonlinear | KDMA `25 40 02 01` | identity, relu, sigmoid | `relu.py`, `sigmoid.py` | `MACCfg[17:16]` (non_linear_mode) | 1 | sigmoid needs KDMA LUT data |
+| **2b (NE comp)** | Conv+NE compute | KDMA, separate firmware | conv, gemm | `conv.py`, `gemm.py` | — | N/A | Different BTSP programs; W8 has compute flags |
+| **3 (pass)** | L2-cached conv | Embedded bytes (no KDMA) | relu (L2 style) | `relu_l2.py` | — | N/A | Different arch; no PE/NE needed |
+| **4 (tile)** | Multi-tile pass | KDMA | concat | `concat.py` | — | N/A | 2-tile chaining, NE pass-through mode |
 
-Relu also has an **alternative register layout** (used by `relu_from_add.py` / `relu_l2.py`) where TileDMA source is configured via the L2 bank's stream header register (`L2Cfg=0x6c013800`) instead of direct SrcDMAConfig. Both layouts are equivalent: TileDMA sources data, conv pipeline processes it, results stage through L2, TileDMA outputs.
+#### Family 1 — PE Elementwise (`add`, `mul`, `max`, `min`, `sq`)
+
+Same bare-metal firmware (no KDMA context). PE pipeline (`Cfg=0x33`), NE disabled. Dual-source DMA (W8=`0x00086C66`):
+
+| Op | PECfg | MACCfg | Data Path | Example |
+|----|-------|--------|-----------|---------|
+| add (default) | `(2<<18)` | 0 | TileDMA→PE→TileDMA | `python add.py` |
+| mul | `(2<<18) | (1<<2)` | `(1<<4)|(1<<5)` = 0x30 | TileDMA→PE→TileDMA | `python add.py mul` |
+| max | `(2<<18) | (2<<2)` | 0 | TileDMA→PE→TileDMA | `python elementwise.py max` |
+| min | `(2<<18) | (3<<2)` | 0 | TileDMA→PE→TileDMA | `python elementwise.py min` |
+| sq | `(2<<18) | (4<<2)` | 0 | TileDMA→PE→TileDMA | `python elementwise.py sq` |
+
+Switch: `PECfg[3:2]` (0=add, 1=mul, 2=max, 3=min, 4=sq). Add↔mul also needs `MACCfg[5:4]=0x30`.
+
+#### Family 2a — Conv NE Nonlinear (`identity`, `relu`, `sigmoid`)
+
+Same KDMA-loaded firmware (`25 40 02 01`). Conv pipeline, NE enabled. Single-source DMA (W8=`0x01240025`):
+
+| Op | MACCfg | non_linear_mode | KernelCfg | Data Path | Example |
+|----|--------|-----------------|-----------|-----------|---------|
+| identity | `0x0010000c` | 0 | `0x80` | TileDMA→Conv+NE→TileDMA | `python relu.py` + MACCfg override |
+| relu | `0x0011000c` | 1 | `0x80` | TileDMA→Conv+NE→TileDMA | `python relu.py` |
+| sigmoid | `0x0012000c` | 2 | `0x80` | TileDMA→Conv+NE→TileDMA | `python sigmoid.py` |
+
+Switch: `MACCfg[17:16]` (0=identity, 1=relu, 2=sigmoid). Sigmoid needs KDMA LUT data embedded. PE bypassed (all zeros).
+
+#### Family 2b — Conv NE Compute (`conv`, `gemm`)
+
+KDMA-loaded firmware with compute flags. NE enabled with `KernelCfg=0x82`, `MACCfg=0x00101c00`. W8 has compute flags (conv=bit25, gemm=bit26).
+
+#### Standalone
+
+- `relu_l2.py` — L2-cached source, different architecture entirely (no KDMA, no PE/NE)
+- `concat.py` — Multi-tile chaining, NE in pass-through mode (same MACCfg as Family 2a identity)
+
+**Detailed experiment results:** see `experimental/expt.md` for complete register classification (expt1: op conversion switches, expt2: bit-level sensitivity, expt3: minimal register set per op).
 
 ### Key Patterns
 

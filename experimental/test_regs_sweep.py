@@ -1,16 +1,10 @@
-"""expt2: ±1 Bit-Level Sensitivity Scan on relu firmware.
-For every register, apply relu_val + 1 and relu_val - 1 to find which bits
-are "live" (affect behavior) vs "dead" (dontcare).
-
-Usage:
-  python experimental/test_regs_sweep.py
-  python experimental/test_regs_sweep.py safe     # only safe regs
-  python experimental/test_regs_sweep.py baseline  # verify baseline
-"""
-
-from fcntl import ioctl
-import os, mmap, ctypes, struct, sys
+import os, sys, struct
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
+from experimental.ane_helpers import (
+    allocate_buffer, submit_task, make_from_segments, stream_header,
+    build_seg, pack_reg, run_one_raw, reset_ane, is_wedged, try_baseline
+)
 
 STRIDE = 96
 CHANNELS = 1
@@ -19,7 +13,6 @@ ST = STRIDE * 2
 HALF_ONE = 0x3C00
 DMA_EOL = 0x80000000
 DMA_ACTIVE = 0x40000000
-ANE_TILE_COUNT = 0x20
 
 class reg:
     W0=0x00;W1=0x04;W2=0x08;W3=0x0c;W4=0x10;W5=0x14;W6=0x18;W7=0x1c;W8=0x20;W9=0x24;KernelDMA=0x28
@@ -43,49 +36,6 @@ class reg:
     Srcpad5=0x198;Srcpad6=0x19c;Srcpad7=0x1a0;SrcFmt=0x1a4;Srcpad8=0x1a8;SrcPadStream=0x1AC
     DstDMAConfig=0x258;DstBaseAddr=0x25c;DstRowStride=0x260
     DstPlaneStride=0x264;DstDepthStride=0x268;DstGroupStride=0x26c;DstFmt=0x270
-
-class drm_ane_bo_init(ctypes.Structure):
-    _fields_ = [("handle", ctypes.c_uint32), ("pad", ctypes.c_uint32),
-                ("size", ctypes.c_uint64), ("offset", ctypes.c_uint64)]
-class drm_ane_submit(ctypes.Structure):
-    _fields_ = [("tsk_size", ctypes.c_uint64), ("td_count", ctypes.c_uint32),
-                ("td_size", ctypes.c_uint32), ("handles", ctypes.c_uint32 * ANE_TILE_COUNT),
-                ("btsp_handle", ctypes.c_uint32), ("pad", ctypes.c_uint32)]
-def _IOWR(nr, size): return (3 << 30) | (0x64 << 8) | (size << 16) | nr
-DRM_IOCTL_ANE_BO_INIT = _IOWR(0x41, ctypes.sizeof(drm_ane_bo_init))
-DRM_IOCTL_ANE_SUBMIT = _IOWR(0x43, ctypes.sizeof(drm_ane_submit))
-
-def allocate_buffer(fd, size):
-    bo = drm_ane_bo_init(handle=0, pad=0, size=size, offset=0)
-    ioctl(fd, DRM_IOCTL_ANE_BO_INIT, bo)
-    buf = mmap.mmap(fd, size, mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE, offset=bo.offset)
-    return bo.handle, buf
-
-def submit_task(fd, tsk_size, td_count, td_size, handles, btsp_handle):
-    req = drm_ane_submit(tsk_size=tsk_size, td_count=td_count, td_size=td_size,
-                         btsp_handle=btsp_handle, pad=0)
-    for i in range(ANE_TILE_COUNT):
-        req.handles[i] = handles[i] if i < len(handles) else 0
-    return ioctl(fd, DRM_IOCTL_ANE_SUBMIT, req)
-
-def make_from_segments(size, segments):
-    buf = bytearray(size)
-    for offset, length, data in segments:
-        buf[offset:offset + length] = data
-    return buf
-
-def stream_header(hw_addr, num_words):
-    return ((num_words - 1) << 26) | hw_addr
-
-def build_seg(seg_off, seg_len, word_packs):
-    max_off = max(boff for boff, _ in word_packs) if word_packs else 0
-    tmp = bytearray(max(max_off + 4, seg_off + seg_len + 4))
-    for boff, val in word_packs:
-        pack_reg(tmp, boff, val)
-    return bytes(tmp[seg_off:seg_off + seg_len])
-
-def pack_reg(buf, offset, value):
-    struct.pack_into('<I', buf, offset, value)
 
 BTSP_BUF = make_from_segments(0x4000, [
     (0, 44, build_seg(0, 44, [
@@ -152,67 +102,7 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
 ])
 
-# ── Test runner with wedge detection ────────────────────────────────────────
-
-ane_wedged = False
-
-def safety_check():
-    global ane_wedged
-    if ane_wedged:
-        return False
-    fd = os.open("/dev/accel/accel0", os.O_RDWR)
-    try:
-        out_h, out_m = allocate_buffer(fd, 0x4000)
-        src_h, src_m = allocate_buffer(fd, 0x4000)
-        btsp_h, btsp_m = allocate_buffer(fd, 0x4000)
-        inp = np.zeros(8192, dtype=np.float16)
-        inp[0] = np.float16(-3.0)
-        inp[1] = np.float16(5.0)
-        src_m.write(inp.tobytes())
-        btsp_m.write(bytes(BTSP_BUF))
-        submit_task(fd, 0x274, 1, 0x274,
-            [btsp_h, 0, 0, 0, out_h, src_h, 0] + [0]*25, btsp_h)
-        out = np.frombuffer(out_m, dtype=np.float16, count=4).copy()
-        ok = abs(float(out[0])) < 0.01 and abs(float(out[1]) - 5.0) < 0.01
-        if not ok:
-            ane_wedged = True
-            return False
-        return True
-    except Exception:
-        ane_wedged = True
-        return False
-    finally:
-        os.close(fd)
-
-def run_one(buf, inputs):
-    if ane_wedged:
-        return None, None
-    fd = os.open("/dev/accel/accel0", os.O_RDWR)
-    try:
-        out_h, out_m = allocate_buffer(fd, 0x4000)
-        src_h, src_m = allocate_buffer(fd, 0x4000)
-        btsp_h, btsp_m = allocate_buffer(fd, 0x4000)
-        inp = np.zeros(8192, dtype=np.float16)
-        for i, v in enumerate(inputs):
-            inp[i] = np.float16(v)
-        src_m.write(inp.tobytes())
-        btsp_m.write(bytes(buf))
-        submit_task(fd, 0x274, 1, 0x274,
-            [btsp_h, 0, 0, 0, out_h, src_h, 0] + [0]*25, btsp_h)
-        out = np.frombuffer(out_m, dtype=np.float16, count=4).copy()
-        return float(out[0]), float(out[1])
-    except Exception:
-        return None, None
-    finally:
-        os.close(fd)
-
-# ── Register values (relu baseline) ─────────────────────────────────────────
-
-# All relu registers with their baseline values
-# Format: (block, name, offset, relu_value, [optional extra tests])
-# The ±1 tests are generated automatically
 ALL_REGS = [
-    # SAFE: dimension + stride regs (changing these just changes data layout, no hang risk)
     ("Common", "InDim", 0x128, 0x0001004d),
     ("Common", "OutDim", 0x13c, 0x0001004d),
     ("SrcDMA", "SrcRowStride", 0x178, 0xc0),
@@ -240,22 +130,15 @@ ALL_REGS = [
     ("L2", "ConvResultChannelStride", 0x218, 0),
     ("L2", "ConvResultRowStride", 0x21c, 0),
     ("L2", "SourceBase", 0x1e8, 0),
-
-    # PE block (all zero in relu)
     ("PE", "PECfg", 0x22c, 0),
     ("PE", "BiasScale", 0x230, 0),
     ("PE", "PreScale", 0x234, 0),
     ("PE", "FinalScale", 0x238, 0),
-    ("PE", "PEStream", 0x228, 0x12001000),  # stream header
-
-    # NE block
     ("NE", "KernelCfg", 0x240, 0x80),
     ("NE", "MACCfg", 0x244, 0x0011000c),
     ("NE", "MatrixVectorBias", 0x248, 0),
     ("NE", "AccBias", 0x24c, 0),
     ("NE", "PostScale", 0x250, 0x3c00),
-
-    # SrcDMA
     ("SrcDMA", "SrcDMAConfig", 0x16c, 0x33881),
     ("SrcDMA", "Srcpad0", 0x170, 0x8880),
     ("SrcDMA", "Srcpad1", 0x188, 0),
@@ -268,17 +151,11 @@ ALL_REGS = [
     ("SrcDMA", "SrcFmt", 0x1a4, 0x01002031),
     ("SrcDMA", "Srcpad8", 0x1a8, 0),
     ("SrcDMA", "SrcPadStream", 0x1AC, 0x00000100),
-
-    # L2 config regs
     ("L2", "L2Cfg", 0x1e0, 0),
     ("L2", "SourceCfg", 0x1e4, 0x00500172),
     ("L2", "ResultCfg", 0x210, 0x0050017a),
-
-    # DstDMA
     ("DstDMA", "DstDMAConfig", 0x258, 0x040000c1),
     ("DstDMA", "DstFmt", 0x270, 0x01302031),
-
-    # Common block
     ("Common", "ChCfg", 0x130, 0x22),
     ("Common", "Cin", 0x134, 1),
     ("Common", "Cout", 0x138, 1),
@@ -296,11 +173,8 @@ ALL_REGS = [
 ]
 
 def gen_tests(rv):
-    """Generate ±1 test values for a register based on its baseline."""
     tests = []
-    # +1
     tests.append((rv + 1, f"relu+1"))
-    # -1 (if non-zero, do value-1; if zero, try all-1s aka -1 wrap)
     if rv == 0:
         tests.append((0xFFFFFFFF, f"relu-1(wrap)"))
         tests.append((1, f"0+1"))
@@ -311,7 +185,6 @@ def gen_tests(rv):
     return tests
 
 def run_sweep():
-    global ane_wedged
     print("=" * 100)
     print("expt2: ±1 BIT-LEVEL SENSITIVITY SCAN (relu firmware)")
     print("For each register, apply relu_val ± 1 and observe effect.")
@@ -328,26 +201,25 @@ def run_sweep():
     print("-" * 120)
 
     for block, rname, off, rv in ALL_REGS:
-        if ane_wedged:
+        if is_wedged():
             print(f"  [ANE WEDGED — remaining tests skipped]")
             break
 
-        # Baseline check: verify relu value works
         base_buf = bytearray(BTSP_BUF)
         pack_reg(base_buf, off, rv)
-        v0, v1 = run_one(base_buf, [-3.0, 5.0])
+        v0, v1 = run_one_raw(base_buf, [-3.0, 5.0])
         if v0 is None or abs(v0) >= 0.01 or abs(v1 - 5.0) >= 0.01:
             print(f"{block:<10} {rname:<25} {rv:>10x} {'BASELINE':>10} {'CRITICAL':<20} {'FAIL':>8} {'':>8} {'BASELINE BROKEN':<15}")
             continue
 
         tests = gen_tests(rv)
         for test_val, desc in tests:
-            if ane_wedged:
+            if is_wedged():
                 break
             total += 1
             buf = bytearray(BTSP_BUF)
             pack_reg(buf, off, test_val)
-            v0, v1 = run_one(buf, [-3.0, 5.0])
+            v0, v1 = run_one_raw(buf, [-3.0, 5.0])
 
             if v0 is None:
                 result_str = "HANG"
@@ -382,17 +254,14 @@ def run_sweep():
 
             print(f"{block:<10} {rname:<25} {rv:>10x} {test_val:>10x} {desc:<20} {v0s:>8} {v1s:>8} {result_str:<15}")
 
-            # After HANG, safety check
             if v0 is None:
-                ok = safety_check()
-                if not ok:
-                    print(f"  >>> ANE WEDGED. Reload: sudo rmmod apple_ane && sudo modprobe apple_ane <<<")
+                if not reset_ane(BTSP_BUF):
+                    print(f"  >>> HANG — reset_ane FAILED, aborting <<<")
                     break
 
-        if ane_wedged:
+        if is_wedged():
             break
 
-    # Summary
     print()
     print("=" * 120)
     print("SUMMARY: BIT-LEVEL SENSITIVITY")

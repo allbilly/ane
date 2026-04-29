@@ -1,17 +1,11 @@
-"""Systematic register-by-register experiment on relu firmware.
-For each register (including pads/reserved), modifies value and observes effect.
-
-Handles ANE hardware wedge: after a HANG, verifies recovery before continuing.
-
-Usage:
-  python experimental/test_regs_experiment.py          # full experiment
-  python experimental/test_regs_experiment.py baseline  # just verify baseline
-  python experimental/test_regs_experiment.py quick     # quick subset
-"""
-
-from fcntl import ioctl
-import os, mmap, ctypes, struct, sys, time
+import os, sys, struct
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
+from experimental.ane_helpers import (
+    allocate_buffer, submit_task, make_from_segments, stream_header,
+    build_seg, pack_reg, run_one_raw, reset_ane, is_wedged, set_wedged,
+    try_baseline
+)
 
 STRIDE = 96
 CHANNELS = 1
@@ -20,7 +14,6 @@ ST = STRIDE * 2
 HALF_ONE = 0x3C00
 DMA_EOL = 0x80000000
 DMA_ACTIVE = 0x40000000
-ANE_TILE_COUNT = 0x20
 
 class reg:
     W0=0x00;W1=0x04;W2=0x08;W3=0x0c;W4=0x10;W5=0x14;W6=0x18;W7=0x1c;W8=0x20;W9=0x24;KernelDMA=0x28
@@ -44,49 +37,6 @@ class reg:
     Srcpad5=0x198;Srcpad6=0x19c;Srcpad7=0x1a0;SrcFmt=0x1a4;Srcpad8=0x1a8;SrcPadStream=0x1AC
     DstDMAConfig=0x258;DstBaseAddr=0x25c;DstRowStride=0x260
     DstPlaneStride=0x264;DstDepthStride=0x268;DstGroupStride=0x26c;DstFmt=0x270
-
-class drm_ane_bo_init(ctypes.Structure):
-    _fields_ = [("handle", ctypes.c_uint32), ("pad", ctypes.c_uint32),
-                ("size", ctypes.c_uint64), ("offset", ctypes.c_uint64)]
-class drm_ane_submit(ctypes.Structure):
-    _fields_ = [("tsk_size", ctypes.c_uint64), ("td_count", ctypes.c_uint32),
-                ("td_size", ctypes.c_uint32), ("handles", ctypes.c_uint32 * ANE_TILE_COUNT),
-                ("btsp_handle", ctypes.c_uint32), ("pad", ctypes.c_uint32)]
-def _IOWR(nr, size): return (3 << 30) | (0x64 << 8) | (size << 16) | nr
-DRM_IOCTL_ANE_BO_INIT = _IOWR(0x41, ctypes.sizeof(drm_ane_bo_init))
-DRM_IOCTL_ANE_SUBMIT = _IOWR(0x43, ctypes.sizeof(drm_ane_submit))
-
-def allocate_buffer(fd, size):
-    bo = drm_ane_bo_init(handle=0, pad=0, size=size, offset=0)
-    ioctl(fd, DRM_IOCTL_ANE_BO_INIT, bo)
-    buf = mmap.mmap(fd, size, mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE, offset=bo.offset)
-    return bo.handle, buf
-
-def submit_task(fd, tsk_size, td_count, td_size, handles, btsp_handle):
-    req = drm_ane_submit(tsk_size=tsk_size, td_count=td_count, td_size=td_size,
-                         btsp_handle=btsp_handle, pad=0)
-    for i in range(ANE_TILE_COUNT):
-        req.handles[i] = handles[i] if i < len(handles) else 0
-    return ioctl(fd, DRM_IOCTL_ANE_SUBMIT, req)
-
-def make_from_segments(size, segments):
-    buf = bytearray(size)
-    for offset, length, data in segments:
-        buf[offset:offset + length] = data
-    return buf
-
-def stream_header(hw_addr, num_words):
-    return ((num_words - 1) << 26) | hw_addr
-
-def build_seg(seg_off, seg_len, word_packs):
-    max_off = max(boff for boff, _ in word_packs) if word_packs else 0
-    tmp = bytearray(max(max_off + 4, seg_off + seg_len + 4))
-    for boff, val in word_packs:
-        pack_reg(tmp, boff, val)
-    return bytes(tmp[seg_off:seg_off + seg_len])
-
-def pack_reg(buf, offset, value):
-    struct.pack_into('<I', buf, offset, value)
 
 BTSP_BUF = make_from_segments(0x4000, [
     (0, 44, build_seg(0, 44, [
@@ -153,89 +103,16 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
 ])
 
-# ── Test runner with wedge detection ────────────────────────────────────────
-
-ane_wedged = False
-
-import time
-
-def safety_check():
-    global ane_wedged
-    if ane_wedged:
-        return False
-    for attempt in range(5):
-        time.sleep(0.5)
-        try:
-            fd = os.open("/dev/accel/accel0", os.O_RDWR)
-            out_h, out_m = allocate_buffer(fd, 0x4000)
-            src_h, src_m = allocate_buffer(fd, 0x4000)
-            btsp_h, btsp_m = allocate_buffer(fd, 0x4000)
-            inp = np.zeros(8192, dtype=np.float16)
-            inp[0] = np.float16(-3.0)
-            inp[1] = np.float16(5.0)
-            src_m.write(inp.tobytes())
-            btsp_m.write(bytes(BTSP_BUF))
-            submit_task(fd, 0x274, 1, 0x274,
-                [btsp_h, 0, 0, 0, out_h, src_h, 0] + [0]*25, btsp_h)
-            out = np.frombuffer(out_m, dtype=np.float16, count=4).copy()
-            os.close(fd)
-            ok = abs(float(out[0])) < 0.01 and abs(float(out[1]) - 5.0) < 0.01
-            if ok:
-                return True
-        except Exception:
-            pass
-        finally:
-            try: os.close(fd)
-            except: pass
-    ane_wedged = True
-    return False
-
-def run_one(buf, inputs):
-    if ane_wedged:
-        return None, None
-    fd = os.open("/dev/accel/accel0", os.O_RDWR)
-    try:
-        out_h, out_m = allocate_buffer(fd, 0x4000)
-        src_h, src_m = allocate_buffer(fd, 0x4000)
-        btsp_h, btsp_m = allocate_buffer(fd, 0x4000)
-        inp = np.zeros(8192, dtype=np.float16)
-        for i, v in enumerate(inputs):
-            inp[i] = np.float16(v)
-        src_m.write(inp.tobytes())
-        btsp_m.write(bytes(buf))
-        submit_task(fd, 0x274, 1, 0x274,
-            [btsp_h, 0, 0, 0, out_h, src_h, 0] + [0]*25, btsp_h)
-        out = np.frombuffer(out_m, dtype=np.float16, count=4).copy()
-        return float(out[0]), float(out[1])
-    except Exception:
-        return None, None
-    finally:
-        os.close(fd)
-
-# ── Register test definitions ──────────────────────────────────────────────
-
 ALL_REGS = [
-    # ── REGISTERS THAT ARE SAFE TO VARY (test first) ──
-    # Only InDim/OutDim changes produce different output (dimension mismatch) but no hang
     ("Common", "InDim", 0x128, 0x0001004d, [
         ((1<<16)|1, "in_1x1")]),
     ("Common", "OutDim", 0x13c, 0x0001004d, [
         ((1<<16)|1, "out_1x1")]),
-
-    # ── NE block: MACCfg changes (known safe, just changes behavior) ──
     ("NE", "MACCfg", 0x244, 0x0011000c, [
-        (0x0000000c, "no nonlinear"),
-        (0x00000000, "zero")]),
-    # SIGMOID NOTE: MACCfg=0x0012000c requires KDMA kernel data (sigmoid LUT)
-    # which relu firmware doesn't have -> HANG/wedge. Skip here.
-    # Test separately via sigmoid firmware instead.
-
-    # ── NE block: PostScale ──
+        (0x0000000c, "no nonlinear")]),
     ("NE", "PostScale", 0x250, 0x3c00, [
         (0, "zero -> no postscale"),
         (0xffff, "0xffff -> max")]),
-
-    # ── PE block (all zero in relu, try non-zero) ──
     ("PE", "PECfg", 0x22c, 0, [
         (0x80000, "add PECfg"),
         (0x80004, "mul PECfg")]),
@@ -245,8 +122,6 @@ ALL_REGS = [
         (0x3c000000, "add PreScale")]),
     ("PE", "FinalScale", 0x238, 0, [
         (0x3f800000, "add FinalScale")]),
-
-    # ── L2: SourceChannelStride, SourceRowStride ──
     ("L2", "SourceChannelStride", 0x1ec, 0xa0, [
         (0x10, "add style"),
         (0, "zero")]),
@@ -283,8 +158,6 @@ ALL_REGS = [
         (0x01002031, "DstFmt in L2?")]),
     ("L2", "ResultCfg", 0x210, 0x0050017a, [
         (0, "zero -> no L2 result")]),
-
-    # ── TileDMA Src: stride regs ──
     ("SrcDMA", "SrcRowStride", 0x178, 0xc0, [
         (0x40, "stride=64")]),
     ("SrcDMA", "SrcPlaneStride", 0x17c, 0xc0, [
@@ -301,8 +174,6 @@ ALL_REGS = [
         (0x01302031, "DstFmt style")]),
     ("SrcDMA", "SrcPadStream", 0x1AC, 0x00000100, [
         (0, "zero")]),
-
-    # ── TileDMA Dst ──
     ("DstDMA", "DstRowStride", 0x260, 0xc0, [
         (0x40, "stride=64")]),
     ("DstDMA", "DstPlaneStride", 0x264, 0xc0, [
@@ -317,8 +188,6 @@ ALL_REGS = [
     ("DstDMA", "DstFmt", 0x270, 0x01302031, [
         (0x01002031, "add style"),
         (0, "zero Fmt")]),
-
-    # ── Common: Cfg, TaskInfo, GroupConvCfg ──
     ("Common", "Cfg", 0x15c, 0x04010101, [
         (0x33, "add Cfg"),
         (0x04144405, "conv Cfg"),
@@ -330,8 +199,6 @@ ALL_REGS = [
         (0, "zero")]),
     ("Common", "TileCfg", 0x150, 1, [
         (0, "zero")]),
-
-    # ── NE: KernelCfg, MatrixVectorBias, AccBias ──
     ("NE", "KernelCfg", 0x240, 0x80, [
         (0, "zero -> no NE"),
         (0x82, "conv style")]),
@@ -339,8 +206,6 @@ ALL_REGS = [
         (0x3c00, "fp16 1.0")]),
     ("NE", "AccBias", 0x24c, 0, [
         (0x3c00, "fp16 1.0")]),
-
-    # ── Src DMA zero regs ──
     ("SrcDMA", "Srcpad1", 0x188, 0, [
         (1, "one")]),
     ("SrcDMA", "Srcpad2", 0x18c, 0, [
@@ -357,8 +222,6 @@ ALL_REGS = [
         (1, "one")]),
     ("SrcDMA", "Srcpad8", 0x1a8, 0, [
         (0x2030, "add style")]),
-
-    # ── L2 zero regs: SourceBase, L2Cfg ──
     ("L2", "SourceBase", 0x1e8, 0, [
         (0xa0, "nonzero")]),
     ("L2", "L2Cfg", 0x1e0, 0, [
@@ -366,20 +229,12 @@ ALL_REGS = [
     ("L2", "SourceCfg", 0x1e4, 0x00500172, [
         (0x01500172, "add style bit24"),
         (0, "zero")]),
-
-    # ── Dst DMA ──
     ("DstDMA", "DstDMAConfig", 0x258, 0x040000c1, [
         (0xc1, "conv style")]),
-
-    # ── DPE - small changes ──
     ("Common", "DPE", 0x164, 0, [
         (1, "one")]),
-
-    # ── SrcDMAConfig (zero = no DMA = hang risk) ──
     ("SrcDMA", "SrcDMAConfig", 0x16c, 0x33881, [
         (0x33880, "en=0 -> might hang")]),
-
-    # ── Common known-critical, test last ──
     ("Common", "ChCfg", 0x130, 0x22, [
         (0x2a, "add ChCfg"),
         (0, "zero")]),
@@ -399,24 +254,18 @@ ALL_REGS = [
         (4, "add style")]),
     ("Common", "pad4", 0x158, 0, [
         (1, "one")]),
-
-    # ── Srcpad0 (might be critical) ──
     ("SrcDMA", "Srcpad0", 0x170, 0x8880, [
         (0, "zero"),
         (0x33880, "add style")]),
-
-    # ── SrcDMAConfig zero (last test, may wedge hardware) ──
     ("SrcDMA", "SrcDMAConfig", 0x16c, 0x33881, [
         (0, "zero -> no DMA, LIKELY WEDGE")]),
 ]
 
 def run_experiment():
-    global ane_wedged
     print("=" * 100)
     print("REGISTER-BY-REGISTER EXPERIMENT (relu firmware)")
     print("Input: [-3.0, 5.0]  Expected relu: [0, 5.0]")
-    print("After each HANG, safety-check with clean BTSP_BUF to detect ANE wedge.")
-    print("If ANE wedges, remaining tests are SKIPPED.")
+    print("After each HANG, reset_ane() automatically recovers.")
     print("=" * 100)
     print()
     print(f"{'Block':<10} {'Register':<25} {'Value':>12} {'Desc':<35} {'out[0]':>8} {'out[1]':>8} {'Result':<15}")
@@ -425,13 +274,13 @@ def run_experiment():
     results = []
     n_tests = 0
     for block, rname, off, relu_val, test_cases in ALL_REGS:
-        if ane_wedged:
+        if is_wedged():
             print(f"{'SKIP':<10} {rname:<25} {'WEDGED':>12} {'ANE is wedged, skipping':<35}")
             results.append((off, rname, "SKIP", 0, "SKIP_ANEWEDGE", None, None))
             continue
 
         for test_val, test_desc in test_cases:
-            if ane_wedged:
+            if is_wedged():
                 print(f"{'SKIP':<10} {rname:<25} {'WEDGED':>12} {'ANE is wedged, skipping':<35}")
                 results.append((off, rname, "SKIP", 0, "SKIP_ANEWEDGE", None, None))
                 continue
@@ -439,7 +288,7 @@ def run_experiment():
             n_tests += 1
             buf = bytearray(BTSP_BUF)
             pack_reg(buf, off, test_val)
-            v0, v1 = run_one(buf, [-3.0, 5.0])
+            v0, v1 = run_one_raw(buf, [-3.0, 5.0])
 
             if v0 is None:
                 result_str = "HANG"
@@ -469,26 +318,20 @@ def run_experiment():
             print(f"{block:<10} {rname:<25} {test_val:>12x} {test_desc:<35} {v0s:>8} {v1s:>8} {result_str:<15}")
             results.append((off, rname, test_desc, test_val, result_str, v0, v1))
 
-            # After a HANG, safety-check
             if v0 is None:
-                ok = safety_check()
-                if not ok:
-                    print(f"  >>> HANG — recovering ANE (retrying safety)... <<<")
+                if not reset_ane(BTSP_BUF):
+                    print(f"  >>> HANG — reset_ane FAILED, aborting <<<")
                     break
 
-        if ane_wedged:
-            break
-
-    # Summary
     print()
     print("=" * 120)
     print("SUMMARY: REGISTER FUNCTION CLASSIFICATION")
     print("=" * 120)
     print()
 
-    dontcare = {}   # off -> list of vals tested that all passed
-    functional = {} # off -> what it affects
-    critical = {}   # off -> what caused hang
+    dontcare = {}
+    functional = {}
+    critical = {}
 
     for off, rname, desc, val, result, v0, v1 in results:
         if "SKIP_ANEWEDGE" in result:
@@ -501,16 +344,13 @@ def run_experiment():
         else:
             functional[off] = (rname, val, desc, result)
 
-    # Print functional regs
     for off in sorted(functional):
         rname, val, desc, result = functional[off]
         print(f"  {rname:25s} (0x{off:04x}): value 0x{val:x} ({desc}) -> {result}")
 
-    # Print dontcare
     for off in sorted(dontcare):
         if off in functional or off in critical:
             continue
-        vals = dontcare[off]
         rname = None
         for b, rn, o, *_ in ALL_REGS:
             if o == off:
@@ -519,7 +359,6 @@ def run_experiment():
         if rname:
             print(f"  {rname:25s} (0x{off:04x}): DONTCARE (all tested values OK)")
 
-    # Print critical
     print()
     for off in sorted(critical):
         rname = None
@@ -531,11 +370,11 @@ def run_experiment():
 
     print()
     print(f"Tests run: {n_tests}")
-    if ane_wedged:
+    if is_wedged():
         print("ANE WEDGED during test. Some results may be incomplete.")
-        print("Recovery: sudo rmmod apple_ane && sudo modprobe apple_ane")
 
 def run_baseline():
+    import os
     fd = os.open("/dev/accel/accel0", os.O_RDWR)
     out_h, out_m = allocate_buffer(fd, 0x4000)
     src_h, src_m = allocate_buffer(fd, 0x4000)

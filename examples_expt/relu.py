@@ -3,9 +3,13 @@ import os, mmap, ctypes, struct
 import numpy as np
 import sys
 
-STRIDE = 32    # element stride between channels (SrcRowStride / sizeof(float16))
-CHANNELS = 0x40  # Cin = Cout = 64
+STRIDE = 96     # element stride between elements (SrcRowStride / sizeof(float16))
+CHANNELS = 1     # Cin = Cout = 1 (single-element conv pipeline)
+W = 77           # input/output width (w_in = w_out = 77)
+ST = STRIDE * 2  # buffer stride in bytes (SrcRowStride = 192)
 HALF_ONE = 0x3C00  # float16(1.0) encoding
+DMA_EOL = 0x80000000   # DMA descriptor: end-of-list marker
+DMA_ACTIVE = 0x40000000  # DMA descriptor: active buffer
 ANE_TILE_COUNT = 0x20
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
 
@@ -128,34 +132,36 @@ BTSP_BUF = make_from_segments(0x4000, [
             (38 << 10) |    # next_priority=38
             (3 << 28)),     # pad bits
         (reg.W7, 0),  # next_ptr
-        (reg.W8,  # base_ene: rbase0=6, rbe0=1, rbase1=5, rbe1=1, wbase=4, wbe=1
-            (6) |          # rbase0=6
+        (reg.W8,  # base_ene: rbase0=5, rbe0=1, wbase=4, wbe=1
+            (5) |          # rbase0=5
             (1 << 5) |     # rbe0=1
-            (5 << 6) |     # rbase1=5
-            (1 << 11) |    # rbe1=1
             (4 << 12) |    # wbase=4
-            (1 << 17)),    # wbe=1
+            (1 << 17) |    # wbe=1
+            (1 << 24)),    # reserved
         (reg.W9, 0),
         (reg.KernelDMA, stream_header(0x1F800, 62)),
     ])),
 
+    # ── Firmware DMA context ─────────────────────────────────────────
+    (44, 248, struct.pack('>' + 'I' * 62,
+        *([0]*2 + [DMA_EOL]*16 + [0]*16 + [DMA_ACTIVE]*16 + [DMA_EOL]*4 + [0]*8))),
+
     # ── Common + TileDMA Src ─────────────────────────────────────────
     (292, 184, build_seg(0x124, 184, [
         (reg.CommonStream, stream_header(0x00000, 16)),
-        (reg.InDim,  # h_in=1, w_in=1
-            (1 << 16) | 1),
-        (reg.OutDim,  # h_out=1, w_out=1
-            (1 << 16) | 1),
-        (reg.ChCfg,  # infmt=fp16, pad0=2, outfmt=fp16
+        (reg.InDim,  # h_in=1, w_in=W
+            (1 << 16) | W),
+        (reg.OutDim,  # h_out=1, w_out=W
+            (1 << 16) | W),
+        (reg.ChCfg,  # infmt=fp16, outfmt=fp16
             (2) |          # infmt=fp16
-            (2 << 2) |     # pad0=2
             (2 << 4)),     # outfmt=fp16
         (reg.Cin, CHANNELS),
         (reg.Cout, CHANNELS),
         (reg.pad0, 1),
         (reg.pad1, 1),
         (reg.pad2, 0x2041),  # reserved
-        (reg.pad3, 4),
+        (reg.pad3, 0),
         (reg.pad4, 0),
         (reg.ConvCfg,  # kw=1, kh=1, sx=1, sy=1, ox=1, oy=1
             (1) |          # kw=1
@@ -164,15 +170,17 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1 << 15) |    # sy=1
             (1 << 28) |    # ox=1
             (1 << 30)),    # oy=1
-        (reg.GroupConvCfg,  # num_groups=1, unicast_cin=1
+        (reg.GroupConvCfg,  # num_groups=1, unicast_en=1, unicast_cin=1
             (1) |          # num_groups=1
+            (1 << 14) |    # unicast_en=1
             (1 << 16)),    # unicast_cin=1
         (reg.TileCfg, 1),
-        (reg.Cfg,  # PE elementwise pipeline (add/mul): 0x33
-            (3 << 0) |  # pad0=3
-            (0 << 2) |  # small_src_mode=0
-            (6 << 3)),  # pad1=6
-        (reg.TaskInfo, 0),
+        (reg.Cfg,  # conv pipeline: pad0=1, small_src=0, pad1=0
+            (1 << 0) |      # pad0=1
+            (1 << 8) |      # conv_mode=1
+            (1 << 16) |     # dst_mode=1
+            (1 << 26)),     # enable=1
+        (reg.TaskInfo, (1 << 20)),
         (reg.DPE, 0),
 
         # TileDMA Src HEADER
@@ -183,25 +191,26 @@ BTSP_BUF = make_from_segments(0x4000, [
             (8 << 8) |     # cache_hint_reuse=8
             (3 << 12) |    # cache_hint_noreuse=3
             (3 << 16)),    # dep_mode=3
-        (reg.Srcpad0, 0x33880),  # TileDMA Src pad2: same value as SrcDMAConfig with en=0
+        (reg.Srcpad0, 0x8880),  # TileDMA Src pad2: same value as SrcDMAConfig with en=0
         (reg.SrcBaseAddr, 0),
-        (reg.SrcRowStride, STRIDE * 2),                # 64 bytes = 32 float16
-        (reg.SrcPlaneStride, STRIDE * 2),              # same
-        (reg.SrcDepthStride, CHANNELS * STRIDE * 2),   # 64*32*2 = 0x1000
+        (reg.SrcRowStride, ST),           # 192 bytes
+        (reg.SrcPlaneStride, ST),         # same
+        (reg.SrcDepthStride, ST),         # same (single channel)
         (reg.SrcGroupStride, 0),
         (reg.Srcpad1, 0),
-        (reg.Srcpad2, STRIDE * 2),                     # 64
-        (reg.Srcpad3, STRIDE * 2),                     # 64
-        (reg.Srcpad4, CHANNELS * STRIDE * 2),          # 0x1000
+        (reg.Srcpad2, 0),
+        (reg.Srcpad3, 0),
+        (reg.Srcpad4, 0),
         (reg.Srcpad5, 0),
         (reg.Srcpad6, 0),
         (reg.Srcpad7, 0),
-        (reg.Srcpad8, 0x2030),  # reserved
+        (reg.Srcpad8, 0),  # reserved
         (reg.SrcFmt,  # source data format
             (1) |          # fmt_mode=1
             (3 << 4) |     # truncate=3
             (2 << 12) |    # mem_fmt=2
             (1 << 24)),    # interleave=1
+        (reg.SrcPadStream, 0x00000100),  # TileDMA Src stream padding
     ])),
 
     # ── L2 ───────────────────────────────────────────────────────────
@@ -215,18 +224,17 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1 << 6) |     # fmt=1
             (1 << 8) |     # interleave=1
             (1 << 20) |    # alias_planar_src=1
-            (1 << 22) |    # alias_planar_rslt=1
-            (1 << 24)),    # reserved bit
+            (1 << 22)),    # alias_planar_rslt=1
         (reg.SourceBase, 0),
-        (reg.SourceChannelStride, 0x10),   # 16 bytes
-        (reg.SourceRowStride, 0x420),      # 1056 bytes (stride=66 in 16B units)
-        (reg.L2pad0, 0x400),   # reserved
-        (reg.L2pad1, 0x400),   # reserved
-        (reg.L2pad2, 0x440),   # reserved
-        (reg.L2pad3, 0x10),    # = SourceChannelStride
-        (reg.L2pad4, 0x420),   # = SourceRowStride
-        (reg.L2pad5, 0x400),   # reserved
-        (reg.L2pad6, 0x400),   # reserved
+        (reg.SourceChannelStride, 0xa0),  # 160 bytes
+        (reg.SourceRowStride, 0xa0),      # 160 bytes
+        (reg.L2pad0, 0xa0),   # reserved
+        (reg.L2pad1, 0xa0),   # reserved
+        (reg.L2pad2, 0),   # reserved
+        (reg.L2pad3, 0),
+        (reg.L2pad4, 0),
+        (reg.L2pad5, 0),
+        (reg.L2pad6, 0),
         (reg.ResultCfg,  # L2 result config: type=2, bfrmode=2, alias=both
             (2) |          # type=2
             (2 << 2) |     # bfrmode=2
@@ -236,23 +244,25 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1 << 8) |     # interleave=1
             (1 << 20) |    # alias_planar_src=1
             (1 << 22)),    # alias_planar_rslt=1
-        (reg.ResultBase, 0x860),  # 2144 bytes
+        (reg.ResultBase, 0xa0),   # L2 result base: 160 bytes (= SourceRowStride)
+        (reg.ConvResultChannelStride, 0),
+        (reg.ConvResultRowStride, 0),
     ])),
 
     # ── PE + NE ──────────────────────────────────────────────────────
     (552, 44, build_seg(0x228, 44, [
         (reg.PEStream, stream_header(0x08800, 4)),
-        (reg.PECfg, (2 << 18)),  # second_source=2 (L2 result); add mode
-        (reg.BiasScale, (HALF_ONE << 16)),  # bias=0, scale=fp16(1.0)
-        (reg.PreScale, (HALF_ONE << 16)),   # pre_scale=0
-        (reg.FinalScale, 0x3f800000),     # fp32(1.0)
 
+        # NE HEADER
         (reg.NEStream, stream_header(0x0C800, 5)),
-        (reg.KernelCfg, 0),
-        (reg.MACCfg, 0),  # add mode; 0x30 = mul mode
+        (reg.KernelCfg, (1 << 7)),          # NE enable
+        (reg.MACCfg,  # NE MAC op: op_mode=12 (elementwise), non_linear_mode=1 (relu)
+            (12) |          # op_mode=12
+            (1 << 16) |     # non_linear_mode=1
+            (1 << 20)),     # reserved
         (reg.MatrixVectorBias, 0),
         (reg.AccBias, 0),
-        (reg.PostScale, 0),
+        (reg.PostScale, HALF_ONE),          # fp16(1.0) as post-scale
     ])),
 
     # ── TileDMA Dst ──────────────────────────────────────────────────
@@ -263,38 +273,34 @@ BTSP_BUF = make_from_segments(0x4000, [
             (12 << 4) |    # cache_hint=12
             (1 << 26)),    # reserved bit
         (reg.DstBaseAddr, 0),
-        (reg.DstRowStride, STRIDE * 2),
-        (reg.DstPlaneStride, STRIDE * 2),
-        (reg.DstDepthStride, CHANNELS * STRIDE * 2),
+        (reg.DstRowStride, ST),
+        (reg.DstPlaneStride, ST),
+        (reg.DstDepthStride, ST),
         (reg.DstGroupStride, 0),
         (reg.DstFmt,  # destination data format
             (1) |          # fmt_mode=1
             (3 << 4) |     # truncate=3
             (2 << 12) |    # mem_fmt=2
+            (1 << 13) |    # bank_split=1
+            (3 << 20) |    # bank=3
             (1 << 24)),    # interleave=1
     ])),
 ])
 
-if len(sys.argv) > 1 and sys.argv[1] == "mul":
-    pack_reg(BTSP_BUF, reg.PECfg,  # PE cfg: second_source=2, op_mode=1 (mul)
-        (2 << 18) |     # second_source=2 (L2 result)
-        (1 << 2))       # op_mode[2]=1 (multiply)
-    pack_reg(BTSP_BUF, reg.MACCfg,  # NE MAC op: kernel_mode=1, bias_mode=1 (multiply)
-        (1 << 4) |      # kernel_mode=1
-        (1 << 5))       # bias_mode=1
+if len(sys.argv) > 1 and sys.argv[1] == "exp":
+    pack_reg(BTSP_BUF, reg.KernelCfg, (1 << 7) | (1 << 9))  # NE enable + bit9
+    pack_reg(BTSP_BUF, reg.MACCfg,  # NE MAC op: op_mode=13 (exp)
+        (13) |          # op_mode=13
+        (1 << 16) |     # non_linear_mode=1
+        (1 << 20))      # reserved
 
-input_a = np.zeros(8192, dtype=np.float16)
-input_b = np.zeros(8192, dtype=np.float16)
-input_a[:CHANNELS * STRIDE:STRIDE] = 3.0
-input_b[:CHANNELS * STRIDE:STRIDE] = 2.0
+input_a = np.tile(np.array([-3.0, 5.0, -3.0, 5.0], dtype=np.float16), 2048)
 
 out_handle, out_map = allocate_buffer(fd, 0x4000)
 src1_handle, src1_map = allocate_buffer(fd, 0x4000)
-src2_handle, src2_map = allocate_buffer(fd, 0x4000)
 btsp_handle, btsp_map = allocate_buffer(fd, 0x4000)
 
 src1_map.write(input_a.tobytes())
-src2_map.write(input_b.tobytes())
 btsp_map.write(BTSP_BUF)
 
 ret = submit_task(
@@ -302,12 +308,11 @@ ret = submit_task(
     tsk_size=0x274,
     td_count=1,
     td_size=0x274,
-    handles=[btsp_handle, 0, 0, 0, out_handle, src1_handle, src2_handle] + [0] * 25,
+    handles=[btsp_handle, 0, 0, 0, out_handle, src1_handle, 0] + [0] * 25,
     btsp_handle=btsp_handle,
 )
 os.close(fd)
 
-output = np.frombuffer(out_map, dtype=np.float16, count=CHANNELS * STRIDE).reshape(CHANNELS, STRIDE)[:, 0].copy()
+output = np.frombuffer(out_map, dtype=np.float16, count=W * CHANNELS).copy()
 print("output =", output)
-expected = (input_a[:CHANNELS * STRIDE] + input_b[:CHANNELS * STRIDE]).reshape(CHANNELS, STRIDE)[:, 0]
-print("expected add =", expected)
+print("expected relu =", np.maximum(0, input_a[:64]))
