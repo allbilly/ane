@@ -7,6 +7,7 @@ C = 3           # Cin = Cout = 3 (3-channel 1x1 conv)
 HALF_ONE = 0x3C00  # float16(1.0) encoding
 DMA_EOL = 0x80000000   # DMA descriptor: end-of-list marker
 DMA_ACTIVE = 0x40000000  # DMA descriptor: active buffer
+KERNEL_WEIGHT_ADDR = 0x81000000  # firmware DMA src addr for kernel weights
 ANE_TILE_COUNT = 0x20
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
 
@@ -38,6 +39,7 @@ class reg:  # register offset
     L2pad3, L2pad4, L2pad5, L2pad6 = 0x200, 0x204, 0x208, 0x20c
     ResultCfg, ResultBase = 0x210, 0x214
     ConvResultChannelStride, ConvResultRowStride = 0x218, 0x21c
+    L2pad7, L2pad8 = 0x220, 0x224
 
     # --- PE (0x8800) ---
     PECfg, BiasScale, PreScale, FinalScale = 0x22c, 0x230, 0x234, 0x238
@@ -150,9 +152,19 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.KernelDMA, stream_header(0x1F800, 62)),
     ])),
 
-    # ── Firmware DMA context ─────────────────────────────────────────
+    # ── Firmware DMA context (62 = 2-word descriptors) ────────────────
+    # 3 groups of descriptors:
+    #   [0]: kernel weight read descriptors
+    #     DMA_ACTIVE, 0      — first descriptor active, channel 0
+    #     0x81000000 × 3     — kernel weight source addrs for 3 channels
+    #     DMA_EOL × 13       — end-of-list for remaining read channels
+    #   [1]: ??? (intermediate / sync descriptors)
+    #     0, DMA_ACTIVE, DMA_EOL + zeros
+    #   [2]: output write descriptors
+    #     DMA_ACTIVE × 16    — all write channels active
+    #     DMA_EOL × 4 + zeros
     (0x2C, 0xF8, struct.pack('>' + 'I' * 62,
-        *([DMA_ACTIVE, 0] + [0x81000000]*3 + [DMA_EOL]*13
+        *([DMA_ACTIVE, 0] + [KERNEL_WEIGHT_ADDR]*3 + [DMA_EOL]*13
           + [0, DMA_ACTIVE, DMA_EOL] + [0]*13
           + [DMA_ACTIVE]*16 + [DMA_EOL]*4 + [0]*8))),
 
@@ -172,10 +184,25 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.pad2, 0x2041),  # reserved
         (reg.pad3, 0),
         (reg.pad4, 0),
-        (reg.ConvCfg, 0x5000a021),  # conv config: kw=1, kh=1, sx=5
-        (reg.GroupConvCfg, 0x00010001),
+        (reg.ConvCfg,  # kw=1, kh=1, sx=1, sy=1, ox=1, oy=1
+            (1) |          # kw=1
+            (1 << 5) |     # kh=1
+            (1 << 13) |    # sx=1
+            (1 << 15) |    # sy=1
+            (1 << 28) |    # ox=1
+            (1 << 30)),    # oy=1
+        (reg.GroupConvCfg,  # num_groups=1, unicast_cin=1
+            (1) |          # num_groups=1
+            (1 << 16)),    # unicast_cin=1
         (reg.TileCfg, 1),
-        (reg.Cfg, 0x04144405),  # conv pipeline config
+        (reg.Cfg,  # conv pipeline config
+            (1 << 0) |      # pad0=1
+            (1 << 2) |      # ???
+            (1 << 10) |     # ???
+            (1 << 14) |     # ???
+            (1 << 18) |     # ???
+            (1 << 20) |     # ???
+            (1 << 26)),     # enable=1
         (reg.TaskInfo, (1 << 20)),  # enable
         (reg.DPE, 0),
 
@@ -213,7 +240,14 @@ BTSP_BUF = make_from_segments(0x4000, [
     (476, 76, build_seg(0x1DC, 76, [
         (reg.L2Stream, stream_header(0x04800, 18)),
         (reg.L2Cfg, 0),
-        (reg.SourceCfg, 0x00500172),  # L2 source config
+        (reg.SourceCfg,  # L2 source config: type=2, alias=both, fmt=1, interleave=1
+            (2) |          # type=2
+            (1 << 4) |     # alias_conv_src=1
+            (1 << 5) |     # alias_conv_rslt=1
+            (1 << 6) |     # fmt=1
+            (1 << 8) |     # interleave=1
+            (1 << 20) |    # alias_planar_src=1
+            (1 << 22)),    # alias_planar_rslt=1
         (reg.SourceBase, 0),
         (reg.SourceChannelStride, 0x10),
         (reg.SourceRowStride, 0x30),
@@ -224,12 +258,19 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.L2pad4, 0),
         (reg.L2pad5, 0),
         (reg.L2pad6, 0),
-        (reg.ResultCfg, 0x00500172),  # L2 result config
+        (reg.ResultCfg,  # L2 result config: type=2, alias=both, fmt=1, interleave=1
+            (2) |          # type=2
+            (1 << 4) |     # alias_conv_src=1
+            (1 << 5) |     # alias_conv_rslt=1
+            (1 << 6) |     # fmt=1
+            (1 << 8) |     # interleave=1
+            (1 << 20) |    # alias_planar_src=1
+            (1 << 22)),    # alias_planar_rslt=1
         (reg.ResultBase, 0x30),
         (reg.ConvResultChannelStride, 0x10),
         (reg.ConvResultRowStride, 0x30),
-        (0x220, 0x30),  # reserved
-        (0x224, 0x30),  # reserved
+        (reg.L2pad7, 0x30),  # reserved
+        (reg.L2pad8, 0x30),  # reserved
     ])),
 
     # ── PE + NE ──────────────────────────────────────────────────────
@@ -241,8 +282,14 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.FinalScale, 0),
 
         (reg.NEStream, stream_header(0x0C800, 5)),
-        (reg.KernelCfg, 0x82),  # NE enable + exp mode
-        (reg.MACCfg, 0x00101c00),  # conv exp MAC op
+        (reg.KernelCfg,  # NE enable + exp mode
+            (1 << 7) |      # NE enable
+            (1 << 1)),      # exp mode
+        (reg.MACCfg,  # conv MAC op
+            (1 << 10) |     # op_mode field bit 0
+            (1 << 11) |     # op_mode field bit 1
+            (1 << 12) |     # op_mode field bit 2
+            (1 << 20)),     # ???
         (reg.MatrixVectorBias, 0),
         (reg.AccBias, 0),
         (reg.PostScale, HALF_ONE),  # fp16(1.0) as post-scale
@@ -259,7 +306,7 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.DstPlaneStride, 0x40),
         (reg.DstDepthStride, 0xc0),
         (reg.DstGroupStride, 0),
-        (reg.DstFmt,  # destination data format
+        (reg.DstFmt,  # destination data format (no bank_split=1 vs relu.py)
             (1) |          # fmt_mode=1
             (3 << 4) |     # truncate=3
             (2 << 12) |    # mem_fmt=2
@@ -271,7 +318,7 @@ BTSP_BUF = make_from_segments(0x4000, [
     (0x274, len(kernel), kernel),
 ])
 
-input_a = np.zeros(8192, dtype=np.float16)
+input_a = np.zeros(256, dtype=np.float16)
 input_a[0] = np.float16(1.0)
 input_a[STRIDE] = np.float16(2.0)
 input_a[STRIDE * 2] = np.float16(3.0)
