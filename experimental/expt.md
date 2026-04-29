@@ -530,16 +530,17 @@ The script builds BTSP_BUF for each op using the same `make_from_segments`/`buil
 
 Phase 1 automatically skips 24 zero-valued registers (confirmed dead by expt1/expt2). Phase 2 sets each non-zero register to 0 and runs the op, recording the result.
 
-### Results (Phase 2 — Relu)
+### Results (Phase 2 — All Ops)
+
+Tests ordered by reverse offset (safe stride/pad regs first, dangerous config last).
+Registers that cause unrecoverable HANGs (confirmed by expt1/expt2) are skipped via `NO_NULLIFY` set.
+
+#### Relu (18 tested, 29 skipped)
 
 | Register | Value | Result |
 |----------|-------|--------|
-| InDim | 0x1004d | **ESSENTIAL** — zeroing zeros output (wrong dimensions) |
-| ChCfg | 0x22 | **ESSENTIAL** — zeroing gives ADD-like pass-through (no format) |
+| InDim | 0x1004d | **ESSENTIAL** — zeroing zeros output |
 | PostScale | 0x3c00 | **ESSENTIAL** — zeroing zeros output scale |
-| DstDMAConfig | 0x40000c1 | **ESSENTIAL** — DMA disabled, no output |
-| Cin | 1 | UNNEEDED |
-| pad2 | 0x2041 | UNNEEDED |
 | Cfg | 0x04010101 | UNNEEDED |
 | TaskInfo | 0x100000 | UNNEEDED |
 | Srcpad0 | 0x8880 | UNNEEDED |
@@ -552,31 +553,118 @@ Phase 1 automatically skips 24 zero-valued registers (confirmed dead by expt1/ex
 | L2pad0 | 0xa0 | UNNEEDED |
 | L2pad1 | 0xa0 | UNNEEDED |
 | ResultBase | 0xa0 | UNNEEDED |
-| KernelCfg | 0x80 | UNNEEDED — firmware handles relu, not NE? |
+| KernelCfg | 0x80 | UNNEEDED — NE enable not gating on conv pipeline? |
 | DstRowStride | 0xc0 | UNNEEDED (1-ch) |
 | DstPlaneStride | 0xc0 | UNNEEDED (1-ch) |
 | DstDepthStride | 0xc0 | UNNEEDED (1-ch) |
-| pad0 | 1 | HANG |
-| Cout | 1 | HANG |
-| OutDim | 0x1004d | HANG |
-| pad1 | 1 | HANG |
-| ConvCfg | 0x5000a021 | HANG |
-| GroupConvCfg | 0x14001 | HANG |
-| TileCfg | 1 | HANG |
-| SrcDMAConfig | 0x33881 | HANG |
-| SrcFmt | 0x01002031 | HANG |
-| SourceChannelStride | 0xa0 | HANG |
-| ResultCfg | 0x0050017a | HANG |
-| MACCfg | 0x0011000c | HANG |
-| DstFmt | 0x01302031 | HANG |
 
-**Key findings (relu):**
-1. Only **4 registers are ESSENTIAL**: InDim, ChCfg, PostScale, DstDMAConfig
-2. **KernelCfg (0x80) is UNNEEDED** — surprising! The NE enable bit may not gate data flow in this firmware
-3. **Cfg (0x04010101) is UNNEEDED** — the pipeline config is burned into the firmware program
-4. All stride registers are UNNEEDED for 1-channel ops
-5. 14 registers HANG when zeroed — these are config/format registers that must have *some* valid value (not necessarily the specific baseline value)
-6. 18 registers are truly UNNEEDED — zeroing produces identical correct output
+#### Sigmoid (18 tested, 30 skipped)
+
+| Register | Value | Result |
+|----------|-------|--------|
+| InDim | 0x1004d | **ESSENTIAL** |
+| PostScale | 0x3c00 | **ESSENTIAL** — zeroing gives all-0.5 (sigmoid midpoint) |
+| Cfg | 0x04010101 | UNNEEDED |
+| TaskInfo | 0x100000 | UNNEEDED |
+| Srcpad0 | 0x8880 | UNNEEDED |
+| SrcRowStride | 0xc0 | UNNEEDED |
+| SrcPlaneStride | 0xc0 | UNNEEDED |
+| SrcDepthStride | 0xc0 | UNNEEDED |
+| SrcPadStream | 0x100 | UNNEEDED |
+| SourceCfg | 0x00500172 | UNNEEDED |
+| SourceRowStride | 0xa0 | UNNEEDED |
+| L2pad0 | 0xa0 | UNNEEDED |
+| L2pad1 | 0xa0 | UNNEEDED |
+| ResultBase | 0xa0 | UNNEEDED |
+| KernelCfg | 0x80 | UNNEEDED (same as relu) |
+| DstRowStride | 0xc0 | UNNEEDED |
+| DstPlaneStride | 0xc0 | UNNEEDED |
+| DstDepthStride | 0xc0 | UNNEEDED |
+
+#### Add (12 tested, 6 skipped)
+
+| Register | Value | Result |
+|----------|-------|--------|
+| PECfg | 0x80000 | **ESSENTIAL** — disables PE entirely |
+| BiasScale | 0x3c000000 | **ESSENTIAL** — zero disables second source (b=0) |
+| PreScale | 0x3c000000 | **ESSENTIAL** — zero gives a+0 |
+| L2pad4 | 0x420 | UNNEEDED |
+| L2pad5 | 0x400 | UNNEEDED |
+| L2pad6 | 0x400 | UNNEEDED |
+| ResultBase | 0x860 | UNNEEDED |
+| FinalScale | 0x3f800000 | UNNEEDED |
+| DstRowStride | 0x40 | UNNEEDED |
+| DstPlaneStride | 0x40 | UNNEEDED |
+| DstDepthStride | 0x1000 | UNNEEDED |
+
+#### Mul (12 tested, 7 skipped)
+
+| Register | Value | Result |
+|----------|-------|--------|
+| PECfg | 0x80004 | **ESSENTIAL** — disables PE entirely |
+| PreScale | 0x3c000000 | **ESSENTIAL** — zero gives 0 output (a×0) |
+| L2pad4 | 0x420 | UNNEEDED |
+| L2pad5 | 0x400 | UNNEEDED |
+| L2pad6 | 0x400 | UNNEEDED |
+| ResultBase | 0x860 | UNNEEDED |
+| BiasScale | 0x3c000000 | UNNEEDED (mul doesn't use second source) |
+| FinalScale | 0x3f800000 | UNNEEDED |
+| DstRowStride | 0x40 | UNNEEDED |
+| DstPlaneStride | 0x40 | UNNEEDED |
+| DstDepthStride | 0x1000 | UNNEEDED |
+
+#### Conv (20 tested, 13 skipped)
+
+| Register | Value | Result |
+|----------|-------|--------|
+| SrcRowStride | 0x40 | **ESSENTIAL** — zero makes all channels read position 0 → same output |
+| KernelCfg | 0x82 | **ESSENTIAL** — NE disabled → sum not computed |
+| PostScale | 0x3c00 | **ESSENTIAL** — zero zeros output |
+| DstPlaneStride | 0x40 | **ESSENTIAL** — zero makes all channels write to same position |
+| TaskInfo | 0x100000 | UNNEEDED |
+| Srcpad0 | 0x8880 | UNNEEDED |
+| SrcPlaneStride | 0x40 | UNNEEDED |
+| SrcDepthStride | 0xc0 | UNNEEDED |
+| SrcPadStream | 0x100 | UNNEEDED |
+| SourceCfg | 0x00500172 | UNNEEDED |
+| SourceRowStride | 0x30 | UNNEEDED |
+| L2pad0 | 0x30 | UNNEEDED |
+| L2pad1 | 0x30 | UNNEEDED |
+| ResultBase | 0x30 | UNNEEDED |
+| ConvResultRowStride | 0x30 | UNNEEDED |
+| L2pad7 | 0x30 | UNNEEDED |
+| L2pad8 | 0x30 | UNNEEDED |
+| DstRowStride | 0x40 | UNNEEDED |
+| DstDepthStride | 0xc0 | UNNEEDED |
+
+#### Gemm
+
+Skipped — requires standalone process due to device state pollution between firmware families.
+
+### Cross-Op Comparison (Revised from expt3 results)
+
+| Register | add | mul | relu | sigmoid | conv | gemm |
+|----------|-----|-----|------|---------|------|------|
+| PECfg | **ESSENTIAL** | **ESSENTIAL** | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED |
+| BiasScale | **ESSENTIAL** | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED |
+| PreScale | **ESSENTIAL** | **ESSENTIAL** | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED |
+| KernelCfg | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | **ESSENTIAL** | **ESSENTIAL** |
+| PostScale | UNNEEDED | UNNEEDED | **ESSENTIAL** | **ESSENTIAL** | **ESSENTIAL** | — |
+| SrcRowStride | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | **ESSENTIAL** | — |
+| DstPlaneStride | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | **ESSENTIAL** | — |
+| Cfg | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | — | — |
+| TaskInfo | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | UNNEEDED | — |
+| InDim | — | — | **ESSENTIAL** | **ESSENTIAL** | — | — |
+
+**Key findings:**
+1. **PECfg is the PE ON/OFF switch** — ESSENTIAL for add/mul, UNNEEDED for conv pipeline
+2. **KernelCfg switches roles** — conv pipeline with weights needs it (conv), pass-through doesn't (relu/sigmoid)
+3. **BiasScale is add-specific** — zeroing disables second source (b=0), mul doesn't need it
+4. **PostScale is conv-pipeline-specific** — PE pipeline ops (add/mul) don't use it
+5. **SrcRowStride is ESSENTIAL for multi-channel conv** — zero collapses all channels to same input position
+6. **DstPlaneStride is ESSENTIAL for multi-channel conv** — zero collapses all channel outputs
+7. **Stride regs (Src/Dst) are UNNEEDED for 1-channel ops** — single row, no stride needed
+8. **Most L2pad regs are truly UNNEEDED** — zeroing produces identical output across all ops
 
 ### Run
 
