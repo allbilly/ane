@@ -6,6 +6,9 @@ STRIDE = 96
 ST = STRIDE * 2
 CHANNELS = 1
 W = 77
+HALF_ONE = 0x3C00  # not used (NE disabled), kept for symmetry
+DMA_EOL = 0x80000000
+DMA_ACTIVE = 0x40000000
 ANE_TILE_COUNT = 0x20
 fd = os.open("/dev/accel/accel0", os.O_RDWR)
 
@@ -43,6 +46,7 @@ class reg:
     Srcpad2, Srcpad3, Srcpad4 = 0x18c, 0x190, 0x194
     Srcpad5, Srcpad6, Srcpad7 = 0x198, 0x19c, 0x1a0
     SrcFmt, Srcpad8 = 0x1a4, 0x1a8
+    SrcPadStream = 0x1AC
 
     DstDMAConfig, DstBaseAddr, DstRowStride = 0x258, 0x25c, 0x260
     DstPlaneStride, DstDepthStride, DstGroupStride, DstFmt = 0x264, 0x268, 0x26c, 0x270
@@ -97,17 +101,44 @@ def build_seg(seg_off, seg_len, word_packs):
         struct.pack_into('<I', tmp, boff, val)
     return bytes(tmp[seg_off:seg_off + seg_len])
 
+def pack_reg(buf, offset, value):
+    struct.pack_into('<I', buf, offset, value)
+
 # Key difference from relu.py: SrcStream at host 0x168 points to ANE 0x04800
 # (L2 cache controller) instead of 0x13800 (TileDMA Src engine).
-# L2 cache handles input data sourcing, no firmware modules loaded.
+# L2 cache handles input data sourcing. No firmware modules loaded.
+#
+# Firmware program bytes embedded in this buffer (non-zero bytes outside
+# standard register regions). In relu.py, these come from FW DMA loading.
 BTSP_BUF = make_from_segments(0x4000, [
-    # Task descriptor — flat hex for brevity (identical to relu.py task header)
-    # tid=0, nid=64, eon=1, KernelDMA = stream_header(0x1F800, 62)
-    (2, 42, bytes.fromhex(
-        '40020000000022040000000000006af8ff'
-        '0000000000009800300000000025400201'
-        '0000000000f801f4'
-    )),
+    # Task Descriptor
+    (0, 44, build_seg(0, 44, [
+        (reg.W0,
+            (0 << 0) |
+            (0x40 << 16) |
+            (1 << 25)),
+        (reg.W1, 0),
+        (reg.W2, 1058),
+        (reg.W3, 0),
+        (reg.W4, 0xFFF86A),
+        (reg.W5, 0),
+        (reg.W6,
+            (38 << 10) |
+            (3 << 28)),
+        (reg.W7, 0),
+        (reg.W8,
+            (5) |
+            (1 << 5) |
+            (0 << 6) |
+            (0 << 11) |
+            (36 << 12) |
+            (1 << 24)),
+        (reg.W9, 0),
+        (reg.KernelDMA, stream_header(0x1F800, 62)),
+    ])),
+
+    # Firmware DMA context (all zeros — no firmware modules loaded)
+    (0x2C, 0xF8, b'\x00' * 0xF8),
 
     # Common stream (host 0x124, ANE 0x00000)
     (292, 68, build_seg(0x124, 68, [
@@ -129,7 +160,6 @@ BTSP_BUF = make_from_segments(0x4000, [
     ])),
 
     # L2 Source stream re-routed: SrcStream at 0x168 → ANE 0x04800 (L2)
-    # instead of 0x13800 (TileDMA). L2's SourceCfg/SourceBase handle data.
     (360, 72, build_seg(0x168, 72, [
         (reg.SrcStream, stream_header(0x04800, 18)),
         (reg.SrcDMAConfig, 0),
@@ -148,13 +178,6 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.SrcFmt, 0), (reg.Srcpad8, 0),
     ])),
 
-    # Firmware program bytes (8 non-zero bytes embedded in the buffer)
-    (432, 52, bytes.fromhex(
-        '000000000088000c000000000000000000'
-        '0000000000000000c80010800000000c00'
-        '1100000000000000000000000000000000'
-    )),
-
     # L2 section (host 0x1DC)
     (476, 68, build_seg(0x1DC, 68, [
         (reg.L2Stream, 0x00003c00),
@@ -167,9 +190,6 @@ BTSP_BUF = make_from_segments(0x4000, [
         (reg.ConvResultChannelStride, 0),
         (reg.ConvResultRowStride, 0x01002031),
     ])),
-
-    # Firmware program byte (0x01 at offset 0x225)
-    (0x225, 1, b'\x01'),
 
     # PE + NE (disabled — all zeros, no stream headers)
     (552, 44, build_seg(0x228, 44, [
@@ -190,6 +210,15 @@ BTSP_BUF = make_from_segments(0x4000, [
             (1) | (3 << 4) | (2 << 12) |
             (1 << 13) | (3 << 20) | (1 << 24)),
     ])),
+
+    # Firmware program bytes (8 non-zero bytes at offsets between stream
+    # sections). These are BTSP firmware instructions embedded in the buffer,
+    # replacing the KDMA-loaded firmware modules used in relu.py.
+    (0x1B4, 4, struct.pack('<I', 0x0c008800)),  # LE: 00 88 00 0c
+    (0x1C8, 4, struct.pack('<I', 0x1000c800)),  # LE: 00 c8 00 10
+    (0x1CC, 4, struct.pack('<I', 0x00000080)),  # LE: 80 00 00 00
+    (0x1D0, 4, struct.pack('<I', 0x0011000c)),  # LE: 0c 00 11 00
+    (0x224, 4, struct.pack('<I', 0x00000100)),  # LE: 00 01 00 00
 ])
 
 input_a = np.zeros(8192, dtype=np.float16)
