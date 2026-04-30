@@ -1,5 +1,3 @@
-⚠️ Documentations still WIP
-
 # Apple ANE running on Asahi
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/allbilly/ane) 
 
