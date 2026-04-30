@@ -1,6 +1,6 @@
 # Apple ANE running on Asahi
 
-⚠️ Documentations still WIP. For now u can read the code at [elementwise.py](https://github.com/allbilly/ane/blob/main/examples/elementwise.py) or ask deepwiki [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/allbilly/ane) (it has up to 1 week delay)
+⚠️ Documentations still WIP. For now u can read the code at [elementwise.py](https://github.com/allbilly/ane/blob/main/examples/elementwise.py) or [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/allbilly/ane) (it has up to 1 week delay)
 
 ✅ Tested on Asahi Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k
 
