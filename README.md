@@ -14,7 +14,7 @@ TODO
 - Add ANE support to [mesa](https://gitlab.freedesktop.org/mesa/mesa), which NPU baseline work has been merged by [Tomeu Vizoso](https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/29698)
 - Add MacOS 13+ support to anecc, I have reversed the firmware with GhidraMCP. One extracted parseTD function at [parseTD.cpp](https://github.com/allbilly/ane/blob/main/experimental/parseTD.cpp)
 - Complet the [Register Programming Guide](https://github.com/allbilly/ane/blob/main/REGISTER_PROGRMMING.md)
-
+- borrow [maderix/ANE](https://github.com/maderix/ANE) ideas to train LLM in ANE but with pure register programing
 
 # For normal user
 
