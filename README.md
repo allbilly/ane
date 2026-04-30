@@ -138,6 +138,7 @@ PR adding new ops to examples are more than welcome.
 
 UTM install macos https://ipsw.me/macOS/12.4/
 - version gucessed from last commit time in [eiln/anecc](https://github.com/eiln/anecc), it worked. Other MacOS version < 14 might works too.
+- hwx gernerated by different MacOS are doucmented [macos_hwx.md](https://github.com/allbilly/ane/blob/main/macos_hwx.md)
 
 ```bash
 python gen_mlmodel.py test.mlmodel
@@ -177,6 +178,7 @@ python run.py ./hwx/sum.ane
 Run ANE ops without anecc and .ane file
 - op.hwx -> hwx2py -> op_from_hwx.py
 - it extract the cmd buf from hwx file as hex blob and replay directly. Python files in examples/* are cleaned and commented version originally generated from hwx2py.py
+- cleaned with [how_to_parse_hex_blob.md](https://github.com/allbilly/ane/blob/main/how_to_parse_hex_blob.md)
 
 ```bash
 python experimental/hwx2.py hwx/sum.hwx -o sum_from_hwx.py
