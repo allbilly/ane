@@ -2,6 +2,7 @@ import numpy as np
 import coremltools as ct
 from coremltools.models import datatypes
 from coremltools.models.neural_network import NeuralNetworkBuilder
+import sys
 
 # KxK GEMM with bias
 K = 64
@@ -27,4 +28,4 @@ mlmodel = ct.models.MLModel(builder.spec)
 # trigger the ANE!
 out = mlmodel.predict({"image": np.zeros(K, dtype=np.float32)+1, "image2": np.zeros(K, dtype=np.float32)+2})
 print(out)
-mlmodel.save('test.mlmodel')
+mlmodel.save(sys.argv[1])

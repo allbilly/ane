@@ -1,427 +1,187 @@
+⚠️ Documentations still WIP. Some session in the end are marked as AI Slop. 
+
 # Apple ANE running on Asahi
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/allbilly/ane) 
 
-⚠️ Documentations still WIP. For now u can read the code at [elementwise.py](https://github.com/allbilly/ane/blob/main/examples/elementwise.py) or [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/allbilly/ane) (it has up to 1 week delay)
+Thanks for the prior work from [geohotz](https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/) [eiln](https://github.com/eiln/ane) [freedomtan](https://github.com/freedomtan/coreml_to_ane_hwx), some scripts in experimental/* are from [freedomtan/coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx)
 
-✅ Tested on Asahi Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k
+TODO
+- Convert [whisper](https://github.com/allbilly/ane/blob/main/.github/workflows/whisper.yml) on MacOS v12
+- Intergrate ANE to tinygrad like my fork on [RK3588 NPU](https://github.com/allbilly/tinygrad/blob/master/tinygrad/runtime/ops_rockchip.py)
+- Continue eiln effort to [merge ANE kmd to mainline](https://github.com/eiln/ane/issues/4#issuecomment-1899761667)
+- Add ANE support to [mesa](https://gitlab.freedesktop.org/mesa/mesa), which NPU baseline work has been merged by [Tomeu Vizoso](https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/29698)
+- Add MacOS 13+ support to anecc, I have reversed the firmware with GhidraMCP. One extracted parseTD function at [parseTD.cpp](https://github.com/allbilly/ane/blob/main/experimental/parseTD.cpp)
+- Complet the [Register Programming Guide](https://github.com/allbilly/ane/blob/main/REGISTER_PROGRMMING.md)
+
+
+# For normal user
+
+✅ Tested on Asahi Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k with device tree overlay [ane-overlay.dts](https://github.com/allbilly/libane/blob/main/ane/ane-overlay.dts) [ane.dtbo](https://github.com/allbilly/libane/blob/main/ane.dtbo) (I lost the steps, attempted to reproduce but result in failed boot, please PR if you know how so we can prevent recompile whole kerenel just for dts)
 
 ✅ Tested on Asahi Linux fedora 6.19.11+ built from [my fork of fairy-dust branch of asahi linux](https://github.com/allbilly/linux/commit/52d22304e89d2995bfa2e678153feffba5dff23a)
 
-This repo should be the most detailed document out there on using ANE on Asahi Linux.
 
-Thanks for the prior work from [geohotz](https://github.com/geohot) [eiln](https://github.com/eiln) [freedomtan](https://github.com/freedomtan), some scripts in experimental/* are from [freedomtan/coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx)
+## 1. Install Asahi Linux, build with dts and install kmd for ANE
 
-## 1. Generate hwx
+On MacOS, run
+```bash
+curl https://alx.sh | sh
+```
 
-### on MacOS 12.4
-
-sum.hwx is from https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/ops
-
-mul.hwx if from MacOS Monterey VM (v12.4 21F79) running on M4 macbook air 
+After Asahi Linux is installed, build kernel with ANE (and typec dp) support
 
 ```bash
-python gen_mlmodel.py
+git clone https://github.com/AsahiLinux/linux.git --branch fairydust --single-branch
+
+# for M1
+curl -L https://github.com/eiln/linux/commit/bf6651bb55212f2cfab573bd0d49bf5c601b4703 | git apply
+
+# for M1 Pro (not tested) 
+curl -L https://github.com/eiln/linux/commit/297491ef3126f057d708d24bdcb658356d9ce25d | git apply
+
+# Below steps are from https://grzegorz-smajdor.com/blog/2026-monitor-asahi-fedora/
+
+sudo dnf install -y gcc gcc-c++ make bc bison flex elfutils-libelf-devel ncurses-devel \
+  python3 zlib-devel libuuid-devel dwarves xz zstd clang llvm lld git
+cp /boot/config-$(uname -r) .config
+
+# Press Enter for default answers
+make oldconfig
+
+# Edit the .config to ensure Alt Mode support is built as modules:
+vim .config
+CONFIG_TYPEC_DP_ALTMODE=m
+CONFIG_TYPEC_NVIDIA_ALTMODE=m
+CONFIG_TYPEC_TBT_ALTMODE=m
+CONFIG_EFI_SBAT_FILE=""
+CONFIG_QRTR_MHI=n
+
+make -j$(nproc)
+make dtbs -j$(nproc)
+
+sudo make modules_install
+sudo make dtbs_install
+
+# 6.19.11 on mainline fariy-dust at the time of wriing, check Makefile for latest version
+sudo mkdir -p /usr/lib/modules/6.19.11+/dtb
+sudo cp -r arch/arm64/boot/dts/* /usr/lib/modules/6.19.11+/dtb/
+sudo make install
+
+# Edit /etc/default/grub to show boot menu
+vim /etc/default/grub 
+GRUB_TIMEOUT_STYLE=menu
+GRUB_TIMEOUT=5
+
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+sudo reboot
+
+# Choose the newly installed kernel, mine is Asahi Linux fedora 6.19.11+
+
+# Verify after boot
+lsmod | grep typec
+sudo modprobe typec_displayport
+sudo modprobe typec_nvidia
+sudo modprobe typec_thunderbolt
+ls /sys/bus/typec/devices/
+ls /sys/class/drm/
+echo -e "typec_displayport\ntypec_nvidia\ntypec_thunderbolt" | sudo tee /etc/modules-load.d/fairydust.conf
+
+# Note monitor suport only on one blessed typec port on M1
+```
+
+Install KMD of ANE, 
+```bash
+git clone https://github.com/eiln/ane && cd ane
+sudo make
+cd ane && sh run.sh install
+```
+if make failed, git clone my fork and retry https://github.com/allbilly/libane
+
+
+## 2. Run examples
+
+Supported ops: ADD, MUL, MIN, MAX, SUMSQ, CONV, CONCAT, GEMM, RELU, SIGMOID
+- for full model like yolo check out [eiln/ane-ex](https://github.com/eiln/ane-ex) and [eiln/whisper.cpp](https://github.com/eiln/whisper.cpp)
+
+```bash
+#   op_mode=0 → a+b       add       (default)
+#   op_mode=1 → a*b       mul
+#   op_mode=2 → max(a,b)  max
+#   op_mode=3 → min(a,b)  min
+#   op_mode=4 → (a+b)^2   sq
+
+pip install numpy
+python examples/elementwise.py add
+python examples/elementwise.py mul
+python examples/elementwise.py max
+python examples/elementwise.py min
+python examples/elementwise.py sq
+
+python examples/conv.py
+python examples/concat.py
+python examples/gemm.py
+python examples/relu.py
+python examples/relu_l2.py # using l2 cache
+python examples/sigmoid.py # Look up table
+```
+
+# For developer
+
+If you would like to run new ops or model not inside examples/* , follow these steps.
+PR adding new ops to examples are more than welcome.
+
+## 1. Generate mlmodel and hwx
+
+### Using MacOS 12.4 VM
+
+UTM install macos https://ipsw.me/macOS/12.4/
+- version gucessed from last commit time in [eiln/anecc](https://github.com/eiln/anecc), it worked. Other MacOS version < 14 might works too.
+
+```bash
+python gen_mlmodel.py test.mlmodel
 git clone https://github.com/freedomtan/coreml_to_ane_hwx && cd coreml_to_ane_hwx && make && mv ./coreml2hwx ../ && cd ../
 ./coreml2hwx ./test.mlmodel
 cp /tmp/hwx_output/test/model.hwx ./mul.hwx
 ```
 
-more ops on https://github.com/eiln/ane-ex/blob/main/sources.md
+Working hwx example in hwx/*
+- sum.hwx is from https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/ops
+- mul.hwx if from MacOS Monterey VM (v12.4 21F79) running on M4 macbook air 
 
-### on Github action (Not working now)
-sadly macos14 is the oldest macos version on gh action, which is not yet supported by anecc 
-https://docs.github.com/en/actions/reference/runners/github-hosted-runners
 
-Check the gihub action config at .github/workflows/ane-generation.yml
-- go to branch "macos_buildhwx" and modify mode in builder.add_elementwise
-- go to actions/runs/_runid_/ -> Artifacts -> download and unzip
+### No access to MacOS (Github action) 
 
-## 2. Parse hwx
+Check the gihub action config [ane-generation.yml](https://github.com/allbilly/ane/blob/main/.github/workflows/ane-generation.yml), trigger manually and go to actions/runs/_runid_/ -> Artifacts -> download and unzip
+- ❌ Not working now, sadly [macos14](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) is the oldest macos version on GH action, which is not yet supported by anecc, you need MacOS 12.4 VM
+- If you have no access to Macos 12, you can only use pre-generated .hwx [here](https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/ops)
 
+## 2. (Optional) Parse hwx 
+```bash
 python parse.py hwx/sum.hwx 
-
-Add vs Mul (verified empirically, see examples/min_add.py → min_mul.py)
-| Constant | CMD_BUF offset | sum | mul | HW Register | Field | Description |
-|----------|----------------|-----|-----|------------|-------|-------------|
-| `MACCfg` | 0x244 | 0x00 | 0x30 | NE MACCfg (0xC804) | KernelMode, BiasMode | **ADD→MUL** |
-| `PECfg`  | 0x22c | 0x00 | 0x04 | PE Cfg (0x8800) | OpMode bit 2 | Enables multiply mode |
-
-**Key changes** (only 2 bytes needed in both CMD_BUF and BTSP_BUF):
-- `CMD_BUF[MACCfg] = 0x30` — NE KernelMode=1, BiasMode=1
-- `CMD_BUF[PECfg] = (CMD_BUF[PECfg] & ~0x04) | 0x04` — PE OpMode=1
-
-Other byte differences (0x20, 0x184, 0x198, 0x218, 0x22c/MSB, 0x26d) exist in the .hwx files but are **not required** for the operation to work.
-
-Add vs Relu (verified empirically, see examples/add.py → examples/relu_from_add.py)
-
-### Data path difference
-| | add | relu (raw firmware) | relu (L2-style layout) |
-|---|---|---|---|
-| Source | TileDMA (two inputs via SrcDMAConfig=0x33881) | TileDMA (single input via SrcDMAConfig=0x33881) | TileDMA via L2 bank stream header (L2Cfg=0x6c013800) |
-| Compute | PE/NE ALU (PECfg=0x80000, scales non-zero) | Conv pipeline only (PECfg=0, all scales=0) | Conv pipeline only (PECfg=0) |
-| Destination | TileDMA | TileDMA (L2 result staging) | TileDMA |
-| Firmware | PE-based | Conv pipeline (relu.hwx) | Conv pipeline (built from segments) |
-
-### Registers that changed (BTSP_BUF offsets, little-endian u32)
-
-**Common section** (all must change together for relu C=1 single-channel config):
-| Offset | Register | add | relu | Notes |
-|--------|----------|-----|------|-------|
-| 0x128 | InDim | 0x00010001 | 0x0001004d | Input dimensions |
-| 0x130 | ChCfg | 0x2a | 0x22 | Channel config |
-| 0x134 | Cin | 0x40 (64) | 0x01 (1) | Input channels |
-| 0x138 | Cout | 0x40 (64) | 0x01 (1) | Output channels |
-| 0x13c | OutDim | 0x00010001 | 0x0001004d | Output dimensions |
-| 0x14c | GroupConvCfg | 0x10001 | 0x14001 | Group conv |
-| 0x154 | pad3 | 4 | 0 | Mode select |
-| 0x15c | Cfg | 0x33 | 0x04010101 | Config flags |
-| 0x160 | TaskInfo | 0 | 0x00100000 | Task info |
-
-**Data source — raw firmware** (relu.hwx uses TileDMA source, same as add; `relu_l2.py` uses an alternative L2-based register layout):
-| Offset | Register | add | relu (raw fw) | relu (L2-style) | Notes |
-|--------|----------|-----|------|------|-------|
-| 0x16c | SrcDMAConfig | 0x33881 | **0x33881** | **0** | Raw fw: TileDMA on; L2-style: off |
-| 0x170 | Srcpad0 | 0x33880 | **0x8880** | **0x00500172** | Repurposed in L2-style |
-| 0x178 | SrcRowStride | 0x40 | **0xc0** | **0xa0** | Stale in L2-style |
-| 0x17c | SrcPlaneStride | 0x40 | **0xc0** | **0xa0** | |
-| 0x180 | SrcDepthStride | 0x1000 | **0xc0** | **0xa0** | |
-| 0x184 | SrcGroupStride | 0 | 0 | **0xa0** | |
-| 0x1a4 | SrcFmt | 0x01002031 | **0x01002031** | **0** | |
-| 0x1e0 | L2Cfg | 0 | 0 | **0x6c013800** | L2-style: stream header→TileDMA Src |
-| 0x1e4 | SourceCfg | 0x01500172 | 0x00500172 | **0x33881** | |
-| 0x1e8 | SourceBase | 0 | 0 | **0x8880** | |
-| 0x1f0 | SourceRowStride | 0x420 | 0xa0 | **0xc0** | |
-
-**L2 result staging** (needed by conv pipeline in raw firmware):
-| Offset | Register | add | relu (raw fw) | relu (L2-style) | Notes |
-|--------|----------|-----|------|------|-------|
-| 0x210 | ResultCfg | 0x0050017a | **0x0050017a** | **0** | Raw fw: L2 result enabled |
-| 0x214 | ResultBase | 0x860 | **0xa0** | **0** | |
-| 0x21c | ConvResultRowStride | 0 | **0** | **0x01002031** | Repurposed in L2-style |
-
-**PE → disabled** (relu runs in conv pipeline, not PE):
-| Offset | Register | add | relu | Notes |
-|--------|----------|-----|------|-------|
-| 0x22c | PECfg | 0x80000 | **0** | **Disable PE** |
-| 0x230 | BiasScale | 0x3c000000 | **0** | |
-| 0x234 | PreScale | 0x3c000000 | **0** | |
-| 0x238 | FinalScale | 0x3f800000 | **0** | |
-
-**Destination** (TileDMA, stride changed for C=1):
-| Offset | Register | add | relu | Notes |
-|--------|----------|-----|------|-------|
-| 0x260 | DstRowStride | 0x40 | **0xc0** | 192 bytes |
-| 0x264 | DstPlaneStride | 0x40 | **0xc0** | |
-| 0x268 | DstDepthStride | 0x1000 | **0xc0** | |
-| 0x270 | DstFmt | 0x01002031 | **0x01302031** | Bit 20 set |
-
-**BTSP program code** (instruction bytes changed):
-| Offset | add | relu | Notes |
-|--------|-----|------|-------|
-| 0x01b | 66 49 02 00 | 25 40 02 01 | Program header entry point |
-| 0x1b5 | 00 | 88 | Program instruction |
-| 0x1b7 | 00 | 0c | |
-| 0x1c9-0x1cc | 00 | c8 10 80 | |
-| 0x1d0 | 00 | 0c | |
-| 0x1d2 | 00 | 11 | |
-| 0x1dd | 48 | 3c | |
-| 0x225 | 00 | 01 | |
-
-**Key insight**: Unlike add→mul (same BTSP program, 2 register changes), **add→relu requires changing the BTSP firmware program itself + ~25 critical registers**. Relu uses a conv pipeline (not PE) but still sources data via TileDMA — the L2 is used as intermediate result staging, not as input source.
-
-> **Note**: The raw-hex-offset experiment `experimental/test_regs_one_by_one.py` is superseded by the structured register analysis in [§13](#13-structured-register-analysis) below. Results are kept here for reference.
-
-### Experimental results (one-register-at-a-time revert from working relu config)
-
-Each test: start from full relu config, revert ONE register group to add value, check if relu still works.
-
-**Don't-care registers** (relu still works with add's value):
-| Register | offset | add | relu | Verdict |
-|----------|--------|-----|------|---------|
-| `ChCfg`  | 0x130  | 0x2a | 0x22 | **relu works either way** |
-| `Cin`    | 0x134  | 64   | 1    | **relu works either way** |
-
-**Wrong output but no ANE crash** (size/dimension mismatch):
-| Register | offset | add → relu | Verdict |
-|----------|--------|------------|---------|
-| `InDim`  | 0x128  | 0x10001 → 0x1004d | FAIL (zeros) |
-| `OutDim` | 0x13c  | 0x10001 → 0x1004d | FAIL (zeros) |
-
-**Critical registers** (ANE HANGs when reverted to add value):
-`Cout` (0x138), `GroupConvCfg` (0x14c), `pad3` (0x154), `Cfg` (0x15c), `TaskInfo` (0x160),
-`L2Cfg` (0x1e0), `SourceCfg` (0x1e4), `SourceBase` (0x1e8), `SourceChStride` (0x1ec), `SourceRowStride` (0x1f0),
-`L2pad0-6` (0x1f4-0x20c), `ResultCfg` (0x210), `ResultBase` (0x214), `ConvResultRowStride` (0x21c),
-`PECfg` (0x22c), `BiasScale` (0x230), `PreScale` (0x234), `FinalScale` (0x238),
-`SrcDMAConfig` (0x16c), `Srcpad0` (0x170), `SrcRow/Plane/Depth/GroupStride` (0x178-0x184),
-`Srcpad2-4` (0x18c-0x194), `SrcFmt` (0x1a4), `Srcpad8` (0x1a8),
-`DstRowStride` (0x260), `DstPlaneStride` (0x264), `DstDepthStride` (0x268), `DstFmt` (0x270)
-
-### Why add→relu is different from add→mul
-
-| Aspect | add→mul | add→relu |
-|--------|---------|----------|
-| BTSP program | **Same** firmware | **Different** firmware (program code bytes changed) |
-| Data path | TileDMA→PE→TileDMA | **TileDMA→Conv→TileDMA** |
-| PE used? | Yes (bit 2 toggles add↔mul) | **No (PECfg=0 disables PE entirely)** |
-| Number of inputs | 2 | 1 |
-| L2 role | — | Internal pipeline staging (ResultCfg) |
-| Minimum register changes | **2** (PECfg, MACCfg) | **~25** plus BTSP program code |
-
-**Note**: The `relu_from_add.py` example uses an alternative register layout where TileDMA source is configured via the L2 bank's stream header (`L2Cfg=0x6c013800`) instead of the direct TileDMA Src registers. Both approaches (`relu_dma.py` raw firmware, `relu_l2.py` L2-style) work standalone — no L2 priming needed.
-
-Relu vs Conv (verified empirically, see examples/relu_from_add.py → examples/conv_from_relu.py)
-
-### Data path comparison
-
-| | relu | conv |
-|---|---|---|
-| Source | TileDMA (SrcDMAConfig=0x33881) | TileDMA (SrcDMAConfig=0x33881) |
-| Kernel weights | None (KernelCfg=0, MACCfg=0) | **3×3 depthwise** (KernelCfg=0x82, MACCfg=0x101c00) |
-| Compute | Conv pipeline, no weights (Cfg=0x04010101) | Conv pipeline with weights (Cfg=0x04144405) |
-| Destination | TileDMA (DstDMAConfig=0x040000c1) | TileDMA (DstDMAConfig=0xc1) |
-| L2 result staging | Enabled (ResultCfg=0x50017a) | Enabled (ResultCfg=0x500172) |
-| Channels | 1 | 3 |
-
-### Register differences (relu → conv)
-
-**Same values** (no change needed):
-`ChCfg`=0x22, `ConvCfg`=0x5000a021, `pad0`/`pad1`/`pad2`/`pad4`=1/1/0x2041/0, `TileCfg`=1, `DPE`=0,
-`PECfg`=0, `BiasScale`=0, `PreScale`=0, `FinalScale`=0, `MatrixVectorBias`=0, `AccBias`=0,
-`DstFmt`=0x01302031, `L2pad2-6`=0, `Srcpad2-4`=0, `Srcpad8`=0, `DstBaseAddr`=0, `DstGroupStride`=0, `DstDepthStride`=0xc0
-
-**Changed for multi-channel (C=1→3)**:
-| Offset | Register | relu | conv | Notes |
-|--------|----------|------|------|-------|
-| 0x128 | InDim | 0x1004d | 0x10001 | Input dimensions |
-| 0x13c | OutDim | 0x1004d | 0x10001 | Output dimensions |
-| 0x134 | Cin | 1 | 3 | **Input channels 1→3** |
-| 0x138 | Cout | 1 | 3 | **Output channels 1→3** |
-
-**Data source (both use TileDMA; relu L2-style → conv direct)**:
-| Offset | Register | relu (raw fw) | relu (L2-style) | conv | Notes |
-|--------|----------|------|------|------|-------|
-| 0x16c | SrcDMAConfig | 0x33881 | 0 | 0x33881 | Raw fw uses TileDMA directly |
-| 0x170 | Srcpad0 | 0x8880 | 0x00500172 | 0x8880 | |
-| 0x178 | SrcRowStride | 0xc0 | 0xa0 | 0x40 | |
-| 0x1a4 | SrcFmt | 0x01002031 | 0 | 0x01002031 | |
-| 0x1e0 | L2Cfg | 0 | 0x6c013800 | 0 | L2-style uses stream header |
-| 0x1e4 | SourceCfg | 0x500172 | 0x33881 | 0x500172 | |
-| 0x1e8 | SourceBase | 0 | 0x8880 | 0 | |
-| 0x1ec | SourceChannelStride | 0xa0 | 0 | 0x10 | |
-| 0x1f0 | SourceRowStride | 0xa0 | 0xc0 | 0x30 | |
-| 0x1f4 | L2pad0 | 0xa0 | 0xc0 | 0x30 | |
-| 0x1f8 | L2pad1 | 0xa0 | 0xc0 | 0x30 | |
-
-**L2 result path**:
-| Offset | Register | relu (raw fw) | relu (L2-style) | conv | Notes |
-|--------|----------|------|------|------|-------|
-| 0x210 | ResultCfg | 0x50017a | 0 | 0x500172 | Raw fw: L2 result staging active |
-| 0x214 | ResultBase | 0xa0 | 0 | 0x30 | |
-| 0x218 | ConvResultChannelStride | 0 | 0 | 0x10 | |
-| 0x21c | ConvResultRowStride | 0 | 0x01002031 | 0x30 | |
-
-**NE kernel config (only conv uses)**:
-| Offset | Register | relu | conv | Notes |
-|--------|----------|------|------|-------|
-| 0x240 | KernelCfg | 0 | **0x82** | **Kernel 3×3 depthwise** |
-| 0x244 | MACCfg | 0 | **0x101c00** | **MAC kernel mode** |
-| 0x250 | PostScale | 0 | **0x3c00** | Post-processing scale (=1.0 fp16) |
-
-**Destination config**:
-| Offset | Register | relu | conv | Notes |
-|--------|----------|------|------|-------|
-| 0x258 | DstDMAConfig | 0x040000c1 | 0xc1 | Bit 26 cleared (no L2 flush?) |
-| 0x260 | DstRowStride | 0xc0 | 0x40 | Row stride (64 bytes) |
-| 0x264 | DstPlaneStride | 0xc0 | 0x40 | Plane stride (64 bytes) |
-
-**BTSP program**: Different firmware (conv loads from `hwx/tinygrad/conv.hwx`, relu has program embedded in hex segments)
+```
 
 ## 3. Convert and run ane 
 
-```bash
-compile https://github.com/eiln/ane/blob/main/bindings/python/dylib/Makefile and the cp libane_python.so to /usr/lib/
+compile [python binding from eiln](https://github.com/eiln/ane/blob/main/bindings/python/dylib/Makefile) and then copy libane_python.so to /usr/lib/
 
+```bash
 uv venv --python=3.11 && source .venv/bin/activate
 uv pip install https://github.com/eiln/anecc.git#subdirectory=anecc https://github.com/eiln/ane.git#subdirectory=bindings/python/python
 anecc hwx/sum.hwx -o hwx/sum.ane
 python run.py ./hwx/sum.ane 
 ```
 
-## 4. Dump IOCTL and BO
-
-### Dump IOCTL
-```bash
-sudo bpftrace -e '
-tracepoint:syscalls:sys_enter_ioctl /args->cmd == 0xc0186441/ { printf("ANE BO_INIT\n"); }
-tracepoint:syscalls:sys_enter_ioctl /args->cmd == 0xc0086442/ { printf("ANE BO_FREE\n"); }
-tracepoint:syscalls:sys_enter_ioctl /args->cmd == 0xc0986443/ { printf("ANE SUBMIT\n"); }'
-
-Attaching 3 probes...
-ANE BO_INIT
-ANE BO_INIT
-ANE BO_INIT
-ANE BO_INIT
-ANE BO_INIT
-ANE SUBMIT
-ANE BO_FREE
-ANE BO_FREE
-ANE BO_FREE
-ANE BO_FREE
-ANE BO_FREE
-```
-
-### Dump IOCTL submit
-
-You can use bpftrace to dump ioctl submit content. Most ops use `td_count=1` (single tile). The only exception is `concat.py` which chains 2 tiles and uses `td_count=2`.
+## 4. hwx2py
+Run ANE ops without anecc and .ane file
+- op.hwx -> hwx2py -> op_from_hwx.py
+- it extract the cmd buf from hwx file as hex blob and replay directly. Python files in examples/* are cleaned and commented version originally generated from hwx2py.py
 
 ```bash
-sudo bpftrace -e '
-struct drm_ane_submit {
-    unsigned long long tsk_size;  // 對應 __u64 / uint64
-    unsigned int td_count;        // 對應 __u32 / uint32
-    unsigned int td_size;
-    unsigned int handles[1];      // 先用 1 或具體數字，bpftrace 不支援 ANE_TILE_COUNT 變數
-    unsigned int btsp_handle;
-    unsigned int pad;
-};
-
-tracepoint:syscalls:sys_enter_ioctl 
-/args->cmd == 0xc0986443/ 
-{
-    $s = (struct drm_ane_submit *)args->arg;
-    printf("ANE SUBMIT: tsk_size=%llu, td_count=%u, td_size=%u, btsp_handle=%u\n", 
-           $s->tsk_size, $s->td_count, $s->td_size, $s->btsp_handle);
-}'
-
-ANE SUBMIT (single-tile, e.g. add/relu): tsk_size=628, td_count=1, td_size=628, btsp_handle=0
-ANE SUBMIT (multi-tile, e.g. concat):   tsk_size=1396, td_count=2, td_size=628, btsp_handle=5
+python experimental/hwx2.py hwx/sum.hwx -o sum_from_hwx.py
+python sum_from_hex.py
 ```
 
-but i modified the kernel driver directly to print the dump.
-https://github.com/allbilly/libane
-
-```bash
-ANE NN {
-  fd=3
-  data=0xaaab63898000
-  anec={size=17024 td_size=628 td_count=1 tsk_size=628 krn_size=16384 src_count=2 dst_count=1}
-  btsp_chan={map=0xfffece008000 size=16384 handle=5 offset=4295049216}
-  chans=[
-    00: {map=0xfffece7d0000 size=32768 handle=1 offset=4294967296},
-    01: {map=(nil) size=0 handle=0 offset=0},
-    02: {map=(nil) size=0 handle=0 offset=0},
-    03: {map=(nil) size=0 handle=0 offset=0},
-    04: {map=0xfffece7cc000 size=16384 handle=2 offset=4295000064},
-    05: {map=0xfffece1dc000 size=16384 handle=3 offset=4295016448},
-    06: {map=0xfffece00c000 size=16384 handle=4 offset=4295032832},
-    07: {map=(nil) size=0 handle=0 offset=0},
-    08: {map=(nil) size=0 handle=0 offset=0},
-    09: {map=(nil) size=0 handle=0 offset=0},
-    10: {map=(nil) size=0 handle=0 offset=0},
-    11: {map=(nil) size=0 handle=0 offset=0},
-    12: {map=(nil) size=0 handle=0 offset=0},
-    13: {map=(nil) size=0 handle=0 offset=0},
-    14: {map=(nil) size=0 handle=0 offset=0},
-    15: {map=(nil) size=0 handle=0 offset=0},
-    16: {map=(nil) size=0 handle=0 offset=0},
-    17: {map=(nil) size=0 handle=0 offset=0},
-    18: {map=(nil) size=0 handle=0 offset=0},
-    19: {map=(nil) size=0 handle=0 offset=0},
-    20: {map=(nil) size=0 handle=0 offset=0},
-    21: {map=(nil) size=0 handle=0 offset=0},
-    22: {map=(nil) size=0 handle=0 offset=0},
-    23: {map=(nil) size=0 handle=0 offset=0},
-    24: {map=(nil) size=0 handle=0 offset=0},
-    25: {map=(nil) size=0 handle=0 offset=0},
-    26: {map=(nil) size=0 handle=0 offset=0},
-    27: {map=(nil) size=0 handle=0 offset=0},
-    28: {map=(nil) size=0 handle=0 offset=0},
-    29: {map=(nil) size=0 handle=0 offset=0},
-    30: {map=(nil) size=0 handle=0 offset=0},
-    31: {map=(nil) size=0 handle=0 offset=0}
-  ]
-}
-ANE SUBMIT {
-  tsk_size=628
-  td_count=1
-  td_size=628
-  btsp_handle=5
-  pad=0
-  handles=[1, 0, 0, 0, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-}
-CMD_BUF (handle[0]) (size=628):
-  0000: 00 00 00 02 00 00 00 00 22 04 00 00 00 00 00 00
-  0010: 6a f8 ff 00 00 00 00 00 00 98 00 30 00 00 00 00
-  0020: 66 49 02 00 00 00 00 00 00 f8 01 f4 00 00 00 00
-  0030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0040: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0050: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0060: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0090: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  00a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  00b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  00c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  00d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  00e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  00f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0110: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0120: 00 00 00 00 00 00 00 3c 01 00 01 00 01 00 00 00
-  0130: 2a 00 00 00 40 00 00 00 40 00 00 00 01 00 01 00
-  0140: 01 00 00 00 21 a0 00 50 41 20 00 00 01 00 01 00
-  0150: 01 00 00 00 04 00 00 00 00 00 00 00 33 00 00 00
-  0160: 00 00 00 00 00 00 00 00 00 38 01 6c 81 38 03 00
-  0170: 80 38 03 00 00 00 00 00 40 00 00 00 40 00 00 00
-  0180: 00 10 00 00 00 00 00 00 00 00 00 00 40 00 00 00
-  0190: 40 00 00 00 00 10 00 00 00 00 00 00 00 00 00 00
-  01a0: 00 00 00 00 31 20 00 01 30 20 00 00 00 00 00 00
-  01b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  01c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  01d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 48 00 44
-  01e0: 00 00 00 00 72 01 50 01 00 00 00 00 10 00 00 00
-  01f0: 20 04 00 00 00 04 00 00 00 04 00 00 40 04 00 00
-  0200: 10 00 00 00 20 04 00 00 00 04 00 00 00 04 00 00
-  0210: 7a 01 50 00 60 08 00 00 00 00 00 00 00 00 00 00
-  0220: 00 00 00 00 00 00 00 00 00 88 00 0c 00 00 08 00
-  0230: 00 00 00 3c 00 00 00 3c 00 00 80 3f 00 c8 00 10
-  0240: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0250: 00 00 00 00 00 78 01 18 c1 00 00 04 00 00 00 00
-  0260: 40 00 00 00 40 00 00 00 00 10 00 00 00 00 00 00
-  0270: 31 20 00 01
-(1, 64, 1, 1) float16
-[[[[5.]]
-    ...
-  [[5.]]]] 
-```
-
-### Dump BO
-```bash
-handle[0]=1 → BO for tile/buffer index 0 (where the command/weights live)
-handle[4]=2 → BO for output tile (dst 0)
-handle[5]=3 → BO for input 0
-handle[6]=4 → BO for input 1
-
-python3 /home/asahi/ane-ex/dump.py /tmp/sum_cmd.bin \
-  --decode-cmd --cmd-sbs-compact-grouped
-
-python3 /home/asahi/ane-ex/dump.py /tmp/sum_weights.bin --dtype fp16 --count 64
-
-
-python3 /home/asahi/ane-ex/dump.py /tmp/ane_bo_04_post.bin --dtype fp16 --tile 1,64,1,1,64,64 --count 8
-[3. 3. 3. 3. 3. 3. 3. 3.]
-
-python3 /home/asahi/ane-ex/dump.py /tmp/ane_bo_05.bin --dtype fp16 --tile 1,64,1,1,64,64 --count 8
-[1. 1. 1. 1. 1. 1. 1. 1.]
-
-python3 /home/asahi/ane-ex/dump.py /tmp/ane_bo_06.bin --dtype fp16 --tile 1,64,1,1,64,64 --count 8
-[2. 2. 2. 2. 2. 2. 2. 2.]
-```
-
-## 5. hwx2py
-skip anecc, input hwx -> hwx2py -> op.py
-
-## 6. How to run CONV
+## 5. (⚠️ AI slop) How to run CONV
 
 ### Via anecc (compiled .ane model)
 
@@ -480,7 +240,7 @@ Both are correct. Non-zero at indices [0, 32, 64] = channels 0/1/2 with values [
 - The input data layout uses STRIDE=32 between channels, matching the firmware's expected layout
 
 
-# 7. How to run RELU
+# 6. (⚠️ AI slop) How to run RELU
 
 ### Via anecc (compiled .ane model)
 
@@ -563,7 +323,7 @@ expected relu = [0. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 
 
 There is no `elementwise_l2.py` — elementwise add needs PE/NE active for actual computation (summing two inputs), which defeats the purpose of the L2 approach. The L2 vs TileDMA comparison is fully demonstrated by `relu.py` vs `relu_l2.py`.
 
-# 8. How to run GEMM (Matrix Multiply)
+# 7. (⚠️ AI slop) How to run GEMM (Matrix Multiply)
 
 Cin=512, Cout=512, uses TileDMA source + KDMA kernel weights. The `__TEXT.__const` section in the original `.hwx` has **all-zero weights** (generated with `np.zeros` for pipeline testing). With injected non-zero weights, GEMM produces correct output:
 
@@ -662,7 +422,7 @@ cp /tmp/hwx_output/test/model.hwx ./gemm.hwx  # or concat.hwx
 
 macOS 12 Monterey (real machine or VM) is only strictly needed for clean elementwise hwx files without any spurious KDMA entries.
 
-# 9. How to run CONCAT
+# 8. (⚠️ AI slop) How to run CONCAT
 
 Cin=16, Cout=16, TileDMA source, 2 inputs (16 + 16384 → 16400 output). Loads kernel data from compiled `.ane` file — anecc handles the KDMA kernel region setup properly.
 
@@ -684,7 +444,7 @@ All 3.0 (tile2): True
 
 The spurious CoeffDMAConfig=0x80 pattern (macOS 14+) is handled by anecc's kernel region setup.
 
-# 10. How to run SIGMOID
+# 9. (⚠️ AI slop) How to run SIGMOID
 
 Cin=1, Cout=1, TileDMA source, KDMA with valid coefficient data. This is the only weight-model that produces correct output through hwx2py.
 
@@ -708,412 +468,199 @@ output[0] = 0.95263671875
 
 **Analysis**: Output 0.95263671875 matches expected `sigmoid(3.0) = 1/(1+e⁻³) ≈ 0.952574` within fp16 precision. The sigmoid model has C=1, STRIDE=96, valid KDMA coefficients (0x81, not spurious 0x80 pattern), and the 77-element output all correctly shows sigmoid(3.0).
 
-# 11. Register Analysis
-
-A structured summary of register differences across all ANE operations.
-
-### Key Register Map (H13 architecture)
-
-| Script Offset | H13 Bank | Register | Description |
-|---|---|---|---|
-| 0x128 | Common+0x00 | InDim | Input dimensions (W|H in low/high 16 bits) |
-| 0x12c | Common+0x04 | pad0 | Padding mode |
-| 0x130 | Common+0x08 | ChCfg | Channel config (in/out format) |
-| 0x134 | Common+0x0c | Cin | Input channels |
-| 0x138 | Common+0x10 | Cout | Output channels |
-| 0x13c | Common+0x14 | OutDim | Output dimensions |
-| 0x144 | Common+0x1c | ConvCfg | Conv kernel config (W|H) |
-| 0x14c | Common+0x24 | GroupConvCfg | Group conv / depthwise config |
-| 0x15c | Common+0x34 | Cfg | General config (activation modes) |
-| 0x160 | Common+0x38 | TaskInfo | Task flags |
-| 0x16c | TileDMA Src+0x00 | SrcDMAConfig | TileDMA source config |
-| 0x1e0 | L2+0x00 | L2Cfg | L2 cache config |
-| 0x1e4 | L2+0x04 | SourceCfg | L2 source config (bit 24 = dual input) |
-| 0x210 | L2+0x30 | ResultCfg | L2 result config |
-| 0x22c | PE+0x00 | PECfg | PE config (bit 2 = mul mode) |
-| 0x230 | PE+0x04 | BiasScale | Bias scaling factor |
-| 0x240 | NE+0x00 | KernelCfg | NE kernel config |
-| 0x244 | NE+0x04 | MACCfg | MAC / ALU mode |
-| 0x258 | TileDMA Dst+0x00 | DstDMAConfig | TileDMA dest config |
-
-### Cross-Operation Register Comparison
-
-| Address | Register | Add | Mul | Relu | Conv | GeMM | Concat | Sigmoid |
-|---------|----------|-----|-----|------|------|------|--------|---------|
-| 0x130 | ChCfg | 0x2a | 0x2a | 0x22 | 0x22 | 0x22 | 0x22 | 0x22 |
-| 0x134 | Cin | 64 | 64 | **1** | **3** | **512** | **16** | **1** |
-| 0x138 | Cout | 64 | 64 | **1** | **3** | **512** | **16** | **1** |
-| 0x144 | ConvCfg | 0x5000a021 | 0x5000a021 | 0x5000a021 | 0x5000a021 | **0x5000b421** | 0x5000a021 | 0x5000a021 |
-| 0x14c | GroupConvCfg | 0x10001 | 0x10001 | **0x14001** | 0x10001 | 0x10001 | **0x14001** | **0x14001** |
-| 0x15c | Cfg | 0x33 | 0x33 | **0x04010101** | **0x04144405** | **0x00244405** | **0x04211101** | **0x04010101** |
-| 0x160 | TaskInfo | 0 | 0 | **0x100000** | **0x100000** | **0x100000** | **0x100000** | **0x100000** |
-| 0x16c | SrcDMAConfig | 0x33881 | 0x33881 | **0x33881**ᵃ | **0x33881** | **0x33881** | **0x33881** | **0x33881** |
-| 0x1e0 | L2Cfg | 0 | 0 | **0**ᵃ | 0 | 0 | 0 | 0 |
-| 0x1e4 | SourceCfg | 0x01500172 | 0x01500172 | **0x00500172**ᵃ | 0x500172 | 0x500172 | **0x172** | 0x500172 |
-| 0x210 | ResultCfg | 0x0050017a | 0x0050017a | **0x0050017a**ᵃ | **0x500172** | **0x500172** | **0x17a** | **0x50017a** |
-| 0x22c | PECfg | **0x80000** | **0x80004** | **0** | **0** | **0** | **0** | **0** |
-| 0x240 | KernelCfg | 0 | 0 | 0ᵃ | **0x82** | **0x82** | **0x82** | **0x82** |
-| 0x244 | MACCfg | 0 | **0x30** | 0ᵃ | **0x101c00** | **0x101c00** | **0x101c00** | **0x101c00** |
-| 0x258 | DstDMAConfig | 0x040000c1 | 0x040000c1 | **0x040000c1**ᵃ | **0xc1** | **0xc1** | **0xc1** | **0xc1** |
-| 0x270 | DstFmt | 0x01002031 | 0x01002031 | **0x01302031**ᵃ | **0x01302031** | **0x01302031** | 0x01002031 | **0x01302031** |
-
-ᵃ Relu values from raw relu.hwx firmware. An alternative L2-style register layout (`relu_l2.py`) uses `L2Cfg=0x6c013800`, `SrcDMAConfig=0`, `ResultCfg=0`.
-
-
-### Operation Grouping
-
-Operations are grouped by **firmware program** into families. Within a family, ops share the same BTSP firmware and can be converted with few register changes. Cross-family conversion requires different firmware.
-
-| Family | Pipeline | Firmware | Ops | Example Files | Switch Register | Reg Changes | Notes |
-|--------|----------|----------|-----|---------------|-----------------|-------------|-------|
-| **1 (PE)** | PE elementwise | Bare-metal (no KDMA), `66 49 02 00` | add, mul, max, min, sq | `add.py`, `elementwise.py` | `PECfg[3:2]` (op_mode) | 1 | `add↔mul` also needs `MACCfg[5:4]=0x30` |
-| **2a (NE NL)** | Conv+NE nonlinear | KDMA `25 40 02 01` | identity, relu, sigmoid | `relu.py`, `sigmoid.py` | `MACCfg[17:16]` (non_linear_mode) | 1 | sigmoid needs KDMA LUT data |
-| **2b (NE comp)** | Conv+NE compute | KDMA, separate firmware | conv, gemm | `conv.py`, `gemm.py` | — | N/A | Different BTSP programs; W8 has compute flags |
-| **3 (pass)** | L2-cached conv | Embedded bytes (no KDMA) | relu (L2 style) | `relu_l2.py` | — | N/A | Different arch; no PE/NE needed |
-| **4 (tile)** | Multi-tile pass | KDMA | concat | `concat.py` | — | N/A | 2-tile chaining, NE pass-through mode |
-
-#### Family 1 — PE Elementwise (`add`, `mul`, `max`, `min`, `sq`)
-
-Same bare-metal firmware (no KDMA context). PE pipeline (`Cfg=0x33`), NE disabled. Dual-source DMA (W8=`0x00086C66`):
-
-| Op | PECfg | MACCfg | Data Path | Example |
-|----|-------|--------|-----------|---------|
-| add (default) | `(2<<18)` | 0 | TileDMA→PE→TileDMA | `python add.py` |
-| mul | `(2<<18) | (1<<2)` | `(1<<4)|(1<<5)` = 0x30 | TileDMA→PE→TileDMA | `python add.py mul` |
-| max | `(2<<18) | (2<<2)` | 0 | TileDMA→PE→TileDMA | `python elementwise.py max` |
-| min | `(2<<18) | (3<<2)` | 0 | TileDMA→PE→TileDMA | `python elementwise.py min` |
-| sq | `(2<<18) | (4<<2)` | 0 | TileDMA→PE→TileDMA | `python elementwise.py sq` |
-
-Switch: `PECfg[3:2]` (0=add, 1=mul, 2=max, 3=min, 4=sq). Add↔mul also needs `MACCfg[5:4]=0x30`.
-
-#### Family 2a — Conv NE Nonlinear (`identity`, `relu`, `sigmoid`)
-
-Same KDMA-loaded firmware (`25 40 02 01`). Conv pipeline, NE enabled. Single-source DMA (W8=`0x01240025`):
-
-| Op | MACCfg | non_linear_mode | KernelCfg | Data Path | Example |
-|----|--------|-----------------|-----------|-----------|---------|
-| identity | `0x0010000c` | 0 | `0x80` | TileDMA→Conv+NE→TileDMA | `python relu.py` + MACCfg override |
-| relu | `0x0011000c` | 1 | `0x80` | TileDMA→Conv+NE→TileDMA | `python relu.py` |
-| sigmoid | `0x0012000c` | 2 | `0x80` | TileDMA→Conv+NE→TileDMA | `python sigmoid.py` |
-
-Switch: `MACCfg[17:16]` (0=identity, 1=relu, 2=sigmoid). Sigmoid needs KDMA LUT data embedded. PE bypassed (all zeros).
-
-#### Family 2b — Conv NE Compute (`conv`, `gemm`)
-
-KDMA-loaded firmware with compute flags. NE enabled with `KernelCfg=0x82`, `MACCfg=0x00101c00`. W8 has compute flags (conv=bit25, gemm=bit26).
-
-#### Standalone
-
-- `relu_l2.py` — L2-cached source, different architecture entirely (no KDMA, no PE/NE)
-- `concat.py` — Multi-tile chaining, NE in pass-through mode (same MACCfg as Family 2a identity)
-
-**Detailed experiment results:** see `experimental/expt.md` for complete register classification (expt1: op conversion switches, expt2: bit-level sensitivity, expt3: minimal register set per op).
-
-### Key Patterns
-
-1. **PE vs Conv pipeline**: PECfg=0 disables PE, routing through conv pipeline. All elementwise (add/mul) use PE at 0x80000/0x80004; all others disable PE.
-
-2. **TileDMA source**: All operations use TileDMA source (`SrcDMAConfig=0x33881` for direct, or `L2Cfg=0x6c013800` stream header for indirect). The conv pipeline internally uses L2 for result staging (`ResultCfg` non-zero).
-
-3. **KDMA kernel weights**: KernelCfg=0x82 + MACCfg=0x101c00 = kernel loading pattern (Fmt=FLOAT16, Palettized=off). Relu and add/mul have no kernel. Conv/GeMM/Concat/Sigmoid all load KDMA weights. The weight data in `.ane` files has a 12-byte leading zero header before the first coefficient for channel 0.
-
-4. **Cfg activation encoding**: The `Cfg` register encodes the processing mode:
-   - 0x04010101 / 0x4010101 = relu/sigmoid (identity pass-through, C=1)
-   - 0x04144405 = conv (1×1 pointwise, C=3)
-   - 0x00244405 = gemm (matrix multiply, C=512)
-   - 0x04211101 = concat (channel concatenation, C=16)
-
-5. **DstFmt**: Models with output format change (relu/conv/gemm/sigmoid/concat) use 0x01302031 (bit 20 set). Add/mul use 0x01002031 (bit 20 clear). Bit 20 may indicate multi-channel output format variant.
-
-### Family 2 Cross-Operation: sigmoid↔relu via MACCfg bits 16/17
-
-Just as Family 1 (PE-based) has a **1-bit toggle** `PECfg[2]` to switch add↔mul, Family 2 (Conv pipeline) has a **complementary bit pair** `MACCfg[16:17]` to switch relu↔sigmoid:
-
-| Register | Bits | Family 1 (PE) | Family 2 (Conv pipeline) |
-|----------|------|---------------|--------------------------|
-| `PECfg[2]` | 0x4 | add (0) ↔ mul (1) | — |
-| `MACCfg[16]` | 0x10000 | — | relu mode |
-| `MACCfg[17]` | 0x20000 | — | sigmoid mode |
-
-Both sigmoid and relu share the same firmware program (entry `25400201`). The MACCfg register selects which processing the NE applies:
-
-| MACCfg value | bit20 | bit17 | bit16 | bits2,3 | Mode |
-|---|---|---|---|---|---|
-| 0x0012000c | ✓ | ✓ | — | ✓ | Sigmoid (KDMA table lookup) |
-| 0x0011000c | ✓ | — | ✓ | ✓ | Relu (pass-through, clamp negative) |
-| 0x0002000c | — | ✓ | — | ✓ | Sigmoid-like (reduced precision) |
-| 0x0000000c | — | — | — | ✓ | Pass-through (no activation) |
-| 0x00000000 | — | — | — | — | **Broken** (garbage: 744.0) |
-
-The relu firmware needs sigmoid KDMA kernel data appended to function as sigmoid. Neither Cfg nor any other register controls this toggle — only MACCfg.
-
-**All experimental scripts** in `experimental/` document the complete test methodology.
-
-### Operational Status
-
-| Operation | anecc | hwx2py | Standalone py | Notes |
-|-----------|-------|--------|---------------|-------|
-| **Add** | ✓ | ✓ | ✓ `add.py` | PE-based, 2 inputs |
-| **Mul** | ✓ | ✓ | ✓ `add.py mul` | Same firmware, 2 reg changes |
-| **Relu** | ✓ | ✓ | ✓ `relu.py` (TileDMA src), `relu_l2.py` (L2 cache src), `relu_from_add.py` | Conv pipeline, TileDMA or L2 source, no L2 priming needed |
-| **Conv** | ✓ | ✓ | ✓ `conv.py` | 1×1 pointwise, [12,12,12] ✓ |
-| **Sigmoid** | ✓ | ✓ | ✓ `sigmoid_from_hwx.py` | sigmoid(3) ≈ 0.9526 ✓ |
-| **GeMM** | ✓ | ✓ | ✓ `gemm.py` (inj weights) | Inj 0.5 weights → 128 ✓ |
-| **Concat** | ✓ | ✓ | ✓ `concat.py` | 2 inputs, [2.0,...] ✓ |
-
-# 12. Minimal Register Change Analysis
-
-Systematic experimental results from `experimental/test_minimal_regs.py`, `experimental/test_sig_to_relu.py`, `experimental/test_family2_cross.py`.
-
-## 12.1 Minimal Change Matrix
-
-For each pair (base→target), the table shows how many register changes are truly needed vs how many register differences exist in the raw configs. "Needed" means reverting that register to the base value causes the output to change from target to base behavior.
-
-### Same firmware (sigmoid/relu family, entry `25400201`)
-
-| Pair | Total reg diffs | Needed | Don't-care | Minimal change |
-|------|----|---------|------------|----------------|
-| sigmoid→relu | 1 | 1 | 0 | `MACCfg`: 0x0012000c → 0x0011000c (bit17 off, bit16 on) |
-| relu→sigmoid | 1 | 1 | 0 | `MACCfg`: 0x0011000c → 0x0012000c (bit16 off, bit17 on) + KDMA kernel |
-
-### Cross-firmware (different BTSP programs)
-
-| Pair | Base firmware entry | Result |
-|------|-------------------|--------|
-| conv→relu | `25400203` | **HANG** — different BTSP program |
-| conv→sigmoid | `25400203` | **HANG** |
-| sigmoid→conv | `25400201` | **HANG** |
-
-The BTSP firmware program is hardcoded with specific data flow operations. Register overrides alone cannot bridge different firmware families.
-
-## 12.2 MACCfg Bit Field (NE Engine Config)
-
-Systematic bit-sweep on sigmoid firmware (input=3.0):
-
-| MACCfg | bit20 | bit17 | bit16 | bits2,3 | Output | Mode |
-|--------|-------|-------|-------|--------|--------|------|
-| 0x0012000c | 1 | 1 | 0 | 1 | 0.9526 | Sigmoid (table lookup) |
-| 0x0011000c | 1 | 0 | 1 | 1 | 3.0000 | Relu (pass-through) |
-| 0x0010000c | 1 | 0 | 0 | 1 | 3.0000 | Pass-through (no activation) |
-| 0x0002000c | 0 | 1 | 0 | 1 | 0.9995 | Partial sigmoid |
-| 0x0001000c | 0 | 0 | 1 | 1 | 3.0000 | Pass-through |
-| 0x0000000c | 0 | 0 | 0 | 1 | 3.0000 | Pass-through |
-| 0x00000000 | 0 | 0 | 0 | 0 | 744.0 | **Broken** |
-
-**Key findings:**
-- `bit20 (0x100000)` = NE core enable (must be set for correct operation)
-- `bits2,3 (0x0c)` = ALU/format mode (must be set)
-- `bit17 (0x20000)` = sigmoid/KMDA table lookup mode
-- `bit16 (0x10000)` = relu pass-through with negative clamping
-- `MACCfg=0` breaks the NE engine entirely (garbage 744.0)
-
-## 12.3 Cfg Register: Does NOT Control Op Mode
-
-Cfg was tested with 5 different values on sigmoid firmware. All produced identical sigmoid output:
-
-| Cfg value | Source op | Output | Verdict |
-|-----------|-----------|--------|---------|
-| 0x04010101 | relu/sigmoid | 0.9526 | Same |
-| 0x04144405 | conv | 0.9526 | Same |
-| 0x04211101 | concat | 0.9526 | Same |
-| 0x00244405 | gemm | 0.9526 | Same |
-| 0x00000000 | zero | 0.9526 | Same |
-
-Cfg register controls activation post-processing parameters, not the fundamental op mode. The op mode is determined by MACCfg (within same firmware) or by the BTSP firmware program (cross-firmware).
-
-## 12.4 Comparison: Family 1 vs Family 2 Mode Toggles
-
-| Aspect | Family 1 (PE) | Family 2 (Conv pipeline) |
-|--------|---------------|--------------------------|
-| Same firmware ops | add ↔ mul | relu ↔ sigmoid |
-| Toggle register | PECfg | MACCfg |
-| Toggle bits | `PECfg[2]` (0x4) | `MACCfg[16:17]` (0x10000/0x20000) |
-| Firmware entry | Same (`66 49 02 00`) | Same (`25 40 02 01`) |
-| Other ops | — | conv/gemm/concat = different firmware |
-
-# 13. Structured Register Analysis
-
-Structured analysis using the fully-decoded register infrastructure from `examples/*.py`. Unlike the raw-hex experiments in earlier sections, this analysis uses the named register objects (`reg` class), stream headers, and `build_seg`/`pack_reg` helpers from the example files.
-
-The experiment script `experimental/test_structured_regs.py` runs all 4 phases. Results below require ANE hardware (`/dev/accel/accel0`).
-
-## 13.1 Cross-Operation Register Comparison
-
-Register values extracted from each example's `BTSP_BUF`. Marked values differ from the baseline (add).
-
-| Address | Register | add | relu | sigmoid |
-|---------|----------|-----|------|---------|
-| 0x128 | InDim | 0x00010001 | **0x0001004d** | **0x0001004d** |
-| 0x12c | pad0 | 1 | 1 | 1 |
-| 0x130 | ChCfg | 0x2a | **0x22** | **0x22** |
-| 0x134 | Cin | 64 | **1** | **1** |
-| 0x138 | Cout | 64 | **1** | **1** |
-| 0x13c | OutDim | 0x00010001 | **0x0001004d** | **0x0001004d** |
-| 0x140 | pad1 | 1 | 1 | 1 |
-| 0x144 | ConvCfg | 0x5000a021 | 0x5000a021 | **0x5000a021** |
-| 0x148 | pad2 | 0x2041 | 0x2041 | 0x2041 |
-| 0x14c | GroupConvCfg | 0x10001 | **0x14001** | **0x14001** |
-| 0x150 | TileCfg | 1 | 1 | 1 |
-| 0x154 | pad3 | 4 | **0** | **0** |
-| 0x158 | pad4 | 0 | 0 | 0 |
-| 0x15c | Cfg | 0x33 | **0x04010101** | **0x04010101** |
-| 0x160 | TaskInfo | 0 | **0x00100000** | **0x00100000** |
-| 0x164 | DPE | 0 | 0 | 0 |
-| 0x16c | SrcDMAConfig | 0x33881 | 0x33881 | 0x33881 |
-| 0x170 | Srcpad0 | 0x33880 | **0x8880** | **0x8880** |
-| 0x174 | SrcBaseAddr | 0 | 0 | 0 |
-| 0x178 | SrcRowStride | 0x40 | **0xc0** | **0xc0** |
-| 0x17c | SrcPlaneStride | 0x40 | **0xc0** | **0xc0** |
-| 0x180 | SrcDepthStride | 0x1000 | **0xc0** | **0xc0** |
-| 0x184 | SrcGroupStride | 0 | 0 | 0 |
-| 0x188 | Srcpad1 | 0 | 0 | 0 |
-| 0x18c | Srcpad2 | 0x40 | **0** | **0** |
-| 0x190 | Srcpad3 | 0x40 | **0** | **0** |
-| 0x194 | Srcpad4 | 0x1000 | **0** | **0** |
-| 0x198 | Srcpad5 | 0 | 0 | 0 |
-| 0x19c | Srcpad6 | 0 | 0 | 0 |
-| 0x1a0 | Srcpad7 | 0 | 0 | 0 |
-| 0x1a4 | SrcFmt | 0x01002031 | 0x01002031 | 0x01002031 |
-| 0x1a8 | Srcpad8 | 0x2030 | **0** | **0** |
-| 0x1e0 | L2Cfg | 0 | 0 | 0 |
-| 0x1e4 | SourceCfg | 0x01500172 | **0x00500172** | **0x00500172** |
-| 0x1e8 | SourceBase | 0 | 0 | 0 |
-| 0x1ec | SourceChannelStride | 0x10 | **0xa0** | **0xa0** |
-| 0x1f0 | SourceRowStride | 0x420 | **0xa0** | **0xa0** |
-| 0x1f4 | L2pad0 | 0x400 | **0xa0** | **0xa0** |
-| 0x1f8 | L2pad1 | 0x400 | **0xa0** | **0xa0** |
-| 0x1fc | L2pad2 | 0x440 | **0** | **0** |
-| 0x200 | L2pad3 | 0x10 | **0** | **0** |
-| 0x204 | L2pad4 | 0x420 | **0** | **0** |
-| 0x208 | L2pad5 | 0x400 | **0** | **0** |
-| 0x20c | L2pad6 | 0x400 | **0** | **0** |
-| 0x210 | ResultCfg | 0x0050017a | **0x0050017a** | **0x0050017a** |
-| 0x214 | ResultBase | 0x860 | **0xa0** | **0xa0** |
-| 0x218 | ConvResultChannelStride | 0 | 0 | 0 |
-| 0x21c | ConvResultRowStride | 0 | 0 | 0 |
-| 0x22c | PECfg | **0x80000** | **0** | **0** |
-| 0x230 | BiasScale | **0x3c000000** | **0** | **0** |
-| 0x234 | PreScale | **0x3c000000** | **0** | **0** |
-| 0x238 | FinalScale | **0x3f800000** | **0** | **0** |
-| 0x240 | KernelCfg | 0 | **0x80** | **0x80** |
-| 0x244 | MACCfg | 0 | **0x0011000c** | **0x0012000c** |
-| 0x248 | MatrixVectorBias | 0 | 0 | 0 |
-| 0x24c | AccBias | 0 | 0 | 0 |
-| 0x250 | PostScale | 0 | **0x3c00** | **0x3c00** |
-| 0x258 | DstDMAConfig | 0x040000c1 | **0x040000c1** | **0x040000c1** |
-| 0x25c | DstBaseAddr | 0 | 0 | 0 |
-| 0x260 | DstRowStride | 0x40 | **0xc0** | **0xc0** |
-| 0x264 | DstPlaneStride | 0x40 | **0xc0** | **0xc0** |
-| 0x268 | DstDepthStride | 0x1000 | **0xc0** | **0xc0** |
-| 0x26c | DstGroupStride | 0 | 0 | 0 |
-| 0x270 | DstFmt | 0x01002031 | **0x01302031** | **0x01302031** |
-
-## 13.2 Register Diff Counts by Pair
-
-| | add | relu | sigmoid |
-|---|-----|------|---------|
-| **add** | — | 29 | 30 |
-| **relu** | 29 | — | 1 |
-| **sigmoid** | 30 | 1 | — |
-
-**Same-firmware pair**: relu ↔ sigmoid (1 register diff: `MACCfg` — entry 0x25400201)
-**Cross-firmware**: add ↔ relu/sigmoid (29-30 register diffs — different firmware programs)
-
-## 13.3 Register-by-Register Live vs Don't-Care
-
-For the relu ↔ sigmoid pair (same firmware, entry 0x25400201), each of the 1 differing registers tested:
-
-| Register | RelU Value | Sigmoid Value | Revert Result |
-|----------|-----------|---------------|---------------|
-| MACCfg (0x244) | 0x0011000c | 0x0012000c | **NEEDED** — output reverts to base mode |
-
-**Result**: `MACCfg` bits 16/17 are the sole toggle between relu and sigmoid. No other register changes needed.
-
-## 13.4 MACCfg Comprehensive Bitfield Map
-
-| MACCfg | Description | Output | Verdict |
-|--------|-------------|--------|---------|
-| 0x0012000c | Sigmoid (bit17, bit20) | 0.9526 | sigmoid |
-| 0x0011000c | Relu (bit16, bit20) | 3.0000 | passthru |
-| 0x0010000c | Passthru (bit20 only) | 3.0000 | passthru |
-| 0x0002000c | Partial sig (bit17 only) | ~0.9995 | partial sigmoid |
-| 0x0001000c | Relu-like (bit16 only) | 3.0000 | passthru |
-| 0x0000000c | No activation (bits 2-3 only) | 3.0000 | passthru |
-| 0x00000000 | All zero | ~744.0 | **BROKEN** |
-
-**Bit map:**
-
-| Bits | Mask | Function |
-|------|------|----------|
-| [1:0] | 0x3 | ALU thread/core select |
-| [3:2] | 0xc | ALU format mode (elementwise fp16) |
-| [5:4] | 0x30 | kernel_mode, bias_mode (add=0x00, mul=0x30) |
-| [11:8] | 0xf00 | op_mode for PE-based ops (12=relu, 13=exp) |
-| [16] | 0x10000 | Relu pass-through (clamp negative to 0) |
-| [17] | 0x20000 | Sigmoid table lookup (requires KDMA kernel data) |
-| [20] | 0x100000 | NE core enable (**MUST be set**; without it: broken output) |
-
-## 13.5 Cfg Register Analysis
-
-Cfg register was tested with all known values on sigmoid firmware. All produced identical sigmoid output:
-
-| Cfg | Description | Output | Verdict |
-|-----|-------------|--------|---------|
-| 0x04010101 | Sigmoid default | 0.9526 | sigmoid |
-| 0x04144405 | Conv Cfg | 0.9526 | sigmoid |
-| 0x04211101 | Concat Cfg | 0.9526 | sigmoid |
-| 0x00244405 | GeMM Cfg | 0.9526 | sigmoid |
-| 0x00000000 | Zero | 0.9526 | sigmoid |
-
-**Bit map:**
-
-| Bit | Mask | Function |
-|-----|------|----------|
-| 0 | 0x00000001 | pad0 — padding/layout flag |
-| 8 | 0x00000100 | conv_mode — enables conv pipeline processing |
-| 16 | 0x00010000 | dst_mode — output format/destination mode |
-| 26 | 0x04000000 | enable — master enable for the block |
-
-**Key finding**: Cfg controls **activation post-processing parameters**, not the fundamental operation mode. The op mode is determined by MACCfg (within the same firmware family) or by the BTSP firmware program (cross-firmware).
-
-## 13.6 Operation Families Summary
-
-| Family | Entry | Members | Data Path | Toggle Register |
-|--------|-------|---------|-----------|----------------|
-| 1 (PE) | 0x66490200 | add/mul/max/min/sq | TileDMA → PE → TileDMA | PECfg[2] + MACCfg[4:5] |
-| 2a (Conv) | 0x25400201 | relu/sigmoid | TileDMA → Conv → TileDMA | MACCfg[16:17] |
-| 2b (Conv) | 0x25400203 | conv/gemm/concat | TileDMA → Conv+KDMA → TileDMA | Different firmware |
-
-# 14. KernelCfg (0x240): NOT the NE Enable Switch
-
-From expt3, KernelCfg=0x80 (bit 7 set, "NE enable") showed as UNNEEDED for both relu and sigmoid — zeroing it produced identical output. This was surprising since KernelCfg is documented as the NE engine enable.
-
-### Investigation
-
-Tested on a **fresh /dev/accel/accel0** (no prior ANE access in session):
-
-| Test | KernelCfg | Output | Result |
-|------|-----------|--------|--------|
-| relu baseline | 0x80 | [0, 5, 0, 2] | Correct |
-| relu KernelCfg=0 (fresh) | 0x00 | [0, 5, 0, 2] | **Same — still works** |
-| sigmoid baseline | 0x80 | [0.007, 0.5, 0.993] | Correct |
-| sigmoid KernelCfg=0 (fresh) | 0x00 | [0.007, 0.5, 0.993] | **Same — still works** |
-| relu KernelCfg=0 AND MACCfg=0 (fresh) | 0x00 + 0x00 | HANG | MACCfg=0 is the real poison |
-
-### Root Cause
-
-**KernelCfg=0 (NE disabled) does NOT gate the NE pipeline for elementwise nonlinear ops (relu/sigmoid).** The nonlinear activation (relu clamping, sigmoid LUT) is controlled entirely by `MACCfg[17:16]` (`non_linear_mode`). KernelCfg likely gates only NE **compute** modes (matrix multiply for conv/gemm) — the `KernelCfg=0x82` needed by conv/gemm is the compute-enable pattern, not the same as the passthrough-enable pattern `KernelCfg=0x80`.
-
-This explains the expt3 test ordering artifact: in earlier runs, `MACCfg=0` was zeroed first, wedging the device before `KernelCfg` could be tested. On a clean device, `KernelCfg=0` is confirmed UNNEEDED for relu and sigmoid.
-
-### Practical Impact
-
-- **`examples_expt/relu.py` and `examples_expt/sigmoid.py`**: The `KernelCfg` line is commented out in both files (per expt3 results)
-- **conv/gemm** still need `KernelCfg=0x82` (their compute mode requires it)
-- The actual NE enable for nonlinear ops is `MACCfg[20]` (reserved bit), not `KernelCfg[7]`
-**Cross-firmamily register-only conversion is NOT possible** — different BTSP firmware programs encode different data flow operations. The attempt causes ANE HANG.
-
-# 15 Suggestions for elementwise_appleane.py (learn from RKNPU version):
+# For reverse engineer
+
+No particualr orders, poke around these steps if u like
+
+Check out the code in experimental/*, some example to reverse [firmware](https://www.youtube.com/watch?v=uGqqXVIFqkQ) with [GchidraMCPd](https://github.com/mad-sol-dev/GhidraMCPd)
+
+### Extract ANE firmware
+```basg
+ipsw img4 extract —im4p —output out2 h13_ane_fw_styx_j5x.im4p
+```
+
+Some random firmware notes
+- [Apple Neural Engine Internal](https://i.blackhat.com/asia-21/Friday-Handouts/as21-Wu-Apple-Neural_Engine.pdf)
+- CANEController::CmdProcessor() is the main function that parses ~70 commands.
+- Find CSneTMDrv parseTD ＝CSneTMDrvH13_ParseOutTd
+- aneCmdSend
+- /System/Library/PrivateFrameworks/ANECompiler.framework/ANECompiler
+ZinIrRegBitPrintOutDebug -> broken sym link
+- In ANECompiler : ZinIrRegBitPrintOutDebug(unsigned int, ZinIrCodegenTd_v5 *, int, std::ostream &) 
+
+### Dump BO
+```bash
+handle[0]=1 → BO for tile/buffer index 0 (where the command/weights live)
+handle[4]=2 → BO for output tile (dst 0)
+handle[5]=3 → BO for input 0
+handle[6]=4 → BO for input 1
+
+python3 /home/asahi/ane-ex/dump.py /tmp/sum_cmd.bin \
+  --decode-cmd --cmd-sbs-compact-grouped
+
+python3 /home/asahi/ane-ex/dump.py /tmp/sum_weights.bin --dtype fp16 --count 64
+
+
+python3 /home/asahi/ane-ex/dump.py /tmp/ane_bo_04_post.bin --dtype fp16 --tile 1,64,1,1,64,64 --count 8
+[3. 3. 3. 3. 3. 3. 3. 3.]
+
+python3 /home/asahi/ane-ex/dump.py /tmp/ane_bo_05.bin --dtype fp16 --tile 1,64,1,1,64,64 --count 8
+[1. 1. 1. 1. 1. 1. 1. 1.]
+
+python3 /home/asahi/ane-ex/dump.py /tmp/ane_bo_06.bin --dtype fp16 --tile 1,64,1,1,64,64 --count 8
+[2. 2. 2. 2. 2. 2. 2. 2.]
+```
+
+
+### Dump IOCTL
+```bash
+sudo bpftrace -e '
+tracepoint:syscalls:sys_enter_ioctl /args->cmd == 0xc0186441/ { printf("ANE BO_INIT\n"); }
+tracepoint:syscalls:sys_enter_ioctl /args->cmd == 0xc0086442/ { printf("ANE BO_FREE\n"); }
+tracepoint:syscalls:sys_enter_ioctl /args->cmd == 0xc0986443/ { printf("ANE SUBMIT\n"); }'
+
+Attaching 3 probes...
+ANE BO_INIT
+ANE BO_INIT
+ANE BO_INIT
+ANE BO_INIT
+ANE BO_INIT
+ANE SUBMIT
+ANE BO_FREE
+ANE BO_FREE
+ANE BO_FREE
+ANE BO_FREE
+ANE BO_FREE
+```
+
+### Dump IOCTL submit
+
+You can use bpftrace to dump ioctl submit content. Most ops use `td_count=1` (single tile). The only exception is `concat.py` which chains 2 tiles and uses `td_count=2`.
+
+```bash
+sudo bpftrace -e '
+struct drm_ane_submit {
+    unsigned long long tsk_size;  //  __u64 / uint64
+    unsigned int td_count;        //  __u32 / uint32
+    unsigned int td_size;
+    unsigned int handles[1];      // use 1 or other number as bpftrace does not support variable ANE_TILE_COUNT 
+    unsigned int btsp_handle;
+    unsigned int pad;
+};
+
+tracepoint:syscalls:sys_enter_ioctl 
+/args->cmd == 0xc0986443/ 
+{
+    $s = (struct drm_ane_submit *)args->arg;
+    printf("ANE SUBMIT: tsk_size=%llu, td_count=%u, td_size=%u, btsp_handle=%u\n", 
+           $s->tsk_size, $s->td_count, $s->td_size, $s->btsp_handle);
+}'
+
+ANE SUBMIT (single-tile, e.g. add/relu): tsk_size=628, td_count=1, td_size=628, btsp_handle=0
+ANE SUBMIT (multi-tile, e.g. concat):   tsk_size=1396, td_count=2, td_size=628, btsp_handle=5
+```
+
+but i [modified the kernel driver](https://github.com/allbilly/libane/blob/1e0afd832cf171be543d18069cef726aae2b9634/libane/ane.c#L544-L585) directly to print the dump.
+
+```bash
+ANE NN {
+  fd=3
+  data=0xaaab63898000
+  anec={size=17024 td_size=628 td_count=1 tsk_size=628 krn_size=16384 src_count=2 dst_count=1}
+  btsp_chan={map=0xfffece008000 size=16384 handle=5 offset=4295049216}
+  chans=[
+    00: {map=0xfffece7d0000 size=32768 handle=1 offset=4294967296},
+    01: {map=(nil) size=0 handle=0 offset=0},
+    02: {map=(nil) size=0 handle=0 offset=0},
+    03: {map=(nil) size=0 handle=0 offset=0},
+    04: {map=0xfffece7cc000 size=16384 handle=2 offset=4295000064},
+    05: {map=0xfffece1dc000 size=16384 handle=3 offset=4295016448},
+    06: {map=0xfffece00c000 size=16384 handle=4 offset=4295032832},
+    07: {map=(nil) size=0 handle=0 offset=0},
+    08: {map=(nil) size=0 handle=0 offset=0},
+    09: {map=(nil) size=0 handle=0 offset=0},
+    10: {map=(nil) size=0 handle=0 offset=0},
+    11: {map=(nil) size=0 handle=0 offset=0},
+    12: {map=(nil) size=0 handle=0 offset=0},
+    13: {map=(nil) size=0 handle=0 offset=0},
+    14: {map=(nil) size=0 handle=0 offset=0},
+    15: {map=(nil) size=0 handle=0 offset=0},
+    16: {map=(nil) size=0 handle=0 offset=0},
+    17: {map=(nil) size=0 handle=0 offset=0},
+    18: {map=(nil) size=0 handle=0 offset=0},
+    19: {map=(nil) size=0 handle=0 offset=0},
+    20: {map=(nil) size=0 handle=0 offset=0},
+    21: {map=(nil) size=0 handle=0 offset=0},
+    22: {map=(nil) size=0 handle=0 offset=0},
+    23: {map=(nil) size=0 handle=0 offset=0},
+    24: {map=(nil) size=0 handle=0 offset=0},
+    25: {map=(nil) size=0 handle=0 offset=0},
+    26: {map=(nil) size=0 handle=0 offset=0},
+    27: {map=(nil) size=0 handle=0 offset=0},
+    28: {map=(nil) size=0 handle=0 offset=0},
+    29: {map=(nil) size=0 handle=0 offset=0},
+    30: {map=(nil) size=0 handle=0 offset=0},
+    31: {map=(nil) size=0 handle=0 offset=0}
+  ]
+}
+ANE SUBMIT {
+  tsk_size=628
+  td_count=1
+  td_size=628
+  btsp_handle=5
+  pad=0
+  handles=[1, 0, 0, 0, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+}
+CMD_BUF (handle[0]) (size=628):
+  0000: 00 00 00 02 00 00 00 00 22 04 00 00 00 00 00 00
+  0010: 6a f8 ff 00 00 00 00 00 00 98 00 30 00 00 00 00
+  0020: 66 49 02 00 00 00 00 00 00 f8 01 f4 00 00 00 00
+  0030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0040: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0050: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0060: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0090: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  00a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  00b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  00c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  00d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  00e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  00f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0110: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0120: 00 00 00 00 00 00 00 3c 01 00 01 00 01 00 00 00
+  0130: 2a 00 00 00 40 00 00 00 40 00 00 00 01 00 01 00
+  0140: 01 00 00 00 21 a0 00 50 41 20 00 00 01 00 01 00
+  0150: 01 00 00 00 04 00 00 00 00 00 00 00 33 00 00 00
+  0160: 00 00 00 00 00 00 00 00 00 38 01 6c 81 38 03 00
+  0170: 80 38 03 00 00 00 00 00 40 00 00 00 40 00 00 00
+  0180: 00 10 00 00 00 00 00 00 00 00 00 00 40 00 00 00
+  0190: 40 00 00 00 00 10 00 00 00 00 00 00 00 00 00 00
+  01a0: 00 00 00 00 31 20 00 01 30 20 00 00 00 00 00 00
+  01b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  01c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  01d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 48 00 44
+  01e0: 00 00 00 00 72 01 50 01 00 00 00 00 10 00 00 00
+  01f0: 20 04 00 00 00 04 00 00 00 04 00 00 40 04 00 00
+  0200: 10 00 00 00 20 04 00 00 00 04 00 00 00 04 00 00
+  0210: 7a 01 50 00 60 08 00 00 00 00 00 00 00 00 00 00
+  0220: 00 00 00 00 00 00 00 00 00 88 00 0c 00 00 08 00
+  0230: 00 00 00 3c 00 00 00 3c 00 00 80 3f 00 c8 00 10
+  0240: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0250: 00 00 00 00 00 78 01 18 c1 00 00 04 00 00 00 00
+  0260: 40 00 00 00 40 00 00 00 00 10 00 00 00 00 00 00
+  0270: 31 20 00 01
+(1, 64, 1, 1) float16
+[[[[5.]]
+    ...
+  [[5.]]]] 
+```
+
+
+# Improvements
+## (⚠️ AI slop) Suggestions for elementwise_appleane.py (learn from RKNPU version):
 1. Add PASS/FAIL validation with tolerance instead of just printing:
       match = np.allclose(output, expected, atol=0.1)
    print(f"{'PASS' if match else 'FAIL'}")
