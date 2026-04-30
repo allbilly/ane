@@ -1,4 +1,4 @@
-⚠️ Documentations still WIP. Some session in the end are marked as AI Slop. 
+⚠️ Documentations still WIP
 
 # Apple ANE running on Asahi
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/allbilly/ane) 
@@ -185,7 +185,7 @@ python experimental/hwx2.py hwx/sum.hwx -o sum_from_hwx.py
 python sum_from_hex.py
 ```
 
-## 5. (⚠️ AI slop) How to run CONV
+## 5. How to run CONV
 
 ### Via anecc (compiled .ane model)
 
@@ -244,7 +244,7 @@ Both are correct. Non-zero at indices [0, 32, 64] = channels 0/1/2 with values [
 - The input data layout uses STRIDE=32 between channels, matching the firmware's expected layout
 
 
-# 6. (⚠️ AI slop) How to run RELU
+## 6. How to run RELU
 
 ### Via anecc (compiled .ane model)
 
@@ -327,7 +327,7 @@ expected relu = [0. 5. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 
 
 There is no `elementwise_l2.py` — elementwise add needs PE/NE active for actual computation (summing two inputs), which defeats the purpose of the L2 approach. The L2 vs TileDMA comparison is fully demonstrated by `relu.py` vs `relu_l2.py`.
 
-# 7. (⚠️ AI slop) How to run GEMM (Matrix Multiply)
+## 7. How to run GEMM (Matrix Multiply)
 
 Cin=512, Cout=512, uses TileDMA source + KDMA kernel weights. The `__TEXT.__const` section in the original `.hwx` has **all-zero weights** (generated with `np.zeros` for pipeline testing). With injected non-zero weights, GEMM produces correct output:
 
@@ -426,7 +426,7 @@ cp /tmp/hwx_output/test/model.hwx ./gemm.hwx  # or concat.hwx
 
 macOS 12 Monterey (real machine or VM) is only strictly needed for clean elementwise hwx files without any spurious KDMA entries.
 
-# 8. (⚠️ AI slop) How to run CONCAT
+## 8. How to run CONCAT
 
 Cin=16, Cout=16, TileDMA source, 2 inputs (16 + 16384 → 16400 output). Loads kernel data from compiled `.ane` file — anecc handles the KDMA kernel region setup properly.
 
@@ -448,7 +448,7 @@ All 3.0 (tile2): True
 
 The spurious CoeffDMAConfig=0x80 pattern (macOS 14+) is handled by anecc's kernel region setup.
 
-# 9. (⚠️ AI slop) How to run SIGMOID
+## 9. How to run SIGMOID
 
 Cin=1, Cout=1, TileDMA source, KDMA with valid coefficient data. This is the only weight-model that produces correct output through hwx2py.
 
@@ -664,7 +664,6 @@ CMD_BUF (handle[0]) (size=628):
 
 
 # Improvements
-## (⚠️ AI slop) Suggestions for elementwise_appleane.py (learn from RKNPU version):
 1. Add PASS/FAIL validation with tolerance instead of just printing:
       match = np.allclose(output, expected, atol=0.1)
    print(f"{'PASS' if match else 'FAIL'}")
