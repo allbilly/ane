@@ -1,12 +1,14 @@
 # Apple ANE running on Asahi
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/allbilly/ane)
+⚠️ Documentations still WIP. For now u can read the code at [elementwise.py](https://github.com/allbilly/ane/blob/main/examples/elementwise.py) or ask deepwiki [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/allbilly/ane) (it has up to 1 week delay)
 
-- Tested on 
-  - Asahi Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k
-  - Asahi Linux fedora 6.19.11+ built from [my fork of fairy-dust](https://github.com/allbilly/linux/commit/52d22304e89d2995bfa2e678153feffba5dff23a)
-- some scripts in experimental are from [freedomtan/coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx)
-- Thanks for the prior work from [geohotz](https://github.com/geohot) [eiln](https://github.com/eiln) [freedomtan](https://github.com/freedomtan)
+✅ Tested on Asahi Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k
+
+✅ Tested on Asahi Linux fedora 6.19.11+ built from [my fork of fairy-dust branch of asahi linux](https://github.com/allbilly/linux/commit/52d22304e89d2995bfa2e678153feffba5dff23a)
+
+This repo should be the most detailed document out there on using ANE on Asahi Linux.
+
+Thanks for the prior work from [geohotz](https://github.com/geohot) [eiln](https://github.com/eiln) [freedomtan](https://github.com/freedomtan), some scripts in experimental/* are from [freedomtan/coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx)
 
 ## 1. Generate hwx
 
