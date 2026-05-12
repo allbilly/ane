@@ -7,7 +7,7 @@ Thanks for the prior work from [geohotz](https://github.com/tinygrad/tinygrad/tr
 
 TODO
 - Convert [whisper](https://github.com/allbilly/ane/blob/main/.github/workflows/whisper.yml) on MacOS v12
-- Intergrate ANE to tinygrad like my fork on [RK3588 NPU](https://github.com/allbilly/tinygrad/blob/master/tinygrad/runtime/ops_rockchip.py)
+- Intergrate ANE to tinygrad like my fork on [RK3588 NPU](https://github.com/allbilly/tinygrad/blob/rockchip/wip/tinygrad/runtime/ops_rockchip_old.py)
 - Continue eiln effort to [merge ANE kmd to mainline](https://github.com/eiln/ane/issues/4#issuecomment-1899761667)
 - Add ANE support to [mesa](https://gitlab.freedesktop.org/mesa/mesa), which NPU baseline work has been merged by [Tomeu Vizoso](https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/29698)
 - Add MacOS 13+ support to anecc, I have reversed the firmware with GhidraMCP. One extracted parseTD function at [parseTD.cpp](https://github.com/allbilly/ane/blob/main/experimental/parseTD.cpp)
