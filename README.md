@@ -3,7 +3,7 @@
 
 This repo run ops on Apple ANE in NPU register with pure python and numpy on M1 Asahi Linux. No Espresso, No CoreML, no metal, no .mlmodels file, no .hwx file, no ANEcompiler, no private Apple API, no anecc, nothing. Even numpy is optional.
 
-Thanks for the prior work from [geohotz](https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/) [eiln](https://github.com/eiln/ane) [freedomtan](https://github.com/freedomtan/coreml_to_ane_hwx), some scripts in experimental/* are from [freedomtan/coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx)
+Thanks for the prior work from [geohotz](https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/) [eiln](https://github.com/eiln/ane) [freedomtan](https://github.com/freedomtan/coreml_to_ane_hwx) [mdaiter](https://github.com/mdaiter/ane) , some scripts in experimental/* are from [freedomtan/coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx)
 
 TODO
 - Convert [whisper](https://github.com/allbilly/ane/blob/main/.github/workflows/whisper.yml) on MacOS v12
