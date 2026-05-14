@@ -880,7 +880,7 @@ def parse_macho(data):
                     if sectname == "__text" or sectname == "__TEXT":
                         file_off = struct.unpack_from("<I", data, sect_offset + 48)[0]
                         size = struct.unpack_from("<Q", data, sect_offset + 40)[0]
-                        if file_off > 0 and size > 0:
+                        if file_off > 0 and size > 0 and looks_like_task_stream(data[file_off : file_off + size]):
                             return data[file_off : file_off + size]
                     sect_offset += 80
         elif cmd == LC_ANE_MAPPED_REGION: # Custom ANE segment
@@ -890,6 +890,96 @@ def parse_macho(data):
                 return data[file_off : file_off + size]
         offset += cmdsize
     return None
+
+def looks_like_task_stream(data, subtype=4):
+    if len(data) < 40:
+        return False
+
+    is_version = get_instruction_set_version(subtype)
+    if is_version >= 11:
+        h0 = struct.unpack_from("<I", data, 0)[0]
+        task_size = (h0 >> 16) & 0x7ff
+        tid = h0 & 0xffff
+        return tid < 0x1000 and task_size > 0 and task_size * 4 <= len(data)
+
+    h = struct.unpack_from("<8I", data, 0)
+    tid = h[0] & 0xffff
+    return tid < 0x1000 and not (tid == 0 and h[1] == 0 and h[2] == 0)
+
+def find_task_stream(data, subtype=4):
+    # Some .hwx containers use LC_SEGMENT_64 sections for metadata and place the
+    # executable task stream in a later mapped region. Prefer candidates that
+    # contain parseable register stream headers over textual metadata sections.
+    candidates = []
+
+    for off in range(0, len(data) - 40 + 1, 4):
+        h0 = struct.unpack_from("<I", data, off)[0]
+        task_size = (h0 >> 16) & 0x7ff
+        tid = h0 & 0xffff
+        if tid >= 0x1000 or task_size == 0:
+            continue
+        size_bytes = task_size * 4
+        if off + size_bytes > len(data):
+            continue
+
+        words = struct.unpack_from("<10I", data, off)
+        stream_words = data[off + 40 : off + min(size_bytes, 0x200)]
+        stream_score = 0
+        for i in range(0, max(0, len(stream_words) - 4 + 1), 4):
+            w = struct.unpack_from("<I", stream_words, i)[0]
+            addr = w & 0x3ffffff
+            count = (w >> 26) & 0x3f
+            if count <= 0x20 and addr in {
+                H13_COMMON_START, H13_L2_START, H13_PE_START, H13_NE_START,
+                H13_TILEDMA_SRC_START, H13_TILEDMA_DST_START, H13_KERNELDMA_START,
+            }:
+                stream_score += 1
+
+        header_score = int(words[2] < 0x1000000) + int(words[3] < 0x1000000) + int(words[7] == 0)
+        candidates.append((stream_score, header_score, size_bytes, off))
+
+    if not candidates:
+        return None
+
+    candidates.sort(reverse=True)
+    best = candidates[0]
+    if best[0] == 0:
+        return None
+
+    return data[best[3] :]
+
+def load_hwx_data(path, subtype=4):
+    data = None
+
+    if os.path.isdir(path):
+        plist_path = os.path.join(path, "hwx.plist")
+        bin_path = os.path.join(path, "hwx.bin")
+        if os.path.exists(plist_path):
+            with open(plist_path, "rb") as f:
+                try:
+                    plist = plistlib.load(f)
+                    subtype = plist.get("ANE_CPU_SUBTYPE", subtype)
+                except Exception:
+                    pass
+        if os.path.exists(bin_path):
+            with open(bin_path, "rb") as f:
+                data = f.read()
+    else:
+        with open(path, "rb") as f:
+            data = f.read()
+
+    if not data:
+        return None, subtype
+
+    ane_data = parse_macho(data)
+    if not ane_data:
+        magic = struct.unpack_from("<I", data, 0)[0]
+        if magic == HWX_MAGIC:
+            ane_data = find_task_stream(data, subtype) or data[16:]
+        else:
+            ane_data = find_task_stream(data, subtype)
+
+    return ane_data, subtype
 
 def main():
     import argparse
@@ -901,38 +991,7 @@ def main():
     
     path = args.path
     subtype = args.subtype
-    data = None
-
-    if os.path.isdir(path):
-        plist_path = os.path.join(path, "hwx.plist")
-        bin_path = os.path.join(path, "hwx.bin")
-        if os.path.exists(plist_path):
-            with open(plist_path, "rb") as f:
-                try:
-                    plist = plistlib.load(f)
-                    subtype = plist.get("ANE_CPU_SUBTYPE", 7)
-                except: pass
-        if os.path.exists(bin_path):
-            with open(bin_path, "rb") as f: data = f.read()
-    else:
-        with open(path, "rb") as f: data = f.read()
-        
-    if not data:
-        print(f"Error: Could not read HWX data from {path}")
-        return
-
-    ane_data = parse_macho(data)
-    if not ane_data:
-        magic = struct.unpack_from("<I", data, 0)[0]
-        if magic == HWX_MAGIC:
-            ane_data = data[16:]
-        else:
-            for o in range(0, min(len(data), 0x1000) - 40, 4):
-                h = struct.unpack_from("<I", data, o)[0]
-                tid = h & 0xffff
-                if 0 < tid < 0x1000:
-                    ane_data = data[o:]
-                    break
+    ane_data, subtype = load_hwx_data(path, subtype)
     
     if ane_data:
         parse_hwx(ane_data, subtype, args.json)

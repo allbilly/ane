@@ -1,11 +1,13 @@
-import struct
 import sys
-from hwx_parsing import parse_hwx
+from hwx_parsing import parse_hwx, load_hwx_data
 
-with open(sys.argv[1], 'rb') as f:
-    hwx = f.read()
-    
-# Parse from offset 0x4000 (tsk_start)
-correct_data = hwx[0x4000:]
-print('=== Parsing sum.hwx from offset 0x4000 (correct) ===')
-parse_hwx(correct_data, subtype=4, dump_json=False)
+if len(sys.argv) < 2:
+    raise SystemExit(f"Usage: {sys.argv[0]} PATH [SUBTYPE]")
+
+subtype = int(sys.argv[2]) if len(sys.argv) > 2 else 4
+ane_data, subtype = load_hwx_data(sys.argv[1], subtype)
+if not ane_data:
+    raise SystemExit(f"Error: could not identify HWX command stream in {sys.argv[1]}")
+
+print(f"=== Parsing {sys.argv[1]} ===")
+parse_hwx(ane_data, subtype=subtype, dump_json=False)
