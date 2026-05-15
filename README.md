@@ -132,9 +132,11 @@ PR adding new ops to examples are more than welcome.
 
 ## 1. Generate mlmodel and hwx
 
-### Using any macOS >= 12
+### Using MacOS 12.4 VM
 
-Generate hwx with any macOS version (12, 14, 26+ all work):
+UTM install macos https://ipsw.me/macOS/12.4/
+- version gucessed from last commit time in [eiln/anecc](https://github.com/eiln/anecc), it worked. Other MacOS version < 14 might works too.
+- hwx gernerated by different MacOS are doucmented [macos_hwx.md](https://github.com/allbilly/ane/blob/main/macos_hwx.md)
 
 ```bash
 python gen_mlmodel.py test.mlmodel
@@ -147,20 +149,17 @@ Working hwx example in hwx/*
 - sum.hwx is from https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/ops
 - mul.hwx if from MacOS Monterey VM (v12.4 21F79) running on M4 macbook air 
 
-**macOS version compatibility**: macOS >= 14 generates H13-format HWX with spurious KDMA entries (harmless noise for elementwise ops). macOS 26 adds extra `probs/src` metadata stabs — fixed by `anecc`'s `_anecc_get_nchw()` filtering names containing `/`. The compiled `.ane` files differ by only 2 bytes in a debug register. See [`problem.md`](problem.md) and [`macos_hwx.md`](macos_hwx.md) for details.
 
 ### No access to MacOS (Github action) 
 
 Check the gihub action config [ane-generation.yml](https://github.com/allbilly/ane/blob/main/.github/workflows/ane-generation.yml), trigger manually and go to actions/runs/_runid_/ -> Artifacts -> download and unzip
-- ⏳ Pending: macOS 14 is the oldest GH action runner. Fix is identified (stab-filter in `anecc`, see [`problem.md`](problem.md)) but not yet tested in CI.
-- If you have no access to any MacOS, you can use pre-generated .hwx [here](https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/ops)
+- ❌ Not working now, sadly [macos14](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) is the oldest macos version on GH action, which is not yet supported by anecc, you need MacOS 12.4 VM
+- If you have no access to Macos 12, you can only use pre-generated .hwx [here](https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/ops)
 
 ## 2. (Optional) Parse hwx 
 ```bash
 python parse.py hwx/sum.hwx          # H13 (M1/M4), default
-python parse.py mul_h16_macos26.hwx 7 # H16 (A17 Pro/M4), explicit subtype
-```
-
+python parse.py mul_h16_macos26.hwx 7 # H16 (A17 Pro/M4), explicit subtype```
 **Subtype**: default is 4 (H13). For H16-format HWX generated on macOS >= 26 for newer ANE, pass `7`. The parser auto-detects H13 vs H16 from the subtype value — it doesn't auto-detect from the binary.
 
 ## 3. Convert and run ane 
