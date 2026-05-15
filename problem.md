@@ -52,3 +52,50 @@ macOS 26 generates two HWX variants:
 - ANECompiler: MPS dialect v1, SPI v1, validate network v2
 - Struct sizes identical to macOS 14 — ABI is stable
 - HWX file sizes: macOS 12 = 65536 bytes, macOS 26 = 81920 bytes
+
+
+
+› Here's the complete detailed breakdown:
+  What changed in anecc
+  Single change: _anecc_get_nchw() in anecc/__init__.py:167
+  # Before (line 165-166):
+  nchw_l = []
+  for i,stab in enumerate(stabs):
+      nchw = stab.split(":")[1:-1]
+  # After:
+  nchw_l = []
+  for i,stab in enumerate(stabs):
+      name = stab.split(":t", 1)[0]
+      if "/" in name:
+          logger.debug("STAB%d: %s: skipping (intermediate)" % (i, name))
+          continue
+      nchw = stab.split(":")[1:-1]
+  macOS 12 stabs: image, image2, probs → 3
+  macOS 26 stabs: image, image2, probs/src, probs → 4
+  probs/src is an intermediate source-alias buffer that macOS 26's coreml2hwx adds. It contains / in its name, unlike real IO buffers. Filtering it out restores len(nchw)
+  = 3 = src_count(2) + dst_count(1).
+  How to generate and compare
+  # 1. Generate .ane from macOS 12 HWX
+  anecc mul_m4.hwx -o /tmp/macos12.ane
+  # → anecc::info: found input 1/2: (1, 64, 1, 1)
+  # → anecc::info: found input 2/2: (1, 64, 1, 1)
+  # → anecc::info: found output 1/1: (1, 64, 1, 1)
+  # 2. Generate .ane from macOS 26 HWX (needs the fix above)
+  anecc mul_m4_macos26.hwx -o /tmp/macos26.ane
+  # → same output
+  # 3. Compare
+  ls -la /tmp/macos12.ane /tmp/macos26.ane
+  # both 20992 bytes
+  diff <(xxd /tmp/macos12.ane) <(xxd /tmp/macos26.ane)
+  # output: only 1 line differs
+  # 258c258
+  # < 00001010: 6af8 ff00 0000 0000 0098 0030 0000 0000
+  # ---
+  # > 00001010: fffb ff00 0000 0000 0098 0030 0000 0000
+  What differs
+  At file offset 0x1010 (payload offset 0x10 — the W4 register = debug_log_events in the TD header):
+  File  Value   Register
+  macOS 12 .ane 0x00fff86a      debug_log_events=0xfff86a
+  macOS 26 .ane 0x00fffbff      debug_log_events=0xfffbff
+  Everything else (header, NCHW metadata, stride configs, tile layout, kernel weights) is byte-identical. This is a cosmetic compiler difference — the debug event mask
+  doesn't affect computation. , is it true for the current *.ane, or i need patch anecc
