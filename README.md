@@ -7,6 +7,8 @@ Thanks for the prior work from [geohotz](https://github.com/tinygrad/tinygrad/tr
 
 ANE detailed hardware and patent analysis by [Maynard Handley](https://github.com/name99-org/AArch64-Explore/blob/main/vol7%20ANE.nb.pdf)
 
+register programming, conv, conv_int8, layernorm, softmax by [MidasMulli](https://github.com/MidasMulli/ane-compiler/blob/9e615ee9cbb375a36037e73e7f9be3c2b75368c1/src/emitter.py#L105-L126) and [opcode](https://github.com/MidasMulli/ane-compiler/blob/9e615ee9cbb375a36037e73e7f9be3c2b75368c1/demo_guaranteed_ane.py#L45-L67) and HWX format[BEEFFACE](https://github.com/MidasMulli/beefface)
+
 TODO
 - mac12 run hwx  
 - Convert [whisper](https://github.com/allbilly/ane/blob/main/.github/workflows/whisper.yml) on MacOS v12
