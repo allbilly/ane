@@ -1,5 +1,59 @@
 # macOS 14/26 HWX Compatibility Problems
 
+## Current HWX Problem Statement
+
+We are trying to make a simple CoreML-generated elementwise MUL HWX usable both:
+
+- on macOS, through Apple's private HWX runtime path (`run_hwx_with_ane_client`)
+- on Asahi/Linux, after conversion to an `.ane` command buffer
+
+The important current finding is that a single system HWX file is enough for the macOS private runner. Copying a known-good system model such as:
+
+```bash
+/System/Library/PrivateFrameworks/VideoProcessing.framework/Versions/A/Resources/cnn_frame_enhancer_320p.H13.espresso.hwx
+```
+
+to `/tmp` still runs. Removing nearby `/tmp` companion metadata does not stop it. So the direct macOS runner does **not** require a full Espresso bundle at runtime for this path; the HWX itself contains enough program information.
+
+Our generated `/tmp/hwx_output/mul/model.hwx` is different: it is generated successfully from:
+
+```text
+/tmp/mul.mlmodel
+/tmp/espresso_ir_dump/net.plist
+/tmp/espresso_ir_dump/net.precompilation_info
+/tmp/espresso_ir_dump/net_aux.json
+/tmp/espresso_ir_dump/net.additional.weights
+```
+
+but does not behave like the system `.H13.espresso.hwx` under the macOS private runner. This means the problem is now more likely in the **compile inputs/options used to produce the HWX**, not in missing runtime companion files.
+
+Current suspected missing piece:
+
+```text
+OptionsFilePath -> net_options.plist
+```
+
+We should reconstruct the expected `net_options.plist` schema instead of passing random flags. Candidate fields seen in system-style metadata / notes include:
+
+```text
+ane_compiler_batch = 1
+anec_flags = SpatialSplitGenericDAG
+compress_sparse = 1
+per_network_configuration = 1
+export_method = Photon-v0.12.1
+ModuleCompilationFlags = ...
+```
+
+Open experiment:
+
+1. Generate `/tmp/espresso_ir_dump/net_options.plist` with the expected schema.
+2. Pass it through `OptionsFilePath` in `coreml_to_ane_hwx/coreml_util.m`.
+3. Recompile `/tmp/hwx_output/mul/model.hwx`.
+4. Compare against the working system `cnn_frame_enhancer_320p.H13.espresso.hwx` at the structural level: compiler strings, Mach-O sections, TD offset/size/magic, and register blocks.
+5. Test the regenerated HWX with `run_hwx_with_ane_client`.
+
+This is separate from `ANE-LM` / `_ANEInMemoryModel`: those APIs compile MIL text to in-memory ANE kernels and do not directly answer the static `.hwx` compile-options problem.
+
 ## Current verified artifacts
 
 The local `mul` artifacts show three different compiler generations:
@@ -94,6 +148,10 @@ CoeffDMAConfig[0..15] = 0
 CoeffBfrSize[0..15] = 0
 ```
 
+For Asahi conversion, these spurious registers can matter because they become part of the emitted `.ane` command buffer unless the converter normalizes them. The raw generated `.ane` files are not currently a "2-byte difference" case; local comparisons show dozens or hundreds of byte differences depending on which macOS-generated HWX is used.
+
+The logical reason output becomes `0.0` is that the macOS 14/26 elementwise HWX advertises coefficient/kernel DMA state even though elementwise MUL should not need a coefficient load. The hardware/runtime can then execute the PE MUL path with bogus NE/KDMA state, effectively feeding/using invalid coefficient-related state and producing zero instead of `2.0 * 3.0 = 6.0`.
+
 ## How to test `mul_macos14.hwx` on Asahi
 
 On an Asahi machine with `/dev/accel/accel0` and the ANE KMD installed:
@@ -166,7 +224,12 @@ macOS 26 generates two HWX variants:
 - `anecc` v1.0.9
 - ANECompiler: MPS dialect v1, SPI v1, validate network v2
 - Struct sizes identical to macOS 14 — ABI is stable
-- HWX file sizes: macOS 12 = 65536 bytes, macOS 26 = 81920 bytes
+- Current local `mul` HWX sizes:
+  - `hwx/mul.hwx` macOS 12 clean H13: 49152 bytes
+  - `hwx/mul_macos14.hwx`: 49152 bytes
+  - `hwx/mul_macos26_m1.hwx`: 65536 bytes
+  - `hwx/mul_macos26_h13.hwx`: 65536 bytes
+- The earlier note "HWX file sizes: macOS 12 = 65536 bytes, macOS 26 = 81920 bytes" is not true for the current local `mul` files.
 
 
 

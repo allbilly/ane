@@ -5,7 +5,10 @@ This repo run ops on Apple ANE in NPU register with pure python and numpy on M1 
 
 Thanks for the prior work from [geohotz](https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/) [eiln](https://github.com/eiln/ane) [freedomtan](https://github.com/freedomtan/coreml_to_ane_hwx) [mdaiter](https://github.com/mdaiter/ane) , some scripts in experimental/* are from [freedomtan/coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx)
 
+ANE detailed hardware and patent analysis by [Maynard Handley](https://github.com/name99-org/AArch64-Explore/blob/main/vol7%20ANE.nb.pdf)
+
 TODO
+- mac12 run hwx  
 - Convert [whisper](https://github.com/allbilly/ane/blob/main/.github/workflows/whisper.yml) on MacOS v12
 - Intergrate ANE to tinygrad like my fork on [RK3588 NPU](https://github.com/allbilly/tinygrad/blob/rockchip/wip/tinygrad/runtime/ops_rockchip_old.py)
 - Continue eiln effort to [merge ANE kmd to mainline](https://github.com/eiln/ane/issues/4#issuecomment-1899761667)
@@ -157,6 +160,15 @@ Working hwx example in hwx/*
 - sum.hwx is from https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/ops
 - mul.hwx if from MacOS Monterey VM (v12.4 21F79) running on M4 macbook air 
 
+Side note, you can run compatible HWX files on macOS through the private `_ANEClient` path.
+The HWX must match the machine/driver generation and normally needs its companion Espresso metadata files beside it. 
+
+```bash
+cd coreml_to_ane_hwx/ane
+make run_hwx_with_ane_client
+./run_hwx_with_ane_client \
+  /System/Library/PrivateFrameworks/VideoProcessing.framework/Versions/A/Resources/cnn_frame_enhancer_320p.H13.espresso.hwx
+```
 
 ### No access to MacOS (Github action) 
 
@@ -167,7 +179,8 @@ Check the gihub action config [ane-generation.yml](https://github.com/allbilly/a
 ## 2. (Optional) Parse hwx 
 ```bash
 python parse.py hwx/sum.hwx          # H13 (M1/M4), default
-python parse.py mul_h16_macos26.hwx 7 # H16 (A17 Pro/M4), explicit subtype```
+python parse.py mul_h16_macos26.hwx 7 # H16 (A17 Pro/M4), explicit subtype
+```
 **Subtype**: default is 4 (H13). For H16-format HWX generated on macOS >= 26 for newer ANE, pass `7`. The parser auto-detects H13 vs H16 from the subtype value — it doesn't auto-detect from the binary.
 
 ## 3. Convert and run ane 
