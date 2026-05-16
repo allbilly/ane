@@ -1,4 +1,23 @@
-# macOS 26 HWX Compatibility Problems
+# macOS 14/26 HWX Compatibility Problems
+
+## Current verified artifacts
+
+The local `mul` artifacts show three different compiler generations:
+
+| File | ANECompiler | HWX size | TD offset | TD size | TD magic | Notes |
+|------|-------------|----------|-----------|---------|----------|-------|
+| `hwx/mul.hwx` | `zin_ane_compiler v5.4.1` | 49152 | `0x4000` | `0x274` | `0xf401f800` | Known-good macOS 12 clean old H13 |
+| `hwx/mul_macos14.hwx` | `zin_ane_compiler v7.6.4` | 49152 | `0x4000` | `0x274` | `0xf401f800` | Old H13 layout plus spurious KDMA/NE |
+| `hwx/mul_macos26_m1.hwx` | `zin_ane_compiler v9.509.0` | 65536 | `0x8000` | `0x1f8` | `0x4401f800` | Compact alternate H13 TD plus spurious KDMA/NE |
+| `hwx/mul_macos26_h13.hwx` | `zin_ane_compiler v9.509.0` | 65536 | `0x8000` | `0x1f8` | `0x4401f800` | Newly generated; differs from `mul_macos26_m1.hwx` only by embedded output path |
+
+All four HWX files are CPU subtype `4`, i.e. H13/A14/M1 format. The macOS 26 files are still H13, but use a compact alternate task descriptor.
+
+Compiler version can be checked with:
+
+```bash
+strings -a hwx/mul_macos14.hwx | rg -i "ANEC v|zin_ane_compiler|ModuleVersion|ModuleBundleName"
+```
 
 ## Problem 1: `anecc` assertion failure on macOS 26 HWX
 
@@ -8,7 +27,9 @@
 assert(len(res.nchw) == (src_count + dst_count))
 ```
 
-**Root cause**: macOS 26's `coreml2hwx` adds an extra `probs/src` intermediate buffer metadata entry to the HWX Mach-O strings section. macOS 12 HWX has 3 stabs (`image`, `image2`, `probs`); macOS 26 HWX has 4 stabs (`image`, `image2`, `probs/src`, `probs`). `anecc` expects `len(nchw) == 3` (2 inputs + 1 output) but gets 4.
+**Root cause**: Some macOS 26 `coreml2hwx` outputs add an extra `probs/src` intermediate buffer metadata entry to the HWX Mach-O strings section. macOS 12 HWX has 3 stabs (`image`, `image2`, `probs`); affected macOS 26 HWX has 4 stabs (`image`, `image2`, `probs/src`, `probs`). `anecc` expects `len(nchw) == 3` (2 inputs + 1 output) but gets 4.
+
+Note: the currently regenerated local files `hwx/mul_macos26_m1.hwx` and `hwx/mul_macos26_h13.hwx` only contain 3 stabs (`image`, `image2`, `probs`), so this bug is not triggered by those exact files. The filter is still the correct defensive fix for affected macOS 26 artifacts.
 
 **Fix**: In `_anecc_get_nchw()`, filter out stabs whose names contain `/` (like `probs/src`). Real input/output tensor names never use `/`.
 
@@ -22,14 +43,108 @@ assert(len(res.nchw) == (src_count + dst_count))
  		nchw = stab.split(":")[1:-1]
 ```
 
-**Also required**: The original egg (v1.0.9 installed) has a much more robust implementation than the GitHub clone — it includes `_parse_hwx_macho()`, `_try_parse_text_layout()`, `TD_MAGIC_ALT = 0x4401f800`, and smarter buffer scanning. The GitHub clone at `https://github.com/eiln/anecc` is an older, simpler version that lacks these fixes and will also fail on macOS 12 HWX.
+**Also required for compact macOS 26 H13 TDs**: `anecc` must handle `TD_MAGIC_ALT = 0x4401f800` and `td_size = tsk_size = 0x1f8`. The older/simple GitHub clone assumes the old H13 `0xf401f800` / `0x274` layout and fails before it reaches NCHW validation.
 
 | File | stabs | Expected | Result |
 |------|-------|----------|--------|
 | `mul_m4.hwx` (macOS 12) | 3 | 3 | ✅ Works |
 | `mul_m4_macos26.hwx` (macOS 26) | 4 | 3 | ✅ Fixed (filters `probs/src`) |
 
-## Problem 2: `parse.py` default subtype breaks H16-format HWX
+## Problem 2: macOS 14/26 spurious KDMA/NE state for elementwise MUL
+
+`hwx/mul.hwx` and `hwx/mul_macos14.hwx` use the same old H13 TD layout and the same functional PE elementwise MUL path. Decoded with the offsets from `examples/elementwise.py`, the key functional fields are identical:
+
+| TD offset | Field | Value |
+|-----------|-------|-------|
+| `0x22c` | `PECfg` | `0x00080004` (`OpMode=1`, MUL) |
+| `0x128` | `InDim` | `0x00010001` |
+| `0x134` | `Cin` | `0x40` |
+| `0x138` | `Cout` | `0x40` |
+| `0x178` | `SrcRowStride` | `0x40` |
+| `0x260` | `DstRowStride` | `0x40` |
+
+The differences are header/noise plus spurious KDMA/NE fields:
+
+| TD offset | Field | `mul.hwx` | `mul_macos14.hwx` |
+|-----------|-------|-----------|-------------------|
+| `0x008` | `W2/ExeCycles` | `0x00000422` | `0x0000042a` |
+| `0x020` | `W8/base_ene` | `0x000249a5` | `0x00026964` |
+| `0x034..0x070` | `CoeffDMAConfig[0..15]` | `0` | `0x80` |
+| `0x0b4..0x0f0` | `CoeffBfrSize[0..15]` | `0` | `0x40` |
+| `0x1ac` | `SrcPadStream/pad9` | `0` | `0x100` |
+| `0x240` | `KernelCfg` | `0` | `0x80` |
+| `0x244` | `MACCfg` | `0` | `0x00100000` |
+
+`hwx/mul.hwx` has `MACCfg=0`; the MUL operation is encoded by `PECfg OpMode=1`. `examples/elementwise.py mul` additionally patches `MACCfg=0x30`, but that is not present in the raw `hwx/mul.hwx`.
+
+The previously documented statement that compiled `.ane` files differ by "only 2 bytes" is not correct for raw files. Actual local comparison:
+
+| Comparison | Result |
+|------------|--------|
+| `hwx/mul.ane` vs `hwx/mul_macos14.ane` | same size, 46 differing bytes |
+| `hwx/mul.ane` vs `hwx/mul_macos26_h13.ane` | macOS 26 `.ane` is 128 bytes smaller; 203 differing bytes in shared prefix |
+| `hwx/mul_macos26_m4.ane` vs `hwx/mul_macos26_h13.ane` | byte-identical |
+
+The practical fix for elementwise `mul_macos14` is not "2 bytes"; it is cleaning the spurious KDMA/NE register state:
+
+```text
+KernelCfg = 0
+MACCfg = 0
+CoeffDMAConfig[0..15] = 0
+CoeffBfrSize[0..15] = 0
+```
+
+## How to test `mul_macos14.hwx` on Asahi
+
+On an Asahi machine with `/dev/accel/accel0` and the ANE KMD installed:
+
+1. Convert the raw macOS 14 HWX with `anecc`:
+
+```bash
+anecc hwx/mul_macos14.hwx -o hwx/mul_macos14.ane
+python run.py hwx/mul_macos14.ane
+```
+
+Expected result if raw spurious KDMA/NE is harmless on that stack:
+
+```text
+6.0
+```
+
+Likely failure mode if the hardware honors the bogus KDMA state:
+
+```text
+0.0
+```
+
+2. Test the direct-register reference:
+
+```bash
+python examples/elementwise.py mul
+```
+
+Expected:
+
+```text
+6.0
+```
+
+3. Generate and run a cleaned command buffer from the macOS 14 HWX:
+
+```bash
+python experimental/hwx2py.py hwx/mul_macos14.hwx --clean -o /tmp/mul14_clean.py
+python /tmp/mul14_clean.py
+```
+
+Expected:
+
+```text
+output[0] = 6.0
+```
+
+If raw `mul_macos14.ane` fails but `examples/elementwise.py mul` and the cleaned `hwx2py` script pass, the incompatibility is isolated to the spurious KDMA/NE fields rather than shape, tiling, L2, PE, or TileDMA setup.
+
+## Problem 3: `parse.py` default subtype breaks H16-format HWX
 
 macOS 26 generates two HWX variants:
 - **H13 format** (`mul_m4_macos26.hwx`): Parses correctly with default subtype=4
@@ -43,7 +158,7 @@ macOS 26 generates two HWX variants:
 | `mul_h16_macos26.hwx` | ❌ Garbage (6 regs) | ✅ Full H16 parse |
 | `mul_h16_macos26_nodebug.hwx` | ❌ Garbage (6 regs) | ✅ Full H16 parse |
 
-**Spurious KDMA pattern** (same on macOS 14 and 26): `KernelCfg=0x80`, `MACCfg=0x00100000`, 16× `CoeffDMAConfig=0x80`. Fix via `hwx2py --clean` as documented in `macos_hwx.md`.
+**Spurious KDMA pattern** (same on macOS 14 and 26 for elementwise): `KernelCfg=0x80`, `MACCfg=0x00100000`, 16× `CoeffDMAConfig=0x80`. Fix via `hwx2py --clean` or by normalizing the TD as documented above.
 
 ## System Info
 
