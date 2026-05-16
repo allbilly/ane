@@ -97,6 +97,14 @@ cd ane && sh run.sh install
 ```
 if make failed, git clone my fork and retry https://github.com/allbilly/libane
 
+Note: After dnf update / kernel update, the boot.bin is replaced and external monitor and ANE device tree was no longer supported.
+run theses install command again
+```
+sudo make modules_install
+sudo make dtbs_install
+sudo make install
+sudo reboot
+```
 
 ## 2. Run examples
 
