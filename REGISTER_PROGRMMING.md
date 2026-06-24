@@ -587,3 +587,27 @@ This explains the expt3 test ordering artifact: in earlier runs, `MACCfg=0` was 
 - **conv/gemm** still need `KernelCfg=0x82` (their compute mode requires it)
 - The actual NE enable for nonlinear ops is `MACCfg[20]` (reserved bit), not `KernelCfg[7]`
 **Cross-firmamily register-only conversion is NOT possible** — different BTSP firmware programs encode different data flow operations. The attempt causes ANE HANG.
+## Cross-reference to the ane-guide register map (M1/H13)
+
+ane-guide.readthedocs.io. These offsets are into the BTSP buffer; the guide's are into the ZinAneTdHw image. Not a single shift: the common/dimension block lines up at +0x34, the DMA/L2/PE blocks are ordered differently and map by function.
+
++0x34, two values byte-identical:
+
+| reg (BTSP) | value | guide field (image) |
+|---|---|---|
+| InDim @0x128 | 0x0001004d | Win@0xf4 / Hin@0xf6 (15-bit) |
+| Cin @0x134 | 0x01 | Cin@0x100 (17-bit) |
+| Cout @0x138 | 0x01 | Cout@0x104 (17-bit) |
+| TaskInfo @0x160 | 0x00100000 | CommonTaskType@0x12c |
+| ConvCfg | 0x5000a021 | op-config word |
+| pad2 | 0x2041 | kernel-common record (0x5021 -> 0x2041) |
+
+7 register groups; the BTSP blocks map as: Common -> dimensions + kernel/common, TileDMA Src/Dst -> tile DMA (0x4d00), L2 -> L2/texture (0x4500) + L2-result (0x5100), PE -> elementwise/planar (0x4100) + kernel-fmt/op-mode (0x4900).
+
+From the guide:
+- op-config words: conv 0x5042a063, matmul 0x5000b021 (the ConvCfg here, 0x5000a021, is the third).
+- Cin/Cout 17-bit (max 131071), spatial 15-bit.
+- bias/post-scale stream relocations 0x1554 / 0x1558; loader-patched tile bases 0x1344 / 0x134a / 0x1442.
+- strides are 16-byte-granule multiples (0xc0/0xa0/0x40 = 12/10/4); L2 is 64 banks, max stride 2 MB.
+
+Per-byte offsets inside the DMA/L2/PE groups aren't in the published guide (research corpus).
