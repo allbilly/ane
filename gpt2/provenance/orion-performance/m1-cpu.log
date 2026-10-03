@@ -1,0 +1,18 @@
+Loading tokenizer...
+tokenizer: loaded 50257 vocab, 49992 merges
+Loading weights from model/blobs/gpt2_124m...
+Weights loaded in 125.9 ms
+Prompt: "Hello world" → 2 tokens
+Prefilling 2 tokens (CPU)...
+Prefill: 52.7 ms (26.3 ms/token)
+Decoding (CPU)...
+
+Prompt tokens: 2, Generated tokens: 16, Backend: CPU
+
+--- Orion Performance ---
+  Prefill:           52.7 ms
+  Decode p50:        16.2 ms/tok
+  Decode p90:        20.4 ms/tok
+  Throughput:        58.7 tok/s
+  RSS:            587.7 MB
+-------------------------

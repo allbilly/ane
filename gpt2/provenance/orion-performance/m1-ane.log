@@ -1,0 +1,20 @@
+Loading tokenizer...
+tokenizer: loaded 50257 vocab, 49992 merges
+Loading weights from model/blobs/gpt2_124m...
+Weights loaded in 84.9 ms
+Prompt: "Hello world" → 2 tokens
+Prefilling 2 tokens (ANE)...
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 25 new compiles (25 programs cached, 25 compiles total)
+Prefill: 5006.6 ms (2503.3 ms/token)
+Decoding (ANE)...
+
+Prompt tokens: 2, Generated tokens: 16, Backend: ANE full
+
+--- Orion Performance ---
+  Prefill:         5006.6 ms
+  Decode p50:        15.7 ms/tok
+  Decode p90:        24.7 ms/tok
+  Throughput:         4.6 tok/s
+  RSS:            605.8 MB
+-------------------------

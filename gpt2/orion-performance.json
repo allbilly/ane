@@ -1,0 +1,105 @@
+{
+  "format_version": 1,
+  "scope": "Saved Orion macOS reference timings; not a benchmark of the Python port or Asahi",
+  "local_host": "Apple M1 / H13G",
+  "dump_macos_version": "27.0.1",
+  "local_runs": [
+    {
+      "backend": "Orion CPU",
+      "source": "ablation/final-verification/cpu.log",
+      "log": "provenance/orion-performance/m1-cpu.log",
+      "log_sha256": "7fc5741e4c3843b3873a5155b068ffd8bdbff37ebc72a83e842715c9a60d35d6",
+      "prompt": "Hello world",
+      "prompt_tokens": 2,
+      "generated_tokens": 16,
+      "prefill_ms": 52.7,
+      "decode_p50_ms": 16.2,
+      "decode_p90_ms": 20.4,
+      "reported_decode_throughput_tok_s": 58.7,
+      "cpu_fallback": false,
+      "output_sha256": "ab573fd07f2a33553ba0b67667ed79338b95a249d7d845630e5776a1f35a2d03"
+    },
+    {
+      "backend": "Orion ANE projection/FFN plus CPU attention",
+      "source": "ablation/final-verification/ane.log",
+      "log": "provenance/orion-performance/m1-ane.log",
+      "log_sha256": "9cc5daec8b1897eb402fd7020353fd321836241074a1de500b90903763711cc0",
+      "prompt": "Hello world",
+      "prompt_tokens": 2,
+      "generated_tokens": 16,
+      "prefill_ms": 5006.6,
+      "decode_p50_ms": 15.7,
+      "decode_p90_ms": 24.7,
+      "reported_decode_throughput_tok_s": 4.6,
+      "cpu_fallback": false,
+      "output_sha256": "ab573fd07f2a33553ba0b67667ed79338b95a249d7d845630e5776a1f35a2d03"
+    }
+  ],
+  "outputs_identical": true,
+  "timing_method": {
+    "throughput": "1000 * decode sample count / sum(decode sample milliseconds)",
+    "prefill_excluded_from_decode_throughput": true,
+    "first_decode_compilation_included": true,
+    "explicit_warmup": false,
+    "sampling_and_printing_excluded": true,
+    "orion_times_final_decode_step": true,
+    "source": "Orion apps/cli/commands/infer.m and core/profiler.m",
+    "interpretation": "The saved 16-step aggregate includes lazy compilation. See local_prewarmed_reference for a separate measured run with zero timed compiles."
+  },
+  "upstream_m4_max_reference": {
+    "source": "Orion RESULTS.md, Inference (GPT-2 124M, M4 Max)",
+    "source_sha256": "a6dab0ca8adfb14b08ee82b8472f7554c99fa78efb68a464b1281f699e4a6f25",
+    "local_orion_commit": "4dcc1c2a626c9ee1f35576bd0b290d489db17d08",
+    "hardware": "Mac Studio M4 Max 64GB",
+    "measurement_kind": "upstream-reported, not measured on our M1",
+    "cpu_decode_tok_s": 283,
+    "cpu_decode_p50_ms": 3.5,
+    "ane_decode_tok_s_lower_bound": 170,
+    "ane_decode_ms": 5.78
+  },
+  "port_performance": {
+    "macos_ane_benchmark": null,
+    "asahi_ane_benchmark": null,
+    "note": "Port validation fixtures establish numerical parity, not throughput."
+  },
+  "local_prewarmed_reference": {
+    "report": "provenance/orion-performance/m1-prewarmed.json",
+    "report_sha256": "b6535a6fe91660667788356bb688dfe33b3ebd71035fa3b7d0ea1c17e4a9a545",
+    "log": "provenance/orion-performance/m1-prewarmed.log",
+    "log_sha256": "9debdd8077905e5c694205d21e7095a7a64e557285dfce378721be1c402c6186",
+    "scope": "Native Orion on base M1 macOS, fixed teacher-forced shared trace; not Python port or Asahi",
+    "steps_per_trial": 64,
+    "trials_per_backend": 5,
+    "timed_compiles": 0,
+    "cached_programs": 49,
+    "warmup_ms_excluded": {
+      "cpu": 257.0619999989867,
+      "ane": 7938.317000001669
+    },
+    "backends": {
+      "cpu": {
+        "decode_steps_per_second": 69.82112699968958,
+        "decode_mean_ms": 14.322312500118278,
+        "decode_p50_ms": 14.130000002682209,
+        "decode_p90_ms": 14.736000001430511,
+        "prefill_mean_ms": 29.751800000667572,
+        "top1_mismatches": 0,
+        "max_normalized_logit_rmse": 0,
+        "max_abs_logit_error": 0
+      },
+      "ane": {
+        "decode_steps_per_second": 61.40911268950199,
+        "decode_mean_ms": 16.28422812516801,
+        "decode_p50_ms": 16.207999996840954,
+        "decode_p90_ms": 17.162000000476837,
+        "prefill_mean_ms": 35.29100000113249,
+        "top1_mismatches": 0,
+        "max_normalized_logit_rmse": 0.2918339350982155,
+        "max_abs_logit_error": 4.154621124267578
+      }
+    },
+    "cpu_throughput_ratio_to_ane": 1.1369831600192726,
+    "full_logit_parity": false,
+    "note": "All 320 ANE argmax checks match the shared CPU trace, but ANE-prefill-path logits exceed the 0.005 RMSE diagnostic threshold. Eight untimed ANE decode steps with CPU-created prompt KV stay below 0.00149 RMSE; the full-prefill path needs investigation."
+  }
+}

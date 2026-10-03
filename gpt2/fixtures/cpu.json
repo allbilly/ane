@@ -1,0 +1,41 @@
+[
+  {
+    "prompt": "Hello world",
+    "tokens": [
+      15496,
+      995
+    ],
+    "logits": "fixtures/cpu-0.bin",
+    "backend": "Orion CPU full forward (Accelerate), independent of Python incremental port"
+  },
+  {
+    "prompt": "The capital of France is",
+    "tokens": [
+      464,
+      3139,
+      286,
+      4881,
+      318
+    ],
+    "logits": "fixtures/cpu-1.bin",
+    "backend": "Orion CPU full forward (Accelerate), independent of Python incremental port"
+  },
+  {
+    "prompt": "Hello world, I'm not sure what to say.",
+    "tokens": [
+      15496,
+      995,
+      11,
+      314,
+      1101,
+      407,
+      1654,
+      644,
+      284,
+      910,
+      13
+    ],
+    "logits": "fixtures/cpu-2.bin",
+    "backend": "Orion CPU full forward (Accelerate), independent of Python incremental port"
+  }
+]

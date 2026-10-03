@@ -1,0 +1,137 @@
+{
+  "kernel": "prefill_final_ln_L-1",
+  "td_count": 10,
+  "td_size": 504,
+  "tsk_size": 16384,
+  "program": "objects/878a771ebc44341295e678ddfce6fd1efabb5d6560024006f62f2742daa95929.bin",
+  "weights": "objects/3ec5e7ae0bd6d477d0c022f45db17795e60fdbaeb2c7de6bca9bd23f6d1a348e.bin",
+  "constants": "objects/02c89bf7fd94e7ed41514bf926f7efd521156cfb3245169cc71a779a24c1abb7.bin",
+  "bank_map": {
+    "0": 0,
+    "1": 2,
+    "4": 4,
+    "5": 5,
+    "6": 1
+  },
+  "buffers": [
+    {
+      "bank": 4,
+      "size": 49152,
+      "role": "output",
+      "name": "hidden"
+    },
+    {
+      "bank": 5,
+      "size": 49152,
+      "role": "input",
+      "name": "x"
+    }
+  ],
+  "io": [
+    {
+      "bank": 5,
+      "role": "input",
+      "name": "x",
+      "shape": [
+        1,
+        768,
+        1,
+        32
+      ],
+      "bytes": 49152
+    },
+    {
+      "bank": 4,
+      "role": "output",
+      "name": "hidden",
+      "shape": [
+        1,
+        768,
+        1,
+        32
+      ],
+      "bytes": 49152
+    }
+  ],
+  "source_hwx_sha256": "09f65fffc4bba5c17f5247cac8b7d26551e2f849196528773e53c192ef62b49a",
+  "source_weights_sha256": "594461dca27d28cc707b1ef5b662bee1e4c9be8728539550204162b24bc8be59",
+  "source_bars": [
+    805404672,
+    805410304,
+    0,
+    0,
+    805306368,
+    805355520,
+    805421056,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "verified_model_tensors": 2,
+  "extended_headers": 0,
+  "packing": {
+    "program": {
+      "size": 16384,
+      "sha256": "6635bbf99bcab53b61fc3b1ff1e7d05cd9d1dcaa9802d6c460d21e8ddc69f6fd",
+      "operations": [
+        {
+          "kind": "affine",
+          "gamma": "ln_f_g",
+          "beta": "ln_f_b",
+          "layout": "linear",
+          "offset": 5632,
+          "size": 3072
+        }
+      ],
+      "template": "objects/878a771ebc44341295e678ddfce6fd1efabb5d6560024006f62f2742daa95929.bin"
+    },
+    "weights": {
+      "size": 16384,
+      "sha256": "3ec5e7ae0bd6d477d0c022f45db17795e60fdbaeb2c7de6bca9bd23f6d1a348e",
+      "operations": [],
+      "literals": [
+        [
+          0,
+          "0000007c00fc000000bca5bb4dbbf7baa4ba53ba04bab7b96db924b9ddb897b853b811b89fb720b7a4b62ab6b3b53eb5cbb45ab4d8b3ffb22ab259b18bb083aff6ad6facdda9d1a5000000000000000000000600c90000000000000000000000000000000000000000000000000000000000000000000000000000000000000040ce004c0000007c003c163c2d3c453c5d3c753c8e3ca83cc23cdc3cf83c143d303d4d3d6b3d893da83dc83de83d093e2b3e4e3e713e953eba3ee03e063f2e3f563f7f3fa93fd43f0040000000000000000005000a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        ]
+      ]
+    },
+    "constants": {
+      "size": 3072,
+      "sha256": "02c89bf7fd94e7ed41514bf926f7efd521156cfb3245169cc71a779a24c1abb7",
+      "operations": [
+        {
+          "kind": "affine",
+          "gamma": "ln_f_g",
+          "beta": "ln_f_b",
+          "layout": "linear",
+          "offset": 0,
+          "size": 3072
+        }
+      ],
+      "template": "objects/e80232b4d18d0bb7e794be263ba937626f383f9917d4b8a737ba893a8f752293.bin"
+    }
+  }
+}

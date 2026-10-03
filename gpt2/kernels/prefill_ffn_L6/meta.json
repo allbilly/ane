@@ -1,0 +1,168 @@
+{
+  "kernel": "prefill_ffn_L6",
+  "td_count": 20,
+  "td_size": 504,
+  "tsk_size": 32768,
+  "program": "objects/bec98d02882467347e1d962e8f7e471e4f6a28cf07d4e22ba32eb3d3048c98fe.bin",
+  "weights": "objects/16ab9cccddc1698f893a80babdd171d9cb5a04479bce0cdf939b0f570676aecb.bin",
+  "constants": "objects/4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe.bin",
+  "bank_map": {
+    "0": 0,
+    "1": 2,
+    "4": 4,
+    "5": 5,
+    "6": 1
+  },
+  "buffers": [
+    {
+      "bank": 4,
+      "size": 49152,
+      "role": "output",
+      "name": "hidden"
+    },
+    {
+      "bank": 5,
+      "size": 49152,
+      "role": "input",
+      "name": "x"
+    }
+  ],
+  "io": [
+    {
+      "bank": 5,
+      "role": "input",
+      "name": "x",
+      "shape": [
+        1,
+        768,
+        1,
+        32
+      ],
+      "bytes": 49152
+    },
+    {
+      "bank": 4,
+      "role": "output",
+      "name": "hidden",
+      "shape": [
+        1,
+        768,
+        1,
+        32
+      ],
+      "bytes": 49152
+    }
+  ],
+  "source_hwx_sha256": "84bd8e9b667e3aacfc9bef5b353c7b1ff5b5e442d993a12c823a46502a966163",
+  "source_weights_sha256": "117875e72bf23a165186164a379f6537af4369689a8d27fd728d3769bf73452d",
+  "source_bars": [
+    805404672,
+    805416448,
+    0,
+    0,
+    805306368,
+    805355520,
+    805437440,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "verified_model_tensors": 6,
+  "extended_headers": 0,
+  "packing": {
+    "program": {
+      "size": 32768,
+      "sha256": "bec98d02882467347e1d962e8f7e471e4f6a28cf07d4e22ba32eb3d3048c98fe",
+      "operations": [],
+      "template": "objects/bec98d02882467347e1d962e8f7e471e4f6a28cf07d4e22ba32eb3d3048c98fe.bin"
+    },
+    "weights": {
+      "size": 9453568,
+      "sha256": "16ab9cccddc1698f893a80babdd171d9cb5a04479bce0cdf939b0f570676aecb",
+      "operations": [
+        {
+          "kind": "matrix",
+          "matrix": "layer6/wfc",
+          "bias": "layer6/bfc",
+          "shape": [
+            3072,
+            768
+          ],
+          "tiles": [
+            32,
+            32,
+            32,
+            32,
+            32,
+            32
+          ],
+          "offset": 3328,
+          "size": 4724736
+        },
+        {
+          "kind": "matrix",
+          "matrix": "layer6/wproj",
+          "bias": "layer6/bproj",
+          "shape": [
+            768,
+            3072
+          ],
+          "tiles": [
+            16,
+            16,
+            16
+          ],
+          "offset": 4730112,
+          "size": 4720640
+        },
+        {
+          "kind": "affine",
+          "gamma": "layer6/ln2_g",
+          "beta": "layer6/ln2_b",
+          "layout": "engine_pairs",
+          "scale": 32,
+          "offset": 256,
+          "size": 3072
+        }
+      ],
+      "literals": [
+        [
+          0,
+          "0000007c00fc000000bca5bb4dbbf7baa4ba53ba04bab7b96db924b9ddb897b853b811b89fb720b7a4b62ab6b3b53eb5cbb45ab4d8b3ffb22ab259b18bb083aff6ad6facdda9d1a5000000000000000000000600c90000000000000000000000000000000000000000000000000000000000000000000000000000000000000040ce004c0000007c003c163c2d3c453c5d3c753c8e3ca83cc23cdc3cf83c143d303d4d3d6b3d893da83dc83de83d093e2b3e4e3e713e953eba3ee03e063f2e3f563f7f3fa93fd43f0040000000000000000005000a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        ],
+        [
+          4728064,
+          "000000440000003c0000f52fd633bc35653770381539a239183a793ac93a0a3b3e3b673b883ba23bb63bc63bd33bdd3be53beb3bef3bf33bf63bf83bfa3bfb3bfc3bfd3bfe3bfe3bff3b000000000000003c03006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        ]
+      ]
+    },
+    "constants": {
+      "size": 16384,
+      "sha256": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+      "operations": [],
+      "template": "objects/4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe.bin"
+    }
+  }
+}

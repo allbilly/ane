@@ -1,0 +1,177 @@
+{
+  "kernel": "prefill_ffn_L2",
+  "td_count": 22,
+  "td_size": 504,
+  "tsk_size": 16384,
+  "program": "objects/a86e62df1f7a31ea19f8650f028bbd6f8aa61955416ee2950227bd12f8d2f360.bin",
+  "weights": "objects/0adda0174d16db4b58adaa85f393095c6965577ff8bd914a176a443599e1dd80.bin",
+  "constants": "objects/08cd727818bcdfa08fe7876de8eb90c126b28c67bd2bbd357902bdda1b7c5a52.bin",
+  "bank_map": {
+    "0": 0,
+    "1": 2,
+    "4": 4,
+    "5": 5,
+    "6": 1
+  },
+  "buffers": [
+    {
+      "bank": 4,
+      "size": 49152,
+      "role": "output",
+      "name": "hidden"
+    },
+    {
+      "bank": 5,
+      "size": 49152,
+      "role": "input",
+      "name": "x"
+    }
+  ],
+  "io": [
+    {
+      "bank": 5,
+      "role": "input",
+      "name": "x",
+      "shape": [
+        1,
+        768,
+        1,
+        32
+      ],
+      "bytes": 49152
+    },
+    {
+      "bank": 4,
+      "role": "output",
+      "name": "hidden",
+      "shape": [
+        1,
+        768,
+        1,
+        32
+      ],
+      "bytes": 49152
+    }
+  ],
+  "source_hwx_sha256": "b99b7483688e909996aec11185cd01787450553f89d273405545534ebb639a60",
+  "source_weights_sha256": "6788eda0cf646f21687b5f61761715b1a49ddb932d297bf9ba094086eb72b0c6",
+  "source_bars": [
+    805404672,
+    805417216,
+    0,
+    0,
+    805306368,
+    805355520,
+    805421056,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "verified_model_tensors": 6,
+  "extended_headers": 0,
+  "packing": {
+    "program": {
+      "size": 16384,
+      "sha256": "370c90cab62f23f8782461af1849fb02e6ec6421605a6463e193ac0057988923",
+      "operations": [
+        {
+          "kind": "affine",
+          "gamma": "layer2/ln2_g",
+          "beta": "layer2/ln2_b",
+          "layout": "linear",
+          "offset": 12544,
+          "size": 3072
+        }
+      ],
+      "template": "objects/a86e62df1f7a31ea19f8650f028bbd6f8aa61955416ee2950227bd12f8d2f360.bin"
+    },
+    "weights": {
+      "size": 9453568,
+      "sha256": "0adda0174d16db4b58adaa85f393095c6965577ff8bd914a176a443599e1dd80",
+      "operations": [
+        {
+          "kind": "matrix",
+          "matrix": "layer2/wfc",
+          "bias": "layer2/bfc",
+          "shape": [
+            3072,
+            768
+          ],
+          "tiles": [
+            32,
+            32,
+            32,
+            32,
+            32,
+            32
+          ],
+          "offset": 256,
+          "size": 4724736
+        },
+        {
+          "kind": "matrix",
+          "matrix": "layer2/wproj",
+          "bias": "layer2/bproj",
+          "shape": [
+            768,
+            3072
+          ],
+          "tiles": [
+            16,
+            16,
+            16
+          ],
+          "offset": 4727040,
+          "size": 4720640
+        }
+      ],
+      "literals": [
+        [
+          0,
+          "0000007c00fc000000bca5bb4dbbf7baa4ba53ba04bab7b96db924b9ddb897b853b811b89fb720b7a4b62ab6b3b53eb5cbb45ab4d8b3ffb22ab259b18bb083aff6ad6facdda9d1a5000000000000000000000600c90000000000000000000000000000000000000000000000000000000000000000000000000000000000000040ce004c0000007c003c163c2d3c453c5d3c753c8e3ca83cc23cdc3cf83c143d303d4d3d6b3d893da83dc83de83d093e2b3e4e3e713e953eba3ee03e063f2e3f563f7f3fa93fd43f0040000000000000000005000a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        ],
+        [
+          4724992,
+          "000000440000003c0000f52fd633bc35653770381539a239183a793ac93a0a3b3e3b673b883ba23bb63bc63bd33bdd3be53beb3bef3bf33bf63bf83bfa3bfb3bfc3bfd3bfe3bfe3bff3b000000000000003c03006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        ]
+      ]
+    },
+    "constants": {
+      "size": 3072,
+      "sha256": "08cd727818bcdfa08fe7876de8eb90c126b28c67bd2bbd357902bdda1b7c5a52",
+      "operations": [
+        {
+          "kind": "affine",
+          "gamma": "layer2/ln2_g",
+          "beta": "layer2/ln2_b",
+          "layout": "linear",
+          "offset": 0,
+          "size": 3072
+        }
+      ],
+      "template": "objects/e80232b4d18d0bb7e794be263ba937626f383f9917d4b8a737ba893a8f752293.bin"
+    }
+  }
+}

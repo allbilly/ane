@@ -1,0 +1,54 @@
+program(1.3)
+[buildInfo = dict<string, string>({{"coremlc-component-MIL", "3510.2.1"}, {"coremlc-version", "3505.4.1"}, {"coremltools-component-milinternal", ""}, {"coremltools-version", "9.0"}})]
+{
+    func main<ios18>(tensor<fp16, [1,768,1,32]> x) {
+        tensor<fp16, [1,768,1,1]> ln2_g = const()[name=string("ln2_g"), val=tensor<fp16, [1,768,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(9664)))];
+        tensor<fp16, [1,768,1,1]> ln2_beta = const()[name=string("ln2_beta"), val=tensor<fp16, [1,768,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(8000)))];
+        tensor<int32, [1]> ln2_ax = const()[name=string("ln2_ax"), val=tensor<int32, [1]>([1])];
+        fp16 ln2_eps = const()[name=string("ln2_eps"), val=fp16(1e-05)];
+        fp16 ln2_nhalf = const()[name=string("ln2_nhalf"), val=fp16(-0.5)];
+        tensor<fp16, [3072,768,1,1]> ffn_fc_W = const()[name=string("ffn_fc_W"), val=tensor<fp16, [3072,768,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(11328)))];
+        tensor<fp16, [1,3072,1,1]> ffn_fc_b = const()[name=string("ffn_fc_b"), val=tensor<fp16, [1,3072,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(64)))];
+        fp16 ffn_act_c1 = const()[name=string("ffn_act_c1"), val=fp16(0.044715)];
+        fp16 ffn_act_c2 = const()[name=string("ffn_act_c2"), val=fp16(0.7979)];
+        fp16 ffn_act_one = const()[name=string("ffn_act_one"), val=fp16(1)];
+        fp16 ffn_act_half = const()[name=string("ffn_act_half"), val=fp16(0.5)];
+        tensor<fp16, [768,3072,1,1]> ffn_proj_W = const()[name=string("ffn_proj_W"), val=tensor<fp16, [768,3072,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(4730048)))];
+        tensor<fp16, [1,768,1,1]> ffn_proj_b = const()[name=string("ffn_proj_b"), val=tensor<fp16, [1,768,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(6336)))];
+        bool ln2_mean_kd = const()[name=string("ln2_mean_kd"), val=bool(true)];
+        tensor<fp16, [1,1,1,32]> ln2_mean = reduce_mean(x=x, axes=ln2_ax, keep_dims=ln2_mean_kd)[name=string("ln2_mean")];
+        tensor<fp16, [1,768,1,32]> ln2_cent = sub(x=x, y=ln2_mean)[name=string("ln2_cent")];
+        tensor<fp16, [1,768,1,32]> ln2_sq = mul(x=ln2_cent, y=ln2_cent)[name=string("ln2_sq")];
+        bool ln2_var_kd = const()[name=string("ln2_var_kd"), val=bool(true)];
+        tensor<fp16, [1,1,1,32]> ln2_var = reduce_mean(x=ln2_sq, axes=ln2_ax, keep_dims=ln2_var_kd)[name=string("ln2_var")];
+        tensor<fp16, [1,1,1,32]> ln2_veps = add(x=ln2_var, y=ln2_eps)[name=string("ln2_veps")];
+        tensor<fp16, [1,1,1,32]> ln2_rstd = pow(x=ln2_veps, y=ln2_nhalf)[name=string("ln2_rstd")];
+        tensor<fp16, [1,768,1,32]> ln2_norm = mul(x=ln2_cent, y=ln2_rstd)[name=string("ln2_norm")];
+        tensor<fp16, [1,768,1,32]> ln2_scaled = mul(x=ln2_norm, y=ln2_g)[name=string("ln2_scaled")];
+        tensor<fp16, [1,768,1,32]> ln2_out = add(x=ln2_scaled, y=ln2_beta)[name=string("ln2_out")];
+        string ffn_fc_conv_pt = const()[name=string("ffn_fc_conv_pt"), val=string("valid")];
+        tensor<int32, [2]> ffn_fc_conv_st = const()[name=string("ffn_fc_conv_st"), val=tensor<int32, [2]>([1,1])];
+        tensor<int32, [4]> ffn_fc_conv_pd = const()[name=string("ffn_fc_conv_pd"), val=tensor<int32, [4]>([0,0,0,0])];
+        tensor<int32, [2]> ffn_fc_conv_dl = const()[name=string("ffn_fc_conv_dl"), val=tensor<int32, [2]>([1,1])];
+        int32 ffn_fc_conv_gr = const()[name=string("ffn_fc_conv_gr"), val=int32(1)];
+        tensor<fp16, [1,3072,1,32]> ffn_fc_conv = conv(dilations=ffn_fc_conv_dl, groups=ffn_fc_conv_gr, pad=ffn_fc_conv_pd, pad_type=ffn_fc_conv_pt, strides=ffn_fc_conv_st, weight=ffn_fc_W, x=ln2_out)[name=string("ffn_fc_conv")];
+        tensor<fp16, [1,3072,1,32]> ffn_fc_out = add(x=ffn_fc_conv, y=ffn_fc_b)[name=string("ffn_fc_out")];
+        tensor<fp16, [1,3072,1,32]> ffn_act_x2 = mul(x=ffn_fc_out, y=ffn_fc_out)[name=string("ffn_act_x2")];
+        tensor<fp16, [1,3072,1,32]> ffn_act_hx = mul(x=ffn_fc_out, y=ffn_act_half)[name=string("ffn_act_hx")];
+        tensor<fp16, [1,3072,1,32]> ffn_act_x3 = mul(x=ffn_act_x2, y=ffn_fc_out)[name=string("ffn_act_x3")];
+        tensor<fp16, [1,3072,1,32]> ffn_act_cx3 = mul(x=ffn_act_x3, y=ffn_act_c1)[name=string("ffn_act_cx3")];
+        tensor<fp16, [1,3072,1,32]> ffn_act_inner = add(x=ffn_fc_out, y=ffn_act_cx3)[name=string("ffn_act_inner")];
+        tensor<fp16, [1,3072,1,32]> ffn_act_scaled = mul(x=ffn_act_inner, y=ffn_act_c2)[name=string("ffn_act_scaled")];
+        tensor<fp16, [1,3072,1,32]> ffn_act_th = tanh(x=ffn_act_scaled)[name=string("ffn_act_th")];
+        tensor<fp16, [1,3072,1,32]> ffn_act_onep = add(x=ffn_act_th, y=ffn_act_one)[name=string("ffn_act_onep")];
+        tensor<fp16, [1,3072,1,32]> ffn_act_out = mul(x=ffn_act_hx, y=ffn_act_onep)[name=string("ffn_act_out")];
+        string ffn_proj_conv_pt = const()[name=string("ffn_proj_conv_pt"), val=string("valid")];
+        tensor<int32, [2]> ffn_proj_conv_st = const()[name=string("ffn_proj_conv_st"), val=tensor<int32, [2]>([1,1])];
+        tensor<int32, [4]> ffn_proj_conv_pd = const()[name=string("ffn_proj_conv_pd"), val=tensor<int32, [4]>([0,0,0,0])];
+        tensor<int32, [2]> ffn_proj_conv_dl = const()[name=string("ffn_proj_conv_dl"), val=tensor<int32, [2]>([1,1])];
+        int32 ffn_proj_conv_gr = const()[name=string("ffn_proj_conv_gr"), val=int32(1)];
+        tensor<fp16, [1,768,1,32]> ffn_proj_conv = conv(dilations=ffn_proj_conv_dl, groups=ffn_proj_conv_gr, pad=ffn_proj_conv_pd, pad_type=ffn_proj_conv_pt, strides=ffn_proj_conv_st, weight=ffn_proj_W, x=ffn_act_out)[name=string("ffn_proj_conv")];
+        tensor<fp16, [1,768,1,32]> ffn_proj_out = add(x=ffn_proj_conv, y=ffn_proj_b)[name=string("ffn_proj_out")];
+        tensor<fp16, [1,768,1,32]> hidden = add(x=x, y=ffn_proj_out)[name=string("hidden")];
+    } -> (hidden);
+}

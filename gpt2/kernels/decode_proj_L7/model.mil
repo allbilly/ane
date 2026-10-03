@@ -1,0 +1,49 @@
+program(1.3)
+[buildInfo = dict<string, string>({{"coremlc-component-MIL", "3510.2.1"}, {"coremlc-version", "3505.4.1"}, {"coremltools-component-milinternal", ""}, {"coremltools-version", "9.0"}})]
+{
+    func main<ios18>(tensor<fp16, [1,768,1,32]> x) {
+        tensor<fp16, [1,768,1,1]> ln1_g = const()[name=string("ln1_g"), val=tensor<fp16, [1,768,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(6720)))];
+        tensor<fp16, [1,768,1,1]> ln1_beta = const()[name=string("ln1_beta"), val=tensor<fp16, [1,768,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(5056)))];
+        tensor<int32, [1]> ln1_ax = const()[name=string("ln1_ax"), val=tensor<int32, [1]>([1])];
+        fp16 ln1_eps = const()[name=string("ln1_eps"), val=fp16(1e-05)];
+        fp16 ln1_nhalf = const()[name=string("ln1_nhalf"), val=fp16(-0.5)];
+        tensor<fp16, [768,768,1,1]> q_W = const()[name=string("q_W"), val=tensor<fp16, [768,768,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(1188160)))];
+        tensor<fp16, [1,768,1,1]> q_b = const()[name=string("q_b"), val=tensor<fp16, [1,768,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(1728)))];
+        tensor<fp16, [768,768,1,1]> k_W = const()[name=string("k_W"), val=tensor<fp16, [768,768,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(8384)))];
+        tensor<fp16, [1,768,1,1]> k_b = const()[name=string("k_b"), val=tensor<fp16, [1,768,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(64)))];
+        tensor<fp16, [768,768,1,1]> v_W = const()[name=string("v_W"), val=tensor<fp16, [768,768,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(2367936)))];
+        tensor<fp16, [1,768,1,1]> v_b = const()[name=string("v_b"), val=tensor<fp16, [1,768,1,1]>(BLOBFILE(path=string("@model_path/weights/packed.bin"), offset=uint64(3392)))];
+        bool ln1_mean_kd = const()[name=string("ln1_mean_kd"), val=bool(true)];
+        tensor<fp16, [1,1,1,32]> ln1_mean = reduce_mean(x=x, axes=ln1_ax, keep_dims=ln1_mean_kd)[name=string("ln1_mean")];
+        tensor<fp16, [1,768,1,32]> ln1_cent = sub(x=x, y=ln1_mean)[name=string("ln1_cent")];
+        tensor<fp16, [1,768,1,32]> ln1_sq = mul(x=ln1_cent, y=ln1_cent)[name=string("ln1_sq")];
+        bool ln1_var_kd = const()[name=string("ln1_var_kd"), val=bool(true)];
+        tensor<fp16, [1,1,1,32]> ln1_var = reduce_mean(x=ln1_sq, axes=ln1_ax, keep_dims=ln1_var_kd)[name=string("ln1_var")];
+        tensor<fp16, [1,1,1,32]> ln1_veps = add(x=ln1_var, y=ln1_eps)[name=string("ln1_veps")];
+        tensor<fp16, [1,1,1,32]> ln1_rstd = pow(x=ln1_veps, y=ln1_nhalf)[name=string("ln1_rstd")];
+        tensor<fp16, [1,768,1,32]> ln1_norm = mul(x=ln1_cent, y=ln1_rstd)[name=string("ln1_norm")];
+        tensor<fp16, [1,768,1,32]> ln1_scaled = mul(x=ln1_norm, y=ln1_g)[name=string("ln1_scaled")];
+        tensor<fp16, [1,768,1,32]> ln1_out = add(x=ln1_scaled, y=ln1_beta)[name=string("ln1_out")];
+        string q_conv_pt = const()[name=string("q_conv_pt"), val=string("valid")];
+        tensor<int32, [2]> q_conv_st = const()[name=string("q_conv_st"), val=tensor<int32, [2]>([1,1])];
+        tensor<int32, [4]> q_conv_pd = const()[name=string("q_conv_pd"), val=tensor<int32, [4]>([0,0,0,0])];
+        tensor<int32, [2]> q_conv_dl = const()[name=string("q_conv_dl"), val=tensor<int32, [2]>([1,1])];
+        int32 q_conv_gr = const()[name=string("q_conv_gr"), val=int32(1)];
+        tensor<fp16, [1,768,1,32]> q_conv = conv(dilations=q_conv_dl, groups=q_conv_gr, pad=q_conv_pd, pad_type=q_conv_pt, strides=q_conv_st, weight=q_W, x=ln1_out)[name=string("q_conv")];
+        string k_conv_pt = const()[name=string("k_conv_pt"), val=string("valid")];
+        tensor<int32, [2]> k_conv_st = const()[name=string("k_conv_st"), val=tensor<int32, [2]>([1,1])];
+        tensor<int32, [4]> k_conv_pd = const()[name=string("k_conv_pd"), val=tensor<int32, [4]>([0,0,0,0])];
+        tensor<int32, [2]> k_conv_dl = const()[name=string("k_conv_dl"), val=tensor<int32, [2]>([1,1])];
+        int32 k_conv_gr = const()[name=string("k_conv_gr"), val=int32(1)];
+        tensor<fp16, [1,768,1,32]> k_conv = conv(dilations=k_conv_dl, groups=k_conv_gr, pad=k_conv_pd, pad_type=k_conv_pt, strides=k_conv_st, weight=k_W, x=ln1_out)[name=string("k_conv")];
+        string v_conv_pt = const()[name=string("v_conv_pt"), val=string("valid")];
+        tensor<int32, [2]> v_conv_st = const()[name=string("v_conv_st"), val=tensor<int32, [2]>([1,1])];
+        tensor<int32, [4]> v_conv_pd = const()[name=string("v_conv_pd"), val=tensor<int32, [4]>([0,0,0,0])];
+        tensor<int32, [2]> v_conv_dl = const()[name=string("v_conv_dl"), val=tensor<int32, [2]>([1,1])];
+        int32 v_conv_gr = const()[name=string("v_conv_gr"), val=int32(1)];
+        tensor<fp16, [1,768,1,32]> v_conv = conv(dilations=v_conv_dl, groups=v_conv_gr, pad=v_conv_pd, pad_type=v_conv_pt, strides=v_conv_st, weight=v_W, x=ln1_out)[name=string("v_conv")];
+        tensor<fp16, [1,768,1,32]> q16 = add(x=q_conv, y=q_b)[name=string("q16")];
+        tensor<fp16, [1,768,1,32]> k16 = add(x=k_conv, y=k_b)[name=string("k16")];
+        tensor<fp16, [1,768,1,32]> v16 = add(x=v_conv, y=v_b)[name=string("v16")];
+    } -> (q16, k16, v16);
+}

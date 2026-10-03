@@ -1,0 +1,17 @@
+{
+  "prompt": "Hello world",
+  "tokens": [
+    15496,
+    995
+  ],
+  "generated": [
+    11,
+    314,
+    1101,
+    407
+  ],
+  "text": "Hello world, I'm not",
+  "logits": "fixtures/hybrid-logits.bin",
+  "backend": "Python GPT-2 flow with Orion macOS ANE projection/FFN; sequential prompt ingest",
+  "linux_hardware_verified": false
+}

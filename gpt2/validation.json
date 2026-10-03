@@ -1,0 +1,50 @@
+{
+  "host": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "python": "3.14.7",
+  "linux_ane_hardware_verified": false,
+  "unit_tests": {
+    "passed": 22,
+    "failed": 0
+  },
+  "independent_orion_cpu_logit_fixtures": 3,
+  "cpu_max_abs_logit_error": 0.0003509521484375,
+  "macos_ane_kernel_fixtures": 49,
+  "macos_ane_full_generation": "Hello world, I'm not",
+  "verified_model_parameter_tensors": 362,
+  "tasks": 1574,
+  "extended_headers": 288,
+  "strict_register_values": 187848,
+  "tokenizer_parity": "nine Unicode/punctuation/whitespace cases matched official OpenAI GPT-2 encoder",
+  "first_run_cpu": "PASS",
+  "portable_data_bytes": 10655357,
+  "standard_model_weights_packaged": false,
+  "transfer_archive_created": false,
+  "external_hf_sha256": "248dfc3911869ec493c76e65bf2fcf7f615828b0254c12b473182f0f81d3a707",
+  "hf_fp16_tensors_verified": 196,
+  "cpu_generation_from_cached_safetensors": "Hello world, I'm not sure what to say.\n\n\"I'm sorry, but I",
+  "first_run_cached_hf": "PASS: existing checkpoint reused, CPU reference checks passed, four tokens generated",
+  "compiled_learned_coefficients_packaged": false,
+  "packing_reference_kernels": 49,
+  "packing_reference_payloads": 147,
+  "packing_reference_byte_exact": true,
+  "cold_cache_packing": "PASS: HF checkpoint only, 49 kernels, 110 unique reconstructed payloads",
+  "first_run_pack_all_kernels": "PASS",
+  "setup_explicit_cached_hf": "PASS: 24 decode kernels, no model download",
+  "post_packing_cpu_generation": "Hello world, I'm not",
+  "code_review": {
+    "concurrent_checkpoint_downloads": "PASS: separate partial files and atomic publication",
+    "failed_checkpoint_downloads": "PASS: original file preserved, partials removed",
+    "pinned_hf_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e (HTTP HEAD 200)",
+    "launcher_dependency_reuse": "PASS: cold/warm/changed/missing-import dispatch tested with simulated pip",
+    "alternate_directory_rebuild": "PASS: all 49 kernels, 147 reference payloads, metadata, licensing, integrity",
+    "remaining_acceptance": "Linux ANE hardware execution remains unverified"
+  },
+  "orion_performance_reference": "orion-performance.json; cold M1 logs plus native M1 prewarmed 5x64-step comparison with zero timed compiles; separately labeled upstream M4 Max figures; no Asahi timing claim",
+  "orion_native_prewarmed": {
+    "report": "provenance/orion-performance/m1-prewarmed.json",
+    "timed_compiles": 0,
+    "cached_programs": 49,
+    "ane_argmax_matches": 320,
+    "full_logit_parity": false
+  }
+}

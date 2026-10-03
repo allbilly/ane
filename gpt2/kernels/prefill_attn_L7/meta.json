@@ -1,0 +1,249 @@
+{
+  "kernel": "prefill_attn_L7",
+  "td_count": 69,
+  "td_size": 504,
+  "tsk_size": 49152,
+  "program": "objects/f198504e7bee2d98d11b8cf273c34f35c1be14691d6316833607a43a120599b2.bin",
+  "weights": "objects/871259e0fc93ef34d01bf92141a588b6a9dfda11737c28451991c94cea441cf2.bin",
+  "constants": "objects/28963831525553a60581417fc8a62c1952dd5c01670432d7283b91e9b429174a.bin",
+  "bank_map": {
+    "0": 0,
+    "1": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 1
+  },
+  "buffers": [
+    {
+      "bank": 3,
+      "size": 98304,
+      "role": "scratch"
+    },
+    {
+      "bank": 4,
+      "size": 49152,
+      "role": "output",
+      "name": "hidden"
+    },
+    {
+      "bank": 5,
+      "size": 49152,
+      "role": "output",
+      "name": "k_cache"
+    },
+    {
+      "bank": 6,
+      "size": 49152,
+      "role": "output",
+      "name": "v_cache"
+    },
+    {
+      "bank": 7,
+      "size": 49152,
+      "role": "input",
+      "name": "x"
+    }
+  ],
+  "io": [
+    {
+      "bank": 7,
+      "role": "input",
+      "name": "x",
+      "shape": [
+        1,
+        768,
+        1,
+        32
+      ],
+      "bytes": 49152
+    },
+    {
+      "bank": 4,
+      "role": "output",
+      "name": "hidden",
+      "shape": [
+        1,
+        768,
+        1,
+        32
+      ],
+      "bytes": 49152
+    },
+    {
+      "bank": 5,
+      "role": "output",
+      "name": "k_cache",
+      "shape": [
+        1,
+        768,
+        1,
+        32
+      ],
+      "bytes": 49152
+    },
+    {
+      "bank": 6,
+      "role": "output",
+      "name": "v_cache",
+      "shape": [
+        1,
+        768,
+        1,
+        32
+      ],
+      "bytes": 49152
+    }
+  ],
+  "source_hwx_sha256": "2ad232ea6a3549492d52a2adb34375e1a6a74526eb6f8471db7c9cfd61db1528",
+  "source_weights_sha256": "14bdfbc337a4bad99e25634b905caeb5adccc99caf420c025c225f5095493745",
+  "source_bars": [
+    805601280,
+    805645312,
+    0,
+    805306368,
+    805404672,
+    805453824,
+    805502976,
+    805552128,
+    805650432,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "verified_model_tensors": 10,
+  "extended_headers": 24,
+  "packing": {
+    "program": {
+      "size": 49152,
+      "sha256": "88331e27387657be5c0f527e64ccb2de5e231225831079e4d48f2d2ce2bea804",
+      "operations": [
+        {
+          "kind": "affine",
+          "gamma": "layer7/ln1_g",
+          "beta": "layer7/ln1_b",
+          "layout": "linear",
+          "offset": 44032,
+          "size": 3072
+        }
+      ],
+      "template": "objects/f198504e7bee2d98d11b8cf273c34f35c1be14691d6316833607a43a120599b2.bin"
+    },
+    "weights": {
+      "size": 4734976,
+      "sha256": "871259e0fc93ef34d01bf92141a588b6a9dfda11737c28451991c94cea441cf2",
+      "operations": [
+        {
+          "kind": "matrix",
+          "matrix": "layer7/wv",
+          "bias": "layer7/bv",
+          "shape": [
+            768,
+            768
+          ],
+          "tiles": [
+            16,
+            16,
+            16
+          ],
+          "offset": 256,
+          "size": 1181696
+        },
+        {
+          "kind": "matrix",
+          "matrix": "layer7/wk",
+          "bias": "layer7/bk",
+          "shape": [
+            768,
+            768
+          ],
+          "tiles": [
+            16,
+            16,
+            16
+          ],
+          "offset": 1181952,
+          "size": 1181696
+        },
+        {
+          "kind": "matrix",
+          "matrix": "layer7/wq",
+          "bias": "layer7/bq",
+          "shape": [
+            768,
+            768
+          ],
+          "tiles": [
+            32,
+            16
+          ],
+          "offset": 2363648,
+          "size": 1181696
+        },
+        {
+          "kind": "matrix",
+          "matrix": "layer7/wo",
+          "bias": "layer7/bo",
+          "shape": [
+            768,
+            768
+          ],
+          "tiles": [
+            16,
+            16,
+            16
+          ],
+          "offset": 3546880,
+          "size": 1181696
+        }
+      ],
+      "literals": [
+        [
+          0,
+          "0000007c00fc000000bca5bb4dbbf7baa4ba53ba04bab7b96db924b9ddb897b853b811b89fb720b7a4b62ab6b3b53eb5cbb45ab4d8b3ffb22ab259b18bb083aff6ad6facdda9d1a5000000000000000000000600c90000000000000000000000000000000000000000000000000000000000000000000000000000000000000040ce004c0000007c003c163c2d3c453c5d3c753c8e3ca83cc23cdc3cf83c143d303d4d3d6b3d893da83dc83de83d093e2b3e4e3e713e953eba3ee03e063f2e3f563f7f3fa93fd43f0040000000000000000005000a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        ],
+        [
+          3545344,
+          "40ce004c0000007c003c163c2d3c453c5d3c753c8e3ca83cc23cdc3cf83c143d303d4d3d6b3d893da83dc83de83d093e2b3e4e3e713e953eba3ee03e063f2e3f563f7f3fa93fd43f0040000000000000000005000a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        ]
+      ]
+    },
+    "constants": {
+      "size": 5120,
+      "sha256": "28963831525553a60581417fc8a62c1952dd5c01670432d7283b91e9b429174a",
+      "operations": [
+        {
+          "kind": "affine",
+          "gamma": "layer7/ln1_g",
+          "beta": "layer7/ln1_b",
+          "layout": "linear",
+          "offset": 0,
+          "size": 3072
+        }
+      ],
+      "template": "objects/414ed4b78ad0a5b641f321352e49b9877336f42cf6535912f97359e019dc33f7.bin"
+    }
+  }
+}

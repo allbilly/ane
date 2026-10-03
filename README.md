@@ -3,6 +3,12 @@
 
 This repo run ops on Apple ANE in NPU register with pure python and numpy on M1 Asahi Linux. No Espresso, No CoreML, no metal, no .mlmodels file, no .hwx file, no ANEcompiler, no private Apple API, no anecc, nothing. Even numpy is optional.
 
+The [Orion GPT-2 text-generation port](gpt2/README.md) reads cached Hugging Face
+weights, regenerates ANE tile-packed coefficients into the external cache,
+and includes tokenization, KV caching, a CPU backend, and an M1 ANE replay backend with
+first-run numerical checks. Start with `gpt2/first-run.sh`; Linux ANE hardware
+acceptance remains to be verified on Asahi.
+
 Thanks for the prior work from [geohotz](https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/) [eiln](https://github.com/eiln/ane) [freedomtan](https://github.com/freedomtan/coreml_to_ane_hwx) [mdaiter](https://github.com/mdaiter/ane) , some scripts in experimental/* are from [freedomtan/coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx)
 
 ANE detailed hardware and patent analysis by [Maynard Handley](https://github.com/name99-org/AArch64-Explore/blob/main/vol7%20ANE.nb.pdf)

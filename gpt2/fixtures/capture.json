@@ -1,0 +1,13 @@
+{
+  "backend": "Orion macOS ANE runtime; freshly compiled original MIL and original packed weights",
+  "linux_hardware_verified": false,
+  "fixture_shape": [
+    768,
+    32
+  ],
+  "macos": "27.0.1",
+  "source_files": {
+    "core/ane_runtime.m": "2f61bd09676a89a1def3a334f03b6024368e549084112f7eb2ec192c55ca1168",
+    "core/iosurface_tensor.m": "638ff4a6073a7636ef57b0857b25ff9fb6765d3015d713870e3296431460fe7e"
+  }
+}
