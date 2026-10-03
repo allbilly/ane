@@ -1,0 +1,141 @@
+{
+  "format_version": 1,
+  "scope": "GPT-2 124M implementation references on base M1 / 8 GB / macOS 27.0.1; not Asahi port throughput or pure CPU/GPU/ANE peak comparison",
+  "units": "decode engine steps per second",
+  "workload": {
+    "batch_size": 1,
+    "prompt_lengths": [
+      2,
+      32,
+      64
+    ],
+    "decode_steps_per_trial": 64,
+    "checkpoint_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+    "checkpoint_sha256": "248dfc3911869ec493c76e65bf2fcf7f615828b0254c12b473182f0f81d3a707",
+    "inputs": "Identical saved HF greedy teacher-forced traces for all three prompt cases. No prefix cache reuse; warmup/load/compilation excluded."
+  },
+  "rows": [
+    {
+      "implementation": "Orion CPU",
+      "precision": "FP16 stored weights; CPU arithmetic FP32; ANE operations FP16 when enabled",
+      "decode_engine_steps_per_second_by_prompt": {
+        "2": 50.03472136067201,
+        "32": 51.501500081910905,
+        "64": 47.83484720061692
+      },
+      "report": "provenance/orion-performance/m1-contexts.json",
+      "quality_note": "All three HF top1/KL replays and free greedy checks passed; full raw-logit NRMSE gate failed (FP16 stored weights, differing arithmetic).",
+      "timing_note": "Synchronous native decode with cache guard; prefill, argmax, and diagnostics excluded. Four alternating trials per prompt, two immediate warmups per trial; separate diagnostic replay. Fresh three-context source snapshot, active desktop."
+    },
+    {
+      "implementation": "Orion ANE + CPU attention",
+      "precision": "FP16 stored weights; CPU arithmetic FP32; ANE operations FP16 when enabled",
+      "decode_engine_steps_per_second_by_prompt": {
+        "2": 52.56851618166967,
+        "32": 52.00475274704982,
+        "64": 48.42240376026934
+      },
+      "report": "provenance/orion-performance/m1-contexts.json",
+      "quality_note": "All three HF top1/KL replays and free greedy checks passed; full raw-logit NRMSE gate failed (FP16 stored weights, differing arithmetic).",
+      "timing_note": "Synchronous native decode with cache guard; prefill, argmax, and diagnostics excluded. Four alternating trials per prompt, two immediate warmups per trial; separate diagnostic replay. Fresh three-context source snapshot, active desktop."
+    },
+    {
+      "implementation": "CoreML CPU",
+      "precision": "FP16 converted graph with FP32 layer normalization",
+      "decode_engine_steps_per_second_by_prompt": {
+        "2": 65.21154479765916,
+        "32": 64.82670247669103,
+        "64": 62.51596860231147
+      },
+      "report": "provenance/coreml-performance/m1-fair.json",
+      "quality_note": "All three prompt replays and 16-token greedy checks passed.",
+      "timing_note": "Synchronous CoreML prediction; argmax and input assembly excluded. Four trials per prompt; 64-wide input window."
+    },
+    {
+      "implementation": "CoreML CPU + GPU",
+      "precision": "FP16 converted graph with FP32 layer normalization",
+      "decode_engine_steps_per_second_by_prompt": {
+        "2": 51.41422882938653,
+        "32": 51.320346530298835,
+        "64": 51.81839199501287
+      },
+      "report": "provenance/coreml-performance/m1-fair.json",
+      "quality_note": "All three prompt replays and 16-token greedy checks passed.",
+      "timing_note": "Synchronous CoreML prediction; argmax and input assembly excluded. Four trials per prompt; 64-wide input window."
+    },
+    {
+      "implementation": "CoreML CPU + ANE",
+      "precision": "FP16 converted graph with FP32 layer normalization",
+      "decode_engine_steps_per_second_by_prompt": {
+        "2": 49.66324338131966,
+        "32": 49.17756681135474,
+        "64": 50.510473574657404
+      },
+      "report": "provenance/coreml-performance/m1-fair.json",
+      "quality_note": "All three prompt replays and 16-token greedy checks passed.",
+      "timing_note": "Synchronous CoreML prediction; argmax and input assembly excluded. Four trials per prompt; 64-wide input window."
+    },
+    {
+      "implementation": "CoreML ALL",
+      "precision": "FP16 converted graph with FP32 layer normalization",
+      "decode_engine_steps_per_second_by_prompt": {
+        "2": 52.448948409987956,
+        "32": 52.49689251395645,
+        "64": 52.41153626678725
+      },
+      "report": "provenance/coreml-performance/m1-fair.json",
+      "quality_note": "All three prompt replays and 16-token greedy checks passed.",
+      "timing_note": "Synchronous CoreML prediction; argmax and input assembly excluded. Four trials per prompt; 64-wide input window."
+    },
+    {
+      "implementation": "MLX-LM GPU FP16",
+      "precision": "Unquantized float16 parameter tensors",
+      "decode_engine_steps_per_second_by_prompt": {
+        "2": 108.92399964687758,
+        "32": 123.0305257801989,
+        "64": 132.47123221715654
+      },
+      "report": "provenance/mlx-performance/m1-fp16.json",
+      "quality_note": "Hello world has 1/65 HF top1 mismatch and different free greedy continuation; not accuracy-equivalent.",
+      "timing_note": "Python model call plus synchronized GPU logits and cache evaluation; input assembly and argmax excluded. Four trials per prompt, one-token decode input. Active desktop session."
+    },
+    {
+      "implementation": "MLX-LM GPU FP32",
+      "precision": "Unquantized float32 parameter tensors",
+      "decode_engine_steps_per_second_by_prompt": {
+        "2": 70.71567871882452,
+        "32": 70.68107156962289,
+        "64": 70.64331592133684
+      },
+      "report": "provenance/mlx-performance/m1-fp32.json",
+      "quality_note": "All three prompt gates and greedy checks passed; maximum raw logit NRMSE < 0.00005.",
+      "timing_note": "Python model call plus synchronized GPU logits and cache evaluation; input assembly and argmax excluded. Four trials per prompt, one-token decode input. Active desktop session."
+    },
+    {
+      "implementation": "vllm.cpp",
+      "decode_engine_steps_per_second_by_prompt": {
+        "2": null,
+        "32": null,
+        "64": null
+      },
+      "report": "vllm-performance.json",
+      "quality_note": "Unavailable: local checkout lacks registered GPT-2 text generation. Source inspection only; not a zero-speed result."
+    }
+  ],
+  "reports_sha256": {
+    "provenance/orion-performance/m1-contexts.json": "a5cabd815fd6df8eef93ae86fc4d7a18e95a80b5cf552efb6cd6aaeadba59197",
+    "provenance/coreml-performance/m1-fair.json": "974f9a40a34767b500d71573090b4c18a49310a23957e71262c4f6e55282469f",
+    "provenance/mlx-performance/m1-fp16.json": "ac097b74bc5fab56785a0af0720db675dc0963555f5704d6a12f19863a761ef9",
+    "provenance/mlx-performance/m1-fp32.json": "928f1e30e182b8a43d7e6c28395b1f50447dc1c0f10222a7dc093e3f27dbe317",
+    "vllm-performance.json": "61a3c0387fd13bf5c0eef7cf55b90d4479feff901035928bc1c4d62d162ddc5b"
+  },
+  "limitations": [
+    "Separate active-desktop sessions; existing applications running during MLX and new Orion trials. No cross-runtime paired confidence intervals or isolated peak claims.",
+    "Different graph and cache layout: CoreML input window 64/context512; MLX input width1/context1024; Orion stride32/context1024. Precision and layer norm policies differ.",
+    "Native C/Swift engine timers and Python graph construction timers cover similar decode outputs but different frontend work. Request throughput is separately recorded for CoreML and MLX.",
+    "Orion CPU/ANE pass all tested top1/KL gates but fail raw-logit NRMSE gates; MLX FP16 fails the Hello-world choice gate. Not full-logit or general accuracy equivalence.",
+    "CoreML ALL static plan preferred GPU for all 418 nonconstant operations; it is not a combined CPU+GPU+ANE speed measurement.",
+    "No vllm.cpp throughput number is possible through its current GPT-2 text-generation interface; it has only a host backbone reference used by IndexTTS."
+  ],
+  "orion_older_reference": "Original 69.82/61.41 two-token pair remains historical; current row uses one fresh three-context run. Five Orion source files differ from that earlier captured snapshot."
+}

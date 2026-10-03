@@ -101,5 +101,17 @@
     "cpu_throughput_ratio_to_ane": 1.1369831600192726,
     "full_logit_parity": false,
     "note": "All 320 ANE argmax checks match the shared CPU trace, but ANE-prefill-path logits exceed the 0.005 RMSE diagnostic threshold. Eight untimed ANE decode steps with CPU-created prompt KV stay below 0.00149 RMSE; the full-prefill path needs investigation."
+  },
+  "primary_comparison_reference": "orion-context-performance.json",
+  "local_context_reference": {
+    "report": "provenance/orion-performance/m1-contexts.json",
+    "report_sha256": "a5cabd815fd6df8eef93ae86fc4d7a18e95a80b5cf552efb6cd6aaeadba59197",
+    "summary": "orion-context-performance.json",
+    "prompt_lengths": [
+      2,
+      32,
+      64
+    ],
+    "note": "New four-trial matched HF-trace session with separate diagnostics and two immediate warmups per trial; old two-token data remain historical. Local source snapshot differs; do not combine sessions in a row."
   }
 }

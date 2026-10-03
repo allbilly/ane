@@ -1,0 +1,10 @@
+Verified external GPT-2 weights; 2/32/64 prompt tokens; no downloads
+Building fresh Orion objects
+Running alternating trials; two fresh warmups per trial; separate HF diagnostics
+2 cpu 50.03 steps/s; HF mismatches 0 KL 5.49292108559044e-05
+2 ane 52.57 steps/s; HF mismatches 0 KL 0.00020790553428956605
+32 cpu 51.5 steps/s; HF mismatches 0 KL 2.4779429029159124e-05
+32 ane 52.0 steps/s; HF mismatches 0 KL 0.00023192554448967846
+64 cpu 47.83 steps/s; HF mismatches 0 KL 1.417726225021021e-05
+64 ane 48.42 steps/s; HF mismatches 0 KL 5.663489201953418e-05
+Saved /Users/yeren/ane/gpt2/provenance/orion-performance/m1-contexts.json

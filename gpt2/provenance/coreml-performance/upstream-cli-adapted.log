@@ -1,0 +1,18 @@
+/Users/yeren/more-ane-transformers/.venv/lib/python3.11/site-packages/transformers/tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavior will be depracted in transformers v4.45, and will be then set to `False` by default. For more details check this issue: https://github.com/huggingface/transformers/issues/31884
+  warnings.warn(
+Using the public CompiledMLModel compatibility adapter; this CLI copies KV arrays through Python.
+Loading model from path gpt2.mlmodelc using ComputeUnit.CPU_AND_NE...
+Loaded model in 6.593s.
+
+[95m[Prompt] Hello world[0m, I'm not sure what to say.
+
+"I'm sorry, but
+
+         ---stats---
+       compute unit: CPUAndANE
+    model load time: 6593.49 ms
+   prompt eval time: 94.43 ms   : 1.48 ms/token : 677.78 tokens/s
+new token eval time: 512.86 ms  : 32.05 ms/token : 31.20 tokens/s
+         total time: 7219.18 ms
+
+🏎️  For a 2-5x speedup, follow the steps in SETUP.md.

@@ -1,0 +1,281 @@
+{
+  "format_version": 1,
+  "status": "Measured on active desktop; provisional performance reference, not an isolated benchmark session",
+  "model": "GPT-2 124M",
+  "host": {
+    "chip": "Apple M1",
+    "model": "MacBookAir10,1",
+    "macos": "27.0.1",
+    "macos_build": "26A434"
+  },
+  "checkpoint": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+  "checkpoint_sha256": "248dfc3911869ec493c76e65bf2fcf7f615828b0254c12b473182f0f81d3a707",
+  "source_repo": "https://github.com/ml-explore/mlx-lm",
+  "source_commit": "5cfec4cb39deba54210b3ff4d86f2337c7bc10b5",
+  "runtime_packages": {
+    "mlx": "0.32.2",
+    "mlx-lm": "0.31.4.dev132+g94cdcae13",
+    "numpy": "2.3.5",
+    "transformers": "5.17.0",
+    "safetensors": "0.8.0"
+  },
+  "runtime_note": "Existing oMLX Python environment reused without changing it. Benchmark invokes MLX-LM directly, not the oMLX server; three model/attention/cache files hash-match the fresh ~/mlx-lm clone. Installed full package version is separately recorded.",
+  "timing": {
+    "batch_size": 1,
+    "decode_steps": 64,
+    "trials_per_prompt": 4,
+    "warmups_per_trial": 2,
+    "warmup_steps": 16,
+    "prompt_lengths": [
+      2,
+      32,
+      64
+    ],
+    "context_capacity": 1024,
+    "decode_input_width": 1,
+    "prefix_cache": "disabled; fresh KV cache per request",
+    "precision": "All model parameter tensors cast from the pinned HF checkpoint to float32; upstream MLX layer norm/attention kernels",
+    "engine_timer": "Python model call/graph construction and synchronized mx.eval of last-token logits plus all KV buffers; input construction and argmax excluded",
+    "request_timer": "Python input construction, model call, cache update, sync GPU evaluation and greedy argmax; no printing, full-logit diagnostics or detokenization",
+    "accuracy": "Untimed 65-prediction HF replay per prompt; not universal quality validation",
+    "comparison_scope": "Same checkpoint and decode traces; different graph/cache/arithmetic from Orion/CoreML; separate session"
+  },
+  "precisions": {
+    "fp16": {
+      "report": "provenance/mlx-performance/m1-fp16.json",
+      "report_sha256": "ac097b74bc5fab56785a0af0720db675dc0963555f5704d6a12f19863a761ef9",
+      "log_sha256": "7037e1c7e65d373dc1dbbc0a24337b8589be6644edb165cf6701cf011bd839fa",
+      "runner_sha256": "ffe1974cd8103a331dd19b7470d9b70ca20e3653fa5cdf266bd7d70967fa167e",
+      "all_three_prompt_gates_passed": false,
+      "cases": [
+        {
+          "prompt_tokens": 2,
+          "decode_engine_steps_per_second": 108.92399964687758,
+          "decode_request_steps_per_second": 102.60269165874176,
+          "warm_ttft_mean_ms": 22.86645849926572,
+          "prefill_mean_ms": 19.94742724855314,
+          "trial_engine_steps_per_second": [
+            117.34813386443444,
+            112.11740236485522,
+            119.18930800186388,
+            91.81080564743374
+          ],
+          "top1_mismatches": 1,
+          "max_kl_hf_to_mlx_nats": 0.001299589833280621,
+          "max_normalized_logit_rmse": 0.15065925049861778,
+          "free_greedy_exact_hf_match": false,
+          "strict_trace_choice_and_kl_gate_passed": false,
+          "thermal_start_end": [
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ]
+          ]
+        },
+        {
+          "prompt_tokens": 32,
+          "decode_engine_steps_per_second": 123.0305257801989,
+          "decode_request_steps_per_second": 113.24759672054395,
+          "warm_ttft_mean_ms": 26.40832275210414,
+          "prefill_mean_ms": 25.661781250164495,
+          "trial_engine_steps_per_second": [
+            122.41181917794366,
+            129.50318647607398,
+            129.3303243146426,
+            112.4966420089324
+          ],
+          "top1_mismatches": 0,
+          "max_kl_hf_to_mlx_nats": 0.00019099631462725445,
+          "max_normalized_logit_rmse": 0.17492475662912957,
+          "free_greedy_exact_hf_match": true,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "thermal_start_end": [
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ]
+          ]
+        },
+        {
+          "prompt_tokens": 64,
+          "decode_engine_steps_per_second": 132.47123221715654,
+          "decode_request_steps_per_second": 125.62319896611642,
+          "warm_ttft_mean_ms": 22.009406249708263,
+          "prefill_mean_ms": 21.450135251143365,
+          "trial_engine_steps_per_second": [
+            137.31133215978642,
+            129.19603175089938,
+            128.22275547648684,
+            135.6224326213577
+          ],
+          "top1_mismatches": 0,
+          "max_kl_hf_to_mlx_nats": 9.69546851132591e-05,
+          "max_normalized_logit_rmse": 0.04020363827692468,
+          "free_greedy_exact_hf_match": true,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "thermal_start_end": [
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ]
+          ]
+        }
+      ]
+    },
+    "fp32": {
+      "report": "provenance/mlx-performance/m1-fp32.json",
+      "report_sha256": "928f1e30e182b8a43d7e6c28395b1f50447dc1c0f10222a7dc093e3f27dbe317",
+      "log_sha256": "7037e1c7e65d373dc1dbbc0a24337b8589be6644edb165cf6701cf011bd839fa",
+      "runner_sha256": "ffe1974cd8103a331dd19b7470d9b70ca20e3653fa5cdf266bd7d70967fa167e",
+      "all_three_prompt_gates_passed": true,
+      "cases": [
+        {
+          "prompt_tokens": 2,
+          "decode_engine_steps_per_second": 70.71567871882452,
+          "decode_request_steps_per_second": 68.27317319173966,
+          "warm_ttft_mean_ms": 21.565145998465596,
+          "prefill_mean_ms": 20.976458246877883,
+          "trial_engine_steps_per_second": [
+            70.95112279185989,
+            69.76798088724213,
+            70.62233923615882,
+            71.54465494753045
+          ],
+          "top1_mismatches": 0,
+          "max_kl_hf_to_mlx_nats": 1.1762366798597513e-10,
+          "max_normalized_logit_rmse": 4.4606782667493484e-05,
+          "free_greedy_exact_hf_match": true,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "thermal_start_end": [
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ]
+          ]
+        },
+        {
+          "prompt_tokens": 32,
+          "decode_engine_steps_per_second": 70.68107156962289,
+          "decode_request_steps_per_second": 68.19966796807296,
+          "warm_ttft_mean_ms": 24.192166747525334,
+          "prefill_mean_ms": 23.57130225027504,
+          "trial_engine_steps_per_second": [
+            69.9498976555779,
+            74.71730715614306,
+            68.99375665447162,
+            69.35560184649259
+          ],
+          "top1_mismatches": 0,
+          "max_kl_hf_to_mlx_nats": 4.821635405121315e-11,
+          "max_normalized_logit_rmse": 2.080834364820316e-05,
+          "free_greedy_exact_hf_match": true,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "thermal_start_end": [
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ]
+          ]
+        },
+        {
+          "prompt_tokens": 64,
+          "decode_engine_steps_per_second": 70.64331592133684,
+          "decode_request_steps_per_second": 68.20661603352143,
+          "warm_ttft_mean_ms": 26.269926749591832,
+          "prefill_mean_ms": 25.74710449880513,
+          "trial_engine_steps_per_second": [
+            69.11323023819565,
+            72.92059915795517,
+            70.65065520146692,
+            69.99969078924941
+          ],
+          "top1_mismatches": 0,
+          "max_kl_hf_to_mlx_nats": 7.830070168112615e-11,
+          "max_normalized_logit_rmse": 2.061888687172228e-05,
+          "free_greedy_exact_hf_match": true,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "thermal_start_end": [
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ],
+            [
+              "nominal",
+              "nominal"
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "background_activity": "Brave GPU process was active at start/end snapshots. ps reports CPU activity, not GPU utilization; GPU contention is plausible but not proved. Thermal states were nominal. Cross-session speed ratios are descriptive only.",
+  "earlier_runs": "Initial FP16 run and a run overlapping repository checks are excluded from the main comparison. Reports and matching harness snapshots remain outside the portable package in ~/.cache/coreml-gpt2/mlx-initial and mlx-background-pilot. The final run stopped owned checks; user applications remained active."
+}

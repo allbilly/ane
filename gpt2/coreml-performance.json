@@ -1,0 +1,171 @@
+{
+  "format_version": 1,
+  "scope": "Measured native macOS CoreML GPT-2 124M reference on Apple M1; not the Python/Asahi port",
+  "report": "provenance/coreml-performance/m1-cmt9.json",
+  "report_sha256": "ac9c96b7f9064873ab8386125d83142b2112de0cf6dfd966b4cfec9c3f5c6882",
+  "log": "provenance/coreml-performance/m1-cmt9.log",
+  "host": {
+    "chip": "Apple M1",
+    "model": "MacBookAir10,1",
+    "memory_bytes": 8589934592,
+    "macos": "27.0.1",
+    "macos_build": "26A434",
+    "architecture": "arm64"
+  },
+  "measured_at_utc": "2026-10-03T10:44:08.502411+00:00",
+  "repo_url": "https://github.com/smpanaro/more-ane-transformers",
+  "repo_commit": "14ef84fab12b8df11fd53fa0ba261ad451f91b89",
+  "model": "GPT-2 124M, fresh coremltools 9 conversion of unchanged more-ane-transformers model code",
+  "precision": "FP16 graph and weights with upstream FP32 layer_norm policy; FP16 logits and explicit KV arrays",
+  "checkpoint": "openai-community/gpt2",
+  "checkpoint_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+  "checkpoint_sha256": "248dfc3911869ec493c76e65bf2fcf7f615828b0254c12b473182f0f81d3a707",
+  "timing": {
+    "steps": 64,
+    "trials_per_backend": 5,
+    "warmup_generations": 2,
+    "warmup_steps": 16,
+    "cached_or_new_compile_ms_excluded": 0.011292002454865724,
+    "timing": "Synchronous MLModel.prediction(from:) only; embeddings, attention, FFN, head, runtime dispatch included; input construction, argmax, logit checks, printing, model loading, compilation and warmup excluded",
+    "kv_handoff": "Retain generation_kv_cache MLMultiArray from prior prediction, no Python/numpy round-trip",
+    "scope": "Native macOS CoreML reference; not Python CLI, Orion port, or Asahi",
+    "gpu_allowed": false,
+    "ane_only_claim": false
+  },
+  "backends": {
+    "cpu_and_ne": {
+      "decode_steps_per_second": 48.67518163195968,
+      "decode_mean_ms": 20.544350662338548,
+      "decode_p50_ms": 19.66312500089407,
+      "decode_p90_ms": 23.22316700220108,
+      "warm_prefill_prediction_mean_ms": 43.737850199639794,
+      "decode_predictions_checked": 320,
+      "main_trace_top1_mismatches": 0,
+      "max_normalized_logit_rmse": 0.40558023267508214,
+      "max_kl_hf_to_coreml_nats": 0.006173271070233591,
+      "additional_prompt_checks": [
+        {
+          "prompt": "The capital of France is",
+          "top1_mismatches": 0,
+          "predictions": 17
+        },
+        {
+          "prompt": "Before boarding your rocket to Mars, remember to pack these items:",
+          "top1_mismatches": 3,
+          "predictions": 17
+        }
+      ],
+      "free_greedy_smoke": [
+        {
+          "prompt": "Hello world",
+          "exact_hf_greedy_match": true,
+          "matched_prefix_tokens": 16,
+          "tokens": 16,
+          "continuation": ", I'm not sure what to say.\n\n\"I'm sorry,"
+        },
+        {
+          "prompt": "The capital of France is",
+          "exact_hf_greedy_match": true,
+          "matched_prefix_tokens": 16,
+          "tokens": 16,
+          "continuation": " the capital of the French Republic, and the capital of the French Republic is the"
+        },
+        {
+          "prompt": "Before boarding your rocket to Mars, remember to pack these items:",
+          "exact_hf_greedy_match": false,
+          "matched_prefix_tokens": 2,
+          "tokens": 16,
+          "continuation": "\n\n1. A rocket booster\n\n2. A rocket booster\n\n"
+        }
+      ]
+    },
+    "cpu_only": {
+      "decode_steps_per_second": 55.37327960102721,
+      "decode_mean_ms": 18.059251812519506,
+      "decode_p50_ms": 14.904875002801418,
+      "decode_p90_ms": 24.815749995410442,
+      "warm_prefill_prediction_mean_ms": 20.388733799755574,
+      "decode_predictions_checked": 320,
+      "main_trace_top1_mismatches": 0,
+      "max_normalized_logit_rmse": 0.7556409156464805,
+      "max_kl_hf_to_coreml_nats": 0.005977735258513962,
+      "additional_prompt_checks": [
+        {
+          "prompt": "The capital of France is",
+          "top1_mismatches": 0,
+          "predictions": 17
+        },
+        {
+          "prompt": "Before boarding your rocket to Mars, remember to pack these items:",
+          "top1_mismatches": 3,
+          "predictions": 17
+        }
+      ],
+      "free_greedy_smoke": [
+        {
+          "prompt": "Hello world",
+          "exact_hf_greedy_match": true,
+          "matched_prefix_tokens": 16,
+          "tokens": 16,
+          "continuation": ", I'm not sure what to say.\n\n\"I'm sorry,"
+        },
+        {
+          "prompt": "The capital of France is",
+          "exact_hf_greedy_match": true,
+          "matched_prefix_tokens": 16,
+          "tokens": 16,
+          "continuation": " the capital of the French Republic, and the capital of the French Republic is the"
+        },
+        {
+          "prompt": "Before boarding your rocket to Mars, remember to pack these items:",
+          "exact_hf_greedy_match": false,
+          "matched_prefix_tokens": 2,
+          "tokens": 16,
+          "continuation": "\n\n1. A reusable rocket booster\n\n2. A reusable rocket booster"
+        }
+      ]
+    }
+  },
+  "compute_plan": {
+    "compute_units": "CPU_AND_NE",
+    "nonconstant_operation_counts": {
+      "ane": 301,
+      "cpu": 117,
+      "gpu": 0,
+      "unknown": 0
+    },
+    "interpretation": "Static preferred-device counts, not percentage of runtime or FLOPs"
+  },
+  "workload": {
+    "prompt": "Hello world",
+    "prompt_tokens": 2,
+    "steps_per_trial": 64,
+    "trials_per_backend": 5,
+    "context_capacity": 512,
+    "input_window": 64,
+    "same_token_trace_as_existing_orion_prewarmed_report": true,
+    "all_trials_thermal_nominal": true
+  },
+  "accuracy_status": "Finite logits and identical main-trace greedy choices; not full-logit parity. Mars prompt has 3/17 teacher-forced top1 mismatches and free generation diverges after 2 tokens.",
+  "upstream_python_cli": {
+    "stock_v9_status": "Private _MLModelProxy constructor incompatible with coremltools 9; see upstream-cli-stock.log",
+    "compatibility_adapter": "tools/run_more_ane_cli.py",
+    "smoke_log": "provenance/coreml-performance/upstream-cli-adapted.log",
+    "single_run_generation_tok_s": 31.2,
+    "measurement_kind": "Single 16-step CLI smoke run with Python KV copies and printing, no explicit warmup; not the headline benchmark",
+    "prompt_rate_is_not_real_prompt_throughput": "Upstream CLI divides by padded input width 64, rather than the two real prompt tokens"
+  },
+  "other_clone": {
+    "url": "https://github.com/shershah1024/ane-llm-measurements",
+    "path": "~/ane-llm-measurements",
+    "commit": "d1cb2f4d0e936c23a67283b732b28e1e899926e0",
+    "use": "Read MLComputePlan profiling methodology; no GPT-2 checkpoint supplied",
+    "test_status": "Optional operator smoke built successfully, then exited with signal 11 (exit 139) before producing results; no timing or pass claimed"
+  },
+  "optional_release_download": {
+    "url": "https://github.com/smpanaro/more-ane-transformers/releases/download/v0-2023-October-31/gpt2.mlpackage.zip",
+    "status": "Stopped slow optional download; fresh pinned-weight conversion was successfully tested instead; no release-model numbers claimed"
+  },
+  "status": "Historical two-backend run; use coreml-fair-performance.json for the controlled comparison",
+  "primary_reference": "coreml-fair-performance.json"
+}

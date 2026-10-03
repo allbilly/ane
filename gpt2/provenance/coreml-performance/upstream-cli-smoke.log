@@ -1,0 +1,26 @@
+usage: generate.py [-h] [--model_path MODEL_PATH]
+                   [--input_prompt INPUT_PROMPT]
+                   [--compute_unit {All,CPUOnly,CPUAndGPU,CPUAndANE}]
+                   [--length LENGTH] [--verbose VERBOSE] [--wait]
+                   [--use-mlpackage] [--argmax] [--timingstats]
+
+Load a CoreML modelpackage and generate some text.
+
+options:
+  -h, --help            show this help message and exit
+  --model_path MODEL_PATH
+                        path to .mlpackage file
+  --input_prompt INPUT_PROMPT
+                        input prompt for the model
+  --compute_unit {All,CPUOnly,CPUAndGPU,CPUAndANE}
+                        compute unit
+  --length LENGTH       number of new tokens to generate
+  --verbose VERBOSE     print verbose logs
+  --wait                wait for confirmation before loading the model (ie to
+                        attach a debugger)
+  --use-mlpackage       don't automatically generate a mlmodelc and use it.
+                        dramatically slower but useful for debugging this
+                        script.
+  --argmax              use deterministic argmax instead of multinomial
+                        sampling
+  --timingstats         print verbose timing stats

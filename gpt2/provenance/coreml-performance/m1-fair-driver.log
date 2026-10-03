@@ -1,0 +1,22 @@
+Same GPT-2 artifact; four compute configurations; 2/32/64 prompt tokens; no downloads
+Creating exact-length HF traces
+/Users/yeren/more-ane-transformers/.venv/lib/python3.11/site-packages/transformers/tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavior will be depracted in transformers v4.45, and will be then set to `False` by default. For more details check this issue: https://github.com/huggingface/transformers/issues/31884
+  warnings.warn(
+Recording compute plans
+Running balanced native trials; detailed progress goes to /Users/yeren/ane/gpt2/provenance/coreml-performance/m1-fair.log
+Prompt tokens: 2
+all 52.45 engine steps/s; 45.88 request steps/s; gate True
+cpu_and_gpu 51.41 engine steps/s; 45.1 request steps/s; gate True
+cpu_and_ne 49.66 engine steps/s; 44.59 request steps/s; gate True
+cpu_only 65.21 engine steps/s; 57.01 request steps/s; gate True
+Prompt tokens: 32
+all 52.5 engine steps/s; 45.93 request steps/s; gate True
+cpu_and_gpu 51.32 engine steps/s; 44.94 request steps/s; gate True
+cpu_and_ne 49.18 engine steps/s; 44.21 request steps/s; gate True
+cpu_only 64.83 engine steps/s; 56.69 request steps/s; gate True
+Prompt tokens: 64
+all 52.41 engine steps/s; 45.83 request steps/s; gate True
+cpu_and_gpu 51.82 engine steps/s; 45.39 request steps/s; gate True
+cpu_and_ne 50.51 engine steps/s; 45.39 request steps/s; gate True
+cpu_only 62.52 engine steps/s; 54.59 request steps/s; gate True
+Saved /Users/yeren/ane/gpt2/provenance/coreml-performance/m1-fair.json

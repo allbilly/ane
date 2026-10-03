@@ -1,0 +1,317 @@
+{
+  "format_version": 1,
+  "status": "Primary GPT-2 CoreML reference; controlled single-resident-model run",
+  "report": "provenance/coreml-performance/m1-fair.json",
+  "report_sha256": "974f9a40a34767b500d71573090b4c18a49310a23957e71262c4f6e55282469f",
+  "log": "provenance/coreml-performance/m1-fair.log",
+  "protocol": "benchmark-protocol.json",
+  "host": {
+    "chip": "Apple M1",
+    "model": "MacBookAir10,1",
+    "memory_bytes": 8589934592,
+    "macos": "27.0.1",
+    "macos_build": "26A434"
+  },
+  "configuration": {
+    "model": "GPT-2 124M",
+    "artifact_identical": true,
+    "precision": "Same FP16 artifact with FP32 layer_norm policy; backend arithmetic may differ",
+    "batch_size": 1,
+    "prompt_lengths": [
+      2,
+      32,
+      64
+    ],
+    "decode_steps": 64,
+    "trials_per_backend_per_prompt": 4,
+    "warmup_generations_per_trial": 2,
+    "warmup_steps": 16,
+    "resident_models": 1,
+    "prefix_cache": "disabled; zero KV cache before every request",
+    "decoding": "Shared HF float32 greedy teacher-forced trace; 64 decode inputs and 65 reference logits",
+    "engine_timer": "Synchronous MLModel.prediction only; full-logit diagnostics excluded from every timed trial",
+    "request_timer": "Warm in-process cache reset, input preparation, synchronous prediction, native cache handoff and full-vocabulary greedy argmax; no printing, diagnostics, token detokenization, HTTP or UI",
+    "ttft": "Warm in-process request start through first greedy token selection; excludes model loading/compilation",
+    "prefill_rate": "Actual prompt token count / prompt prediction duration; static input width remains 64",
+    "order": "Four-row balanced Latin square; one backend loaded per block, each prompt trial individually prewarmed",
+    "quality_gate": "Per-prompt HF replay: finite logits, zero top1 mismatches, max KL <= 0.01 nats; does not establish general accuracy",
+    "comparison_scope": "CoreML backend configurations on identical graph; not isolated hardware peaks or Orion/oMLX ranking"
+  },
+  "compute_plans": {
+    "cpu_only": {
+      "compute_units": "CPU_ONLY",
+      "nonconstant_operation_counts": {
+        "ane": 0,
+        "cpu": 418,
+        "gpu": 0,
+        "unknown": 0
+      },
+      "interpretation": "Static preferred-device counts; not runtime utilization or FLOP shares"
+    },
+    "cpu_and_gpu": {
+      "compute_units": "CPU_AND_GPU",
+      "nonconstant_operation_counts": {
+        "ane": 0,
+        "cpu": 0,
+        "gpu": 418,
+        "unknown": 0
+      },
+      "interpretation": "Static preferred-device counts; not runtime utilization or FLOP shares"
+    },
+    "cpu_and_ne": {
+      "compute_units": "CPU_AND_NE",
+      "nonconstant_operation_counts": {
+        "ane": 301,
+        "cpu": 117,
+        "gpu": 0,
+        "unknown": 0
+      },
+      "interpretation": "Static preferred-device counts; not runtime utilization or FLOP shares"
+    },
+    "all": {
+      "compute_units": "ALL",
+      "nonconstant_operation_counts": {
+        "ane": 0,
+        "cpu": 0,
+        "gpu": 418,
+        "unknown": 0
+      },
+      "interpretation": "Static preferred-device counts; not runtime utilization or FLOP shares"
+    }
+  },
+  "captured_plan_snapshot": "provenance/coreml-performance/m1-compute-plans.json",
+  "cases": [
+    {
+      "prompt_tokens": 2,
+      "backends": {
+        "all": {
+          "decode_engine_steps_per_second": 52.448948409987956,
+          "decode_request_steps_per_second": 45.87572243897961,
+          "prefill_engine_mean_ms": 20.108927249908447,
+          "prefill_actual_tokens_per_second": 99.45831396894161,
+          "warm_ttft_mean_ms": 23.006260249763727,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "free_greedy_matches_hf": true
+        },
+        "cpu_and_gpu": {
+          "decode_engine_steps_per_second": 51.41422882938653,
+          "decode_request_steps_per_second": 45.09585272172862,
+          "prefill_engine_mean_ms": 19.587270753458142,
+          "prefill_actual_tokens_per_second": 102.10712994034144,
+          "warm_ttft_mean_ms": 22.426698001101613,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "free_greedy_matches_hf": true
+        },
+        "cpu_and_ne": {
+          "decode_engine_steps_per_second": 49.66324338131966,
+          "decode_request_steps_per_second": 44.59186080894327,
+          "prefill_engine_mean_ms": 20.19869799539447,
+          "prefill_actual_tokens_per_second": 99.01628315132108,
+          "warm_ttft_mean_ms": 22.52391649968922,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "free_greedy_matches_hf": true
+        },
+        "cpu_only": {
+          "decode_engine_steps_per_second": 65.21154479765916,
+          "decode_request_steps_per_second": 57.01139260111838,
+          "prefill_engine_mean_ms": 15.277437750250101,
+          "prefill_actual_tokens_per_second": 130.91200453212508,
+          "warm_ttft_mean_ms": 17.589073000475764,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "free_greedy_matches_hf": true
+        }
+      },
+      "ratios": {
+        "cpu_and_ne_vs_cpu_only": {
+          "throughput_ratio": 0.7615713373363052,
+          "paired_trial_bootstrap_95_interval": [
+            0.7328435976745059,
+            0.7774329994319551
+          ],
+          "paired_trials": 4,
+          "bootstrap_resamples": 10000,
+          "seed": 20261003,
+          "interpretation": "Exploratory trial-block interval; one process/session, not independent machine sessions"
+        },
+        "cpu_and_gpu_vs_cpu_only": {
+          "throughput_ratio": 0.7884221879563894,
+          "paired_trial_bootstrap_95_interval": [
+            0.7696270570198459,
+            0.808598913109241
+          ],
+          "paired_trials": 4,
+          "bootstrap_resamples": 10000,
+          "seed": 20261003,
+          "interpretation": "Exploratory trial-block interval; one process/session, not independent machine sessions"
+        },
+        "all_vs_cpu_and_gpu": {
+          "throughput_ratio": 1.020125159983145,
+          "paired_trial_bootstrap_95_interval": [
+            0.9745905351321564,
+            1.0561045057260603
+          ],
+          "paired_trials": 4,
+          "bootstrap_resamples": 10000,
+          "seed": 20261003,
+          "interpretation": "Exploratory trial-block interval; one process/session, not independent machine sessions"
+        }
+      }
+    },
+    {
+      "prompt_tokens": 32,
+      "backends": {
+        "all": {
+          "decode_engine_steps_per_second": 52.49689251395645,
+          "decode_request_steps_per_second": 45.931331052983175,
+          "prefill_engine_mean_ms": 19.048635749146342,
+          "prefill_actual_tokens_per_second": 1679.9103317115016,
+          "warm_ttft_mean_ms": 21.875041250139475,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "free_greedy_matches_hf": true
+        },
+        "cpu_and_gpu": {
+          "decode_engine_steps_per_second": 51.320346530298835,
+          "decode_request_steps_per_second": 44.93725016368109,
+          "prefill_engine_mean_ms": 19.58233349956572,
+          "prefill_actual_tokens_per_second": 1634.125984051373,
+          "warm_ttft_mean_ms": 22.472895750775933,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "free_greedy_matches_hf": true
+        },
+        "cpu_and_ne": {
+          "decode_engine_steps_per_second": 49.17756681135474,
+          "decode_request_steps_per_second": 44.21320464803367,
+          "prefill_engine_mean_ms": 19.9756770003587,
+          "prefill_actual_tokens_per_second": 1601.948209285992,
+          "warm_ttft_mean_ms": 22.337197748944163,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "free_greedy_matches_hf": true
+        },
+        "cpu_only": {
+          "decode_engine_steps_per_second": 64.82670247669103,
+          "decode_request_steps_per_second": 56.693458122939724,
+          "prefill_engine_mean_ms": 15.242968998849392,
+          "prefill_actual_tokens_per_second": 2099.328549603132,
+          "warm_ttft_mean_ms": 17.523864498361945,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "free_greedy_matches_hf": true
+        }
+      },
+      "ratios": {
+        "cpu_and_ne_vs_cpu_only": {
+          "throughput_ratio": 0.7586004675933801,
+          "paired_trial_bootstrap_95_interval": [
+            0.7185275160103676,
+            0.7842610670697979
+          ],
+          "paired_trials": 4,
+          "bootstrap_resamples": 10000,
+          "seed": 20261003,
+          "interpretation": "Exploratory trial-block interval; one process/session, not independent machine sessions"
+        },
+        "cpu_and_gpu_vs_cpu_only": {
+          "throughput_ratio": 0.7916544351265049,
+          "paired_trial_bootstrap_95_interval": [
+            0.7637263019004216,
+            0.8194699111810796
+          ],
+          "paired_trials": 4,
+          "bootstrap_resamples": 10000,
+          "seed": 20261003,
+          "interpretation": "Exploratory trial-block interval; one process/session, not independent machine sessions"
+        },
+        "all_vs_cpu_and_gpu": {
+          "throughput_ratio": 1.0229255268758368,
+          "paired_trial_bootstrap_95_interval": [
+            0.9793564812393962,
+            1.0739237423370416
+          ],
+          "paired_trials": 4,
+          "bootstrap_resamples": 10000,
+          "seed": 20261003,
+          "interpretation": "Exploratory trial-block interval; one process/session, not independent machine sessions"
+        }
+      }
+    },
+    {
+      "prompt_tokens": 64,
+      "backends": {
+        "all": {
+          "decode_engine_steps_per_second": 52.41153626678725,
+          "decode_request_steps_per_second": 45.8321366704314,
+          "prefill_engine_mean_ms": 19.57388525083661,
+          "prefill_actual_tokens_per_second": 3269.662572343146,
+          "warm_ttft_mean_ms": 22.267489248886704,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "free_greedy_matches_hf": true
+        },
+        "cpu_and_gpu": {
+          "decode_engine_steps_per_second": 51.81839199501287,
+          "decode_request_steps_per_second": 45.389181309833106,
+          "prefill_engine_mean_ms": 19.719875000417233,
+          "prefill_actual_tokens_per_second": 3245.4566775218345,
+          "warm_ttft_mean_ms": 22.521187499165535,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "free_greedy_matches_hf": true
+        },
+        "cpu_and_ne": {
+          "decode_engine_steps_per_second": 50.510473574657404,
+          "decode_request_steps_per_second": 45.38829780059123,
+          "prefill_engine_mean_ms": 19.796854501590133,
+          "prefill_actual_tokens_per_second": 3232.8368122753723,
+          "warm_ttft_mean_ms": 22.08932274952531,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "free_greedy_matches_hf": true
+        },
+        "cpu_only": {
+          "decode_engine_steps_per_second": 62.51596860231147,
+          "decode_request_steps_per_second": 54.58839835416407,
+          "prefill_engine_mean_ms": 15.629604246467352,
+          "prefill_actual_tokens_per_second": 4094.7933799709267,
+          "warm_ttft_mean_ms": 17.975687500089407,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "free_greedy_matches_hf": true
+        }
+      },
+      "ratios": {
+        "cpu_and_ne_vs_cpu_only": {
+          "throughput_ratio": 0.8079611450311885,
+          "paired_trial_bootstrap_95_interval": [
+            0.7741805177569182,
+            0.8727525163391107
+          ],
+          "paired_trials": 4,
+          "bootstrap_resamples": 10000,
+          "seed": 20261003,
+          "interpretation": "Exploratory trial-block interval; one process/session, not independent machine sessions"
+        },
+        "cpu_and_gpu_vs_cpu_only": {
+          "throughput_ratio": 0.8288824944015493,
+          "paired_trial_bootstrap_95_interval": [
+            0.7847085229310469,
+            0.889901602776373
+          ],
+          "paired_trials": 4,
+          "bootstrap_resamples": 10000,
+          "seed": 20261003,
+          "interpretation": "Exploratory trial-block interval; one process/session, not independent machine sessions"
+        },
+        "all_vs_cpu_and_gpu": {
+          "throughput_ratio": 1.011446597413356,
+          "paired_trial_bootstrap_95_interval": [
+            0.9791294864002619,
+            1.0444989296204437
+          ],
+          "paired_trials": 4,
+          "bootstrap_resamples": 10000,
+          "seed": 20261003,
+          "interpretation": "Exploratory trial-block interval; one process/session, not independent machine sessions"
+        }
+      }
+    }
+  ],
+  "interpretation": "Same artifact and trace; measures CoreML compute configurations, not peak hardware or cross-model performance",
+  "earlier_four_resident_model_pilot": "Excluded because swap usage grew and prefill showed large residency outliers; diagnostic artifacts remain in external ~/.cache/coreml-gpt2/fair-resident-pilot",
+  "memory_note": "One resident model; no increase in system-wide swapout count during the session. Swapins did occur, including model-loading periods; zero paging inside trials is not claimed.",
+  "old_reference": "coreml-performance.json: historical two-backend run, superseded as the primary comparison"
+}

@@ -1,0 +1,19 @@
+/Users/yeren/more-ane-transformers/.venv/lib/python3.11/site-packages/transformers/tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavior will be depracted in transformers v4.45, and will be then set to `False` by default. For more details check this issue: https://github.com/huggingface/transformers/issues/31884
+  warnings.warn(
+Loading model from path gpt2.mlmodelc using ComputeUnit.CPU_AND_NE...
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+  File "<frozen runpy>", line 291, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/yeren/more-ane-transformers/generate.py", line 130, in <module>
+    model = MLModelProxy(mlmodelc_path, compute_unit)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yeren/more-ane-transformers/src/utils/model_proxy.py", line 8, in __init__
+    self.__proxy__ = _MLModelProxy(model_path, compute_unit.name)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: __init__(): incompatible constructor arguments. The following argument types are supported:
+    1. coremltools.libcoremlpython._MLModelProxy(arg0: str, arg1: str, arg2: str, arg3: dict)
+    2. coremltools.libcoremlpython._MLModelProxy(arg0: str, arg1: str, arg2: str, arg3: dict, arg4: object)
+
+Invoked with: 'gpt2.mlmodelc', 'CPU_AND_NE'

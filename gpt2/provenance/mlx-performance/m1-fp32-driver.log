@@ -1,0 +1,17 @@
+MLX-LM GPU float32; same pinned checkpoint and HF traces; no model download
+prompt=2 trial=1 70.95 engine steps/s
+prompt=2 trial=2 69.77 engine steps/s
+prompt=2 trial=3 70.62 engine steps/s
+prompt=2 trial=4 71.54 engine steps/s
+prompt=32 trial=1 69.95 engine steps/s
+prompt=32 trial=2 74.72 engine steps/s
+prompt=32 trial=3 68.99 engine steps/s
+prompt=32 trial=4 69.36 engine steps/s
+prompt=64 trial=1 69.11 engine steps/s
+prompt=64 trial=2 72.92 engine steps/s
+prompt=64 trial=3 70.65 engine steps/s
+prompt=64 trial=4 70.00 engine steps/s
+2 70.72 steps/s; gate True HF top1 mismatches 0
+32 70.68 steps/s; gate True HF top1 mismatches 0
+64 70.64 steps/s; gate True HF top1 mismatches 0
+Saved /Users/yeren/ane/gpt2/provenance/mlx-performance/m1-fp32.json

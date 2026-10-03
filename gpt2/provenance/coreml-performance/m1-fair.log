@@ -1,0 +1,66 @@
+/Users/yeren/more-ane-transformers/.venv/lib/python3.11/site-packages/transformers/tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavior will be depracted in transformers v4.45, and will be then set to `False` by default. For more details check this issue: https://github.com/huggingface/transformers/issues/31884
+  warnings.warn(
+Loading block 1 cpu_only
+prompt=2 block=1 cpu_only 65.01 steps/s
+prompt=32 block=1 cpu_only 64.27 steps/s
+prompt=64 block=1 cpu_only 65.05 steps/s
+Loading block 1 cpu_and_gpu
+prompt=2 block=1 cpu_and_gpu 53.09 steps/s
+prompt=32 block=1 cpu_and_gpu 53.00 steps/s
+prompt=64 block=1 cpu_and_gpu 52.68 steps/s
+Loading block 1 all
+prompt=2 block=1 all 50.74 steps/s
+prompt=32 block=1 all 50.96 steps/s
+prompt=64 block=1 all 50.67 steps/s
+Loading block 1 cpu_and_ne
+prompt=2 block=1 cpu_and_ne 50.58 steps/s
+prompt=32 block=1 cpu_and_ne 50.57 steps/s
+prompt=64 block=1 cpu_and_ne 50.56 steps/s
+Loading block 2 cpu_and_gpu
+prompt=2 block=2 cpu_and_gpu 51.16 steps/s
+prompt=32 block=2 cpu_and_gpu 51.09 steps/s
+prompt=64 block=2 cpu_and_gpu 50.73 steps/s
+Loading block 2 cpu_and_ne
+prompt=2 block=2 cpu_and_ne 50.56 steps/s
+prompt=32 block=2 cpu_and_ne 50.61 steps/s
+prompt=64 block=2 cpu_and_ne 50.63 steps/s
+Loading block 2 cpu_only
+prompt=2 block=2 cpu_only 65.14 steps/s
+prompt=32 block=2 cpu_only 65.18 steps/s
+prompt=64 block=2 cpu_only 65.40 steps/s
+Loading block 2 all
+prompt=2 block=2 all 52.88 steps/s
+prompt=32 block=2 all 52.85 steps/s
+prompt=64 block=2 all 52.80 steps/s
+Loading block 3 cpu_and_ne
+prompt=2 block=3 cpu_and_ne 50.66 steps/s
+prompt=32 block=3 cpu_and_ne 50.72 steps/s
+prompt=64 block=3 cpu_and_ne 50.66 steps/s
+Loading block 3 all
+prompt=2 block=3 all 53.11 steps/s
+prompt=32 block=3 all 53.13 steps/s
+prompt=64 block=3 all 53.04 steps/s
+Loading block 3 cpu_and_gpu
+prompt=2 block=3 cpu_and_gpu 51.61 steps/s
+prompt=32 block=3 cpu_and_gpu 53.18 steps/s
+prompt=64 block=3 cpu_and_gpu 53.19 steps/s
+Loading block 3 cpu_only
+prompt=2 block=3 cpu_only 65.29 steps/s
+prompt=32 block=3 cpu_only 65.30 steps/s
+prompt=64 block=3 cpu_only 65.43 steps/s
+Loading block 4 all
+prompt=2 block=4 all 53.15 steps/s
+prompt=32 block=4 all 53.10 steps/s
+prompt=64 block=4 all 53.21 steps/s
+Loading block 4 cpu_only
+prompt=2 block=4 cpu_only 65.40 steps/s
+prompt=32 block=4 cpu_only 64.57 steps/s
+prompt=64 block=4 cpu_only 55.45 steps/s
+Loading block 4 cpu_and_ne
+prompt=2 block=4 cpu_and_ne 47.05 steps/s
+prompt=32 block=4 cpu_and_ne 45.28 steps/s
+prompt=64 block=4 cpu_and_ne 50.19 steps/s
+Loading block 4 cpu_and_gpu
+prompt=2 block=4 cpu_and_gpu 49.90 steps/s
+prompt=32 block=4 cpu_and_gpu 48.32 steps/s
+prompt=64 block=4 cpu_and_gpu 50.77 steps/s

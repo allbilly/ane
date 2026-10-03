@@ -1,0 +1,67 @@
+Fetching https://github.com/apple/swift-protobuf.git
+[1/54396] Fetching swift-protobuf
+Fetched https://github.com/apple/swift-protobuf.git (650.89s)
+Computing version for https://github.com/apple/swift-protobuf.git
+Computed https://github.com/apple/swift-protobuf.git at 1.37.0 (652.96s)
+Computed https://github.com/apple/swift-protobuf.git at 1.37.0 (0.00s)
+Creating working copy for https://github.com/apple/swift-protobuf.git
+Working copy of https://github.com/apple/swift-protobuf.git resolved at 1.37.0
+Building for production...
+[Pre-planning 1 / 153]
+[Planning deferred tasks]
+[42 / 69]
+[43 / 69]
+[44 / 70] SwiftProtobuf
+[53 / 105]
+[55 / 105]
+[57 / 105]
+[60 / 105]
+[62 / 105]
+[64 / 105]
+[67 / 105]
+[69 / 105]
+[71 / 105]
+[73 / 105]
+[76 / 105]
+[78 / 105]
+[79 / 105]
+[80 / 105] SwiftProtobuf
+[87 / 106] CoreMLProto
+[97 / 141]
+[98 / 141]
+[100 / 141]
+[105 / 141]
+[106 / 141]
+[107 / 141]
+[110 / 141]
+[111 / 141]
+[113 / 141]
+[114 / 141]
+[116 / 141]
+[119 / 141]
+[120 / 141]
+[121 / 141]
+[122 / 141]
+[123 / 141] CoreMLProto
+[130 / 142] CoreMLProto
+[130 / 142] MILBuilder
+[133 / 146]
+/Users/yeren/ane-llm-measurements/run_matrix/Sources/MILBuilder/Builder.swift:561:13: warning: variable 'allIns' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+559 |         let il = cBool([interleave])
+560 |         let outName = name ?? uniq("cat")
+561 |         var allIns: [String: MILArgument] = [
+    |             `- warning: variable 'allIns' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+562 |             "values": args,
+563 |             "axis": bindName(ax),
+
+[#VariableNeverMutated]: <https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated>
+[135 / 146] MILBuilder
+[142 / 147] run_matrix-product
+[146 / 156]
+[149 / 156]
+[150 / 156]
+[151 / 156]
+[152 / 156] run_matrix-product
+[154 / 156] run_matrix-product
+[155 / 156] run_matrix-product
+Build complete! (71.68 sec)

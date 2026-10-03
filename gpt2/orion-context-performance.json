@@ -1,0 +1,167 @@
+{
+  "format_version": 1,
+  "status": "Primary three-context native Orion implementation reference; active desktop session, not isolated hardware peak",
+  "report": "provenance/orion-performance/m1-contexts.json",
+  "report_sha256": "a5cabd815fd6df8eef93ae86fc4d7a18e95a80b5cf552efb6cd6aaeadba59197",
+  "log": "provenance/orion-performance/m1-contexts.log",
+  "log_sha256": "e2ab534cd5280106362da2f1f64c922d40a6b86f35f29749a33a1dfe0fc844e3",
+  "host": {
+    "chip": "Apple M1",
+    "model": "MacBookAir10,1",
+    "macos": "27.0.1",
+    "macos_build": "26A434",
+    "memory_bytes": 8589934592
+  },
+  "configuration": {
+    "batch_size": 1,
+    "prompt_lengths": [
+      2,
+      32,
+      64
+    ],
+    "decode_steps": 64,
+    "trials_per_backend_per_prompt": 4,
+    "warmups_per_trial": 2,
+    "warmup_steps": 16,
+    "context_capacity": 1024,
+    "order": "CPU/ANE order alternates per trial; four trials, two first positions per backend",
+    "prefix_cache": "disabled; fresh KV allocation per request",
+    "cache_residency": "One prompt bucket at a time; ANE program cache cleared between prompt cases",
+    "precision": "Orion FP16 stored weights and ANE operations; CPU arithmetic float32",
+    "engine_timer": "Synchronous native decode call with cache-length guard; embeddings, full vocabulary logits, CPU attention, ANE transfers/dispatch included; input trace lookup, argmax, prefill, allocation, printing and numerical checks excluded",
+    "diagnostics": "Separate 65-prediction HF replay and 16-token free greedy run per backend/prompt; no logit checks between timed steps",
+    "quality_gate": "Finite logits, zero HF top1 mismatches, max KL <= 0.01 nats; raw logit NRMSE <= 0.005 reported separately; not general accuracy",
+    "comparison_scope": "Implementation references on one Mac; cross-runtime sessions and graphs differ"
+  },
+  "reference_checkpoint_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+  "reference_checkpoint_sha256": "248dfc3911869ec493c76e65bf2fcf7f615828b0254c12b473182f0f81d3a707",
+  "cases": [
+    {
+      "prompt_tokens": 2,
+      "timed_compiles": 0,
+      "cached_programs": 49,
+      "backends": {
+        "cpu": {
+          "decode_engine_steps_per_second": 50.03472136067201,
+          "prefill_mean_ms": 47.625499999150634,
+          "trial_engine_steps_per_second": [
+            52.37178731890482,
+            44.695390438706184,
+            52.2322769353697,
+            51.72954500710325
+          ],
+          "top1_mismatches": 0,
+          "max_kl_hf_to_orion_nats": 5.49292108559044e-05,
+          "max_normalized_logit_rmse": 0.053884326450685575,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "raw_logit_rmse_gate_passed": false,
+          "free_greedy_exact_hf_match": true
+        },
+        "ane": {
+          "decode_engine_steps_per_second": 52.56851618166967,
+          "prefill_mean_ms": 17.927750002592802,
+          "trial_engine_steps_per_second": [
+            52.41103022893689,
+            52.74044285481543,
+            52.58643072921303,
+            52.537219335665505
+          ],
+          "top1_mismatches": 0,
+          "max_kl_hf_to_orion_nats": 0.00020790553428956605,
+          "max_normalized_logit_rmse": 0.245810276225912,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "raw_logit_rmse_gate_passed": false,
+          "free_greedy_exact_hf_match": true
+        }
+      }
+    },
+    {
+      "prompt_tokens": 32,
+      "timed_compiles": 0,
+      "cached_programs": 49,
+      "backends": {
+        "cpu": {
+          "decode_engine_steps_per_second": 51.501500081910905,
+          "prefill_mean_ms": 66.85524999909103,
+          "trial_engine_steps_per_second": [
+            52.559655208466296,
+            51.32268173926651,
+            51.65443505823284,
+            50.51102955636941
+          ],
+          "top1_mismatches": 0,
+          "max_kl_hf_to_orion_nats": 2.4779429029159124e-05,
+          "max_normalized_logit_rmse": 0.03436830908319348,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "raw_logit_rmse_gate_passed": false,
+          "free_greedy_exact_hf_match": true
+        },
+        "ane": {
+          "decode_engine_steps_per_second": 52.00475274704982,
+          "prefill_mean_ms": 19.79050000011921,
+          "trial_engine_steps_per_second": [
+            51.4984437815156,
+            52.5163539206147,
+            52.19691940329388,
+            51.81863155155005
+          ],
+          "top1_mismatches": 0,
+          "max_kl_hf_to_orion_nats": 0.00023192554448967846,
+          "max_normalized_logit_rmse": 0.3794325065286666,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "raw_logit_rmse_gate_passed": false,
+          "free_greedy_exact_hf_match": true
+        }
+      }
+    },
+    {
+      "prompt_tokens": 64,
+      "timed_compiles": 0,
+      "cached_programs": 49,
+      "backends": {
+        "cpu": {
+          "decode_engine_steps_per_second": 47.83484720061692,
+          "prefill_mean_ms": 118.7704999987036,
+          "trial_engine_steps_per_second": [
+            39.58419279453666,
+            51.558808057689035,
+            51.4246640731359,
+            51.23689056144856
+          ],
+          "top1_mismatches": 0,
+          "max_kl_hf_to_orion_nats": 1.417726225021021e-05,
+          "max_normalized_logit_rmse": 0.03013710403572754,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "raw_logit_rmse_gate_passed": false,
+          "free_greedy_exact_hf_match": true
+        },
+        "ane": {
+          "decode_engine_steps_per_second": 48.42240376026934,
+          "prefill_mean_ms": 24.10274999961257,
+          "trial_engine_steps_per_second": [
+            42.83773200945846,
+            48.52171763925015,
+            51.49492171603513,
+            51.99189901274118
+          ],
+          "top1_mismatches": 0,
+          "max_kl_hf_to_orion_nats": 5.663489201953418e-05,
+          "max_normalized_logit_rmse": 0.1593434374228265,
+          "strict_trace_choice_and_kl_gate_passed": true,
+          "raw_logit_rmse_gate_passed": false,
+          "free_greedy_exact_hf_match": true
+        }
+      }
+    }
+  ],
+  "older_reference": "provenance/orion-performance/m1-prewarmed.json retained as a historical two-token, five-trial source snapshot; not mixed into this three-context row",
+  "source_files_differing_from_older_snapshot": [
+    "core/ane_io.m",
+    "core/mil_builder.m",
+    "core/kernel.m",
+    "compiler/kernel_adapter.m",
+    "core/mil_builder.h"
+  ],
+  "interpretation": "All CPU/ANE prompt cases pass tested HF top1/KL and 16-token greedy gates; all raw-logit NRMSE gates fail. Different FP16 weight/arithmetic policy from HF FP32. These checks do not establish general accuracy or full-logit parity.",
+  "background_note": "Existing desktop applications active; process CPU snapshots are recorded, not GPU utilization. All trials nominal thermal. Four-trial variability retained; separate sessions from CoreML/MLX."
+}

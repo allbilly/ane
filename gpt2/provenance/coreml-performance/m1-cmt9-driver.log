@@ -1,0 +1,8 @@
+Verified cached checkpoint; creating HF float32 reference trace
+/Users/yeren/more-ane-transformers/.venv/lib/python3.11/site-packages/transformers/tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavior will be depracted in transformers v4.45, and will be then set to `False` by default. For more details check this issue: https://github.com/huggingface/transformers/issues/31884
+  warnings.warn(
+Profiling the CPU+ANE compute plan
+Running native CPU and CPU+ANE trials; warmup excluded
+swift-driver version: 1.168.6 cpu_and_ne: 48.68 steps/s; p50 19.66 ms; p90 23.22 ms; top1 mismatches 0; max NRMSE 0.40558
+cpu_only: 55.37 steps/s; p50 14.90 ms; p90 24.82 ms; top1 mismatches 0; max NRMSE 0.75564
+Compute plan: {'ane': 301, 'cpu': 117, 'gpu': 0, 'unknown': 0}; report: /Users/yeren/ane/gpt2/provenance/coreml-performance/m1-cmt9.json

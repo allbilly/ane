@@ -1,0 +1,44 @@
+{
+  "format_version": 1,
+  "model": "GPT-2 124M",
+  "backend": "vllm.cpp",
+  "status": "unavailable: no registered GPT-2 text-generation model",
+  "measurement_kind": "Source capability inspection; no throughput run attempted",
+  "decode_steps_per_second": null,
+  "reason": "The local GPT-2 code is a scalar float32 host reference for the IndexTTS backbone. GPT2LMHeadModel is absent from src/include registration paths; the reference has full-sequence ForwardHost/ForwardHostEmbeds/LogitsHost, not the cached text-generation path used in this comparison. Timing the TTS reference would measure a different workload.",
+  "scope": "Current local checkout only; no claim about future support or other branches",
+  "checked_at_utc": "2026-10-03T11:44:33.614762+00:00",
+  "repo": "/Users/yeren/Desktop/vllm.cpp",
+  "repo_commit": "9157ba9c855c1b8a1c7240a2affa56c85da046b2",
+  "repo_worktree_status": "",
+  "source_sha256": {
+    "include/vllm/model_executor/models/gpt2.h": "6dbeef7b5b7353196af773805336a7804b5ae849a65732aece9b0630971a1c53",
+    "src/vllm/model_executor/models/gpt2.cpp": "b9acdaa60c252cf123d3c7a8c51b1993920c45ae2f3f3ffc461e12755937eea6",
+    "src/vllm/model_executor/models/model_registry.cpp": "31b27070c1b2989b1e5f18b09d67091b152b7c1777396c56c7b15edaca6d0cbc",
+    "src/vllm/model_executor/models/talker.cpp": "d2b9a8ddbdb53ebd334e5210f630df2ccb00695242a49421d082d470c1a62e50",
+    "tests/vllm/models/test_gpt2.cpp": "134f31050b1c815b4affddee29957ead97dfe742b677c3fb81866f6ce13e0ef5"
+  },
+  "evidence": [
+    {
+      "path": "include/vllm/model_executor/models/gpt2.h",
+      "line": 10,
+      "finding": "Header documents host reference scope and absence from text runner/ABI/server."
+    },
+    {
+      "path": "include/vllm/model_executor/models/gpt2.h",
+      "line": 87,
+      "finding": "Exposes full-sequence host forward and tied output head; no incremental text-decode cache API."
+    },
+    {
+      "path": "src/vllm/model_executor/models/model_registry.cpp",
+      "line": 281,
+      "finding": "Unknown architectures rejected by ModelRegistry."
+    },
+    {
+      "search": "rg -n GPT2LMHeadModel src include",
+      "exit_code": 1,
+      "matches": []
+    }
+  ],
+  "repo_checks": "Read-only entry and role confirmed. Existing repository preflight failures observed; the lengthy remaining audit was stopped before final MLX timing. No implementation edits or builds."
+}

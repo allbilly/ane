@@ -1,0 +1,123 @@
+/Users/yeren/more-ane-transformers/.venv/lib/python3.11/site-packages/transformers/tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavior will be depracted in transformers v4.45, and will be then set to `False` by default. For more details check this issue: https://github.com/huggingface/transformers/issues/31884
+  warnings.warn(
+ANE I/O: fp16, decode seq 32, weights packed
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 25 new compiles (25 programs cached, 27 compiles total)
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+prompt=2 trial=1 backend=cpu
+prompt=2 trial=1 backend=ane
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+prompt=2 trial=2 backend=ane
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+prompt=2 trial=2 backend=cpu
+prompt=2 trial=3 backend=cpu
+prompt=2 trial=3 backend=ane
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+prompt=2 trial=4 backend=ane
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+ANE prefill: 2 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 51 compiles total)
+prompt=2 trial=4 backend=cpu
+prompt=2 cpu 50.03 steps/s gate=pass
+prompt=2 ane 52.57 steps/s gate=pass
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 25 new compiles (25 programs cached, 76 compiles total)
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+prompt=32 trial=1 backend=cpu
+prompt=32 trial=1 backend=ane
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+prompt=32 trial=2 backend=ane
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+prompt=32 trial=2 backend=cpu
+prompt=32 trial=3 backend=cpu
+prompt=32 trial=3 backend=ane
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+prompt=32 trial=4 backend=ane
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+ANE prefill: 32 tokens → bucket 32
+ANE prefill: 0 new compiles (49 programs cached, 100 compiles total)
+prompt=32 trial=4 backend=cpu
+prompt=32 cpu 51.50 steps/s gate=pass
+prompt=32 ane 52.00 steps/s gate=pass
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 25 new compiles (25 programs cached, 125 compiles total)
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+prompt=64 trial=1 backend=cpu
+prompt=64 trial=1 backend=ane
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+prompt=64 trial=2 backend=ane
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+prompt=64 trial=2 backend=cpu
+prompt=64 trial=3 backend=cpu
+prompt=64 trial=3 backend=ane
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+prompt=64 trial=4 backend=ane
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+ANE prefill: 64 tokens → bucket 64
+ANE prefill: 0 new compiles (49 programs cached, 149 compiles total)
+prompt=64 trial=4 backend=cpu
+prompt=64 cpu 47.83 steps/s gate=pass
+prompt=64 ane 48.42 steps/s gate=pass

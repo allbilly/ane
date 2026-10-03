@@ -1,0 +1,61 @@
+{
+  "format_version": 1,
+  "source_report_sha256": "129eb3162a9a7a1a4a086d7473b132757f3a9530e323333213b5d84ff00eb264",
+  "provenance": {
+    "host": {
+      "chip": "Apple M1",
+      "model": "MacBookAir10,1",
+      "memory_bytes": 8589934592,
+      "macos": "27.0.1",
+      "macos_build": "26A434"
+    },
+    "model_files_sha256": {
+      "Data/com.apple.CoreML/model.mlmodel": "048fa109d9443b1c951b870759df8e75e5a3c80c48e9898fd9bcda545ea999ea",
+      "Data/com.apple.CoreML/weights/weight.bin": "aedf45837e894ee56513cbb5d8ccd7e3d2892f3839ae1349389bd0b77963b486",
+      "Manifest.json": "b4a1870b9dde68e792ee66b17910bef7c9547080edce979fe2ba867a79347ecb"
+    }
+  },
+  "compute_plans": {
+    "cpu_only": {
+      "compute_units": "CPU_ONLY",
+      "nonconstant_operation_counts": {
+        "ane": 0,
+        "cpu": 418,
+        "gpu": 0,
+        "unknown": 0
+      },
+      "interpretation": "Static preferred-device counts; not runtime utilization or FLOP shares"
+    },
+    "cpu_and_gpu": {
+      "compute_units": "CPU_AND_GPU",
+      "nonconstant_operation_counts": {
+        "ane": 0,
+        "cpu": 0,
+        "gpu": 418,
+        "unknown": 0
+      },
+      "interpretation": "Static preferred-device counts; not runtime utilization or FLOP shares"
+    },
+    "cpu_and_ne": {
+      "compute_units": "CPU_AND_NE",
+      "nonconstant_operation_counts": {
+        "ane": 301,
+        "cpu": 117,
+        "gpu": 0,
+        "unknown": 0
+      },
+      "interpretation": "Static preferred-device counts; not runtime utilization or FLOP shares"
+    },
+    "all": {
+      "compute_units": "ALL",
+      "nonconstant_operation_counts": {
+        "ane": 0,
+        "cpu": 0,
+        "gpu": 418,
+        "unknown": 0
+      },
+      "interpretation": "Static preferred-device counts; not runtime utilization or FLOP shares"
+    }
+  },
+  "interpretation": "Static plans captured during the first session on the same Mac and exactly matching model artifact. Contains no pilot performance numbers."
+}

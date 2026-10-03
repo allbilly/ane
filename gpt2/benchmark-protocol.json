@@ -1,0 +1,60 @@
+{
+  "format_version": 1,
+  "scope": "GPT-2 124M only, native macOS CoreML backend comparison",
+  "question": "How does CoreML compute-unit selection change prefill and decode performance for the same GPT-2 artifact?",
+  "controls": {
+    "checkpoint": "openai-community/gpt2",
+    "checkpoint_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+    "checkpoint_sha256": "248dfc3911869ec493c76e65bf2fcf7f615828b0254c12b473182f0f81d3a707",
+    "artifact": "One unchanged more-ane-transformers conversion shared by all configurations",
+    "precision": "Same FP16 graph/weights and FP32 layer_norm policy; numerical arithmetic remains backend-dependent",
+    "host": "Same Apple M1 8 GB macOS machine, one process/session",
+    "batch_size": 1,
+    "input_window": 64,
+    "context_capacity": 512,
+    "prompt_tokens": [
+      2,
+      32,
+      64
+    ],
+    "decode_steps": 64,
+    "inputs": "Identical HF float32 greedy decode token IDs for all backends within each prompt case",
+    "cache": "Zero KV cache for every request; no prompt prefix reuse",
+    "warmup": "Two 16-step generations immediately before every timed trial; separate correctness replay excluded",
+    "trials": "Four per backend per prompt; balanced Latin square backend order, with all three prompt cases evaluated in each single-model block",
+    "diagnostics": "Full-logit correctness checks outside timed trials; finite native argmax checks included in request timer",
+    "model_residency": "One model configuration at a time, discarded before loading the next; HF reference model runs in a separate child process"
+  },
+  "configurations": {
+    "cpu_only": "CPU_ONLY",
+    "cpu_and_gpu": "CPU_AND_GPU: CPU/GPU allowed, ANE excluded",
+    "cpu_and_ne": "CPU_AND_NE: CPU/ANE allowed, GPU excluded",
+    "all": "ALL: CPU/GPU/ANE allowed; does not require all three to execute"
+  },
+  "metrics": {
+    "prefill_engine_ms": "Synchronous first prediction only",
+    "prefill_actual_tokens_per_second": "Actual prompt tokens divided by first-prediction seconds; never use the padded width as token count",
+    "warm_ttft_ms": "Zero-cache reset, input assembly, prediction, KV handoff, first native greedy argmax; excludes compilation/loading, HTTP/UI and detokenization",
+    "decode_engine_steps_per_second": "64 synchronized prediction calls divided by their summed durations",
+    "decode_request_steps_per_second": "64 steps including input assembly, prediction, KV handoff, full-vocabulary argmax and autorelease cleanup",
+    "startup": "Model load durations recorded separately; compilation/profile setup excluded",
+    "statistics": "Raw trial and step samples, aggregate throughput, latency percentiles, and exploratory paired whole-trial bootstrap intervals",
+    "placement_source": "Fresh MLComputePlan queries, or a prior plan report whose complete model-file hashes match; source recorded"
+  },
+  "quality": {
+    "strict_trace_gate": "Finite logits, zero HF top1 mismatches across prompt plus 64 decode predictions, and maximum KL(HF||CoreML) <= 0.01 nats",
+    "additional_evidence": "16-token free greedy continuation checked against HF for each case/configuration",
+    "interpretation": "Trace gate and generation smoke are limited to these prompts; they do not establish general model accuracy or full-logit parity"
+  },
+  "interpretation": {
+    "cpu_and_ne_vs_cpu_only": "Controlled CoreML CPU/ANE allowance comparison on the same graph",
+    "all_vs_cpu_and_gpu": "Compare compute-unit allowance, then inspect preferred-device plan; if ALL prefers only GPU, no ANE speedup attribution is allowed",
+    "placement": "MLComputePlan preferred-device counts are static metadata, not measured runtime utilization or overlap",
+    "thermal": "Report each trial's start/end thermal state; qualify conclusions if any state is not nominal",
+    "uncertainty": "One session with four paired blocks; repeat separate sessions before claiming stable small speedups",
+    "cross_implementation": "Orion has different graph shapes, cache and arithmetic policies; retain its numbers separately as implementation context",
+    "excluded": "Qwen/oMLX, pure GPU claims, pure ANE claims, peak hardware rankings, and Asahi performance"
+  },
+  "runner": "tools/bench_coreml_fair.py",
+  "report": "provenance/coreml-performance/m1-fair.json"
+}

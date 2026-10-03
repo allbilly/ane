@@ -1,0 +1,12 @@
+Prewarmed cpu_only
+Prewarmed cpu_and_ne
+Trial 1 cpu_only: 51.94 steps/s, p50 15.34 ms, p90 25.84 ms
+Trial 1 cpu_and_ne: 47.78 steps/s, p50 20.05 ms, p90 25.05 ms
+Trial 2 cpu_and_ne: 50.00 steps/s, p50 19.48 ms, p90 22.13 ms
+Trial 2 cpu_only: 62.60 steps/s, p50 14.69 ms, p90 20.87 ms
+Trial 3 cpu_only: 50.22 steps/s, p50 14.97 ms, p90 29.64 ms
+Trial 3 cpu_and_ne: 50.42 steps/s, p50 19.42 ms, p90 21.04 ms
+Trial 4 cpu_and_ne: 47.60 steps/s, p50 19.62 ms, p90 23.75 ms
+Trial 4 cpu_only: 56.08 steps/s, p50 15.09 ms, p90 23.28 ms
+Trial 5 cpu_only: 57.71 steps/s, p50 14.94 ms, p90 24.43 ms
+Trial 5 cpu_and_ne: 47.73 steps/s, p50 19.93 ms, p90 23.43 ms
