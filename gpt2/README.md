@@ -52,13 +52,13 @@ compared against recorded macOS ANE outputs, and the complete generation flow
 is checked against macOS ANE logits and four greedy tokens. A failure exits
 with a diagnostic. The selected ANE backend never falls back to CPU.
 
-**Linux ANE decode and generation were verified on base M1 Asahi on
-2026-10-04.** All 24 decode kernels matched the macOS ANE fixtures, and the
-full generation check passed its reference logits and four greedy tokens.
-Repeated 32-token generations completed successfully. The 25 reference
-prefill kernels have not been replayed on Linux in these runs.
-`package.json` and [asahi-decode-performance.json](asahi-decode-performance.json) record this
-verification scope.
+**All 49 Linux ANE reference kernels and generation parity passed on base M1
+Asahi on 2026-10-04**, running `7.1.13+` with the runtime device tree overlay.
+This includes all 24 decode kernels and all 25 prefill reference kernels.
+A fresh 32-token generation completed successfully. `package.json` and
+[asahi-runtime-validation.json](asahi-runtime-validation.json) record this
+validation. The earlier decode performance measurements remain in
+[asahi-decode-performance.json](asahi-decode-performance.json).
 
 Packing can be tested without an ANE device, on macOS or Linux:
 
@@ -71,9 +71,11 @@ Packing can be tested without an ANE device, on macOS or Linux:
 cache uses about 149 MiB for decode, or 204 MiB for all kernels. This storage is
 created on the target machine; it is excluded from the portable directory.
 
-Stock Asahi installation alone is insufficient if it lacks the ANE device
-tree/driver. Follow the parent [ANE setup instructions](../README.md) and
-[allbilly/libane](https://github.com/allbilly/libane) for that prerequisite.
+If the stock Asahi installation lacks ANE device tree nodes, use the
+[runtime overlay and loadable KMD](../kmod/README.md). On base M1 it supplies
+the missing nodes without rebuilding the kernel or changing boot files.
+Build against development files matching the running kernel, install the
+modules, and load them with `sudo modprobe ane`.
 `doctor` checks the package, M1 device-tree compatibility, ANE driver binding,
 and device permissions before submitting work:
 
@@ -87,6 +89,28 @@ and device permissions before submitting work:
 later chips are rejected: the source capture is base M1 and those chips need
 their own validated artifacts. Kernel/device-tree installation is deliberately
 outside this startup script.
+
+## Training on Asahi
+
+[The Linux training adapter](training/README-asahi.md) runs GPT-2 124M using
+27 captured forward and backward kernel templates. Weights are runtime
+inputs, so parameter updates require no kernel recompilation. It supports
+batch size one and sequence length 32 on base M1.
+
+From the repository root, with the driver loaded and weights cached:
+
+```sh
+OPENBLAS_NUM_THREADS=1 gpt2/.venv/bin/python gpt2/training/asahi.py train \
+  --steps 10 --checkpoint
+```
+
+The transformer forward/backward passes and parameter gradients execute on
+ANE; embeddings, the vocabulary head, loss, and fp32 Adam run on CPU. Ten
+updates passed on this machine, reducing fixed-batch loss from 4.42788 to
+0.000207. Both sets of 27 training fixtures matched exactly. The saved
+checkpoint reproduced its final loss on ANE and achieved 32/32 correct next
+tokens in an independent CPU evaluation. This measures memorization of the
+training batch; see the linked guide for timing scope and limitations.
 
 ## CPU generation and sampling
 

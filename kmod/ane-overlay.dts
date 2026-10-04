@@ -1,0 +1,106 @@
+// SPDX-License-Identifier: GPL-2.0-only OR MIT
+/* T8103 resources from eiln/linux bf6651bb55212f2cfab573bd0d49bf5c601b4703.
+ * The ane_dt loader replaces the three 0xfeedxxxx external phandle markers
+ * with handles from the live tree. Internal references use normal DT fixups.
+ * This template must not be applied directly by a boot loader.
+ */
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "apple,t8103";
+
+    fragment@0 {
+        target-path = "/soc/power-management@23b700000";
+        __overlay__ {
+            #address-cells = <1>;
+            #size-cells = <1>;
+
+            ane_base: power-controller@c008 {
+                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
+                reg = <0xc008 4>;
+                #power-domain-cells = <0>;
+                #reset-cells = <0>;
+                label = "ane_base";
+                power-domains = <0xfeed0003>; /* existing ane_sys_cpu */
+            };
+
+            ane_set1: power-controller@c010 {
+                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
+                reg = <0xc010 4>;
+                #power-domain-cells = <0>;
+                #reset-cells = <0>;
+                label = "ane_set1";
+                power-domains = <&ane_base>;
+            };
+
+            ane_set2: power-controller@c018 {
+                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
+                reg = <0xc018 4>;
+                #power-domain-cells = <0>;
+                #reset-cells = <0>;
+                label = "ane_set2";
+                power-domains = <&ane_base>;
+            };
+
+            ane_set3: power-controller@c020 {
+                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
+                reg = <0xc020 4>;
+                #power-domain-cells = <0>;
+                #reset-cells = <0>;
+                label = "ane_set3";
+                power-domains = <&ane_base>;
+            };
+
+            ane_set4: power-controller@c028 {
+                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
+                reg = <0xc028 4>;
+                #power-domain-cells = <0>;
+                #reset-cells = <0>;
+                label = "ane_set4";
+                power-domains = <&ane_base>;
+            };
+
+            ane_set5: power-controller@c030 {
+                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
+                reg = <0xc030 4>;
+                #power-domain-cells = <0>;
+                #reset-cells = <0>;
+                label = "ane_set5";
+                power-domains = <&ane_base>;
+            };
+        };
+    };
+
+    fragment@1 {
+        target-path = "/soc";
+        __overlay__ {
+            #address-cells = <2>;
+            #size-cells = <2>;
+
+            ane_dart: iommu@26b800000 {
+                compatible = "apple,t8103-dart";
+                reg = <0x2 0x6b800000 0 0x4000>;
+                #iommu-cells = <1>;
+                interrupt-parent = <0xfeed0001>; /* existing AIC */
+                interrupts = <0 417 4>; /* AIC_IRQ, level high */
+                power-domains = <0xfeed0002>; /* existing ane_sys */
+            };
+
+            ane@26a000000 {
+                compatible = "apple,t8103-ane";
+                iommus = <&ane_dart 0>;
+                reg-names = "engine", "dart0", "dart1", "dart2";
+                reg = <0x2 0x6bc04000 0 0x24000>,
+                      <0x2 0x6b800000 0 0x4000>,
+                      <0x2 0x6b810000 0 0x4000>,
+                      <0x2 0x6b820000 0 0x4000>;
+                interrupt-parent = <0xfeed0001>;
+                interrupt-names = "ane", "dart";
+                interrupts = <0 416 4>, <0 417 4>;
+                power-domains = <&ane_set1>, <&ane_set2>, <&ane_set3>,
+                                <&ane_set4>, <&ane_set5>;
+            };
+        };
+    };
+};

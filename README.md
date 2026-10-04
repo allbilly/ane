@@ -13,6 +13,12 @@ copies and defaulting OpenBLAS to one thread, four 32-token runs measured
 for the two-token prompt. See the
 [Asahi measurements](gpt2/README.md#measured-asahi-generation) for timing scope.
 
+[GPT-2 training on Asahi](gpt2/training/README-asahi.md) replays the captured
+forward and backward kernels through the same driver. A full 124M parameter
+run completed ten Adam updates on this machine; its fixed-batch loss fell
+from 4.42788 to 0.000207. The transformer runs on ANE, with the vocabulary
+head, loss and optimizer on CPU.
+
 Thanks for the prior work from [geohotz](https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/) [eiln](https://github.com/eiln/ane) [freedomtan](https://github.com/freedomtan/coreml_to_ane_hwx) [mdaiter](https://github.com/mdaiter/ane) , some scripts in experimental/* are from [freedomtan/coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx)
 
 ANE detailed hardware and patent analysis by [Maynard Handley](https://github.com/name99-org/AArch64-Explore/blob/main/vol7%20ANE.nb.pdf)
@@ -31,12 +37,28 @@ TODO
 
 # For normal user
 
-✅ Tested on Asahi Linux fedora 6.14.8-400.asahi.fc42.aarch64+16k with device tree overlay [ane-overlay.dts](https://github.com/allbilly/libane/blob/main/ane/ane-overlay.dts) [ane.dtbo](https://github.com/allbilly/libane/blob/main/ane.dtbo) (I lost the steps, attempted to reproduce but result in failed boot, please PR if you know how so we can prevent recompile whole kerenel just for dts)
+For **base M1 (T8103)**, [the runtime overlay and loadable KMD](kmod/README.md)
+can supply the missing ANE device tree nodes without rebuilding the kernel or
+changing boot files. Build with `make -C kmod`, install with
+`sudo make -C kmod install`, then load with `sudo modprobe ane`.
+Tested on a base M1 MacBook Air running `7.1.13+`: all ten operation checks,
+runtime autosuspend, and driver unload/reload passed with the runtime overlay.
+See the linked instructions for kernel requirements, permissions and hardware
+validation. This replaces the incomplete old `libane/ane-overlay.dts` recipe;
+do not apply that old overlay to the boot device tree.
+
+The earlier Asahi Linux Fedora 6.14.8 overlay setup worked once, but its boot
+installation steps were not reproducible. Use the documented runtime path
+above for the new overlay work.
 
 ✅ Tested on Asahi Linux fedora 6.19.11+ built from [my fork of fairy-dust branch of asahi linux](https://github.com/allbilly/linux/commit/52d22304e89d2995bfa2e678153feffba5dff23a)
 
 
 ## 1. Install Asahi Linux, build with dts and install kmd for ANE
+
+The kernel build below describes the earlier setup and the optional Type-C
+display work. Base M1 users can use [kmod](kmod/README.md) for ANE without this
+kernel rebuild.
 
 On MacOS, run
 ```bash

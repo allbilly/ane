@@ -68,7 +68,10 @@
     "chip": "base M1/t8103",
     "decode_kernels_passed": 24,
     "full_generation_parity": "PASS",
-    "prefill_reference_kernels_verified": false,
-    "report": "asahi-decode-performance.json"
+    "prefill_reference_kernels_verified": true,
+    "report": "asahi-runtime-validation.json",
+    "kernel": "7.1.13+",
+    "runtime_device_tree_overlay": true,
+    "prefill_reference_kernels_passed": 25
   }
 }

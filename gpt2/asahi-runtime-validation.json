@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-04",
+  "chip": "base M1/t8103",
+  "machine": "MacBook Air J313",
+  "kernel": "7.1.13+",
+  "device": "/dev/accel/accel0",
+  "device_tree": "ane_dt runtime overlay; no ANE nodes in boot tree",
+  "driver": {
+    "operation_checks_passed": 10,
+    "autosuspend_submission": "PASS",
+    "unload_reload": "PASS",
+    "new_kernel_faults": false
+  },
+  "inference": {
+    "status": "PASS",
+    "decode_kernels_passed": 24,
+    "prefill_reference_kernels_passed": 25,
+    "full_generation_parity": "PASS",
+    "fresh_generation_tokens": 32,
+    "fresh_generation_prompt": "The Apple Neural Engine"
+  },
+  "training": {
+    "status": "PASS",
+    "kernel_source": "aneforge",
+    "parameter_count": 124439808,
+    "sequence_length": 32,
+    "batch_size": 1,
+    "steps": 10,
+    "lr": 0.0001,
+    "initial_loss": 4.42788028717041,
+    "final_loss_after_updates": 0.00020708292140625417,
+    "initial_gradient_norm": 41.38331601931007,
+    "macos_reference_gradient_norm": 41.383043818440605,
+    "scope": "Transformer forward/backward and parameter gradients on ANE; embeddings, vocabulary head/loss and fp32 Adam on CPU.",
+    "peak_rss_bytes": 2478391296,
+    "fixture_sources": {
+      "aneforge": 27,
+      "orion": 27
+    },
+    "fixtures_bit_exact": true,
+    "ane_dispatches_per_update": 580,
+    "median_complete_update_ms": 1794.951224000215,
+    "median_submit_ioctl_ms": 35.43778449648016
+  },
+  "checkpoint_replay": {
+    "status": "PASS",
+    "reloaded_checkpoint_loss": 0.00020708292140625417,
+    "parameter_count": 124439808,
+    "ane_dispatches": 169
+  },
+  "independent_cpu_checkpoint_evaluation": {
+    "status": "PASS",
+    "method": "Independent NumPy fp32 CPU forward; checkpoint parameters rounded to fp16; no ANE calls",
+    "initial": {
+      "loss": 4.427120208740234,
+      "correct_next_tokens": 5,
+      "total_tokens": 32
+    },
+    "trained_checkpoint": {
+      "loss": 0.00020754837896674871,
+      "correct_next_tokens": 32,
+      "total_tokens": 32
+    }
+  },
+  "stock_kernel_compile_checks": [
+    "6.17.12-400.asahi.fc42.aarch64+16k",
+    "6.19.14-400.asahi.fc42.aarch64+16k"
+  ],
+  "scope_notes": [
+    "Stock Fedora kernels were compile checked, not booted for hardware validation.",
+    "The ten-update training run uses a fixed batch with no dropout and measures batch memorization.",
+    "The overlay and polling fault IRQ mask persist until reboot; ane.ko can be reloaded independently."
+  ]
+}

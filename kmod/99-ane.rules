@@ -1,0 +1,2 @@
+# Access to the ANE only; other accelerators keep their own permissions.
+SUBSYSTEM=="accel", KERNEL=="accel[0-9]*", DRIVERS=="ane", GROUP="render", MODE="0660", TAG+="uaccess"

@@ -1,0 +1,11 @@
+*.o
+*.ko
+*.mod
+*.mod.c
+.*.cmd
+Module.symvers
+modules.order
+ane.dtbo
+overlay_blob.h
+.tmp_versions/
+test-output/
