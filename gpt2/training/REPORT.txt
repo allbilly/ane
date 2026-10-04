@@ -1,0 +1,80 @@
+GPT-2 TRAINING POC: ANEFORGE AND ORION
+
+Measured locally on Apple M1, 8 GB RAM, macOS 27.0.1.
+Full pretrained GPT-2 124M: 12 layers, 768 hidden channels, 12 heads, vocabulary 50257.
+All 124,439,808 parameters have gradients and receive Adam updates.
+Batch size 1, sequence length 32, ten updates on the SAME batch, dropout disabled.
+Same verified fp16-rounded starting weights, learning rate 1e-4, fp32 CPU Adam, gradient clipping 1, loss scale 128.
+
+RESULTS
+                            ANEForge           Orion
+Initial ANE training loss       4.427890        4.427890
+Loss after ten updates          0.000217        0.000217
+Compiler/setup calls            4.145705 s      1.732814 s
+Training step median            1.298874 s      1.157090 s
+
+Compile timings were sequential first runs, not a controlled compiler benchmark.
+The ten training-step timings include CPU Adam and memory traffic and are order-sensitive.
+A cleaner timing check alternated ten pairs of full forward/backward passes on the same initial weights, with no optimizer or timed compilation:
+  ANEForge: 359.22 ms median; ANE execute calls 145.91 ms.
+  Orion:    349.03 ms median; ANE execute calls 129.47 ms.
+  Paired ANEForge/Orion time ratios ranged 0.873 to 1.335.
+Orion was about 3% faster by median for forward/backward; variability is too large for a clear overall speed winner.
+
+THE VERY LOW LOSS IS OVERFITTING
+Independent PyTorch CPU fp32 forward checks, with saved checkpoint weights rounded to fp16:
+  Training batch: 4.427089 -> 0.000215.
+  Unseen text:    3.719297 -> 4.839213.
+Both backends produce 32/32 correct training next-token predictions after ten updates.
+This shows correct training execution and rapid memorization, not improved generalization.
+
+CORRECTNESS
+The initial ANE loss differs from the independent CPU loss by 0.000801.
+Four sampled full-model parameter gradients agree with the CPU oracle (cosines >= 0.99994; relative L2 0.4%-1.2%).
+All 124,439,808 final parameter values match exactly between backends; different tensors: 0.
+
+WHAT WAS COMPARED
+An external Python training harness composes kernels through each repository's own graph builder, MIL emitter and native ANE runtime.
+VJPs are hand-derived in the common harness. ANEForge's autograd/Trainer and Orion's Stories110M trainer are NOT used.
+No source files in either repository were changed. Stock Orion does not implement GPT-2 training.
+Transformer matmuls, bias/norm/GELU/attention/residual computation, backward propagation and transformer parameter gradients run on the ANE.
+The CPU performs embedding lookup/scatter, tied vocabulary projection and its gradient, cross entropy, optimizer updates, reshapes/transposes and orchestration.
+Both implementations use 27 reusable kernel templates and 580 ANE dispatches per training step.
+Weights are program inputs, so neither backend recompiles or reloads baked weights during the ten steps.
+This shared decomposition permits a matched runtime comparison; it does not measure each project's best possible fused training implementation.
+The Orion experiment adapter supplies the required rsqrt epsilon=0 argument omitted by its generic emitter on this macOS. Original unmodified MIL is kept as model.mil.raw.
+
+ARTIFACTS
+aneforge/kernels/ and orion/kernels/: 27 templates each, with model.mil, fixture.npz and hwx/.
+  hwx/model.hwx: H13G offline binary compiled from the exact emitted MIL.
+  hwx/task-descriptors.bin: raw task descriptor/register packet bytes.
+  hwx/tasks.json and container.json: decoded descriptors/registers and HWX container metadata.
+  hwx/model.hwx.status.plist: Apple compiler physical I/O and allocation metadata.
+  fixture.npz: actual first-use fp16 input/output buffers from the full-model initial forward/backward pass, in logical tensor order.
+  kernel-index.json: shapes and logical-to-runtime port names.
+ANEForge also retains original e5rt cache bundles locally; Orion's compiler net.plist is tracked in Git.
+Offline HWX exports are not claimed to be byte-identical readbacks of signed binaries loaded by aned.
+Per-backend loss.csv, results.json and protocol.json are tracked, along with all per-kernel replay fixtures.
+Full fp32 checkpoints, oracle/gradient arrays, native build products and e5rt caches remain local and are ignored by Git.
+The commands below regenerate these local artifacts; build/receipt.json preserves the native build provenance.
+comparison.json, paired-benchmark.json, overfitting-check.json and kernel-manifest.json contain the machine-readable evidence.
+Initial pretrained weights remain external at ~/Desktop/Orion/model/blobs/gpt2_124m/; their 196 files were hash-verified.
+
+REPRODUCE
+Use the ANEForge and Orion source commits recorded in provenance.json under ~/Desktop/ANEForge and ~/Desktop/Orion.
+From this directory, create the environment and activate it:
+  python3.12 -m venv .venv
+  .venv/bin/python -m pip install numpy regex torch ruff
+  source .venv/bin/activate
+  export VECLIB_MAXIMUM_THREADS=4
+  python build_orion.py
+  xcrun clang -O2 -fobjc-arc -framework Foundation dump_hwx.m -o build/dump_hwx
+  python train.py oracle
+  python train.py aneforge --steps 10
+  python train.py orion --steps 10
+  python check_overfitting.py
+  python paired_benchmark.py
+  python capture_fixtures.py
+  python export_kernels.py
+  python summarize.py
+Dependencies: numpy, regex, torch (CPU oracle only). ruff checks the experiment sources. Native builds require Xcode command-line tools.

@@ -1,0 +1,8 @@
+program(1.3)
+[buildInfo = dict<string, string>({{"coremlc-component-MIL", "3520.4.1"}, {"coremlc-version", "3520.5.1"}})]
+{
+    func main<ios18>(tensor<fp16, [1, 1, 32, 768]> t2, tensor<fp16, [1, 1, 768, 768]> t1, tensor<fp16, [1, 1, 1, 768]> t0) {
+        tensor<fp16, [1, 1, 32, 768]> t3 = matmul(transpose_x = bool(false), transpose_y = bool(false), x = t2, y = t1)[name = string("t3")];
+        tensor<fp16, [1, 1, 32, 768]> t4 = add(x = t3, y = t0)[name = string("t4")];
+    } -> (t4);
+}

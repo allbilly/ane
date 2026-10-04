@@ -1,0 +1,125 @@
+{
+  "segments": [
+    {
+      "name": "__PAGEZERO",
+      "vmaddr": 0,
+      "vmsize": 16384,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__DATA",
+      "vmaddr": 805306368,
+      "vmsize": 196608,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805502976,
+      "vmsize": 196608,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805699584,
+      "vmsize": 16384,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__TEXT",
+      "vmaddr": 805715968,
+      "vmsize": 32768,
+      "fileoff": 16384,
+      "filesize": 32768
+    }
+  ],
+  "sections": [
+    {
+      "name": "__bss",
+      "segment": "__DATA",
+      "addr": 805306368,
+      "size": 196608,
+      "offset": 0
+    },
+    {
+      "name": "__const",
+      "segment": "__FVMLIB",
+      "addr": 805502976,
+      "size": 196608,
+      "offset": 0
+    },
+    {
+      "name": "__data",
+      "segment": "__FVMLIB",
+      "addr": 805699584,
+      "size": 6144,
+      "offset": 0
+    },
+    {
+      "name": "__text",
+      "segment": "__TEXT",
+      "addr": 805715968,
+      "size": 1016,
+      "offset": 16384
+    },
+    {
+      "name": "__const",
+      "segment": "__TEXT",
+      "addr": 805716992,
+      "size": 16384,
+      "offset": 17408
+    }
+  ],
+  "thread": {
+    "bars": [
+      805715968,
+      805716992,
+      0,
+      805306368,
+      805502976,
+      805699584,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "entry": 805715968,
+    "td_size": 504,
+    "td_count": 2
+  },
+  "symbols": {
+    "n0002": {
+      "addr": 805699584,
+      "section": 3
+    },
+    "input00": {
+      "addr": 805502976,
+      "section": 2
+    }
+  }
+}

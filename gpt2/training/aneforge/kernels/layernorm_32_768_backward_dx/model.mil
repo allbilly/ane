@@ -1,0 +1,30 @@
+program(1.3)
+[buildInfo = dict<string, string>({{"coremlc-component-MIL", "3520.4.1"}, {"coremlc-version", "3520.5.1"}})]
+{
+    func main<ios18>(tensor<fp16, [1, 1, 32, 768]> t1, tensor<fp16, [1, 1, 1, 768]> t9, tensor<fp16, [1, 1, 32, 768]> t10) {
+        tensor<fp16, []> t0 = const()[name = string("t0"), val = tensor<fp16, []>(BLOBFILE(path = string("@model_path/weights.bin"), offset = uint64(64)))];
+        tensor<int32, [1]> t2_ax = const()[name = string("t2_ax"), val = tensor<int32, [1]>([3])];
+        bool t2_kd = const()[name = string("t2_kd"), val = bool(true)];
+        tensor<fp16, [1, 1, 32, 1]> t2 = reduce_mean(axes = t2_ax, keep_dims = t2_kd, x = t1)[name = string("t2")];
+        tensor<fp16, [1, 1, 32, 768]> t3 = sub(x = t1, y = t2)[name = string("t3")];
+        tensor<fp16, [1, 1, 32, 768]> t4 = mul(x = t3, y = t3)[name = string("t4")];
+        tensor<int32, [1]> t5_ax = const()[name = string("t5_ax"), val = tensor<int32, [1]>([3])];
+        bool t5_kd = const()[name = string("t5_kd"), val = bool(true)];
+        tensor<fp16, [1, 1, 32, 1]> t5 = reduce_mean(axes = t5_ax, keep_dims = t5_kd, x = t4)[name = string("t5")];
+        tensor<fp16, [1, 1, 32, 1]> t6 = add(x = t5, y = t0)[name = string("t6")];
+        tensor<fp16, [1, 1, 32, 1]> t7 = rsqrt(epsilon = fp16(0x0.0p+0), x = t6)[name = string("t7")];
+        tensor<fp16, [1, 1, 32, 768]> t8 = mul(x = t3, y = t7)[name = string("t8")];
+        tensor<fp16, [1, 1, 32, 768]> t11 = mul(x = t10, y = t9)[name = string("t11")];
+        tensor<fp16, [1, 1, 32, 768]> t12 = mul(x = t11, y = t8)[name = string("t12")];
+        tensor<int32, [1]> t13_ax = const()[name = string("t13_ax"), val = tensor<int32, [1]>([3])];
+        bool t13_kd = const()[name = string("t13_kd"), val = bool(true)];
+        tensor<fp16, [1, 1, 32, 1]> t13 = reduce_mean(axes = t13_ax, keep_dims = t13_kd, x = t12)[name = string("t13")];
+        tensor<fp16, [1, 1, 32, 768]> t14 = mul(x = t8, y = t13)[name = string("t14")];
+        tensor<int32, [1]> t15_ax = const()[name = string("t15_ax"), val = tensor<int32, [1]>([3])];
+        bool t15_kd = const()[name = string("t15_kd"), val = bool(true)];
+        tensor<fp16, [1, 1, 32, 1]> t15 = reduce_mean(axes = t15_ax, keep_dims = t15_kd, x = t11)[name = string("t15")];
+        tensor<fp16, [1, 1, 32, 768]> t16 = sub(x = t11, y = t15)[name = string("t16")];
+        tensor<fp16, [1, 1, 32, 768]> t17 = sub(x = t16, y = t14)[name = string("t17")];
+        tensor<fp16, [1, 1, 32, 768]> t18 = mul(x = t17, y = t7)[name = string("t18")];
+    } -> (t18);
+}

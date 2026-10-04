@@ -1,0 +1,33 @@
+{
+  "recorded_at_utc": "2026-10-04T08:38:17.102628+00:00",
+  "python": "3.12.7 (v3.12.7:0b05ead877f, Sep 30 2024, 23:18:00) [Clang 13.0.0 (clang-1300.0.29.30)]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "numpy": "2.5.3",
+  "commands": {
+    "power_source": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=25559139)\t100%; charged; 0:00 remaining present: true\n",
+    "thermal": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded\n"
+  },
+  "sources": {
+    "ANEForge": {
+      "commit": "2e4b0e744b82d53dd19147164bc2b530e5a1a3a2",
+      "worktree_status": ""
+    },
+    "Orion": {
+      "commit": "ae3a5183a4e35c40d2d893e3a43e6e904c6cc4b0",
+      "worktree_status": ""
+    }
+  },
+  "harness_sha256": {
+    "dump_hwx.m": "d97cb0a9323673a8b75e7a39847f9768747f09f03c6a1249edfece62c02436be",
+    "capture_fixtures.py": "63c6e95eed294c5becd24c8c2c216134fe95c1d702004aa3b29e4646c87f94d7",
+    "export_kernels.py": "a187e5d789aafcb3bbc94dbaeae8ae4e815e1e3a0dea4a9585f1d0f9c96007d3",
+    "paired_benchmark.py": "0dfed61b98930057e6f1421c209cf6b7c0bd208f7d59438e2b28d5c57e615b24",
+    "summarize.py": "13233d724379006d3bc17056960b2fcda78e7af44829af0017fdf6fdf237d97d",
+    "build_orion.py": "0d169eb0568984b7308d8db050411a628b6b044d6e88a777843b48826eb99627",
+    "backends.py": "a8b119e8b19bad88febbc4890e06ae3843cdfc8ebf4d9a6ceefbc01c9158cdff",
+    "ruff.toml": "c2f3b2eaddc763652b2e6ea59e5f9b9ba3ca813bf1c0e7c7cf520de54e26b8d9",
+    "train.py": "7b8ff9d2c35e7c6e3a1838a7ad544bfaf99a6b2c618feaa9d446f1a6b849a375",
+    "orion_shim.m": "59a590a998b9b80856cb288a52ebde86f9dcace0f110b7da315db021e05ff8db",
+    "check_overfitting.py": "e036a47fb89a797de064ce64618f310028e78f5536beb75105f9dec0acda675a"
+  }
+}

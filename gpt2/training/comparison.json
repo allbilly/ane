@@ -1,0 +1,571 @@
+{
+  "measured_on": {
+    "chip": "Apple M1",
+    "macos": "27.0.1",
+    "memory_gb": 8
+  },
+  "training": {
+    "aneforge": {
+      "initial_loss": 4.427890300750732,
+      "final_loss_after_updates": 0.0002168211794923991,
+      "compile_seconds": 4.145704955999918,
+      "median_step_ms": 1298.8735205001376,
+      "median_ane_execute_ms": 151.58095550577855,
+      "parameter_count": 124439808,
+      "compiled_programs": 27,
+      "gradient_oracle": {
+        "layer0/wq": {
+          "relative_l2": 0.010315697071397715,
+          "cosine": 0.9999472819183651,
+          "max_abs": 3.568548709154129e-05
+        },
+        "layer0/wfc": {
+          "relative_l2": 0.007986396451858892,
+          "cosine": 0.9999681295566445,
+          "max_abs": 0.0002107179316226393
+        },
+        "layer11/wproj": {
+          "relative_l2": 0.004147932242246047,
+          "cosine": 0.9999916316404107,
+          "max_abs": 5.841674283146858e-05
+        },
+        "ln_f_g": {
+          "relative_l2": 0.01169236803931433,
+          "cosine": 0.9999425947304067,
+          "max_abs": 0.0012616664171218872
+        }
+      },
+      "peak_rss_bytes": 2523348992
+    },
+    "orion": {
+      "initial_loss": 4.427890300750732,
+      "final_loss_after_updates": 0.0002168211794923991,
+      "compile_seconds": 1.7328141239995603,
+      "median_step_ms": 1157.090333000042,
+      "median_ane_execute_ms": 139.18571250223977,
+      "parameter_count": 124439808,
+      "compiled_programs": 27,
+      "gradient_oracle": {
+        "layer0/wq": {
+          "relative_l2": 0.010315697071397715,
+          "cosine": 0.9999472819183651,
+          "max_abs": 3.568548709154129e-05
+        },
+        "layer0/wfc": {
+          "relative_l2": 0.007986396451858892,
+          "cosine": 0.9999681295566445,
+          "max_abs": 0.0002107179316226393
+        },
+        "layer11/wproj": {
+          "relative_l2": 0.004147932242246047,
+          "cosine": 0.9999916316404107,
+          "max_abs": 5.841674283146858e-05
+        },
+        "ln_f_g": {
+          "relative_l2": 0.01169236803931433,
+          "cosine": 0.9999425947304067,
+          "max_abs": 0.0012616664171218872
+        }
+      },
+      "peak_rss_bytes": 2536865792
+    }
+  },
+  "alternating_forward_backward_medians": {
+    "aneforge": {
+      "forward_ms": 104.65558349983439,
+      "backward_ms": 251.42268700005843,
+      "total_ms": 359.22024999990754,
+      "ane_execute_ms": 145.90730899112714
+    },
+    "orion": {
+      "forward_ms": 100.34875049996117,
+      "backward_ms": 240.90225000009013,
+      "total_ms": 349.03447950000555,
+      "ane_execute_ms": 129.4719385011831
+    }
+  },
+  "paired_aneforge_over_orion_time_ratios": [
+    1.1000267323505781,
+    0.8733955586488927,
+    0.9811941794485055,
+    1.1758198152503876,
+    0.8995508687834907,
+    1.1072237505645506,
+    0.9893804995425126,
+    1.0986370151287832,
+    0.8765423394899761,
+    1.3353325724040546
+  ],
+  "checkpoints": {
+    "parameters_checked": 124439808,
+    "different_tensors": [],
+    "identical": true
+  },
+  "overfitting": {
+    "initial": {
+      "train": {
+        "loss": 4.427089214324951,
+        "accuracy": 0.15625,
+        "target_probability_mean": 0.08744992315769196,
+        "target_probability_min": 1.869226252892986e-05,
+        "predicted_tokens": [
+          198,
+          6305,
+          7311,
+          318,
+          307,
+          284,
+          262,
+          286,
+          198,
+          460,
+          262,
+          17019,
+          284,
+          284,
+          257,
+          900,
+          900,
+          286,
+          290,
+          340,
+          2854,
+          284,
+          262,
+          1103,
+          530,
+          11,
+          290,
+          788,
+          262,
+          2746,
+          13,
+          2872
+        ]
+      },
+      "unseen": {
+        "loss": 3.719297409057617,
+        "accuracy": 0.3125,
+        "target_probability_mean": 0.1340406984090805,
+        "target_probability_min": 0.00013882745406590402,
+        "predicted_tokens": [
+          262,
+          2643,
+          2119,
+          287,
+          262,
+          4865,
+          11,
+          257,
+          1862,
+          582,
+          3706,
+          465,
+          10047,
+          13,
+          1110,
+          13,
+          679,
+          1110,
+          1755,
+          11,
+          339,
+          1862,
+          1625,
+          290,
+          257,
+          1468,
+          38283,
+          3091,
+          13,
+          257,
+          1402,
+          422
+        ]
+      }
+    },
+    "aneforge": {
+      "train": {
+        "loss": 0.00021532841492444277,
+        "accuracy": 1.0,
+        "target_probability_mean": 0.9997847080230713,
+        "target_probability_min": 0.9992436170578003,
+        "predicted_tokens": [
+          4196,
+          47986,
+          7117,
+          460,
+          2193,
+          422,
+          6096,
+          13,
+          775,
+          4512,
+          257,
+          3303,
+          2746,
+          319,
+          257,
+          1402,
+          15458,
+          11,
+          8996,
+          663,
+          16277,
+          351,
+          262,
+          1306,
+          16326,
+          11,
+          290,
+          4296,
+          262,
+          19590,
+          284,
+          4646
+        ]
+      },
+      "unseen": {
+        "loss": 4.839212894439697,
+        "accuracy": 0.25,
+        "target_probability_mean": 0.20814315974712372,
+        "target_probability_min": 1.0513175219273307e-08,
+        "predicted_tokens": [
+          4196,
+          3303,
+          2119,
+          11,
+          262,
+          4865,
+          11,
+          257,
+          1402,
+          2576,
+          5341,
+          465,
+          19132,
+          13,
+          3329,
+          13,
+          679,
+          1110,
+          1755,
+          11,
+          339,
+          1402,
+          422,
+          13,
+          257,
+          11212,
+          38283,
+          3091,
+          13,
+          257,
+          1402,
+          13
+        ]
+      }
+    },
+    "orion": {
+      "train": {
+        "loss": 0.00021532841492444277,
+        "accuracy": 1.0,
+        "target_probability_mean": 0.9997847080230713,
+        "target_probability_min": 0.9992436170578003,
+        "predicted_tokens": [
+          4196,
+          47986,
+          7117,
+          460,
+          2193,
+          422,
+          6096,
+          13,
+          775,
+          4512,
+          257,
+          3303,
+          2746,
+          319,
+          257,
+          1402,
+          15458,
+          11,
+          8996,
+          663,
+          16277,
+          351,
+          262,
+          1306,
+          16326,
+          11,
+          290,
+          4296,
+          262,
+          19590,
+          284,
+          4646
+        ]
+      },
+      "unseen": {
+        "loss": 4.839212894439697,
+        "accuracy": 0.25,
+        "target_probability_mean": 0.20814315974712372,
+        "target_probability_min": 1.0513175219273307e-08,
+        "predicted_tokens": [
+          4196,
+          3303,
+          2119,
+          11,
+          262,
+          4865,
+          11,
+          257,
+          1402,
+          2576,
+          5341,
+          465,
+          19132,
+          13,
+          3329,
+          13,
+          679,
+          1110,
+          1755,
+          11,
+          339,
+          1402,
+          422,
+          13,
+          257,
+          11212,
+          38283,
+          3091,
+          13,
+          257,
+          1402,
+          13
+        ]
+      }
+    }
+  },
+  "kernels": [
+    {
+      "name": "add_32_768",
+      "phase": "shared",
+      "aneforge_tasks": 1,
+      "orion_tasks": 1,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "attention_av_backward_da",
+      "phase": "backward",
+      "aneforge_tasks": 25,
+      "orion_tasks": 25,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "attention_av_backward_db",
+      "phase": "backward",
+      "aneforge_tasks": 13,
+      "orion_tasks": 13,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "attention_av_forward",
+      "phase": "forward",
+      "aneforge_tasks": 24,
+      "orion_tasks": 24,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "attention_qk_backward_da",
+      "phase": "backward",
+      "aneforge_tasks": 25,
+      "orion_tasks": 25,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "attention_qk_backward_db",
+      "phase": "backward",
+      "aneforge_tasks": 13,
+      "orion_tasks": 13,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "attention_qk_forward",
+      "phase": "forward",
+      "aneforge_tasks": 24,
+      "orion_tasks": 24,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "gelu_32_3072_backward",
+      "phase": "backward",
+      "aneforge_tasks": 13,
+      "orion_tasks": 13,
+      "task_descriptors_identical": true,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "gelu_32_3072_forward",
+      "phase": "forward",
+      "aneforge_tasks": 6,
+      "orion_tasks": 6,
+      "task_descriptors_identical": true,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "layernorm_32_768_backward_dbeta",
+      "phase": "backward",
+      "aneforge_tasks": 2,
+      "orion_tasks": 2,
+      "task_descriptors_identical": true,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "layernorm_32_768_backward_dgamma",
+      "phase": "backward",
+      "aneforge_tasks": 7,
+      "orion_tasks": 7,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "layernorm_32_768_backward_dx",
+      "phase": "backward",
+      "aneforge_tasks": 12,
+      "orion_tasks": 12,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "layernorm_32_768_forward",
+      "phase": "forward",
+      "aneforge_tasks": 8,
+      "orion_tasks": 8,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "linear_32_3072_768_backward_db",
+      "phase": "backward",
+      "aneforge_tasks": 2,
+      "orion_tasks": 2,
+      "task_descriptors_identical": true,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "linear_32_3072_768_backward_dw",
+      "phase": "backward",
+      "aneforge_tasks": 25,
+      "orion_tasks": 25,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "linear_32_3072_768_backward_dx",
+      "phase": "backward",
+      "aneforge_tasks": 3,
+      "orion_tasks": 3,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "linear_32_3072_768_forward",
+      "phase": "forward",
+      "aneforge_tasks": 4,
+      "orion_tasks": 4,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "linear_32_768_3072_backward_db",
+      "phase": "backward",
+      "aneforge_tasks": 2,
+      "orion_tasks": 2,
+      "task_descriptors_identical": true,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "linear_32_768_3072_backward_dw",
+      "phase": "backward",
+      "aneforge_tasks": 7,
+      "orion_tasks": 7,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "linear_32_768_3072_backward_dx",
+      "phase": "backward",
+      "aneforge_tasks": 3,
+      "orion_tasks": 3,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "linear_32_768_3072_forward",
+      "phase": "forward",
+      "aneforge_tasks": 4,
+      "orion_tasks": 4,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "linear_32_768_768_backward_db",
+      "phase": "backward",
+      "aneforge_tasks": 2,
+      "orion_tasks": 2,
+      "task_descriptors_identical": true,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "linear_32_768_768_backward_dw",
+      "phase": "backward",
+      "aneforge_tasks": 7,
+      "orion_tasks": 7,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "linear_32_768_768_backward_dx",
+      "phase": "backward",
+      "aneforge_tasks": 3,
+      "orion_tasks": 3,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "linear_32_768_768_forward",
+      "phase": "forward",
+      "aneforge_tasks": 4,
+      "orion_tasks": 4,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "softmax_12_32_backward",
+      "phase": "backward",
+      "aneforge_tasks": 3,
+      "orion_tasks": 3,
+      "task_descriptors_identical": true,
+      "fixture_inputs_and_outputs_identical": true
+    },
+    {
+      "name": "softmax_12_32_forward",
+      "phase": "forward",
+      "aneforge_tasks": 7,
+      "orion_tasks": 7,
+      "task_descriptors_identical": false,
+      "fixture_inputs_and_outputs_identical": true
+    }
+  ],
+  "conclusion": "Equivalent numerical results and bit-identical trained parameters in this shared manual-VJP GPT-2 harness. Orion's median forward/backward pass was about 3% faster; high paired variability prevents a decisive speed claim. Training loss improvement is batch memorization; unseen-text loss worsened. This does not compare stock training APIs or fully fused optimal implementations."
+}

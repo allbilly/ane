@@ -1,0 +1,30 @@
+program(1.3)
+[buildInfo = dict<string, string>({{"coremlc-component-MIL", "3510.2.1"}, {"coremlc-version", "3505.4.1"}, {"coremltools-component-milinternal", ""}, {"coremltools-version", "9.0"}})]
+{
+    func main<ios18>(tensor<fp16, [1,1,32,768]> input00, tensor<fp16, [1,1,1,768]> input01, tensor<fp16, [1,1,32,768]> input02) {
+        tensor<int32, [1]> n0001 = const()[name=string("n0001"), val=tensor<int32, [1]>([3])];
+        tensor<int32, [1]> n0005 = const()[name=string("n0005"), val=tensor<int32, [1]>([3])];
+        fp16 n0007 = const()[name=string("n0007"), val=fp16(1e-05)];
+        tensor<int32, [1]> n0012 = const()[name=string("n0012"), val=tensor<int32, [1]>([3])];
+        tensor<int32, [1]> n0016 = const()[name=string("n0016"), val=tensor<int32, [1]>([3])];
+        tensor<fp16, [1,1,32,768]> n0011 = mul(x=input02, y=input01)[name=string("n0011")];
+        bool n0002_kd = const()[name=string("n0002_kd"), val=bool(true)];
+        tensor<fp16, [1,1,32,1]> n0002 = reduce_mean(x=input00, axes=n0001, keep_dims=n0002_kd)[name=string("n0002")];
+        bool n0013_kd = const()[name=string("n0013_kd"), val=bool(true)];
+        tensor<fp16, [1,1,32,1]> n0013 = reduce_mean(x=n0011, axes=n0012, keep_dims=n0013_kd)[name=string("n0013")];
+        tensor<fp16, [1,1,32,768]> n0003 = sub(x=input00, y=n0002)[name=string("n0003")];
+        tensor<fp16, [1,1,32,768]> n0014 = sub(x=n0011, y=n0013)[name=string("n0014")];
+        tensor<fp16, [1,1,32,768]> n0004 = mul(x=n0003, y=n0003)[name=string("n0004")];
+        bool n0006_kd = const()[name=string("n0006_kd"), val=bool(true)];
+        tensor<fp16, [1,1,32,1]> n0006 = reduce_mean(x=n0004, axes=n0005, keep_dims=n0006_kd)[name=string("n0006")];
+        tensor<fp16, [1,1,32,1]> n0008 = add(x=n0006, y=n0007)[name=string("n0008")];
+        tensor<fp16, [1,1,32,1]> n0009 = rsqrt(x=n0008)[name=string("n0009")];
+        tensor<fp16, [1,1,32,768]> n0010 = mul(x=n0003, y=n0009)[name=string("n0010")];
+        tensor<fp16, [1,1,32,768]> n0015 = mul(x=n0011, y=n0010)[name=string("n0015")];
+        bool n0017_kd = const()[name=string("n0017_kd"), val=bool(true)];
+        tensor<fp16, [1,1,32,1]> n0017 = reduce_mean(x=n0015, axes=n0016, keep_dims=n0017_kd)[name=string("n0017")];
+        tensor<fp16, [1,1,32,768]> n0018 = mul(x=n0010, y=n0017)[name=string("n0018")];
+        tensor<fp16, [1,1,32,768]> n0019 = sub(x=n0014, y=n0018)[name=string("n0019")];
+        tensor<fp16, [1,1,32,768]> n0020 = mul(x=n0019, y=n0009)[name=string("n0020")];
+    } -> (n0020);
+}

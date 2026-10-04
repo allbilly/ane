@@ -1,0 +1,36 @@
+program(1.3)
+[buildInfo = dict<string, string>({{"coremlc-component-MIL", "3510.2.1"}, {"coremlc-version", "3505.4.1"}, {"coremltools-component-milinternal", ""}, {"coremltools-version", "9.0"}})]
+{
+    func main<ios18>(tensor<fp16, [1,1,32,3072]> input00, tensor<fp16, [1,1,32,3072]> input01) {
+        fp16 n0003 = const()[name=string("n0003"), val=fp16(0.044715)];
+        fp16 n0006 = const()[name=string("n0006"), val=fp16(0.797885)];
+        fp16 n0010 = const()[name=string("n0010"), val=fp16(0.134145)];
+        fp16 n0012 = const()[name=string("n0012"), val=fp16(1)];
+        fp16 n0014 = const()[name=string("n0014"), val=fp16(0.797885)];
+        fp16 n0017 = const()[name=string("n0017"), val=fp16(-1)];
+        fp16 n0019 = const()[name=string("n0019"), val=fp16(1)];
+        fp16 n0022 = const()[name=string("n0022"), val=fp16(1)];
+        fp16 n0024 = const()[name=string("n0024"), val=fp16(0.5)];
+        fp16 n0027 = const()[name=string("n0027"), val=fp16(0.5)];
+        tensor<fp16, [1,1,32,3072]> n0001 = mul(x=input00, y=input00)[name=string("n0001")];
+        tensor<fp16, [1,1,32,3072]> n0009 = mul(x=input00, y=input00)[name=string("n0009")];
+        tensor<fp16, [1,1,32,3072]> n0002 = mul(x=n0001, y=input00)[name=string("n0002")];
+        tensor<fp16, [1,1,32,3072]> n0011 = mul(x=n0009, y=n0010)[name=string("n0011")];
+        tensor<fp16, [1,1,32,3072]> n0004 = mul(x=n0002, y=n0003)[name=string("n0004")];
+        tensor<fp16, [1,1,32,3072]> n0013 = add(x=n0011, y=n0012)[name=string("n0013")];
+        tensor<fp16, [1,1,32,3072]> n0005 = add(x=input00, y=n0004)[name=string("n0005")];
+        tensor<fp16, [1,1,32,3072]> n0015 = mul(x=n0013, y=n0014)[name=string("n0015")];
+        tensor<fp16, [1,1,32,3072]> n0007 = mul(x=n0005, y=n0006)[name=string("n0007")];
+        tensor<fp16, [1,1,32,3072]> n0008 = tanh(x=n0007)[name=string("n0008")];
+        tensor<fp16, [1,1,32,3072]> n0016 = mul(x=n0008, y=n0008)[name=string("n0016")];
+        tensor<fp16, [1,1,32,3072]> n0023 = add(x=n0008, y=n0022)[name=string("n0023")];
+        tensor<fp16, [1,1,32,3072]> n0018 = mul(x=n0016, y=n0017)[name=string("n0018")];
+        tensor<fp16, [1,1,32,3072]> n0025 = mul(x=n0023, y=n0024)[name=string("n0025")];
+        tensor<fp16, [1,1,32,3072]> n0020 = add(x=n0018, y=n0019)[name=string("n0020")];
+        tensor<fp16, [1,1,32,3072]> n0021 = mul(x=n0015, y=n0020)[name=string("n0021")];
+        tensor<fp16, [1,1,32,3072]> n0026 = mul(x=input00, y=n0021)[name=string("n0026")];
+        tensor<fp16, [1,1,32,3072]> n0028 = mul(x=n0026, y=n0027)[name=string("n0028")];
+        tensor<fp16, [1,1,32,3072]> n0029 = add(x=n0025, y=n0028)[name=string("n0029")];
+        tensor<fp16, [1,1,32,3072]> n0030 = mul(x=input01, y=n0029)[name=string("n0030")];
+    } -> (n0030);
+}

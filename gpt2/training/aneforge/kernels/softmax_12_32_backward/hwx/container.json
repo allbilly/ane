@@ -1,0 +1,129 @@
+{
+  "segments": [
+    {
+      "name": "__PAGEZERO",
+      "vmaddr": 0,
+      "vmsize": 16384,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805306368,
+      "vmsize": 32768,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805339136,
+      "vmsize": 32768,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805371904,
+      "vmsize": 32768,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__TEXT",
+      "vmaddr": 805404672,
+      "vmsize": 32768,
+      "fileoff": 32768,
+      "filesize": 32768
+    }
+  ],
+  "sections": [
+    {
+      "name": "__const",
+      "segment": "__FVMLIB",
+      "addr": 805306368,
+      "size": 24576,
+      "offset": 0
+    },
+    {
+      "name": "__const",
+      "segment": "__FVMLIB",
+      "addr": 805339136,
+      "size": 24576,
+      "offset": 0
+    },
+    {
+      "name": "__data",
+      "segment": "__FVMLIB",
+      "addr": 805371904,
+      "size": 24576,
+      "offset": 0
+    },
+    {
+      "name": "__text",
+      "segment": "__TEXT",
+      "addr": 805404672,
+      "size": 1528,
+      "offset": 32768
+    },
+    {
+      "name": "__const",
+      "segment": "__TEXT",
+      "addr": 805406208,
+      "size": 16384,
+      "offset": 34304
+    }
+  ],
+  "thread": {
+    "bars": [
+      805404672,
+      805406208,
+      0,
+      0,
+      805306368,
+      805339136,
+      805371904,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "entry": 805404672,
+    "td_size": 504,
+    "td_count": 3
+  },
+  "symbols": {
+    "t6": {
+      "addr": 805371904,
+      "section": 3
+    },
+    "t0": {
+      "addr": 805306368,
+      "section": 1
+    },
+    "t1": {
+      "addr": 805339136,
+      "section": 2
+    }
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "segments": [
+    {
+      "name": "__PAGEZERO",
+      "vmaddr": 0,
+      "vmsize": 16384,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__DATA",
+      "vmaddr": 805306368,
+      "vmsize": 49152,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805355520,
+      "vmsize": 16384,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805371904,
+      "vmsize": 4718592,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 810090496,
+      "vmsize": 49152,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 810139648,
+      "vmsize": 196608,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__TEXT",
+      "vmaddr": 810336256,
+      "vmsize": 32768,
+      "fileoff": 32768,
+      "filesize": 32768
+    }
+  ],
+  "sections": [
+    {
+      "name": "__bss",
+      "segment": "__DATA",
+      "addr": 805306368,
+      "size": 49152,
+      "offset": 0
+    },
+    {
+      "name": "__const",
+      "segment": "__FVMLIB",
+      "addr": 805355520,
+      "size": 6144,
+      "offset": 0
+    },
+    {
+      "name": "__const",
+      "segment": "__FVMLIB",
+      "addr": 805371904,
+      "size": 4718592,
+      "offset": 0
+    },
+    {
+      "name": "__const",
+      "segment": "__FVMLIB",
+      "addr": 810090496,
+      "size": 49152,
+      "offset": 0
+    },
+    {
+      "name": "__data",
+      "segment": "__FVMLIB",
+      "addr": 810139648,
+      "size": 196608,
+      "offset": 0
+    },
+    {
+      "name": "__text",
+      "segment": "__TEXT",
+      "addr": 810336256,
+      "size": 2296,
+      "offset": 32768
+    },
+    {
+      "name": "__const",
+      "segment": "__TEXT",
+      "addr": 810338560,
+      "size": 16384,
+      "offset": 35072
+    }
+  ],
+  "thread": {
+    "bars": [
+      810336256,
+      810338560,
+      0,
+      805306368,
+      805355520,
+      805371904,
+      810090496,
+      810139648,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "entry": 810336256,
+    "td_size": 504,
+    "td_count": 4
+  },
+  "symbols": {
+    "t0": {
+      "addr": 805355520,
+      "section": 2
+    },
+    "t4": {
+      "addr": 810139648,
+      "section": 5
+    },
+    "t1": {
+      "addr": 805371904,
+      "section": 3
+    },
+    "t2": {
+      "addr": 810090496,
+      "section": 4
+    }
+  }
+}

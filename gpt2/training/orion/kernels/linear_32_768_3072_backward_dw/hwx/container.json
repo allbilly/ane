@@ -1,0 +1,143 @@
+{
+  "segments": [
+    {
+      "name": "__PAGEZERO",
+      "vmaddr": 0,
+      "vmsize": 16384,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__DATA",
+      "vmaddr": 805306368,
+      "vmsize": 49152,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805355520,
+      "vmsize": 49152,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805404672,
+      "vmsize": 196608,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805601280,
+      "vmsize": 4718592,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__TEXT",
+      "vmaddr": 810319872,
+      "vmsize": 32768,
+      "fileoff": 32768,
+      "filesize": 32768
+    }
+  ],
+  "sections": [
+    {
+      "name": "__bss",
+      "segment": "__DATA",
+      "addr": 805306368,
+      "size": 49152,
+      "offset": 0
+    },
+    {
+      "name": "__const",
+      "segment": "__FVMLIB",
+      "addr": 805355520,
+      "size": 49152,
+      "offset": 0
+    },
+    {
+      "name": "__const",
+      "segment": "__FVMLIB",
+      "addr": 805404672,
+      "size": 196608,
+      "offset": 0
+    },
+    {
+      "name": "__data",
+      "segment": "__FVMLIB",
+      "addr": 805601280,
+      "size": 4718592,
+      "offset": 0
+    },
+    {
+      "name": "__text",
+      "segment": "__TEXT",
+      "addr": 810319872,
+      "size": 4984,
+      "offset": 32768
+    },
+    {
+      "name": "__const",
+      "segment": "__TEXT",
+      "addr": 810324864,
+      "size": 16384,
+      "offset": 37760
+    }
+  ],
+  "thread": {
+    "bars": [
+      810319872,
+      810324864,
+      0,
+      805306368,
+      805355520,
+      805404672,
+      805601280,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "entry": 810319872,
+    "td_size": 504,
+    "td_count": 7
+  },
+  "symbols": {
+    "n0003": {
+      "addr": 805601280,
+      "section": 4
+    },
+    "input00": {
+      "addr": 805355520,
+      "section": 2
+    },
+    "input01": {
+      "addr": 805404672,
+      "section": 3
+    }
+  }
+}

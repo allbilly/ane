@@ -1,0 +1,76 @@
+compiled aneforge: layernorm_32_768_forward (0.16s)
+compiled aneforge: linear_32_768_768_forward (0.05s)
+compiled aneforge: attention_qk_forward (0.07s)
+compiled aneforge: softmax_12_32_forward (0.12s)
+compiled aneforge: attention_av_forward (0.08s)
+compiled aneforge: add_32_768 (0.04s)
+compiled aneforge: linear_32_768_3072_forward (0.04s)
+compiled aneforge: gelu_32_3072_forward (0.10s)
+compiled aneforge: linear_32_3072_768_forward (0.05s)
+compiled aneforge: layernorm_32_768_backward_dx (0.07s)
+compiled aneforge: layernorm_32_768_backward_dgamma (0.06s)
+compiled aneforge: layernorm_32_768_backward_dbeta (0.03s)
+compiled aneforge: linear_32_3072_768_backward_dx (0.04s)
+compiled aneforge: linear_32_3072_768_backward_dw (0.09s)
+compiled aneforge: linear_32_3072_768_backward_db (0.03s)
+compiled aneforge: gelu_32_3072_backward (0.15s)
+compiled aneforge: linear_32_768_3072_backward_dx (0.04s)
+compiled aneforge: linear_32_768_3072_backward_dw (0.05s)
+compiled aneforge: linear_32_768_3072_backward_db (0.03s)
+compiled aneforge: linear_32_768_768_backward_dx (0.04s)
+compiled aneforge: linear_32_768_768_backward_dw (0.05s)
+compiled aneforge: linear_32_768_768_backward_db (0.03s)
+compiled aneforge: attention_av_backward_da (0.07s)
+compiled aneforge: attention_av_backward_db (0.06s)
+compiled aneforge: softmax_12_32_backward (0.04s)
+compiled aneforge: attention_qk_backward_da (0.07s)
+compiled aneforge: attention_qk_backward_db (0.07s)
+warm aneforge: loss=4.42789030
+compiled orion: layernorm_32_768_forward (0.04s)
+compiled orion: linear_32_768_768_forward (0.03s)
+compiled orion: attention_qk_forward (0.06s)
+compiled orion: softmax_12_32_forward (0.10s)
+compiled orion: attention_av_forward (0.13s)
+compiled orion: add_32_768 (0.03s)
+compiled orion: linear_32_768_3072_forward (0.03s)
+compiled orion: gelu_32_3072_forward (0.08s)
+compiled orion: linear_32_3072_768_forward (0.03s)
+compiled orion: layernorm_32_768_backward_dx (0.05s)
+compiled orion: layernorm_32_768_backward_dgamma (0.04s)
+compiled orion: layernorm_32_768_backward_dbeta (0.02s)
+compiled orion: linear_32_3072_768_backward_dx (0.03s)
+compiled orion: linear_32_3072_768_backward_dw (0.07s)
+compiled orion: linear_32_3072_768_backward_db (0.02s)
+compiled orion: gelu_32_3072_backward (0.11s)
+compiled orion: linear_32_768_3072_backward_dx (0.03s)
+compiled orion: linear_32_768_3072_backward_dw (0.04s)
+compiled orion: linear_32_768_3072_backward_db (0.02s)
+compiled orion: linear_32_768_768_backward_dx (0.03s)
+compiled orion: linear_32_768_768_backward_dw (0.03s)
+compiled orion: linear_32_768_768_backward_db (0.02s)
+compiled orion: attention_av_backward_da (0.06s)
+compiled orion: attention_av_backward_db (0.05s)
+compiled orion: softmax_12_32_backward (0.03s)
+compiled orion: attention_qk_backward_da (0.06s)
+compiled orion: attention_qk_backward_db (0.05s)
+warm orion: loss=4.42789030
+pair 0: aneforge 358.8 ms, ANE 151.9 ms
+pair 0: orion 326.2 ms, ANE 131.6 ms
+pair 1: orion 418.9 ms, ANE 127.3 ms
+pair 1: aneforge 365.8 ms, ANE 146.9 ms
+pair 2: aneforge 362.8 ms, ANE 121.2 ms
+pair 2: orion 369.8 ms, ANE 145.4 ms
+pair 3: orion 304.0 ms, ANE 111.6 ms
+pair 3: aneforge 357.5 ms, ANE 146.6 ms
+pair 4: aneforge 327.3 ms, ANE 117.6 ms
+pair 4: orion 363.8 ms, ANE 131.8 ms
+pair 5: orion 324.1 ms, ANE 121.4 ms
+pair 5: aneforge 358.9 ms, ANE 145.2 ms
+pair 6: aneforge 330.7 ms, ANE 120.1 ms
+pair 6: orion 334.3 ms, ANE 134.6 ms
+pair 7: orion 327.3 ms, ANE 124.2 ms
+pair 7: aneforge 359.6 ms, ANE 150.0 ms
+pair 8: aneforge 408.6 ms, ANE 128.0 ms
+pair 8: orion 466.2 ms, ANE 158.2 ms
+pair 9: orion 369.7 ms, ANE 121.3 ms
+pair 9: aneforge 493.7 ms, ANE 174.7 ms

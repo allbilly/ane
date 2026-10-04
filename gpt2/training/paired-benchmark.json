@@ -1,0 +1,219 @@
+{
+  "protocol": "10 alternating pairs, same initial weights, no optimizer, no compile inside timing",
+  "rows": [
+    {
+      "pair": 0,
+      "backend": "aneforge",
+      "loss": 4.427890300750732,
+      "forward_ms": 102.61095799978648,
+      "backward_ms": 256.2057079999249,
+      "total_ms": 358.8166659997114,
+      "ane_execute_ms": 151.86354600245977,
+      "dispatches": 580
+    },
+    {
+      "pair": 0,
+      "backend": "orion",
+      "loss": 4.427890300750732,
+      "forward_ms": 102.6662919998671,
+      "backward_ms": 223.5227500000292,
+      "total_ms": 326.1890419998963,
+      "ane_execute_ms": 131.60995299949718,
+      "dispatches": 580
+    },
+    {
+      "pair": 1,
+      "backend": "orion",
+      "loss": 4.427890300750732,
+      "forward_ms": 74.17008300035377,
+      "backward_ms": 344.70016699970074,
+      "total_ms": 418.8702500000545,
+      "ane_execute_ms": 127.33392400286903,
+      "dispatches": 580
+    },
+    {
+      "pair": 1,
+      "backend": "aneforge",
+      "loss": 4.427890300750732,
+      "forward_ms": 101.91554100038047,
+      "backward_ms": 263.9238749998185,
+      "total_ms": 365.839416000199,
+      "ane_execute_ms": 146.9018779966973,
+      "dispatches": 580
+    },
+    {
+      "pair": 2,
+      "backend": "aneforge",
+      "loss": 4.427890300750732,
+      "forward_ms": 112.36254200002804,
+      "backward_ms": 250.44083300008424,
+      "total_ms": 362.8033750001123,
+      "ane_execute_ms": 121.2337820124958,
+      "dispatches": 580
+    },
+    {
+      "pair": 2,
+      "backend": "orion",
+      "loss": 4.427890300750732,
+      "forward_ms": 120.17820799974288,
+      "backward_ms": 249.57875000018248,
+      "total_ms": 369.75695799992536,
+      "ane_execute_ms": 145.42357900609204,
+      "dispatches": 580
+    },
+    {
+      "pair": 3,
+      "backend": "orion",
+      "loss": 4.427890300750732,
+      "forward_ms": 73.94979200034868,
+      "backward_ms": 230.06812499988882,
+      "total_ms": 304.0179170002375,
+      "ane_execute_ms": 111.55670099969939,
+      "dispatches": 580
+    },
+    {
+      "pair": 3,
+      "backend": "aneforge",
+      "loss": 4.427890300750732,
+      "forward_ms": 109.90604100015844,
+      "backward_ms": 247.56424999986848,
+      "total_ms": 357.4702910000269,
+      "ane_execute_ms": 146.5730119930413,
+      "dispatches": 580
+    },
+    {
+      "pair": 4,
+      "backend": "aneforge",
+      "loss": 4.427890300750732,
+      "forward_ms": 97.4658330001148,
+      "backward_ms": 229.80291700014277,
+      "total_ms": 327.26875000025757,
+      "ane_execute_ms": 117.58714500183487,
+      "dispatches": 580
+    },
+    {
+      "pair": 4,
+      "backend": "orion",
+      "loss": 4.427890300750732,
+      "forward_ms": 99.97054199993727,
+      "backward_ms": 263.84295800016844,
+      "total_ms": 363.8135000001057,
+      "ane_execute_ms": 131.83683400120572,
+      "dispatches": 580
+    },
+    {
+      "pair": 5,
+      "backend": "orion",
+      "loss": 4.427890300750732,
+      "forward_ms": 98.79349999982878,
+      "backward_ms": 225.3207920002751,
+      "total_ms": 324.1142920001039,
+      "ane_execute_ms": 121.36211400456887,
+      "dispatches": 580
+    },
+    {
+      "pair": 5,
+      "backend": "aneforge",
+      "loss": 4.427890300750732,
+      "forward_ms": 106.7002089998823,
+      "backward_ms": 252.1668330000466,
+      "total_ms": 358.8670419999289,
+      "ane_execute_ms": 145.24160598921299,
+      "dispatches": 580
+    },
+    {
+      "pair": 6,
+      "backend": "aneforge",
+      "loss": 4.427890300750732,
+      "forward_ms": 97.74045800031672,
+      "backward_ms": 232.9653749998215,
+      "total_ms": 330.7058330001382,
+      "ane_execute_ms": 120.08045599532124,
+      "dispatches": 580
+    },
+    {
+      "pair": 6,
+      "backend": "orion",
+      "loss": 4.427890300750732,
+      "forward_ms": 102.0297089999076,
+      "backward_ms": 232.2257499999978,
+      "total_ms": 334.2554589999054,
+      "ane_execute_ms": 134.6414729919161,
+      "dispatches": 580
+    },
+    {
+      "pair": 7,
+      "backend": "orion",
+      "loss": 4.427890300750732,
+      "forward_ms": 100.72695899998507,
+      "backward_ms": 226.56354099990494,
+      "total_ms": 327.29049999989,
+      "ane_execute_ms": 124.2188390051524,
+      "dispatches": 580
+    },
+    {
+      "pair": 7,
+      "backend": "aneforge",
+      "loss": 4.427890300750732,
+      "forward_ms": 108.8949169998159,
+      "backward_ms": 250.67854100007025,
+      "total_ms": 359.57345799988616,
+      "ane_execute_ms": 149.97111399998175,
+      "dispatches": 580
+    },
+    {
+      "pair": 8,
+      "backend": "aneforge",
+      "loss": 4.427890300750732,
+      "forward_ms": 97.1468749999076,
+      "backward_ms": 311.4755420001529,
+      "total_ms": 408.6224170000605,
+      "ane_execute_ms": 127.96549200129448,
+      "dispatches": 580
+    },
+    {
+      "pair": 8,
+      "backend": "orion",
+      "loss": 4.427890300750732,
+      "forward_ms": 133.72491600011926,
+      "backward_ms": 332.45041699956346,
+      "total_ms": 466.1753329996827,
+      "ane_execute_ms": 158.22834600430724,
+      "dispatches": 580
+    },
+    {
+      "pair": 9,
+      "backend": "orion",
+      "loss": 4.427890300750732,
+      "forward_ms": 98.4390000003259,
+      "backward_ms": 271.28499999980704,
+      "total_ms": 369.72400000013295,
+      "ane_execute_ms": 121.26488900776167,
+      "dispatches": 580
+    },
+    {
+      "pair": 9,
+      "backend": "aneforge",
+      "loss": 4.427890300750732,
+      "forward_ms": 177.4115419998452,
+      "backward_ms": 316.292957999849,
+      "total_ms": 493.70449999969424,
+      "ane_execute_ms": 174.68240900598175,
+      "dispatches": 580
+    }
+  ],
+  "median": {
+    "aneforge": {
+      "forward_ms": 104.65558349983439,
+      "backward_ms": 251.42268700005843,
+      "total_ms": 359.22024999990754,
+      "ane_execute_ms": 145.90730899112714
+    },
+    "orion": {
+      "forward_ms": 100.34875049996117,
+      "backward_ms": 240.90225000009013,
+      "total_ms": 349.03447950000555,
+      "ane_execute_ms": 129.4719385011831
+    }
+  }
+}

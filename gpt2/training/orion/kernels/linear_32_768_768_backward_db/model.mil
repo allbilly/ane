@@ -1,0 +1,9 @@
+program(1.3)
+[buildInfo = dict<string, string>({{"coremlc-component-MIL", "3510.2.1"}, {"coremlc-version", "3505.4.1"}, {"coremltools-component-milinternal", ""}, {"coremltools-version", "9.0"}})]
+{
+    func main<ios18>(tensor<fp16, [1,1,32,768]> input00) {
+        tensor<int32, [1]> n0001 = const()[name=string("n0001"), val=tensor<int32, [1]>([2])];
+        bool n0002_kd = const()[name=string("n0002_kd"), val=bool(true)];
+        tensor<fp16, [1,1,1,768]> n0002 = reduce_sum(x=input00, axes=n0001, keep_dims=n0002_kd)[name=string("n0002")];
+    } -> (n0002);
+}

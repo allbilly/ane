@@ -1,0 +1,20 @@
+program(1.3)
+[buildInfo = dict<string, string>({{"coremlc-component-MIL", "3520.4.1"}, {"coremlc-version", "3520.5.1"}})]
+{
+    func main<ios18>(tensor<fp16, [1, 1, 32, 768]> t3, tensor<fp16, [1, 1, 1, 768]> t1, tensor<fp16, [1, 1, 1, 768]> t0) {
+        tensor<fp16, []> t2 = const()[name = string("t2"), val = tensor<fp16, []>(BLOBFILE(path = string("@model_path/weights.bin"), offset = uint64(64)))];
+        tensor<int32, [1]> t4_ax = const()[name = string("t4_ax"), val = tensor<int32, [1]>([3])];
+        bool t4_kd = const()[name = string("t4_kd"), val = bool(true)];
+        tensor<fp16, [1, 1, 32, 1]> t4 = reduce_mean(axes = t4_ax, keep_dims = t4_kd, x = t3)[name = string("t4")];
+        tensor<fp16, [1, 1, 32, 768]> t5 = sub(x = t3, y = t4)[name = string("t5")];
+        tensor<fp16, [1, 1, 32, 768]> t6 = mul(x = t5, y = t5)[name = string("t6")];
+        tensor<int32, [1]> t7_ax = const()[name = string("t7_ax"), val = tensor<int32, [1]>([3])];
+        bool t7_kd = const()[name = string("t7_kd"), val = bool(true)];
+        tensor<fp16, [1, 1, 32, 1]> t7 = reduce_mean(axes = t7_ax, keep_dims = t7_kd, x = t6)[name = string("t7")];
+        tensor<fp16, [1, 1, 32, 1]> t8 = add(x = t7, y = t2)[name = string("t8")];
+        tensor<fp16, [1, 1, 32, 1]> t9 = rsqrt(epsilon = fp16(0x0.0p+0), x = t8)[name = string("t9")];
+        tensor<fp16, [1, 1, 32, 768]> t10 = mul(x = t5, y = t9)[name = string("t10")];
+        tensor<fp16, [1, 1, 32, 768]> t11 = mul(x = t10, y = t1)[name = string("t11")];
+        tensor<fp16, [1, 1, 32, 768]> t12 = add(x = t11, y = t0)[name = string("t12")];
+    } -> (t12);
+}

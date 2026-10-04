@@ -1,0 +1,147 @@
+{
+  "segments": [
+    {
+      "name": "__PAGEZERO",
+      "vmaddr": 0,
+      "vmsize": 16384,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805306368,
+      "vmsize": 196608,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805502976,
+      "vmsize": 196608,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805699584,
+      "vmsize": 196608,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__TEXT",
+      "vmaddr": 805896192,
+      "vmsize": 32768,
+      "fileoff": 32768,
+      "filesize": 32768
+    },
+    {
+      "name": "__KERN_0",
+      "vmaddr": 805928960,
+      "vmsize": 16384,
+      "fileoff": 65536,
+      "filesize": 16384
+    }
+  ],
+  "sections": [
+    {
+      "name": "__const",
+      "segment": "__FVMLIB",
+      "addr": 805306368,
+      "size": 196608,
+      "offset": 0
+    },
+    {
+      "name": "__const",
+      "segment": "__FVMLIB",
+      "addr": 805502976,
+      "size": 196608,
+      "offset": 0
+    },
+    {
+      "name": "__data",
+      "segment": "__FVMLIB",
+      "addr": 805699584,
+      "size": 196608,
+      "offset": 0
+    },
+    {
+      "name": "__text",
+      "segment": "__TEXT",
+      "addr": 805896192,
+      "size": 6904,
+      "offset": 32768
+    },
+    {
+      "name": "__const",
+      "segment": "__TEXT",
+      "addr": 805903104,
+      "size": 16384,
+      "offset": 39680
+    },
+    {
+      "name": "__kern_0",
+      "segment": "__KERN_0",
+      "addr": 805928960,
+      "size": 128,
+      "offset": 65536
+    }
+  ],
+  "thread": {
+    "bars": [
+      805896192,
+      805903104,
+      0,
+      0,
+      805306368,
+      805502976,
+      805699584,
+      805928960,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "entry": 805896192,
+    "td_size": 504,
+    "td_count": 13
+  },
+  "symbols": {
+    "t1": {
+      "addr": 805306368,
+      "section": 1
+    },
+    "t23": {
+      "addr": 805502976,
+      "section": 2
+    },
+    "t24": {
+      "addr": 805699584,
+      "section": 3
+    },
+    "K3B3E0764F981022D039696B6798A6CADD91C19D78274D4F4A8A06932C4DD2447": {
+      "addr": 805928960,
+      "section": 6
+    }
+  }
+}

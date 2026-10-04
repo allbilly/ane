@@ -1,0 +1,14 @@
+.venv/
+.ruff_cache/
+__pycache__/
+*.pyc
+
+# Regenerable full-model arrays; keep the smaller per-kernel replay fixtures.
+checkpoint-*.npz
+initial-gradients.npz
+/oracle.npz
+
+# Machine-specific native binaries and e5rt caches; retain build provenance.
+/build/*
+!/build/receipt.json
+cache/

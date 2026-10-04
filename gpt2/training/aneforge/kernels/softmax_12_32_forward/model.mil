@@ -1,0 +1,11 @@
+program(1.3)
+[buildInfo = dict<string, string>({{"coremlc-component-MIL", "3520.4.1"}, {"coremlc-version", "3520.5.1"}})]
+{
+    func main<ios18>(tensor<fp16, [1, 12, 32, 32]> t1, tensor<fp16, [1, 1, 32, 32]> t0) {
+        fp16 t2_k = const()[name = string("t2_k"), val = fp16(0x1.0000000000000p-3)];
+        tensor<fp16, [1, 12, 32, 32]> t2 = mul(x = t1, y = t2_k)[name = string("t2")];
+        tensor<fp16, [1, 12, 32, 32]> t3 = add(x = t2, y = t0)[name = string("t3")];
+        int32 t4_ax = const()[name = string("t4_ax"), val = int32(3)];
+        tensor<fp16, [1, 12, 32, 32]> t4 = softmax(axis = t4_ax, x = t3)[name = string("t4")];
+    } -> (t4);
+}

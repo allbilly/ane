@@ -1,0 +1,129 @@
+{
+  "segments": [
+    {
+      "name": "__PAGEZERO",
+      "vmaddr": 0,
+      "vmsize": 16384,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805306368,
+      "vmsize": 196608,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__FVMLIB",
+      "vmaddr": 805502976,
+      "vmsize": 196608,
+      "fileoff": 0,
+      "filesize": 0
+    },
+    {
+      "name": "__TEXT",
+      "vmaddr": 805699584,
+      "vmsize": 32768,
+      "fileoff": 16384,
+      "filesize": 32768
+    },
+    {
+      "name": "__KERN_0",
+      "vmaddr": 805732352,
+      "vmsize": 16384,
+      "fileoff": 49152,
+      "filesize": 16384
+    }
+  ],
+  "sections": [
+    {
+      "name": "__const",
+      "segment": "__FVMLIB",
+      "addr": 805306368,
+      "size": 196608,
+      "offset": 0
+    },
+    {
+      "name": "__data",
+      "segment": "__FVMLIB",
+      "addr": 805502976,
+      "size": 196608,
+      "offset": 0
+    },
+    {
+      "name": "__text",
+      "segment": "__TEXT",
+      "addr": 805699584,
+      "size": 3320,
+      "offset": 16384
+    },
+    {
+      "name": "__const",
+      "segment": "__TEXT",
+      "addr": 805702912,
+      "size": 16384,
+      "offset": 19712
+    },
+    {
+      "name": "__kern_0",
+      "segment": "__KERN_0",
+      "addr": 805732352,
+      "size": 128,
+      "offset": 49152
+    }
+  ],
+  "thread": {
+    "bars": [
+      805699584,
+      805702912,
+      0,
+      0,
+      805306368,
+      805502976,
+      805732352,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "entry": 805699584,
+    "td_size": 504,
+    "td_count": 6
+  },
+  "symbols": {
+    "input00": {
+      "addr": 805306368,
+      "section": 1
+    },
+    "n0013": {
+      "addr": 805502976,
+      "section": 2
+    },
+    "K3B3E0764F981022D039696B6798A6CADD91C19D78274D4F4A8A06932C4DD2447": {
+      "addr": 805732352,
+      "section": 5
+    }
+  }
+}

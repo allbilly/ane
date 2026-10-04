@@ -1,0 +1,1676 @@
+[
+  {
+    "backend": "aneforge",
+    "name": "layernorm_32_768_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/layernorm_32_768_forward/model.mil",
+    "hwx": "aneforge/kernels/layernorm_32_768_forward/hwx/model.hwx",
+    "hwx_sha256": "d492200e9ad5f0e106bcb1a9c0b1631f14cef60554d9656cfb09ad5a9bc8ed2e",
+    "hwx_bytes": 65536,
+    "task_count": 8,
+    "task_descriptors_sha256": "9400e79d050d8a5d9252ae4415e264588172826b942b63dda2c750195571e471",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "linear_32_768_768_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        768,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/linear_32_768_768_forward/model.mil",
+    "hwx": "aneforge/kernels/linear_32_768_768_forward/hwx/model.hwx",
+    "hwx_sha256": "f8a970efa6cfe818ac36e9345553da1251c3f6c7ed3531c130394ac05946305f",
+    "hwx_bytes": 65536,
+    "task_count": 4,
+    "task_descriptors_sha256": "c9b8207bc2a6f4659772b4ae2813637c3c1364542da0ac037f8a12356cccc066",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "attention_qk_forward",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        64
+      ],
+      [
+        1,
+        12,
+        64,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      32
+    ],
+    "mil": "kernels/attention_qk_forward/model.mil",
+    "hwx": "aneforge/kernels/attention_qk_forward/hwx/model.hwx",
+    "hwx_sha256": "c119912ad0df839ebe413a14db8a1b6f46e409753c9cb136dba25be2a361c56a",
+    "hwx_bytes": 65536,
+    "task_count": 24,
+    "task_descriptors_sha256": "26e1560662018fd14eb3a3173f31ae85ec876f14c3fba9d5a2bca0cca4edbb07",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "softmax_12_32_forward",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        1,
+        32,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      32
+    ],
+    "mil": "kernels/softmax_12_32_forward/model.mil",
+    "hwx": "aneforge/kernels/softmax_12_32_forward/hwx/model.hwx",
+    "hwx_sha256": "5b9bd923e691ffad618d06d3b54db1a8de8156374da1a82d9c2a50362a4725c8",
+    "hwx_bytes": 81920,
+    "task_count": 7,
+    "task_descriptors_sha256": "e46dc22060252d147b99222aa6ef9d1c04c8b13ab63a7140fa922dc2364863a4",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "attention_av_forward",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        12,
+        32,
+        64
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      64
+    ],
+    "mil": "kernels/attention_av_forward/model.mil",
+    "hwx": "aneforge/kernels/attention_av_forward/hwx/model.hwx",
+    "hwx_sha256": "71fe643b0e62acf3f689bc9a76ea403c47a19541748247c31c9896319854c821",
+    "hwx_bytes": 65536,
+    "task_count": 24,
+    "task_descriptors_sha256": "f552a1b69411547796b8ea85c06f28695d48d7b3347326ea044bdcc40d5c2c37",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "add_32_768",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/add_32_768/model.mil",
+    "hwx": "aneforge/kernels/add_32_768/hwx/model.hwx",
+    "hwx_sha256": "cbaaddca0ecdeca11f9c065901550ef9cb6b67b8099e3c64df4b9b69d4f8d3cb",
+    "hwx_bytes": 65536,
+    "task_count": 1,
+    "task_descriptors_sha256": "735de8aab7fef72df238b92ade84f86ed139f646414a03d2f01a92371605bae9",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "linear_32_768_3072_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        768,
+        3072
+      ],
+      [
+        1,
+        1,
+        1,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      3072
+    ],
+    "mil": "kernels/linear_32_768_3072_forward/model.mil",
+    "hwx": "aneforge/kernels/linear_32_768_3072_forward/hwx/model.hwx",
+    "hwx_sha256": "d061c532b44b2ef6c5217ab21e91580b01afbcd9503be2bf44607d479610c5ee",
+    "hwx_bytes": 65536,
+    "task_count": 4,
+    "task_descriptors_sha256": "d8e50772d3c0d95bdc2fd03931b366aec8588119f153f1d159b6be02fe74dbb7",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "gelu_32_3072_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      3072
+    ],
+    "mil": "kernels/gelu_32_3072_forward/model.mil",
+    "hwx": "aneforge/kernels/gelu_32_3072_forward/hwx/model.hwx",
+    "hwx_sha256": "de9a04c2411c02c15b4e95b0940c6186962205f1e930bd7720ad168ebd1ad531",
+    "hwx_bytes": 65536,
+    "task_count": 6,
+    "task_descriptors_sha256": "99dad32effbee93a9ad0a549fc9bff6953bc6dbbac64c68fb8400aa412830c5f",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "linear_32_3072_768_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ],
+      [
+        1,
+        1,
+        3072,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/linear_32_3072_768_forward/model.mil",
+    "hwx": "aneforge/kernels/linear_32_3072_768_forward/hwx/model.hwx",
+    "hwx_sha256": "a2db891b7bcc058cd86c6158559321db02593d11e3f03b9093fe71d6deadd1ef",
+    "hwx_bytes": 65536,
+    "task_count": 4,
+    "task_descriptors_sha256": "0bf078d6a8d841e3dc99c8d1f8eb49a6b67eaa5c6cc0d88c146a6db3ea70d083",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "layernorm_32_768_backward_dx",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/layernorm_32_768_backward_dx/model.mil",
+    "hwx": "aneforge/kernels/layernorm_32_768_backward_dx/hwx/model.hwx",
+    "hwx_sha256": "fb784f147edd7cfe53356f9e8ec4e252ca57759fa48f3ea30a27455be660abe0",
+    "hwx_bytes": 65536,
+    "task_count": 12,
+    "task_descriptors_sha256": "1277724ff8621de05ec6d6304be54732af7dd21c6318364134f2360d8926da37",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "layernorm_32_768_backward_dgamma",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      768
+    ],
+    "mil": "kernels/layernorm_32_768_backward_dgamma/model.mil",
+    "hwx": "aneforge/kernels/layernorm_32_768_backward_dgamma/hwx/model.hwx",
+    "hwx_sha256": "0feb3cd082142775d8cf00092dca5a066bd2ce91bd933e11a77197b02700a132",
+    "hwx_bytes": 65536,
+    "task_count": 7,
+    "task_descriptors_sha256": "327d93cc7e74b676bd87d6bc70d04547e149308f89a93943366d87d9f02141f0",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "layernorm_32_768_backward_dbeta",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      768
+    ],
+    "mil": "kernels/layernorm_32_768_backward_dbeta/model.mil",
+    "hwx": "aneforge/kernels/layernorm_32_768_backward_dbeta/hwx/model.hwx",
+    "hwx_sha256": "36f50c45ae1252d06fe7ed4934d72c397482653b5ac53660e811f537e59e495b",
+    "hwx_bytes": 49152,
+    "task_count": 2,
+    "task_descriptors_sha256": "df0d72f758f95473d059208117cdd41c95d6460038a079b3f9c7923900e5f941",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "linear_32_3072_768_backward_dx",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        3072,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      3072
+    ],
+    "mil": "kernels/linear_32_3072_768_backward_dx/model.mil",
+    "hwx": "aneforge/kernels/linear_32_3072_768_backward_dx/hwx/model.hwx",
+    "hwx_sha256": "783cc11448240ddc55ccb733be6cd69fc2c89a96f0be759af162157fb16afcf6",
+    "hwx_bytes": 65536,
+    "task_count": 3,
+    "task_descriptors_sha256": "9d7d9defed425cbace29dad7bc1c5f6f4af52c8d7d89463bc7ea74646f94cc48",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "linear_32_3072_768_backward_dw",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      3072,
+      768
+    ],
+    "mil": "kernels/linear_32_3072_768_backward_dw/model.mil",
+    "hwx": "aneforge/kernels/linear_32_3072_768_backward_dw/hwx/model.hwx",
+    "hwx_sha256": "a85f3289759851d2a147fa7ad3a5b4c70527e699cd475e2c06104c41821d31a6",
+    "hwx_bytes": 81920,
+    "task_count": 25,
+    "task_descriptors_sha256": "9dd60ed3e8c70453f7e46d3c90004048d4986fae44a41f7bc7797e25e35f75a1",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "linear_32_3072_768_backward_db",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      768
+    ],
+    "mil": "kernels/linear_32_3072_768_backward_db/model.mil",
+    "hwx": "aneforge/kernels/linear_32_3072_768_backward_db/hwx/model.hwx",
+    "hwx_sha256": "79ceb43824f6c68560469aa6aa8dbe10ac8be83690b732fad8776947e043e393",
+    "hwx_bytes": 49152,
+    "task_count": 2,
+    "task_descriptors_sha256": "df0d72f758f95473d059208117cdd41c95d6460038a079b3f9c7923900e5f941",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "gelu_32_3072_backward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ],
+      [
+        1,
+        1,
+        32,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      3072
+    ],
+    "mil": "kernels/gelu_32_3072_backward/model.mil",
+    "hwx": "aneforge/kernels/gelu_32_3072_backward/hwx/model.hwx",
+    "hwx_sha256": "e45b279eb52d3f3b2b09c36aed6670938090b418570c7ac33ee9d11ac61bd955",
+    "hwx_bytes": 81920,
+    "task_count": 13,
+    "task_descriptors_sha256": "181161e403e2907f3206ba343c35181a885317ae95eaf4d1257fbbf3b09a38a0",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "linear_32_768_3072_backward_dx",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ],
+      [
+        1,
+        1,
+        768,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/linear_32_768_3072_backward_dx/model.mil",
+    "hwx": "aneforge/kernels/linear_32_768_3072_backward_dx/hwx/model.hwx",
+    "hwx_sha256": "dce2ba22075b071654669e63e9db23e79625205790c981d62f6118743e2ceadc",
+    "hwx_bytes": 65536,
+    "task_count": 3,
+    "task_descriptors_sha256": "d9b33bfd5df97418b5d1d2f43c057614d6a5f6358b02421c48cbdd89481a0fac",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "linear_32_768_3072_backward_dw",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      768,
+      3072
+    ],
+    "mil": "kernels/linear_32_768_3072_backward_dw/model.mil",
+    "hwx": "aneforge/kernels/linear_32_768_3072_backward_dw/hwx/model.hwx",
+    "hwx_sha256": "e707a68569b0605327eb08528bf4f76dfb2cf75396006acb359240fb2ccfdb26",
+    "hwx_bytes": 65536,
+    "task_count": 7,
+    "task_descriptors_sha256": "14bc1a8658a38b07b4c0a529909bb7ae7bd92dcebe514d89439638a7cb5c44c9",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "linear_32_768_3072_backward_db",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      3072
+    ],
+    "mil": "kernels/linear_32_768_3072_backward_db/model.mil",
+    "hwx": "aneforge/kernels/linear_32_768_3072_backward_db/hwx/model.hwx",
+    "hwx_sha256": "979dd3ab828e2b47f89ed3c05c68bb3d8701acedd4a44bf15a6ad94d0b6f51bf",
+    "hwx_bytes": 49152,
+    "task_count": 2,
+    "task_descriptors_sha256": "52d51601bd2898f7c2ca3d6cae59d3a0229b9b2525308ce745ab9b56a5bc52e2",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "linear_32_768_768_backward_dx",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        768,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/linear_32_768_768_backward_dx/model.mil",
+    "hwx": "aneforge/kernels/linear_32_768_768_backward_dx/hwx/model.hwx",
+    "hwx_sha256": "b34040b943637f34b36d0dc6cf98071aacece9b3a07a0ee056d7bc3ea32c1861",
+    "hwx_bytes": 65536,
+    "task_count": 3,
+    "task_descriptors_sha256": "36ec3455322f426a594e35ae11212802aefe857ecc99286f9bae715a52407b35",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "linear_32_768_768_backward_dw",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      768,
+      768
+    ],
+    "mil": "kernels/linear_32_768_768_backward_dw/model.mil",
+    "hwx": "aneforge/kernels/linear_32_768_768_backward_dw/hwx/model.hwx",
+    "hwx_sha256": "afcf4b8ba628e2dedd368a11fd9912b38cdd6e36e05505c8eb0884b5fc5fc5f7",
+    "hwx_bytes": 65536,
+    "task_count": 7,
+    "task_descriptors_sha256": "2ffae442b61abff30ba606b26a89e8a6978a1f7860e03265d964f28a6f2cc07f",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "linear_32_768_768_backward_db",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      768
+    ],
+    "mil": "kernels/linear_32_768_768_backward_db/model.mil",
+    "hwx": "aneforge/kernels/linear_32_768_768_backward_db/hwx/model.hwx",
+    "hwx_sha256": "dc6dbb124c9a67d9277f491b39b0cb18434039c20015a5e1ae4c434ff4752d09",
+    "hwx_bytes": 49152,
+    "task_count": 2,
+    "task_descriptors_sha256": "df0d72f758f95473d059208117cdd41c95d6460038a079b3f9c7923900e5f941",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "attention_av_backward_da",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        64
+      ],
+      [
+        1,
+        12,
+        32,
+        64
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      32
+    ],
+    "mil": "kernels/attention_av_backward_da/model.mil",
+    "hwx": "aneforge/kernels/attention_av_backward_da/hwx/model.hwx",
+    "hwx_sha256": "7859365fa84ab010d9917d38934d09fa2faf0147e46150afd7bd4b1932273915",
+    "hwx_bytes": 65536,
+    "task_count": 25,
+    "task_descriptors_sha256": "3c82ca72e19e5cca5dca0ae6d355a2800f0106231fff74bec4d6914b67c4c533",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "attention_av_backward_db",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        12,
+        32,
+        64
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      64
+    ],
+    "mil": "kernels/attention_av_backward_db/model.mil",
+    "hwx": "aneforge/kernels/attention_av_backward_db/hwx/model.hwx",
+    "hwx_sha256": "f6b8230659c3e1fd64bd8dfa1ffca78c03550699373140db968832bd06b5fac7",
+    "hwx_bytes": 65536,
+    "task_count": 13,
+    "task_descriptors_sha256": "f0302c7d2b750fa480de76885d8ed004761d95357a3ba550adf4fa94c86480ce",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "softmax_12_32_backward",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        12,
+        32,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      32
+    ],
+    "mil": "kernels/softmax_12_32_backward/model.mil",
+    "hwx": "aneforge/kernels/softmax_12_32_backward/hwx/model.hwx",
+    "hwx_sha256": "2ab54ff9659f2fa35b0ecc0652c504db74ad939fcf996440a0de95689d8dd2d8",
+    "hwx_bytes": 65536,
+    "task_count": 3,
+    "task_descriptors_sha256": "22f2d5077cf596aad8816313c9adfdbfea2fbd1cb96b8343bc737ba1803e862a",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "attention_qk_backward_da",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        12,
+        64,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      64
+    ],
+    "mil": "kernels/attention_qk_backward_da/model.mil",
+    "hwx": "aneforge/kernels/attention_qk_backward_da/hwx/model.hwx",
+    "hwx_sha256": "b333fba1d2215b482d542f3955e14227ab2fbf262d2b74e82017a87ec0fe3722",
+    "hwx_bytes": 65536,
+    "task_count": 25,
+    "task_descriptors_sha256": "c576329f83fac0b20a431d2267a9324185cb31d12b4af63f421caf29bf7f30eb",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "aneforge",
+    "name": "attention_qk_backward_db",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        64
+      ],
+      [
+        1,
+        12,
+        32,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      64,
+      32
+    ],
+    "mil": "kernels/attention_qk_backward_db/model.mil",
+    "hwx": "aneforge/kernels/attention_qk_backward_db/hwx/model.hwx",
+    "hwx_sha256": "6b191a318a7f307ff793b7f72a405f40b05ef8828bdce663bde0620edc8eb648",
+    "hwx_bytes": 65536,
+    "task_count": 13,
+    "task_descriptors_sha256": "f36def3c0f62c857a2bb005b320cb5caf095f29df9a1199b1208593bb948d8f5",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "layernorm_32_768_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/layernorm_32_768_forward/model.mil",
+    "hwx": "orion/kernels/layernorm_32_768_forward/hwx/model.hwx",
+    "hwx_sha256": "772ceebaf691e8e656285f261f8007665a586b49e85d6d1c4e05b2728a680440",
+    "hwx_bytes": 65536,
+    "task_count": 8,
+    "task_descriptors_sha256": "41b3569feef940fb470acf3ff74d9765a40ee00e5dc37a508fefd5487df21b0b",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "linear_32_768_768_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        768,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/linear_32_768_768_forward/model.mil",
+    "hwx": "orion/kernels/linear_32_768_768_forward/hwx/model.hwx",
+    "hwx_sha256": "421625fc9d5054dffaaf78c2df4783b11a31c55a05f8d2a7432d81b409aa66e5",
+    "hwx_bytes": 65536,
+    "task_count": 4,
+    "task_descriptors_sha256": "2790736537136671d11533d15dc200075810189e0f457d668093cf9e19a2c2a9",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "attention_qk_forward",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        64
+      ],
+      [
+        1,
+        12,
+        64,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      32
+    ],
+    "mil": "kernels/attention_qk_forward/model.mil",
+    "hwx": "orion/kernels/attention_qk_forward/hwx/model.hwx",
+    "hwx_sha256": "dc2ad2c3b4e6c64ef3cef3adc69aee49b662ef1d6a94f07e997af44c8e30a599",
+    "hwx_bytes": 65536,
+    "task_count": 24,
+    "task_descriptors_sha256": "ae479c11e6ad4b2693e2a4f961349a8bbd8825eb052cdb7b538d48ccd3c07fff",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "softmax_12_32_forward",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        1,
+        32,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      32
+    ],
+    "mil": "kernels/softmax_12_32_forward/model.mil",
+    "hwx": "orion/kernels/softmax_12_32_forward/hwx/model.hwx",
+    "hwx_sha256": "54daec6f8372c1d5e884b558e88d2c54cceb77882944749b1fbee8456b3b2a2f",
+    "hwx_bytes": 81920,
+    "task_count": 7,
+    "task_descriptors_sha256": "9c0c11c0a1a6d788bd2052362b97f1fedbda0f13352a7db30d0fa63726073041",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "attention_av_forward",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        12,
+        32,
+        64
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      64
+    ],
+    "mil": "kernels/attention_av_forward/model.mil",
+    "hwx": "orion/kernels/attention_av_forward/hwx/model.hwx",
+    "hwx_sha256": "6950889488bf00d7e5856a71090023b7e688bcda8b135768a952eb5e8191251c",
+    "hwx_bytes": 65536,
+    "task_count": 24,
+    "task_descriptors_sha256": "674429677b8ed37302070e21b1750fbeabef7d5d488ce5988f580d5f32168cd0",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "add_32_768",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/add_32_768/model.mil",
+    "hwx": "orion/kernels/add_32_768/hwx/model.hwx",
+    "hwx_sha256": "c38c1e916b71f378d8805b66601c7f15f5fa722c85a4a9deb879e42b8ac5ba9d",
+    "hwx_bytes": 65536,
+    "task_count": 1,
+    "task_descriptors_sha256": "92f964b2f3c63052e92861a6cd4e2c2f8aeae57ac0a69fc7f35776349af67e94",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "linear_32_768_3072_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        768,
+        3072
+      ],
+      [
+        1,
+        1,
+        1,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      3072
+    ],
+    "mil": "kernels/linear_32_768_3072_forward/model.mil",
+    "hwx": "orion/kernels/linear_32_768_3072_forward/hwx/model.hwx",
+    "hwx_sha256": "e8f91f8423825dd32aa4b954cc09e3fc87dc39af2eebe71fc225d3357f98769c",
+    "hwx_bytes": 65536,
+    "task_count": 4,
+    "task_descriptors_sha256": "396abad2a76f1baf95809a397d12f90307aaf85030e93c58a04a0c5199cb4454",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "gelu_32_3072_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      3072
+    ],
+    "mil": "kernels/gelu_32_3072_forward/model.mil",
+    "hwx": "orion/kernels/gelu_32_3072_forward/hwx/model.hwx",
+    "hwx_sha256": "36447c68e4bcb8652352cac703e889fd98329d76ce538531333df0c1b91392ac",
+    "hwx_bytes": 65536,
+    "task_count": 6,
+    "task_descriptors_sha256": "99dad32effbee93a9ad0a549fc9bff6953bc6dbbac64c68fb8400aa412830c5f",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "linear_32_3072_768_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ],
+      [
+        1,
+        1,
+        3072,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/linear_32_3072_768_forward/model.mil",
+    "hwx": "orion/kernels/linear_32_3072_768_forward/hwx/model.hwx",
+    "hwx_sha256": "d6e9e3a251225d129a9551b8a40d2a2d82fbe5b66cca727262c3828700465d53",
+    "hwx_bytes": 65536,
+    "task_count": 4,
+    "task_descriptors_sha256": "e94609d9536f5418a11815e379c294f9b791b9b4b51449ae8cff95df3880ce80",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "layernorm_32_768_backward_dx",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/layernorm_32_768_backward_dx/model.mil",
+    "hwx": "orion/kernels/layernorm_32_768_backward_dx/hwx/model.hwx",
+    "hwx_sha256": "c8a36c2b4094cba76364f6f6663dc73d3c089a056f7b1f95d39972ac6d748e49",
+    "hwx_bytes": 65536,
+    "task_count": 12,
+    "task_descriptors_sha256": "96e91008c73aa46509e3d9b8d9331bfec3695b145870cd5749bedf1fbb6c793a",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "layernorm_32_768_backward_dgamma",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      768
+    ],
+    "mil": "kernels/layernorm_32_768_backward_dgamma/model.mil",
+    "hwx": "orion/kernels/layernorm_32_768_backward_dgamma/hwx/model.hwx",
+    "hwx_sha256": "47185d9ba6f8aaeb55b2c344462631dab3a53f5686c72b6f20bbfd822e6e38d5",
+    "hwx_bytes": 65536,
+    "task_count": 7,
+    "task_descriptors_sha256": "6a86c098b0d3536f2b02cd05edd71fe60d625dd38b404c02d40854c350e7b31c",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "layernorm_32_768_backward_dbeta",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      768
+    ],
+    "mil": "kernels/layernorm_32_768_backward_dbeta/model.mil",
+    "hwx": "orion/kernels/layernorm_32_768_backward_dbeta/hwx/model.hwx",
+    "hwx_sha256": "5f2c649f3798b55592d0b9e04fd5c5d9ad51c5612797a9fe7004a740f779cd0d",
+    "hwx_bytes": 49152,
+    "task_count": 2,
+    "task_descriptors_sha256": "df0d72f758f95473d059208117cdd41c95d6460038a079b3f9c7923900e5f941",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "linear_32_3072_768_backward_dx",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        3072,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      3072
+    ],
+    "mil": "kernels/linear_32_3072_768_backward_dx/model.mil",
+    "hwx": "orion/kernels/linear_32_3072_768_backward_dx/hwx/model.hwx",
+    "hwx_sha256": "e9a3e46016bf44961d3706e6e8dd150ca715d7540037cfc6cc655ad37663e188",
+    "hwx_bytes": 65536,
+    "task_count": 3,
+    "task_descriptors_sha256": "a6002c963324f06a4f5fc09c9381eafb2b98eb33c8cd87272c16b77da1ab1c0f",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "linear_32_3072_768_backward_dw",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      3072,
+      768
+    ],
+    "mil": "kernels/linear_32_3072_768_backward_dw/model.mil",
+    "hwx": "orion/kernels/linear_32_3072_768_backward_dw/hwx/model.hwx",
+    "hwx_sha256": "2086657d926f795fe133af791b2698148d0d4db463d708fbaf58da59d366ca0b",
+    "hwx_bytes": 81920,
+    "task_count": 25,
+    "task_descriptors_sha256": "23c7e7648a5b3f6d01069db89333666e857ca939235070046bdbfc6d0f2b8ec5",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "linear_32_3072_768_backward_db",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      768
+    ],
+    "mil": "kernels/linear_32_3072_768_backward_db/model.mil",
+    "hwx": "orion/kernels/linear_32_3072_768_backward_db/hwx/model.hwx",
+    "hwx_sha256": "329d1942fb96eee36245a432e1a958db8f3335d531c1c9c790cc072d097f6afc",
+    "hwx_bytes": 49152,
+    "task_count": 2,
+    "task_descriptors_sha256": "df0d72f758f95473d059208117cdd41c95d6460038a079b3f9c7923900e5f941",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "gelu_32_3072_backward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ],
+      [
+        1,
+        1,
+        32,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      3072
+    ],
+    "mil": "kernels/gelu_32_3072_backward/model.mil",
+    "hwx": "orion/kernels/gelu_32_3072_backward/hwx/model.hwx",
+    "hwx_sha256": "d8f4004d93360cbc9b9646d758f442faf9de6029f9746e02f452f8c8d29aea8b",
+    "hwx_bytes": 81920,
+    "task_count": 13,
+    "task_descriptors_sha256": "181161e403e2907f3206ba343c35181a885317ae95eaf4d1257fbbf3b09a38a0",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "linear_32_768_3072_backward_dx",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ],
+      [
+        1,
+        1,
+        768,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/linear_32_768_3072_backward_dx/model.mil",
+    "hwx": "orion/kernels/linear_32_768_3072_backward_dx/hwx/model.hwx",
+    "hwx_sha256": "7c0a2ee29084826435b29c61e2ae8fdcfcf75a682a6852872800ef1315658797",
+    "hwx_bytes": 65536,
+    "task_count": 3,
+    "task_descriptors_sha256": "2a6ba8faf2d060bd8934e8be754d4e635c0ccf611aa0e35fc288b42d0c2194bc",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "linear_32_768_3072_backward_dw",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      768,
+      3072
+    ],
+    "mil": "kernels/linear_32_768_3072_backward_dw/model.mil",
+    "hwx": "orion/kernels/linear_32_768_3072_backward_dw/hwx/model.hwx",
+    "hwx_sha256": "3cacad40e5f647e9e74d88483dd8582c1b30d29f282b7af01d8d3296f2259662",
+    "hwx_bytes": 65536,
+    "task_count": 7,
+    "task_descriptors_sha256": "ab739d462c2b098cc0d28183e5e42aafb8262337efe21eada169e442bd7c3f33",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "linear_32_768_3072_backward_db",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      3072
+    ],
+    "mil": "kernels/linear_32_768_3072_backward_db/model.mil",
+    "hwx": "orion/kernels/linear_32_768_3072_backward_db/hwx/model.hwx",
+    "hwx_sha256": "f37fd0f44f2c24a3d263249d651974b60ff66670e284c36c31e8a8c2d67a7f87",
+    "hwx_bytes": 49152,
+    "task_count": 2,
+    "task_descriptors_sha256": "52d51601bd2898f7c2ca3d6cae59d3a0229b9b2525308ce745ab9b56a5bc52e2",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "linear_32_768_768_backward_dx",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        768,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/linear_32_768_768_backward_dx/model.mil",
+    "hwx": "orion/kernels/linear_32_768_768_backward_dx/hwx/model.hwx",
+    "hwx_sha256": "08101564db4890a03a5cd466cf9cbca2a16701d16e1a64e971e1770c007d3cf3",
+    "hwx_bytes": 65536,
+    "task_count": 3,
+    "task_descriptors_sha256": "c18bb8e82ebb67ff668313476ab0baeb38e4ab2bd09d769b6eccdcf7c5692cd4",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "linear_32_768_768_backward_dw",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      768,
+      768
+    ],
+    "mil": "kernels/linear_32_768_768_backward_dw/model.mil",
+    "hwx": "orion/kernels/linear_32_768_768_backward_dw/hwx/model.hwx",
+    "hwx_sha256": "6728e582c6ce5bba40b47aee371e740df40ad10905752c5533ae41a2ee647db3",
+    "hwx_bytes": 65536,
+    "task_count": 7,
+    "task_descriptors_sha256": "b837a3a009225da94c115e17421d4c0fca5fc7af8928460f1cb187a0493d7571",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "linear_32_768_768_backward_db",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      768
+    ],
+    "mil": "kernels/linear_32_768_768_backward_db/model.mil",
+    "hwx": "orion/kernels/linear_32_768_768_backward_db/hwx/model.hwx",
+    "hwx_sha256": "259dc3316324f9c5ce6ffa0134e7d9773ed628decaed44db441586cdab4ca9b3",
+    "hwx_bytes": 49152,
+    "task_count": 2,
+    "task_descriptors_sha256": "df0d72f758f95473d059208117cdd41c95d6460038a079b3f9c7923900e5f941",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "attention_av_backward_da",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        64
+      ],
+      [
+        1,
+        12,
+        32,
+        64
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      32
+    ],
+    "mil": "kernels/attention_av_backward_da/model.mil",
+    "hwx": "orion/kernels/attention_av_backward_da/hwx/model.hwx",
+    "hwx_sha256": "e3106abd42b643cdc051a34efcce675d6dc2f061bae846e242db3e190467be04",
+    "hwx_bytes": 65536,
+    "task_count": 25,
+    "task_descriptors_sha256": "b1ceee378862f15592f3fab5123fc19633906e4fbcf543a325df19af3abfbf8a",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "attention_av_backward_db",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        12,
+        32,
+        64
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      64
+    ],
+    "mil": "kernels/attention_av_backward_db/model.mil",
+    "hwx": "orion/kernels/attention_av_backward_db/hwx/model.hwx",
+    "hwx_sha256": "44a34149cfdc9d9473de51b3311b25ded8f3e1c013b199242b03337411ad3eab",
+    "hwx_bytes": 65536,
+    "task_count": 13,
+    "task_descriptors_sha256": "a5125305d39e5d2e3ff410434bd3ef83ef75d846f50e0ac6c2458c8ea131ce71",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "softmax_12_32_backward",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        12,
+        32,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      32
+    ],
+    "mil": "kernels/softmax_12_32_backward/model.mil",
+    "hwx": "orion/kernels/softmax_12_32_backward/hwx/model.hwx",
+    "hwx_sha256": "602de94cc2b8f2f89c51468712dc627abec969fa9291aa001f9d2096caf42d25",
+    "hwx_bytes": 65536,
+    "task_count": 3,
+    "task_descriptors_sha256": "22f2d5077cf596aad8816313c9adfdbfea2fbd1cb96b8343bc737ba1803e862a",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "attention_qk_backward_da",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        12,
+        64,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      64
+    ],
+    "mil": "kernels/attention_qk_backward_da/model.mil",
+    "hwx": "orion/kernels/attention_qk_backward_da/hwx/model.hwx",
+    "hwx_sha256": "3673d47aeb8443c3bada548dacb7ae3e665f2c540ba43a3d268fe90ea28fde86",
+    "hwx_bytes": 65536,
+    "task_count": 25,
+    "task_descriptors_sha256": "b65f4aabeef8d3290997dca4ffd7c48f230ce5730c3e97df90a98de4c512dbc9",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  },
+  {
+    "backend": "orion",
+    "name": "attention_qk_backward_db",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        64
+      ],
+      [
+        1,
+        12,
+        32,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      64,
+      32
+    ],
+    "mil": "kernels/attention_qk_backward_db/model.mil",
+    "hwx": "orion/kernels/attention_qk_backward_db/hwx/model.hwx",
+    "hwx_sha256": "9634cc290c02431b16f90a447e0f2a21e53fa0eaf6f2985a447ac336e6c1385e",
+    "hwx_bytes": 65536,
+    "task_count": 13,
+    "task_descriptors_sha256": "5ece3741ece4a0e16acd69e48493e5dc91afcdcccbef5db9a6767bb65cc79087",
+    "export_method": "ANECCompile h13g offline export of exact emitted MIL; not a readback of the signed runtime binary"
+  }
+]

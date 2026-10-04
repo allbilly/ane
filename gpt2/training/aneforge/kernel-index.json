@@ -1,0 +1,785 @@
+[
+  {
+    "name": "layernorm_32_768_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/layernorm_32_768_forward/model.mil",
+    "input_port_names": [
+      "t3",
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t12"
+  },
+  {
+    "name": "linear_32_768_768_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        768,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/linear_32_768_768_forward/model.mil",
+    "input_port_names": [
+      "t2",
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t4"
+  },
+  {
+    "name": "attention_qk_forward",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        64
+      ],
+      [
+        1,
+        12,
+        64,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      32
+    ],
+    "mil": "kernels/attention_qk_forward/model.mil",
+    "input_port_names": [
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t2"
+  },
+  {
+    "name": "softmax_12_32_forward",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        1,
+        32,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      32
+    ],
+    "mil": "kernels/softmax_12_32_forward/model.mil",
+    "input_port_names": [
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t4"
+  },
+  {
+    "name": "attention_av_forward",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        12,
+        32,
+        64
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      64
+    ],
+    "mil": "kernels/attention_av_forward/model.mil",
+    "input_port_names": [
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t2"
+  },
+  {
+    "name": "add_32_768",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/add_32_768/model.mil",
+    "input_port_names": [
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t2"
+  },
+  {
+    "name": "linear_32_768_3072_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        768,
+        3072
+      ],
+      [
+        1,
+        1,
+        1,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      3072
+    ],
+    "mil": "kernels/linear_32_768_3072_forward/model.mil",
+    "input_port_names": [
+      "t2",
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t4"
+  },
+  {
+    "name": "gelu_32_3072_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      3072
+    ],
+    "mil": "kernels/gelu_32_3072_forward/model.mil",
+    "input_port_names": [
+      "t1"
+    ],
+    "output_port_name": "t10"
+  },
+  {
+    "name": "linear_32_3072_768_forward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ],
+      [
+        1,
+        1,
+        3072,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/linear_32_3072_768_forward/model.mil",
+    "input_port_names": [
+      "t2",
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t4"
+  },
+  {
+    "name": "layernorm_32_768_backward_dx",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        1,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/layernorm_32_768_backward_dx/model.mil",
+    "input_port_names": [
+      "t1",
+      "t9",
+      "t10"
+    ],
+    "output_port_name": "t18"
+  },
+  {
+    "name": "layernorm_32_768_backward_dgamma",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      768
+    ],
+    "mil": "kernels/layernorm_32_768_backward_dgamma/model.mil",
+    "input_port_names": [
+      "t2",
+      "t0"
+    ],
+    "output_port_name": "t11"
+  },
+  {
+    "name": "layernorm_32_768_backward_dbeta",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      768
+    ],
+    "mil": "kernels/layernorm_32_768_backward_dbeta/model.mil",
+    "input_port_names": [
+      "t0"
+    ],
+    "output_port_name": "t1"
+  },
+  {
+    "name": "linear_32_3072_768_backward_dx",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        3072,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      3072
+    ],
+    "mil": "kernels/linear_32_3072_768_backward_dx/model.mil",
+    "input_port_names": [
+      "t2",
+      "t0"
+    ],
+    "output_port_name": "t3"
+  },
+  {
+    "name": "linear_32_3072_768_backward_dw",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      3072,
+      768
+    ],
+    "mil": "kernels/linear_32_3072_768_backward_dw/model.mil",
+    "input_port_names": [
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t3"
+  },
+  {
+    "name": "linear_32_3072_768_backward_db",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      768
+    ],
+    "mil": "kernels/linear_32_3072_768_backward_db/model.mil",
+    "input_port_names": [
+      "t0"
+    ],
+    "output_port_name": "t1"
+  },
+  {
+    "name": "gelu_32_3072_backward",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ],
+      [
+        1,
+        1,
+        32,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      3072
+    ],
+    "mil": "kernels/gelu_32_3072_backward/model.mil",
+    "input_port_names": [
+      "t1",
+      "t23"
+    ],
+    "output_port_name": "t24"
+  },
+  {
+    "name": "linear_32_768_3072_backward_dx",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ],
+      [
+        1,
+        1,
+        768,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/linear_32_768_3072_backward_dx/model.mil",
+    "input_port_names": [
+      "t2",
+      "t0"
+    ],
+    "output_port_name": "t3"
+  },
+  {
+    "name": "linear_32_768_3072_backward_dw",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      768,
+      3072
+    ],
+    "mil": "kernels/linear_32_768_3072_backward_dw/model.mil",
+    "input_port_names": [
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t3"
+  },
+  {
+    "name": "linear_32_768_3072_backward_db",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        3072
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      3072
+    ],
+    "mil": "kernels/linear_32_768_3072_backward_db/model.mil",
+    "input_port_names": [
+      "t0"
+    ],
+    "output_port_name": "t1"
+  },
+  {
+    "name": "linear_32_768_768_backward_dx",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        768,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      32,
+      768
+    ],
+    "mil": "kernels/linear_32_768_768_backward_dx/model.mil",
+    "input_port_names": [
+      "t2",
+      "t0"
+    ],
+    "output_port_name": "t3"
+  },
+  {
+    "name": "linear_32_768_768_backward_dw",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ],
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      768,
+      768
+    ],
+    "mil": "kernels/linear_32_768_768_backward_dw/model.mil",
+    "input_port_names": [
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t3"
+  },
+  {
+    "name": "linear_32_768_768_backward_db",
+    "inputs": [
+      [
+        1,
+        1,
+        32,
+        768
+      ]
+    ],
+    "output": [
+      1,
+      1,
+      1,
+      768
+    ],
+    "mil": "kernels/linear_32_768_768_backward_db/model.mil",
+    "input_port_names": [
+      "t0"
+    ],
+    "output_port_name": "t1"
+  },
+  {
+    "name": "attention_av_backward_da",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        64
+      ],
+      [
+        1,
+        12,
+        32,
+        64
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      32
+    ],
+    "mil": "kernels/attention_av_backward_da/model.mil",
+    "input_port_names": [
+      "t2",
+      "t0"
+    ],
+    "output_port_name": "t3"
+  },
+  {
+    "name": "attention_av_backward_db",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        12,
+        32,
+        64
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      64
+    ],
+    "mil": "kernels/attention_av_backward_db/model.mil",
+    "input_port_names": [
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t3"
+  },
+  {
+    "name": "softmax_12_32_backward",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        12,
+        32,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      32
+    ],
+    "mil": "kernels/softmax_12_32_backward/model.mil",
+    "input_port_names": [
+      "t0",
+      "t1"
+    ],
+    "output_port_name": "t6"
+  },
+  {
+    "name": "attention_qk_backward_da",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        32
+      ],
+      [
+        1,
+        12,
+        64,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      32,
+      64
+    ],
+    "mil": "kernels/attention_qk_backward_da/model.mil",
+    "input_port_names": [
+      "t2",
+      "t0"
+    ],
+    "output_port_name": "t3"
+  },
+  {
+    "name": "attention_qk_backward_db",
+    "inputs": [
+      [
+        1,
+        12,
+        32,
+        64
+      ],
+      [
+        1,
+        12,
+        32,
+        32
+      ]
+    ],
+    "output": [
+      1,
+      12,
+      64,
+      32
+    ],
+    "mil": "kernels/attention_qk_backward_db/model.mil",
+    "input_port_names": [
+      "t1",
+      "t0"
+    ],
+    "output_port_name": "t3"
+  }
+]

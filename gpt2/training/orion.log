@@ -1,0 +1,39 @@
+compiled orion: layernorm_32_768_forward (0.19s)
+compiled orion: linear_32_768_768_forward (0.03s)
+compiled orion: attention_qk_forward (0.07s)
+compiled orion: softmax_12_32_forward (0.16s)
+compiled orion: attention_av_forward (0.15s)
+compiled orion: add_32_768 (0.05s)
+compiled orion: linear_32_768_3072_forward (0.04s)
+compiled orion: gelu_32_3072_forward (0.09s)
+compiled orion: linear_32_3072_768_forward (0.05s)
+compiled orion: layernorm_32_768_backward_dx (0.07s)
+compiled orion: layernorm_32_768_backward_dgamma (0.05s)
+compiled orion: layernorm_32_768_backward_dbeta (0.03s)
+compiled orion: linear_32_3072_768_backward_dx (0.03s)
+compiled orion: linear_32_3072_768_backward_dw (0.10s)
+compiled orion: linear_32_3072_768_backward_db (0.03s)
+compiled orion: gelu_32_3072_backward (0.11s)
+compiled orion: linear_32_768_3072_backward_dx (0.04s)
+compiled orion: linear_32_768_3072_backward_dw (0.04s)
+compiled orion: linear_32_768_3072_backward_db (0.03s)
+compiled orion: linear_32_768_768_backward_dx (0.03s)
+compiled orion: linear_32_768_768_backward_dw (0.04s)
+compiled orion: linear_32_768_768_backward_db (0.03s)
+compiled orion: attention_av_backward_da (0.08s)
+compiled orion: attention_av_backward_db (0.06s)
+compiled orion: softmax_12_32_backward (0.04s)
+compiled orion: attention_qk_backward_da (0.07s)
+compiled orion: attention_qk_backward_db (0.06s)
+Initial loss: 4.42789030; setup 2.48s, compiler 1.73s
+orion step  1: loss=4.427890, 1901.8 ms, ANE=126.4 ms
+orion step  2: loss=2.391852, 2107.8 ms, ANE=149.2 ms
+orion step  3: loss=1.013964, 1182.7 ms, ANE=147.1 ms
+orion step  4: loss=0.339210, 1199.9 ms, ANE=139.8 ms
+orion step  5: loss=0.053213, 1276.9 ms, ANE=146.8 ms
+orion step  6: loss=0.004465, 1131.5 ms, ANE=139.4 ms
+orion step  7: loss=0.000421, 1103.1 ms, ANE=138.4 ms
+orion step  8: loss=0.000443, 1043.0 ms, ANE=139.0 ms
+orion step  9: loss=0.000340, 962.5 ms, ANE=131.4 ms
+orion step 10: loss=0.000267, 1062.2 ms, ANE=127.8 ms
+Final loss after 10 updates: 0.00021682
