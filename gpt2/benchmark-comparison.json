@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "scope": "GPT-2 124M implementation references on base M1 / 8 GB / macOS 27.0.1; not Asahi port throughput or pure CPU/GPU/ANE peak comparison",
+  "scope": "GPT-2 124M implementation references on base M1 / 8 GB: Asahi Python ANE port and saved macOS 27.0.1 native runtimes; separate sessions and graph/frontend implementations",
   "units": "decode engine steps per second",
   "workload": {
     "batch_size": 1,
@@ -15,6 +15,18 @@
     "inputs": "Identical saved HF greedy teacher-forced traces for all three prompt cases. No prefix cache reuse; warmup/load/compilation excluded."
   },
   "rows": [
+    {
+      "implementation": "Asahi Python ANE + CPU attention",
+      "precision": "FP16 stored weights and ANE operations; CPU arithmetic FP32",
+      "decode_engine_steps_per_second_by_prompt": {
+        "2": 70.17972373425526,
+        "32": 63.57668656900319,
+        "64": 57.597722557251224
+      },
+      "report": "asahi-decode-performance.json",
+      "quality_note": "24 decode-kernel fixtures and hybrid generation parity PASS; zero HF top1 mismatches across all three saved 65-prediction traces and matching 16-token greedy continuations. HF KL and raw-logit parity not measured.",
+      "timing_note": "Synchronous Python model.step returning full-vocabulary logits; same saved HF inputs and 64 decode steps, four trials per prompt, two 16-step warmups per trial. Sequential prompt ingest, allocation, argmax, printing and diagnostics excluded; internal finite checks included. One OpenBLAS thread; first-position output copies."
+    },
     {
       "implementation": "Orion CPU",
       "precision": "FP16 stored weights; CPU arithmetic FP32; ANE operations FP16 when enabled",
@@ -127,7 +139,8 @@
     "provenance/coreml-performance/m1-fair.json": "974f9a40a34767b500d71573090b4c18a49310a23957e71262c4f6e55282469f",
     "provenance/mlx-performance/m1-fp16.json": "ac097b74bc5fab56785a0af0720db675dc0963555f5704d6a12f19863a761ef9",
     "provenance/mlx-performance/m1-fp32.json": "928f1e30e182b8a43d7e6c28395b1f50447dc1c0f10222a7dc093e3f27dbe317",
-    "vllm-performance.json": "61a3c0387fd13bf5c0eef7cf55b90d4479feff901035928bc1c4d62d162ddc5b"
+    "vllm-performance.json": "61a3c0387fd13bf5c0eef7cf55b90d4479feff901035928bc1c4d62d162ddc5b",
+    "asahi-decode-performance.json": "7d8f911323b522409f067535c763ae9271aab2cbb510d6afba2e74f761d9a43c"
   },
   "limitations": [
     "Separate active-desktop sessions; existing applications running during MLX and new Orion trials. No cross-runtime paired confidence intervals or isolated peak claims.",
@@ -135,7 +148,18 @@
     "Native C/Swift engine timers and Python graph construction timers cover similar decode outputs but different frontend work. Request throughput is separately recorded for CoreML and MLX.",
     "Orion CPU/ANE pass all tested top1/KL gates but fail raw-logit NRMSE gates; MLX FP16 fails the Hello-world choice gate. Not full-logit or general accuracy equivalence.",
     "CoreML ALL static plan preferred GPU for all 418 nonconstant operations; it is not a combined CPU+GPU+ANE speed measurement.",
-    "No vllm.cpp throughput number is possible through its current GPT-2 text-generation interface; it has only a host backbone reference used by IndexTTS."
+    "No vllm.cpp throughput number is possible through its current GPT-2 text-generation interface; it has only a host backbone reference used by IndexTTS.",
+    "Asahi uses sequential decode kernels for prompt ingestion and a Python frontend; macOS Orion uses bucketed prefill and native code. Same trace/engine timing improves comparability, but these remain separate desktop sessions."
   ],
-  "orion_older_reference": "Original 69.82/61.41 two-token pair remains historical; current row uses one fresh three-context run. Five Orion source files differ from that earlier captured snapshot."
+  "orion_older_reference": "Original 69.82/61.41 two-token pair remains historical; current row uses one fresh three-context run. Five Orion source files differ from that earlier captured snapshot.",
+  "asahi_generation_measurements": {
+    "report": "asahi-decode-performance.json",
+    "scope": "Asahi CLI generation includes prompt processing, token selection and printing; separate from decode-engine timing",
+    "runs": 4,
+    "prompt_tokens": 2,
+    "generated_tokens_per_run": 32,
+    "combined_generation_tokens_per_second": 58.18181818181818,
+    "decode_kernel_checks_passed_each_run": 24,
+    "full_generation_parity": "PASS"
+  }
 }

@@ -1,0 +1,197 @@
+{
+  "format_version": 1,
+  "date": "2026-10-04",
+  "backend": "ane",
+  "host": {
+    "platform": "Linux-6.19.11+-aarch64-with-glibc2.41",
+    "python": "3.13.13",
+    "numpy": "2.5.3",
+    "openblas_num_threads": "1"
+  },
+  "reference": "provenance/orion-performance/m1-contexts.json",
+  "reference_sha256": "a5cabd815fd6df8eef93ae86fc4d7a18e95a80b5cf552efb6cd6aaeadba59197",
+  "checkpoint_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+  "checkpoint_sha256": "248dfc3911869ec493c76e65bf2fcf7f615828b0254c12b473182f0f81d3a707",
+  "configuration": {
+    "batch_size": 1,
+    "decode_steps": 64,
+    "trials": 4,
+    "warmups_per_trial": 2,
+    "warmup_decode_steps": 16,
+    "engine_timer": "Synchronous model.step returning full-vocabulary logits; includes embeddings, CPU attention, ANE dispatch/transfers and internal finite checks. Excludes prefill, allocation, input lookup, argmax, printing and diagnostic replays.",
+    "prompt_processing": "Sequential decode kernels; differs from native macOS Orion bucketed prefill"
+  },
+  "runtime_source_sha256": {
+    "gpt2.py": "1a7503e96c76ec5e447f47bb300ecfae8da9109d4f63b44b0219edef4da22b91",
+    "model.py": "5935a7dbb2fd4bbbabea0c23abf26bd98f4ea3999e9ad2b1109fff11adf89ce8",
+    "replay.py": "d5bccc76fd87e86d0d167dc0e7ee8e796539ec95542b59469c21390ffb5e6b34",
+    "packing.py": "f447e54f0d3a684cc63fb184b2440160e59fb9e03fa0fe75567cb2267fbb283c",
+    "tools/bench_asahi.py": "2e29e93bc92afb8c5b481ff1d3277e11e96896584720d38a7ed8b9fcf57e08ed"
+  },
+  "limitations": [
+    "Active desktop; no resource isolation or cross-OS paired session.",
+    "Token-choice and greedy checks cover these traces; HF KL and full-logit parity were not measured.",
+    "Graph/frontend and prompt-processing implementations differ from native macOS Orion."
+  ],
+  "cases": [
+    {
+      "prompt": "Hello world",
+      "prompt_tokens": 2,
+      "prompt_ids": [15496, 995],
+      "token_trace": [11, 314, 1101, 407, 1654, 644, 284, 910, 13, 198, 198, 1, 40, 1101, 7926, 11, 475, 314, 1101, 407, 1654, 644, 284, 910, 13, 198, 198, 1, 40, 1101, 7926, 11, 475, 314, 1101, 407, 1654, 644, 284, 910, 13, 198, 198, 1, 40, 1101, 7926, 11, 475, 314, 1101, 407, 1654, 644, 284, 910, 13, 198, 198, 1, 40, 1101, 7926, 11],
+      "trials": [
+        {
+          "trial": 1,
+          "raw_decode_ms": [14.91752, 14.627691, 13.995284, 13.650915, 13.495417, 13.513667, 14.530734, 14.183531, 13.847411, 13.651831, 13.977743, 15.668092, 14.955395, 15.359639, 15.267931, 14.297071, 14.74019, 21.611792, 14.996769, 14.400736, 16.022837, 16.348623, 19.695321, 14.277113, 13.489417, 13.494792, 14.300363, 14.483569, 15.257306, 14.355571, 14.812564, 13.186464, 13.151131, 13.772538, 13.604041, 13.54425, 13.58979, 13.190256, 13.164797, 13.800746, 13.238671, 13.246212, 13.162839, 13.482417, 13.599332, 13.473251, 13.125881, 13.28142, 13.512958, 14.26728, 15.183266, 15.166391, 14.073909, 14.196365, 13.346753, 13.74633, 13.72733, 13.524, 13.711455, 13.636624, 13.275421, 13.406169, 13.660956, 13.570332],
+          "decode_engine_steps_per_second": 70.18725883890906
+        },
+        {
+          "trial": 2,
+          "raw_decode_ms": [13.332337, 12.939468, 12.976717, 12.939467, 12.971342, 12.9648, 13.002425, 12.96505, 12.939009, 13.62629, 14.054575, 13.816287, 13.913202, 19.709488, 14.433611, 13.563999, 13.510251, 13.125964, 13.157048, 13.09609, 13.589083, 15.295181, 14.913103, 14.481318, 18.734211, 13.788537, 13.586916, 13.661582, 13.888827, 14.005492, 15.612259, 15.301973, 14.274196, 13.320836, 13.150089, 13.610791, 13.567874, 13.722871, 13.378877, 13.496417, 13.384168, 13.624331, 13.717122, 13.597457, 13.584457, 13.518167, 13.501375, 13.665331, 13.20463, 13.816287, 13.996659, 13.699789, 13.959243, 13.455418, 13.85187, 13.737663, 13.961785, 13.676123, 13.506126, 13.237879, 13.478251, 13.857703, 14.666941, 15.99092],
+          "decode_engine_steps_per_second": 71.98229296777941
+        },
+        {
+          "trial": 3,
+          "raw_decode_ms": [12.884176, 13.211421, 13.514459, 13.236254, 13.462459, 13.098715, 12.974384, 13.337003, 13.525959, 13.591541, 13.448585, 13.338836, 13.22613, 13.204213, 13.380169, 13.60854, 13.712164, 14.960562, 13.882078, 17.720018, 14.687774, 13.384377, 13.445001, 13.547749, 14.087492, 13.999992, 13.483208, 13.370628, 13.613374, 13.71083, 13.570791, 13.368585, 13.915827, 14.529318, 13.814371, 14.011159, 15.002644, 14.375404, 17.852475, 13.838578, 13.901452, 14.0712, 15.178599, 15.385763, 14.908728, 14.425819, 13.85037, 13.980409, 13.655873, 13.396544, 13.586999, 13.934202, 13.610707, 13.624332, 13.488292, 13.692622, 13.960618, 14.618691, 16.454455, 14.972228, 20.93851, 14.504068, 13.675039, 13.681872],
+          "decode_engine_steps_per_second": 70.92004973911202
+        },
+        {
+          "trial": 4,
+          "raw_decode_ms": [13.922535, 13.20588, 13.367002, 13.119798, 12.994925, 13.151006, 13.559458, 13.296837, 13.275837, 13.403668, 13.00855, 13.463501, 13.427168, 13.464251, 13.482542, 13.576708, 13.32042, 13.21463, 13.421794, 13.581708, 14.810897, 16.344789, 15.034894, 22.142367, 15.36243, 19.486158, 15.145809, 15.216224, 15.036352, 13.675581, 14.026284, 14.980519, 14.248364, 14.568442, 15.248724, 15.066726, 18.99354, 13.750539, 13.280087, 13.690331, 13.438084, 15.493136, 15.066101, 14.868688, 19.496075, 13.601582, 13.728831, 13.418293, 14.438319, 14.625942, 21.059175, 14.181573, 14.867938, 14.109158, 14.798188, 14.060867, 19.40216, 13.254629, 13.721914, 15.049851, 20.022358, 15.373513, 14.998852, 13.95616],
+          "decode_engine_steps_per_second": 67.76799097159247
+        }
+      ],
+      "decode_engine_steps_per_second": 70.17972373425526,
+      "decode_mean_ms": 14.24912990234375,
+      "decode_p50_ms": 13.711809500000001,
+      "decode_p90_ms": 15.330805999999999,
+      "hf_top1_mismatches": 0,
+      "hf_greedy_16_token_match": true
+    },
+    {
+      "prompt": "The scientist carefully measured the experiment, recorded the observations, and compared the results with the predictions. The scientist carefully measured the experiment, recorded the observations, and compared",
+      "prompt_tokens": 32,
+      "prompt_ids": [464, 11444, 7773, 8630, 262, 6306, 11, 6264, 262, 13050, 11, 290, 3688, 262, 2482, 351, 262, 16277, 13, 383, 11444, 7773, 8630, 262, 6306, 11, 6264, 262, 13050, 11, 290, 3688],
+      "token_trace": [262, 2482, 351, 262, 16277, 13, 198, 198, 464, 11444, 7773, 8630, 262, 6306, 11, 6264, 262, 13050, 11, 290, 3688, 262, 2482, 351, 262, 16277, 13, 198, 198, 464, 11444, 7773, 8630, 262, 6306, 11, 6264, 262, 13050, 11, 290, 3688, 262, 2482, 351, 262, 16277, 13, 198, 198, 464, 11444, 7773, 8630, 262, 6306, 11, 6264, 262, 13050, 11, 290, 3688, 262],
+      "trials": [
+        {
+          "trial": 1,
+          "raw_decode_ms": [15.11835, 21.207007, 16.082502, 15.918421, 15.287348, 15.60776, 21.822373, 19.509157, 20.257521, 17.006446, 16.215542, 15.257557, 15.980921, 15.981587, 35.782199, 15.669342, 16.862282, 18.815002, 16.328957, 15.253099, 15.285598, 22.333656, 26.627298, 23.858382, 19.81707, 17.674645, 16.207708, 15.091559, 15.42572, 19.093497, 13.675289, 13.924744, 13.960785, 14.907604, 14.731023, 14.327446, 18.942, 14.44986, 13.662998, 14.320904, 14.947978, 21.377504, 14.004076, 13.32242, 13.789787, 13.821704, 14.603317, 14.26803, 15.343305, 19.000291, 13.486876, 13.864953, 13.553125, 13.799079, 14.504943, 15.199474, 20.617182, 13.789496, 15.008935, 14.67569, 15.080351, 14.87748, 13.472043, 13.201463],
+          "decode_engine_steps_per_second": 60.497745522682145
+        },
+        {
+          "trial": 2,
+          "raw_decode_ms": [13.758913, 13.635206, 13.537458, 13.624748, 13.979535, 14.281988, 14.993561, 13.945993, 13.27567, 14.213697, 14.36932, 15.708508, 14.85698, 14.054866, 13.660872, 13.804038, 13.581041, 13.493501, 13.641415, 15.897922, 14.576442, 13.712455, 14.038701, 13.801079, 13.921952, 13.426168, 14.785647, 15.239849, 13.856787, 13.74208, 13.484917, 13.427335, 13.250463, 13.852911, 13.980617, 14.086075, 20.75893, 13.389835, 13.285754, 13.763454, 13.453335, 15.270348, 14.840813, 13.77508, 13.448084, 13.244171, 14.078492, 14.48961, 14.508402, 15.201057, 17.521522, 13.472375, 13.247171, 15.39768, 14.842355, 14.884229, 13.866328, 13.672872, 14.518776, 16.214208, 17.253818, 16.366831, 14.366945, 13.58704],
+          "decode_engine_steps_per_second": 69.70020661482732
+        },
+        {
+          "trial": 3,
+          "raw_decode_ms": [14.756564, 15.326639, 14.664649, 14.091825, 15.117559, 14.441861, 19.103956, 16.089253, 15.063642, 14.58865, 14.667524, 18.935542, 14.905562, 15.025477, 15.601676, 14.830313, 15.083226, 14.387486, 14.269405, 14.650691, 15.407388, 14.957395, 14.777356, 15.054893, 14.920895, 14.745398, 14.610025, 14.459694, 14.500485, 14.468902, 14.121574, 14.435361, 15.425429, 15.861589, 15.980629, 19.37191, 24.880075, 16.952447, 16.568994, 15.796507, 15.066517, 23.184768, 15.926755, 15.568094, 15.632218, 25.829352, 22.17845, 21.354796, 26.76692, 24.420332, 22.533153, 16.806158, 15.367096, 16.220709, 22.717191, 16.885699, 17.899433, 17.127445, 21.123092, 15.634884, 20.103774, 20.093482, 16.711909, 20.088065],
+          "decode_engine_steps_per_second": 58.81602939495753
+        },
+        {
+          "trial": 4,
+          "raw_decode_ms": [15.1076, 20.283604, 15.008852, 14.945144, 15.230474, 13.945743, 13.42471, 13.425335, 13.344003, 13.722664, 15.500719, 15.381763, 15.02356, 14.295905, 13.959243, 14.403819, 15.514344, 13.719456, 14.574317, 14.499943, 13.267379, 13.256629, 14.270905, 13.766705, 19.837528, 14.136073, 19.211454, 13.62754, 13.60754, 13.657498, 13.976327, 13.860994, 14.615608, 14.665066, 13.992117, 13.301711, 13.672664, 16.052044, 19.095497, 14.066658, 18.809627, 14.14199, 14.561109, 15.144141, 20.518059, 14.539859, 14.919229, 15.015269, 14.197781, 14.626691, 14.709065, 19.495116, 14.405361, 14.570568, 14.312321, 14.889396, 16.132543, 16.241958, 14.830646, 15.306931, 15.212599, 14.920895, 15.523928, 14.111408],
+          "decode_engine_steps_per_second": 66.501408933659
+        }
+      ],
+      "decode_engine_steps_per_second": 63.57668656900319,
+      "decode_mean_ms": 15.72903612890625,
+      "decode_p50_ms": 14.841584000000001,
+      "decode_p90_ms": 19.827299,
+      "hf_top1_mismatches": 0,
+      "hf_greedy_16_token_match": true
+    },
+    {
+      "prompt": "The scientist carefully measured the experiment, recorded the observations, and compared the results with the predictions. The scientist carefully measured the experiment, recorded the observations, and compared the results with the predictions. The scientist carefully measured the experiment, recorded the observations, and compared the results with the predictions. The scientist carefully measured the experiment,",
+      "prompt_tokens": 64,
+      "prompt_ids": [464, 11444, 7773, 8630, 262, 6306, 11, 6264, 262, 13050, 11, 290, 3688, 262, 2482, 351, 262, 16277, 13, 383, 11444, 7773, 8630, 262, 6306, 11, 6264, 262, 13050, 11, 290, 3688, 262, 2482, 351, 262, 16277, 13, 383, 11444, 7773, 8630, 262, 6306, 11, 6264, 262, 13050, 11, 290, 3688, 262, 2482, 351, 262, 16277, 13, 383, 11444, 7773, 8630, 262, 6306, 11],
+      "token_trace": [6264, 262, 13050, 11, 290, 3688, 262, 2482, 351, 262, 16277, 13, 383, 11444, 7773, 8630, 262, 6306, 11, 6264, 262, 13050, 11, 290, 3688, 262, 2482, 351, 262, 16277, 13, 383, 11444, 7773, 8630, 262, 6306, 11, 6264, 262, 13050, 11, 290, 3688, 262, 2482, 351, 262, 16277, 13, 383, 11444, 7773, 8630, 262, 6306, 11, 6264, 262, 13050, 11, 290, 3688, 262],
+      "trials": [
+        {
+          "trial": 1,
+          "raw_decode_ms": [13.87112, 13.314545, 13.487625, 13.229379, 14.185824, 14.012367, 13.747496, 19.888277, 14.062783, 14.806813, 13.921619, 14.500569, 15.879463, 19.227787, 13.801538, 14.044534, 13.760121, 14.640108, 14.539359, 13.815079, 13.456209, 13.773205, 13.333837, 14.356196, 14.327529, 14.979769, 13.784037, 13.898036, 13.513, 13.932661, 14.754023, 14.464319, 15.78434, 13.904078, 14.692899, 13.915327, 13.401086, 13.845204, 14.390612, 15.452262, 15.363097, 14.289655, 14.037408, 14.377737, 14.420194, 14.462236, 14.921812, 15.099892, 14.381696, 14.677398, 14.511485, 15.557719, 14.590358, 15.534386, 14.550109, 14.457361, 15.076434, 20.798888, 14.904978, 15.343847, 14.006076, 15.1476, 15.397597, 23.511929],
+          "decode_engine_steps_per_second": 67.64505893901831
+        },
+        {
+          "trial": 2,
+          "raw_decode_ms": [14.592858, 13.682372, 14.041159, 14.340821, 13.367294, 13.868703, 13.976951, 14.14749, 13.887244, 14.71419, 14.384779, 14.536692, 14.138824, 15.726841, 15.055101, 14.741481, 13.764288, 13.640873, 15.50572, 16.065419, 14.957311, 15.181849, 14.169031, 13.590624, 13.819995, 15.718258, 16.381914, 14.845396, 14.084574, 14.475902, 14.707857, 19.543949, 15.861631, 15.715925, 15.398971, 15.05106, 14.658774, 15.610968, 15.852631, 15.439137, 18.637213, 13.39271, 13.673665, 15.196932, 14.327321, 15.70905, 14.469693, 14.675732, 20.529725, 14.27828, 14.978353, 15.079768, 14.873062, 15.284057, 13.808121, 13.880286, 14.162573, 14.023951, 13.428252, 15.307806, 14.147157, 14.661316, 14.098866, 14.114824],
+          "decode_engine_steps_per_second": 67.36958619189593
+        },
+        {
+          "trial": 3,
+          "raw_decode_ms": [19.401951, 15.476886, 14.806314, 13.899661, 15.36418, 15.448512, 14.875146, 14.537609, 15.096809, 13.933535, 14.025909, 13.807413, 13.472084, 14.002993, 14.176239, 14.116907, 14.112115, 19.171538, 13.821745, 13.978702, 13.84762, 15.210974, 14.220156, 14.514693, 14.08295, 13.605165, 13.441085, 13.660831, 14.089867, 14.685608, 15.377555, 14.099907, 13.674831, 15.080309, 14.642941, 15.1081, 15.516011, 14.581025, 14.090283, 14.243739, 14.824938, 15.584843, 15.083976, 13.690289, 13.983118, 14.026284, 13.850578, 14.899729, 15.294931, 34.643549, 24.788076, 22.099659, 24.022338, 22.510737, 16.438163, 16.580536, 15.759173, 18.290093, 22.541278, 19.988234, 16.536078, 19.609531, 16.431622, 16.556286],
+          "decode_engine_steps_per_second": 62.54067971948828
+        },
+        {
+          "trial": 4,
+          "raw_decode_ms": [15.320639, 16.036586, 15.601427, 15.55101, 27.289788, 25.297069, 28.881763, 27.5857, 22.916938, 15.739466, 18.858335, 20.811763, 15.539885, 15.550093, 14.70919, 24.222751, 26.925543, 16.400456, 15.301431, 31.660887, 16.090461, 16.518787, 24.8992, 17.698644, 14.034284, 13.873202, 16.714909, 43.590745, 42.880381, 16.081085, 17.117111, 16.004504, 16.390581, 15.564844, 16.346082, 16.74595, 28.29723, 66.476101, 25.84981, 21.586917, 22.18345, 22.797691, 40.645332, 33.852228, 30.417781, 31.824551, 28.168899, 17.195818, 15.972878, 15.646509, 15.58401, 15.613301, 15.619509, 15.928588, 61.360638, 20.599058, 53.961002, 40.687748, 30.778901, 23.388806, 23.100144, 23.451305, 27.136707, 26.311344],
+          "decode_engine_steps_per_second": 41.96204707771105
+        }
+      ],
+      "decode_engine_steps_per_second": 57.597722557251224,
+      "decode_mean_ms": 17.361797578125,
+      "decode_p50_ms": 14.979061,
+      "decode_p90_ms": 24.1225445,
+      "hf_top1_mismatches": 0,
+      "hf_greedy_16_token_match": true
+    }
+  ],
+  "device": "/dev/accel/accel0",
+  "decode_kernel_checks_passed": 24,
+  "full_generation_parity": "PASS",
+  "generation": {
+    "command": "./gpt2/first-run.sh --backend ane --prompt 'Hello world' --max-tokens 32",
+    "prompt_tokens": 2,
+    "generated_tokens_per_run": 32,
+    "combined_generation_tokens_per_second": 58.18181818181818,
+    "timer": "Includes prompt processing, cache reset, token selection and printing; excludes setup, weight loading, packing and parity checks. CLI elapsed values are rounded to 0.01 seconds.",
+    "trials": [
+      {
+        "trial": 1,
+        "openblas_thread_setting": "Unset in parent; gpt2.py defaults to 1",
+        "generated_tokens": 32,
+        "generation_seconds": 0.53,
+        "tokens_per_second": 60.37735849056603,
+        "process_wall_seconds": 1.8528494920001322,
+        "stdout": "Hello world, I'm not sure what to say.\n\n\"I'm sorry, but I'm not sure what to say.\n\n\"I'm sorry,\n",
+        "stderr": "Package integrity: 386 files PASS\nANE device: /dev/accel/accel0\nChecking decode_ffn_L0...\nChecking decode_ffn_L10...\nChecking decode_ffn_L11...\nChecking decode_ffn_L1...\nChecking decode_ffn_L2...\nChecking decode_ffn_L3...\nChecking decode_ffn_L4...\nChecking decode_ffn_L5...\nChecking decode_ffn_L6...\nChecking decode_ffn_L7...\nChecking decode_ffn_L8...\nChecking decode_ffn_L9...\nChecking decode_proj_L0...\nChecking decode_proj_L10...\nChecking decode_proj_L11...\nChecking decode_proj_L1...\nChecking decode_proj_L2...\nChecking decode_proj_L3...\nChecking decode_proj_L4...\nChecking decode_proj_L5...\nChecking decode_proj_L6...\nChecking decode_proj_L7...\nChecking decode_proj_L8...\nChecking decode_proj_L9...\nANE parity: 24 kernels PASS\nANE full generation parity: PASS\nBackend: ane; prompt=2; generated=32; elapsed=0.53s\n"
+      },
+      {
+        "trial": 2,
+        "openblas_thread_setting": "Unset in parent; gpt2.py defaults to 1",
+        "generated_tokens": 32,
+        "generation_seconds": 0.58,
+        "tokens_per_second": 55.17241379310345,
+        "process_wall_seconds": 1.642779910000172,
+        "stdout": "Hello world, I'm not sure what to say.\n\n\"I'm sorry, but I'm not sure what to say.\n\n\"I'm sorry,\n",
+        "stderr": "Package integrity: 386 files PASS\nANE device: /dev/accel/accel0\nChecking decode_ffn_L0...\nChecking decode_ffn_L10...\nChecking decode_ffn_L11...\nChecking decode_ffn_L1...\nChecking decode_ffn_L2...\nChecking decode_ffn_L3...\nChecking decode_ffn_L4...\nChecking decode_ffn_L5...\nChecking decode_ffn_L6...\nChecking decode_ffn_L7...\nChecking decode_ffn_L8...\nChecking decode_ffn_L9...\nChecking decode_proj_L0...\nChecking decode_proj_L10...\nChecking decode_proj_L11...\nChecking decode_proj_L1...\nChecking decode_proj_L2...\nChecking decode_proj_L3...\nChecking decode_proj_L4...\nChecking decode_proj_L5...\nChecking decode_proj_L6...\nChecking decode_proj_L7...\nChecking decode_proj_L8...\nChecking decode_proj_L9...\nANE parity: 24 kernels PASS\nANE full generation parity: PASS\nBackend: ane; prompt=2; generated=32; elapsed=0.58s\n"
+      },
+      {
+        "trial": 3,
+        "openblas_thread_setting": "Unset in parent; gpt2.py defaults to 1",
+        "generated_tokens": 32,
+        "generation_seconds": 0.54,
+        "tokens_per_second": 59.25925925925925,
+        "process_wall_seconds": 1.614346974,
+        "stdout": "Hello world, I'm not sure what to say.\n\n\"I'm sorry, but I'm not sure what to say.\n\n\"I'm sorry,\n",
+        "stderr": "Package integrity: 386 files PASS\nANE device: /dev/accel/accel0\nChecking decode_ffn_L0...\nChecking decode_ffn_L10...\nChecking decode_ffn_L11...\nChecking decode_ffn_L1...\nChecking decode_ffn_L2...\nChecking decode_ffn_L3...\nChecking decode_ffn_L4...\nChecking decode_ffn_L5...\nChecking decode_ffn_L6...\nChecking decode_ffn_L7...\nChecking decode_ffn_L8...\nChecking decode_ffn_L9...\nChecking decode_proj_L0...\nChecking decode_proj_L10...\nChecking decode_proj_L11...\nChecking decode_proj_L1...\nChecking decode_proj_L2...\nChecking decode_proj_L3...\nChecking decode_proj_L4...\nChecking decode_proj_L5...\nChecking decode_proj_L6...\nChecking decode_proj_L7...\nChecking decode_proj_L8...\nChecking decode_proj_L9...\nANE parity: 24 kernels PASS\nANE full generation parity: PASS\nBackend: ane; prompt=2; generated=32; elapsed=0.54s\n"
+      },
+      {
+        "trial": 4,
+        "openblas_thread_setting": "Unset in parent; gpt2.py defaults to 1",
+        "generated_tokens": 32,
+        "generation_seconds": 0.55,
+        "tokens_per_second": 58.18181818181818,
+        "process_wall_seconds": 1.6659191759999885,
+        "stdout": "Hello world, I'm not sure what to say.\n\n\"I'm sorry, but I'm not sure what to say.\n\n\"I'm sorry,\n",
+        "stderr": "Package integrity: 386 files PASS\nANE device: /dev/accel/accel0\nChecking decode_ffn_L0...\nChecking decode_ffn_L10...\nChecking decode_ffn_L11...\nChecking decode_ffn_L1...\nChecking decode_ffn_L2...\nChecking decode_ffn_L3...\nChecking decode_ffn_L4...\nChecking decode_ffn_L5...\nChecking decode_ffn_L6...\nChecking decode_ffn_L7...\nChecking decode_ffn_L8...\nChecking decode_ffn_L9...\nChecking decode_proj_L0...\nChecking decode_proj_L10...\nChecking decode_proj_L11...\nChecking decode_proj_L1...\nChecking decode_proj_L2...\nChecking decode_proj_L3...\nChecking decode_proj_L4...\nChecking decode_proj_L5...\nChecking decode_proj_L6...\nChecking decode_proj_L7...\nChecking decode_proj_L8...\nChecking decode_proj_L9...\nANE parity: 24 kernels PASS\nANE full generation parity: PASS\nBackend: ane; prompt=2; generated=32; elapsed=0.55s\n"
+      }
+    ]
+  },
+  "validation": {
+    "unit_tests_passed": 22,
+    "unit_tests_failed": 0,
+    "reference_prefill_kernels_verified_on_linux": false
+  }
+}

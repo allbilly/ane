@@ -38,6 +38,8 @@ Python 3.10 or newer, Python's venv/pip support, and internet access for the
 initial dependency install are required. A model download is only needed if
 the checkpoint is absent from the cache. `GPT2_PYTHON=/path/to/python3` selects
 another Python. There is no network access during inference.
+The CLI defaults `OPENBLAS_NUM_THREADS` to `1` before importing NumPy for
+batch-one matrix-vector operations. An explicitly set value is preserved.
 Subsequent launches reuse the installed dependencies; pip runs again only when
 requirements change or a required import is missing. Downloads use a pinned HF
 revision and separate temporary files, so concurrent setup processes cannot
@@ -50,11 +52,13 @@ compared against recorded macOS ANE outputs, and the complete generation flow
 is checked against macOS ANE logits and four greedy tokens. A failure exits
 with a diagnostic. The selected ANE backend never falls back to CPU.
 
-**Linux ANE replay has not yet been tested on hardware.** This machine is
-running macOS. The port is prepared and checked offline, with real macOS ANE
-reference captures; the Asahi run is the remaining hardware acceptance test.
-These checks cannot guarantee that the Linux driver executes macOS 27 task
-programs correctly. `package.json` records this distinction explicitly.
+**Linux ANE decode and generation were verified on base M1 Asahi on
+2026-10-04.** All 24 decode kernels matched the macOS ANE fixtures, and the
+full generation check passed its reference logits and four greedy tokens.
+Repeated 32-token generations completed successfully. The 25 reference
+prefill kernels have not been replayed on Linux in these runs.
+`package.json` and [asahi-decode-performance.json](asahi-decode-performance.json) record this
+verification scope.
 
 Packing can be tested without an ANE device, on macOS or Linux:
 
@@ -113,17 +117,56 @@ This permits prompts of up to 1024 tokens without treating the captured
 bucketed prefill. The 25 captured prefill kernels remain available for replay
 and reference, and are covered by `verify --all-kernels`.
 
-## GPT-2 implementation comparison on this M1
+## Measured Asahi generation
 
-Local measurements on **M1 / 8 GB / macOS 27.0.1**, batch one, with model
-loading and warmup excluded. Every measured cell uses 64 decode steps per
-trial and the same checkpoint/token trace for its prompt. Orion now has all
-three prompt lengths from one fresh four-trial session.
+Measured on **base M1 / 8 GB / Fedora Asahi Remix 42 / Linux 6.19.11+** on
+2026-10-04, using the pinned GPT-2 124M checkpoint, batch one, greedy sampling,
+and the two-token prompt `Hello world`. With one OpenBLAS thread and decode
+copying only the first output position, four fresh CLI invocations measured:
+
+| Run | Generated tokens | Generation elapsed | Generated tokens/s |
+| --- | --- | --- | --- |
+| Trial 1 | 32 | 0.53 s | 60.38 |
+| Trial 2 | 32 | 0.58 s | 55.17 |
+| Trial 3 | 32 | 0.54 s | 59.26 |
+| Trial 4 | 32 | 0.55 s | 58.18 |
+| All four combined | 128 | 2.20 s | 58.18 |
+
+Rates are generated tokens divided by the CLI's reported elapsed time,
+which is rounded to 0.01 s. The timer includes sequential prompt processing,
+KV-cache reset, generation, token selection, and continuation printing.
+Dependency setup, checkpoint loading, packing, and the built-in parity checks
+finish before the timer starts. Those checks exercise all 24 decode kernels
+and the generation path before each measured generation. No additional
+benchmark warmup or resource isolation was used for these CLI runs. CPU
+generation and time to first token were not measured in this session.
+
+All CLI runs used `/dev/accel/accel0`; all 24 decode-kernel checks and full
+generation parity passed, with identical generated text. ANE executes
+projection and FFN kernels; attention, embeddings, output projection, logits,
+and token selection run on CPU. [asahi-decode-performance.json](asahi-decode-performance.json)
+records the runtime versions, timing scope, and retained measurement evidence.
+
+Reproduce from the repository root:
+
+```sh
+./gpt2/first-run.sh --backend ane --prompt 'Hello world' --max-tokens 32
+```
+
+## GPT-2 implementation comparison on M1
+
+Measurements on **M1 / 8 GB**, batch one, with model loading and warmup
+excluded. The Asahi row uses Fedora Asahi Remix 42 / Linux 6.19.11+;
+the remaining rows are saved macOS 27.0.1 references. Every measured cell
+uses 64 decode steps per trial and the same checkpoint/token trace for its
+prompt. Asahi and native Orion each have four trials per prompt and two
+16-step warmups immediately before each trial. These are separate sessions.
 
 Decode **engine steps/s**:
 
 | Implementation | 2-token prompt | 32-token prompt | 64-token prompt |
 | --- | --- | --- | --- |
+| Asahi Python ANE + CPU attention § | 70.18 | 63.58 | 57.60 |
 | Orion CPU ‡ | 50.03 | 51.50 | 47.83 |
 | Orion ANE + CPU attention ‡ | 52.57 | 52.00 | 48.42 |
 | CoreML CPU | 65.21 | 64.83 | 62.52 |
@@ -133,6 +176,24 @@ Decode **engine steps/s**:
 | MLX-LM GPU FP16 † | 108.92 | 123.03 | 132.47 |
 | MLX-LM GPU FP32 | 70.72 | 70.68 | 70.64 |
 | vllm.cpp | Unavailable | Unavailable | Unavailable |
+
+§ Asahi uses one OpenBLAS thread and copies only the consumed first output
+position during decode. Full replay still checks all 32 output positions.
+All 24 kernel fixtures and generation parity passed; all three saved
+65-prediction HF token-choice traces and 16-token greedy continuations matched.
+HF KL and raw-logit parity were not measured. The synchronous `model.step`
+timer includes embeddings, attention, full-vocabulary logits, ANE dispatch
+and transfers, and internal finite checks; prompt processing, allocation,
+argmax, printing, and diagnostic replays are excluded. Prompt ingestion uses
+sequential decode, while native Orion uses bucketed prefill. This compares
+implementations across sessions; it does not isolate an OS speed advantage.
+
+The reproducible Asahi report, including every timed sample, is
+[asahi-decode-performance.json](asahi-decode-performance.json):
+
+```sh
+./gpt2/.venv/bin/python gpt2/tools/bench_asahi.py --output /tmp/asahi-decode.json
+```
 
 † MLX FP16 changes one of 65 HF argmax predictions for `Hello world`; its
 16-token free greedy continuation differs. The 32/64-token cases pass the
@@ -154,7 +215,8 @@ state. Owned repository checks were stopped before this final run; user
 applications remained active. Earlier exploratory runs are excluded and kept
 in the external cache, as recorded in [mlx-performance.json](mlx-performance.json).
 
-This table compares implementations. CoreML uses a 64-wide input window and
+This table compares implementations. Asahi uses stride 32 and 1024-token
+context, with sequential prompt ingestion. CoreML uses a 64-wide input window and
 512-token context; MLX uses one-token KV-cached decode and 1024-token context;
 Orion uses stride 32 and 1024-token context. CoreML has FP16 weights with FP32
 layer normalization; MLX rows use the stated unquantized parameter precision.
@@ -318,8 +380,9 @@ not measurements of this M1 port.
 
 [orion-performance.json](orion-performance.json) records the values, log hashes,
 output equality, timing boundaries, and hardware scope. These are Orion macOS
-references. The Python port's macOS fixtures establish numerical parity;
-Asahi ANE performance remains unmeasured, and a CPU speedup has not been shown.
+references. The Python port now also passes its decode and generation checks
+on base M1 Asahi; its observed generation rates are recorded in the
+[Asahi section](#measured-asahi-generation). No Asahi CPU comparison was run.
 
 ## Controlled GPT-2 CoreML benchmark
 

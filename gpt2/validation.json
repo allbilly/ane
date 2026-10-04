@@ -1,7 +1,7 @@
 {
   "host": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
   "python": "3.14.7",
-  "linux_ane_hardware_verified": false,
+  "linux_ane_hardware_verified": true,
   "unit_tests": {
     "passed": 22,
     "failed": 0
@@ -37,7 +37,7 @@
     "pinned_hf_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e (HTTP HEAD 200)",
     "launcher_dependency_reuse": "PASS: cold/warm/changed/missing-import dispatch tested with simulated pip",
     "alternate_directory_rebuild": "PASS: all 49 kernels, 147 reference payloads, metadata, licensing, integrity",
-    "remaining_acceptance": "Linux ANE hardware execution remains unverified"
+    "remaining_acceptance": "Decode and full generation verified on base M1 Asahi; 25 reference prefill kernels have not been exercised on Linux"
   },
   "orion_performance_reference": "orion-performance.json; cold M1 logs plus native M1 prewarmed 5x64-step comparison with zero timed compiles; separately labeled upstream M4 Max figures; no Asahi timing claim",
   "orion_native_prewarmed": {
@@ -46,5 +46,6 @@
     "cached_programs": 49,
     "ane_argmax_matches": 320,
     "full_logit_parity": false
-  }
+  },
+  "linux_ane_hardware_report": "asahi-decode-performance.json"
 }

@@ -112,7 +112,7 @@ class Kernel:
             self.close()
             raise
 
-    def run(self, x):
+    def run(self, x, *, first_position_only=False):
         x = np.asarray(x, dtype="<f2")
         require(x.shape == (768, 32) and bool(np.isfinite(x).all()), "expected finite fp16 input [768,32]")
         for item in self.meta["buffers"]:
@@ -132,15 +132,21 @@ class Kernel:
         result = {}
         for item in self.meta["io"]:
             if item["role"] == "output":
-                value = np.frombuffer(self.buffers[item["bank"]].map, dtype="<f2", count=768 * 32).reshape(768, 32).copy()
+                value = np.frombuffer(self.buffers[item["bank"]].map, dtype="<f2", count=768 * 32).reshape(768, 32)
+                # Full replay verifies all 32 positions. Decode consumes only
+                # position zero; select it before copying from the device map.
+                if first_position_only:
+                    value = value[:, :1]
+                value = value.copy()
                 require(bool(np.isfinite(value).all()), f"nonfinite/unwritten output: {self.meta['kernel']}/{item['name']}")
                 result[item["name"]] = value
         return result
 
     def vector(self, x):
+        """Run one vector, returning independent output arrays of shape [768,1]."""
         tile = np.zeros((768, 32), dtype="<f2")
         tile[:, 0] = x
-        return self.run(tile)
+        return self.run(tile, first_position_only=True)
 
     def close(self):
         buffers = list(self.buffers.values()) + ([self.bootstrap] if self.bootstrap else [])

@@ -4,6 +4,7 @@ import argparse
 import codecs
 from contextlib import nullcontext
 import json
+import os
 from pathlib import Path
 import sys
 import time
@@ -27,6 +28,9 @@ def main():
     args = cli.parse_args()
     if not 0 <= args.temperature < float("inf") or not 1 <= args.top_k <= 50257 or args.max_tokens < 0:
         cli.error("invalid temperature, top-k, or token count")
+    # Batch-one matrix-vector operations suffer from BLAS thread scheduling
+    # overhead. Set this before importing NumPy, preserving explicit overrides.
+    os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
     try:
         from bpe import Tokenizer
         from model import ANEKernels, CPUKernels, GPT2

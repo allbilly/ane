@@ -327,9 +327,20 @@ class ReplayTests(unittest.TestCase):
             result = kernel.run(x)
             self.assertEqual(kernel.buffers[7].map[:49152], x.tobytes())
             self.assertEqual(set(result), {"k16", "q16", "v16"})
+            vectors = kernel.vector(x[:, 0])
+            written_input = np.frombuffer(kernel.buffers[7].map, dtype="<f2", count=768 * 32).reshape(768, 32)
+            self.assertTrue(np.array_equal(written_input[:, 0], x[:, 0]))
+            self.assertTrue(np.all(written_input[:, 1:] == 0))
+            for bank, name in ((4, "k16"), (5, "q16"), (6, "v16")):
+                self.assertEqual(vectors[name].shape, (768, 1))
+                self.assertTrue(np.array_equal(vectors[name], result[name][:, :1]))
+                # Returned vectors must remain valid after the device buffer
+                # is overwritten by another submission or released.
+                kernel.buffers[bank].write(bytes(49152))
+                self.assertTrue(np.array_equal(vectors[name], result[name][:, :1]))
             kernel.close()
             kernel.close()
-        self.assertEqual(len(requests), 1)
+        self.assertEqual(len(requests), 2)
         self.assertTrue(all(buffer.closed for buffer in allocated))
 
     def test_allocation_failure_cleans_earlier_buffers(self):

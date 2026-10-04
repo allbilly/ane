@@ -58,9 +58,17 @@
   "source_orion_dirty": true,
   "source_dump_manifest_sha256": "7bb97535c45014cdc721e20f7f6c52e20eb9474dc407e0017036ac358f1aa3ec",
   "verified_model_tensors": 362,
-  "linux_hardware_verified": false,
+  "linux_hardware_verified": true,
   "runtime": "ANE decode_proj/FFN; CPU attention/embeddings/logits; sequential prompt ingest",
   "weight_storage": "external HF checkpoint plus generated H13G cache",
   "packing": "reference-verified fp16 matrix/bias tiles and folded LN affine",
-  "learned_weights_packaged": false
+  "learned_weights_packaged": false,
+  "linux_hardware_verification": {
+    "date": "2026-10-04",
+    "chip": "base M1/t8103",
+    "decode_kernels_passed": 24,
+    "full_generation_parity": "PASS",
+    "prefill_reference_kernels_verified": false,
+    "report": "asahi-decode-performance.json"
+  }
 }

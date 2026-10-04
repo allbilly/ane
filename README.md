@@ -6,8 +6,12 @@ This repo run ops on Apple ANE in NPU register with pure python and numpy on M1 
 The [Orion GPT-2 text-generation port](gpt2/README.md) reads cached Hugging Face
 weights, regenerates ANE tile-packed coefficients into the external cache,
 and includes tokenization, KV caching, a CPU backend, and an M1 ANE replay backend with
-first-run numerical checks. Start with `gpt2/first-run.sh`; Linux ANE hardware
-acceptance remains to be verified on Asahi.
+first-run numerical checks. Start with `gpt2/first-run.sh`. On base M1 Asahi,
+all 24 decode kernels and full generation parity passed. After reducing output
+copies and defaulting OpenBLAS to one thread, four 32-token runs measured
+**58.18 generated tokens/s** combined; warmed decode measured **70.18 steps/s**
+for the two-token prompt. See the
+[Asahi measurements](gpt2/README.md#measured-asahi-generation) for timing scope.
 
 Thanks for the prior work from [geohotz](https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/) [eiln](https://github.com/eiln/ane) [freedomtan](https://github.com/freedomtan/coreml_to_ane_hwx) [mdaiter](https://github.com/mdaiter/ane) , some scripts in experimental/* are from [freedomtan/coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx)
 
