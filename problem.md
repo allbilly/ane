@@ -202,7 +202,11 @@ output[0] = 6.0
 
 If raw `mul_macos14.ane` fails but `examples/elementwise.py mul` and the cleaned `hwx2py` script pass, the incompatibility is isolated to the spurious KDMA/NE fields rather than shape, tiling, L2, PE, or TileDMA setup.
 
-## Problem 3: `parse.py` default subtype breaks H16-format HWX
+## Problem 3: `parse.py` default subtype breaks H16-format HWX (resolved)
+
+The shared parser now reads the subtype from the HWX container header and export
+plist, with explicit overrides available. The description and comparison below
+record the previous behavior.
 
 macOS 26 generates two HWX variants:
 - **H13 format** (`mul_m4_macos26.hwx`): Parses correctly with default subtype=4

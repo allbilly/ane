@@ -189,11 +189,35 @@ Check the gihub action config [ane-generation.yml](https://github.com/allbilly/a
 - If you have no access to Macos 12, you can only use pre-generated .hwx [here](https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/ops)
 
 ## 2. (Optional) Parse hwx 
+
 ```bash
-python parse.py hwx/sum.hwx          # H13 (M1/M4), default
-python parse.py mul_h16_macos26.hwx 7 # H16 (A17 Pro/M4), explicit subtype
+python parse.py hwx/mul.hwx                    # Detect subtype from the HWX header
+python parse.py mul_h16_macos26.hwx 7          # Optional subtype override
+python hwx_parsing.py hwx/mul.hwx -j           # One JSON document with all tasks
+python parse.py hwx/mul.hwx --container       # Headers, load commands and LUTs
+python experimental/parse_cmdbuf.py hwx/mul.hwx --registers
 ```
-**Subtype**: default is 4 (H13). For H16-format HWX generated on macOS >= 26 for newer ANE, pass `7`. The parser auto-detects H13 vs H16 from the subtype value — it doesn't auto-detect from the binary.
+
+The shared parser detects the ANE subtype from the container header or an export
+directory's `hwx.plist`. Raw task streams default to subtype `4` (H13/M1).
+Override with the optional positional subtype or `-s`/`--subtype`; the override
+takes precedence over metadata. Both CLI entry points support `-j`/`--json`,
+`--no-regs`, `--container`, `--symbols`, `--threads` and `--hex`.
+
+Register decoders cover H13 through H18: subtype `4` = M1, `5` = M2,
+`6` = M3, `7` = M4, `9` = M5, and `10` = A19. Subtype `11` (ISA v24)
+is recognized and its raw register writes are decoded; H19 register field
+layouts are not yet verified. Support here describes parsing the binaries.
+
+The decoder is adapted from
+[coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx/blob/0da81de0551ec8b0c01f4e346d9e13129257da2d/hwx_dump/hwx_parsing.py),
+including the corrected INT8/UINT8 names, PE condition table and masks,
+TileDMA unsigned fields and destination shift mask, and CacheDMA bitfields.
+Local adaptations preserve the loading and JSON APIs, handle extended H13
+headers and task chains, and reject truncated packets and invalid bounds.
+The experimental command-buffer parser uses this same decoder.
+
+Parser checks: `python -m unittest discover -s tests -p 'test_hwx_parsing.py'`.
 
 ## 3. Convert and run ane 
 
