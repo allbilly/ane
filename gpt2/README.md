@@ -157,15 +157,31 @@ and reference, and are covered by `verify --all-kernels`.
 
 ## GGUF checkpoints
 
-The same CLI accepts **GPT-2 124M GGUF** files with F32, F16, Q8_0, or Q4_0
-tensors, including mixed tensor types. Select the file explicitly:
+The same CLI accepts **GPT-2 124M GGUF** files with F32, F16, BF16, Q8_0,
+Q4_0, and Q2_K through Q6_K tensors, including mixed tensor types. Select the
+file explicitly:
 
 ```sh
 ./gpt2/first-run.sh generate --weights /path/to/gpt2-Q4_0.gguf \
   --backend ane --prompt 'Hello world' --max-tokens 32
 ./gpt2/first-run.sh verify --weights /path/to/gpt2-Q8_0.gguf --all-kernels
 ./gpt2/first-run.sh generate --weights /path/to/gpt2-F16.gguf --backend cpu
+./gpt2/first-run.sh generate --weights /path/to/gpt2-Q4_K_M.gguf --backend ane
 ```
+
+Q4_K_M and Q4_K_XL are mixtures of tensor encodings, rather than individual
+GGML block types. The loader inspects each tensor's encoding, so mixed Q4_K,
+Q5_K, Q6_K and BF16/F16 files work without filename-specific dispatch.
+Q4_K_XL support covers compatible GPT-2 files with these encodings, including
+BF16 tensors used in Unsloth-style mixtures. The architecture and tokenizer
+checks still require GPT-2 124M. K and BF16 tensors are decoded into the
+existing FP16 ANE coefficients; their CPU matrices currently use FP16 native
+kernels or NumPy. The packed integer-head optimization applies to Q4_0/Q8_0.
+[K-format validation](provenance/orion-performance/m1-gguf-k.json) records
+full GPT-2 checkpoints encoded with upstream reference C routines, their
+tensor mixtures, exact decoder comparisons, all 49 ANE checks and 32-token
+generation runs. The K_XL fixture exercises mixed BF16/K encodings; it is
+a compatibility test rather than an Unsloth calibration export.
 
 `setup --checkpoint FILE.gguf` and `pack --weights FILE.gguf` also work.
 A directory containing exactly one GGUF file can be passed to `--weights`.
@@ -211,9 +227,11 @@ For changed weights, ANE verification compares all requested kernel outputs
 against NumPy computations using the selected decoded tensors, then compares
 full-vocabulary logits against the CPU backend while feeding both the same
 tokens after prompt ingestion. All comparisons require normalized RMSE below
-0.5%. Prefill attention permits up to 0.1% of elements outside the pointwise
-tolerance to account for FP16 reductions and cancellation; decode kernels,
-logits, and original macOS fixture checks require every element to pass.
+0.5%. Custom-weight prefill attention permits up to 0.1% of elements outside
+the pointwise tolerance; FFN permits up to 0.01% (two of 24,576 values),
+accounting for FP16 reductions, GELU approximation and cancellation. Projection
+outputs, full logits, and original macOS fixture checks require every element
+to pass.
 CPU-only verification performs finite-logit smoke checks on three
 prompts; it does not claim parity with the original model. The independent
 NumPy oracle is always used for ANE checkpoint checks, even when generation

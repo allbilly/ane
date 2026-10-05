@@ -1,0 +1,1192 @@
+{
+  "scope": "GPT-2 124M only. Full checkpoints encoded with upstream ggml reference C routines; Q4_K_M follows GPT-2 tensor-category precision choices. Q4_K_XL is a representative mixed-tensor compatibility fixture with BF16 QKV and positional embeddings, not an Unsloth calibration export.",
+  "environment": "Linux-7.1.13+-aarch64-with-glibc2.43",
+  "unit_tests": 49,
+  "reference_sources": {
+    "ggml-quants.c": {
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-quants.c",
+      "sha256": "5574a2dccf7c07e75b143733e04a5412d3d8c819e7945f5217a7b83a2b2ff8ab"
+    },
+    "ggml-common.h": {
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-common.h",
+      "sha256": "0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c"
+    },
+    "llama-quant.cpp": {
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/src/llama-quant.cpp",
+      "sha256": "24305a44864f6e12bdbaa29c28ce71395c6ff5af806576f966020939164e13f1"
+    }
+  },
+  "cases": {
+    "Q4_K_M": {
+      "checkpoint_sha256": "1b8b9775ec3d72b8c591b4bc25b170fc34c97af136239d972f3b58752520df1a",
+      "bytes": 88243072,
+      "tensor_types": {
+        "F32": 98,
+        "Q4_K": 31,
+        "Q5_K": 12,
+        "Q6_K": 7
+      },
+      "weights_matching_independent_upstream_c_decoder_exactly": 124318464,
+      "verification": {
+        "backend": "ane",
+        "status": "PASS",
+        "results": {
+          "decode_ffn_L0": {
+            "hidden": {
+              "max_abs": 0.1368408203125,
+              "normalized_rmse": 0.0005032674027948507,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L10": {
+            "hidden": {
+              "max_abs": 0.209930419921875,
+              "normalized_rmse": 0.0009023648830776395,
+              "close_fraction": 0.9999593098958334
+            }
+          },
+          "decode_ffn_L11": {
+            "hidden": {
+              "max_abs": 0.45904541015625,
+              "normalized_rmse": 0.0006567976349770162,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L1": {
+            "hidden": {
+              "max_abs": 0.211944580078125,
+              "normalized_rmse": 0.0009109627481829332,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L2": {
+            "hidden": {
+              "max_abs": 0.567626953125,
+              "normalized_rmse": 0.0008673232512293167,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L3": {
+            "hidden": {
+              "max_abs": 0.22896575927734375,
+              "normalized_rmse": 0.0012644062179608955,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L4": {
+            "hidden": {
+              "max_abs": 0.1710357666015625,
+              "normalized_rmse": 0.001176532143301317,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L5": {
+            "hidden": {
+              "max_abs": 0.14707183837890625,
+              "normalized_rmse": 0.0013716828229628677,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L6": {
+            "hidden": {
+              "max_abs": 0.1008148193359375,
+              "normalized_rmse": 0.0012751569214873254,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L7": {
+            "hidden": {
+              "max_abs": 0.0832977294921875,
+              "normalized_rmse": 0.0012654342937361157,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L8": {
+            "hidden": {
+              "max_abs": 0.06467866897583008,
+              "normalized_rmse": 0.0011528001310387613,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L9": {
+            "hidden": {
+              "max_abs": 0.09300994873046875,
+              "normalized_rmse": 0.0010165544101036045,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_proj_L0": {
+            "k16": {
+              "max_abs": 0.005343437194824219,
+              "normalized_rmse": 0.00045080990926833395
+            },
+            "q16": {
+              "max_abs": 0.005048274993896484,
+              "normalized_rmse": 0.0004830650518505018
+            },
+            "v16": {
+              "max_abs": 0.0011200904846191406,
+              "normalized_rmse": 0.0006019127838995408
+            }
+          },
+          "decode_proj_L10": {
+            "k16": {
+              "max_abs": 0.003951072692871094,
+              "normalized_rmse": 0.0005124364359108501
+            },
+            "q16": {
+              "max_abs": 0.0039520263671875,
+              "normalized_rmse": 0.0005340875789209779
+            },
+            "v16": {
+              "max_abs": 0.0046901702880859375,
+              "normalized_rmse": 0.0005065050816660859
+            }
+          },
+          "decode_proj_L11": {
+            "k16": {
+              "max_abs": 0.004358768463134766,
+              "normalized_rmse": 0.0005058622933517611
+            },
+            "q16": {
+              "max_abs": 0.004897117614746094,
+              "normalized_rmse": 0.0005349162478180889
+            },
+            "v16": {
+              "max_abs": 0.0070285797119140625,
+              "normalized_rmse": 0.0004913950723131147
+            }
+          },
+          "decode_proj_L1": {
+            "k16": {
+              "max_abs": 0.0037164688110351562,
+              "normalized_rmse": 0.0005098110752570229
+            },
+            "q16": {
+              "max_abs": 0.004093170166015625,
+              "normalized_rmse": 0.0004842302923634173
+            },
+            "v16": {
+              "max_abs": 0.002074718475341797,
+              "normalized_rmse": 0.0005494077724632222
+            }
+          },
+          "decode_proj_L2": {
+            "k16": {
+              "max_abs": 0.004154682159423828,
+              "normalized_rmse": 0.0004357537943028237
+            },
+            "q16": {
+              "max_abs": 0.0039653778076171875,
+              "normalized_rmse": 0.00048605741564330496
+            },
+            "v16": {
+              "max_abs": 0.002410411834716797,
+              "normalized_rmse": 0.0005415122354520762
+            }
+          },
+          "decode_proj_L3": {
+            "k16": {
+              "max_abs": 0.004458904266357422,
+              "normalized_rmse": 0.0004676899620816959
+            },
+            "q16": {
+              "max_abs": 0.0036211013793945312,
+              "normalized_rmse": 0.0005119663223738218
+            },
+            "v16": {
+              "max_abs": 0.0027785301208496094,
+              "normalized_rmse": 0.0005315112661597789
+            }
+          },
+          "decode_proj_L4": {
+            "k16": {
+              "max_abs": 0.0074138641357421875,
+              "normalized_rmse": 0.00046493416658542196
+            },
+            "q16": {
+              "max_abs": 0.00629425048828125,
+              "normalized_rmse": 0.0005189734395248193
+            },
+            "v16": {
+              "max_abs": 0.003052234649658203,
+              "normalized_rmse": 0.000512040510482298
+            }
+          },
+          "decode_proj_L5": {
+            "k16": {
+              "max_abs": 0.005530834197998047,
+              "normalized_rmse": 0.0005268223827850824
+            },
+            "q16": {
+              "max_abs": 0.0048961639404296875,
+              "normalized_rmse": 0.0005278303160054784
+            },
+            "v16": {
+              "max_abs": 0.003665924072265625,
+              "normalized_rmse": 0.0005300906966597993
+            }
+          },
+          "decode_proj_L6": {
+            "k16": {
+              "max_abs": 0.004126548767089844,
+              "normalized_rmse": 0.0005166367154699732
+            },
+            "q16": {
+              "max_abs": 0.004345893859863281,
+              "normalized_rmse": 0.0005343728926026298
+            },
+            "v16": {
+              "max_abs": 0.0029077529907226562,
+              "normalized_rmse": 0.0005075558254108713
+            }
+          },
+          "decode_proj_L7": {
+            "k16": {
+              "max_abs": 0.004514217376708984,
+              "normalized_rmse": 0.0005187385648601427
+            },
+            "q16": {
+              "max_abs": 0.004150867462158203,
+              "normalized_rmse": 0.0005371546831649809
+            },
+            "v16": {
+              "max_abs": 0.0037202835083007812,
+              "normalized_rmse": 0.000509517636749457
+            }
+          },
+          "decode_proj_L8": {
+            "k16": {
+              "max_abs": 0.0047054290771484375,
+              "normalized_rmse": 0.0005117891063167336
+            },
+            "q16": {
+              "max_abs": 0.0042629241943359375,
+              "normalized_rmse": 0.0005281973290223583
+            },
+            "v16": {
+              "max_abs": 0.0031769275665283203,
+              "normalized_rmse": 0.0005184572982421364
+            }
+          },
+          "decode_proj_L9": {
+            "k16": {
+              "max_abs": 0.0037665367126464844,
+              "normalized_rmse": 0.0005001427237495946
+            },
+            "q16": {
+              "max_abs": 0.0036683082580566406,
+              "normalized_rmse": 0.0005179796424568446
+            },
+            "v16": {
+              "max_abs": 0.004022121429443359,
+              "normalized_rmse": 0.0005081964355992
+            }
+          },
+          "prefill_attn_L0": {
+            "hidden": {
+              "max_abs": 0.015452384948730469,
+              "normalized_rmse": 0.0007533992038603699,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.005343437194824219,
+              "normalized_rmse": 0.00045080990926833395,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0011200904846191406,
+              "normalized_rmse": 0.0006019127838995408,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L10": {
+            "hidden": {
+              "max_abs": 0.1010284423828125,
+              "normalized_rmse": 0.0009227720494130501,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.003951072692871094,
+              "normalized_rmse": 0.0005124364359108501,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0046901702880859375,
+              "normalized_rmse": 0.0005065050816660859,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L11": {
+            "hidden": {
+              "max_abs": 0.5785999298095703,
+              "normalized_rmse": 0.0011074157324721065,
+              "close_fraction": 0.9999186197916666
+            },
+            "k_cache": {
+              "max_abs": 0.004358768463134766,
+              "normalized_rmse": 0.0005058622933517611,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0070285797119140625,
+              "normalized_rmse": 0.0004913950723131147,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L1": {
+            "hidden": {
+              "max_abs": 0.03096294403076172,
+              "normalized_rmse": 0.0008898718078149972,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.0037164688110351562,
+              "normalized_rmse": 0.0005098110752570229,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.002074718475341797,
+              "normalized_rmse": 0.0005494077724632222,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L2": {
+            "hidden": {
+              "max_abs": 0.01129913330078125,
+              "normalized_rmse": 0.0009843428790155392,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.004154682159423828,
+              "normalized_rmse": 0.0004357537943028237,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.002410411834716797,
+              "normalized_rmse": 0.0005415122354520762,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L3": {
+            "hidden": {
+              "max_abs": 0.03052806854248047,
+              "normalized_rmse": 0.001008794178064866,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.004458904266357422,
+              "normalized_rmse": 0.0004676899620816959,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0027785301208496094,
+              "normalized_rmse": 0.0005315112661597789,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L4": {
+            "hidden": {
+              "max_abs": 0.026328086853027344,
+              "normalized_rmse": 0.0010167334017094315,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.0074138641357421875,
+              "normalized_rmse": 0.00046493416658542196,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.003052234649658203,
+              "normalized_rmse": 0.000512040510482298,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L5": {
+            "hidden": {
+              "max_abs": 0.03488779067993164,
+              "normalized_rmse": 0.0010045481359513397,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.005530834197998047,
+              "normalized_rmse": 0.0005268223827850824,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.003665924072265625,
+              "normalized_rmse": 0.0005300906966597993,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L6": {
+            "hidden": {
+              "max_abs": 0.029109954833984375,
+              "normalized_rmse": 0.0009152855086151806,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.004126548767089844,
+              "normalized_rmse": 0.0005166367154699732,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0029077529907226562,
+              "normalized_rmse": 0.0005075558254108713,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L7": {
+            "hidden": {
+              "max_abs": 0.030673980712890625,
+              "normalized_rmse": 0.0009662836070992278,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.004514217376708984,
+              "normalized_rmse": 0.0005187385648601427,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0037202835083007812,
+              "normalized_rmse": 0.000509517636749457,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L8": {
+            "hidden": {
+              "max_abs": 0.028146743774414062,
+              "normalized_rmse": 0.0010077427669605283,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.0047054290771484375,
+              "normalized_rmse": 0.0005117891063167336,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0031769275665283203,
+              "normalized_rmse": 0.0005184572982421364,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L9": {
+            "hidden": {
+              "max_abs": 0.039775848388671875,
+              "normalized_rmse": 0.0009238311686097813,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.0037665367126464844,
+              "normalized_rmse": 0.0005001427237495946,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.004022121429443359,
+              "normalized_rmse": 0.0005081964355992,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L0": {
+            "hidden": {
+              "max_abs": 0.1368408203125,
+              "normalized_rmse": 0.0005032674027948507,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L10": {
+            "hidden": {
+              "max_abs": 0.209930419921875,
+              "normalized_rmse": 0.0009023648830776395,
+              "close_fraction": 0.9999593098958334
+            }
+          },
+          "prefill_ffn_L11": {
+            "hidden": {
+              "max_abs": 0.45904541015625,
+              "normalized_rmse": 0.0006567976349770162,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L1": {
+            "hidden": {
+              "max_abs": 0.211944580078125,
+              "normalized_rmse": 0.0009109627481829332,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L2": {
+            "hidden": {
+              "max_abs": 0.567626953125,
+              "normalized_rmse": 0.0008673232512293167,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L3": {
+            "hidden": {
+              "max_abs": 0.22896575927734375,
+              "normalized_rmse": 0.0012644062179608955,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L4": {
+            "hidden": {
+              "max_abs": 0.1710357666015625,
+              "normalized_rmse": 0.001176532143301317,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L5": {
+            "hidden": {
+              "max_abs": 0.14707183837890625,
+              "normalized_rmse": 0.0013716828229628677,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L6": {
+            "hidden": {
+              "max_abs": 0.1008148193359375,
+              "normalized_rmse": 0.0012751569214873254,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L7": {
+            "hidden": {
+              "max_abs": 0.0832977294921875,
+              "normalized_rmse": 0.0012654342937361157,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L8": {
+            "hidden": {
+              "max_abs": 0.06467866897583008,
+              "normalized_rmse": 0.0011528001310387613,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L9": {
+            "hidden": {
+              "max_abs": 0.09300994873046875,
+              "normalized_rmse": 0.0010165544101036045,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_final_ln_L-1": {
+            "hidden": {
+              "max_abs": 0.030611038208007812,
+              "normalized_rmse": 0.0004393180951540675
+            }
+          },
+          "hybrid_generation": [
+            {
+              "max_abs": 0.07120513916015625,
+              "normalized_rmse": 0.0004625692693040545
+            },
+            {
+              "max_abs": 0.042724609375,
+              "normalized_rmse": 0.00010020342870202587
+            },
+            {
+              "max_abs": 0.042633056640625,
+              "normalized_rmse": 0.00012414726430726131
+            },
+            {
+              "max_abs": 0.052734375,
+              "normalized_rmse": 0.00018593937923527804
+            }
+          ]
+        }
+      },
+      "generation": {
+        "stdout": "Hello world, I'm sorry. I'm sorry. I'm sorry. I'm sorry. I'm sorry. I'm sorry. I'm sorry. I'm sorry\n",
+        "stderr": "Package integrity: 392 files PASS\nANE device: /dev/accel/accel0\nCPU matrices: NEON packed Q4/Q8/FP16 (integer dot products), 4 CPU threads\nChecking decode_ffn_L0...\nChecking decode_ffn_L10...\nChecking decode_ffn_L11...\nChecking decode_ffn_L1...\nChecking decode_ffn_L2...\nChecking decode_ffn_L3...\nChecking decode_ffn_L4...\nChecking decode_ffn_L5...\nChecking decode_ffn_L6...\nChecking decode_ffn_L7...\nChecking decode_ffn_L8...\nChecking decode_ffn_L9...\nChecking decode_proj_L0...\nChecking decode_proj_L10...\nChecking decode_proj_L11...\nChecking decode_proj_L1...\nChecking decode_proj_L2...\nChecking decode_proj_L3...\nChecking decode_proj_L4...\nChecking decode_proj_L5...\nChecking decode_proj_L6...\nChecking decode_proj_L7...\nChecking decode_proj_L8...\nChecking decode_proj_L9...\nANE parity: 24 kernels PASS\nANE full generation parity: PASS\nBackend: ane; prompt=2; generated=32; elapsed=0.38s\n"
+      }
+    },
+    "Q4_K_XL": {
+      "checkpoint_sha256": "e4125490e4517dfcacf3c4cd743327b6f97b94a1612f1846dcb020bf23adc95d",
+      "bytes": 91696000,
+      "tensor_types": {
+        "F32": 98,
+        "Q4_K": 30,
+        "Q5_K": 11,
+        "Q6_K": 7,
+        "BF16": 2
+      },
+      "weights_matching_independent_upstream_c_decoder_exactly": 121762560,
+      "verification": {
+        "backend": "ane",
+        "status": "PASS",
+        "results": {
+          "decode_ffn_L0": {
+            "hidden": {
+              "max_abs": 0.1368408203125,
+              "normalized_rmse": 0.0005032674027948507,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L10": {
+            "hidden": {
+              "max_abs": 0.209930419921875,
+              "normalized_rmse": 0.0009023648830776395,
+              "close_fraction": 0.9999593098958334
+            }
+          },
+          "decode_ffn_L11": {
+            "hidden": {
+              "max_abs": 0.45904541015625,
+              "normalized_rmse": 0.0006567976349770162,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L1": {
+            "hidden": {
+              "max_abs": 0.211944580078125,
+              "normalized_rmse": 0.0009109627481829332,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L2": {
+            "hidden": {
+              "max_abs": 0.567626953125,
+              "normalized_rmse": 0.0008673232512293167,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L3": {
+            "hidden": {
+              "max_abs": 0.22896575927734375,
+              "normalized_rmse": 0.0012644062179608955,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L4": {
+            "hidden": {
+              "max_abs": 0.1710357666015625,
+              "normalized_rmse": 0.001176532143301317,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L5": {
+            "hidden": {
+              "max_abs": 0.14707183837890625,
+              "normalized_rmse": 0.0013716828229628677,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L6": {
+            "hidden": {
+              "max_abs": 0.1008148193359375,
+              "normalized_rmse": 0.0012751569214873254,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L7": {
+            "hidden": {
+              "max_abs": 0.0832977294921875,
+              "normalized_rmse": 0.0012654342937361157,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L8": {
+            "hidden": {
+              "max_abs": 0.06467866897583008,
+              "normalized_rmse": 0.0011528001310387613,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_ffn_L9": {
+            "hidden": {
+              "max_abs": 0.09300994873046875,
+              "normalized_rmse": 0.0010165544101036045,
+              "close_fraction": 1.0
+            }
+          },
+          "decode_proj_L0": {
+            "k16": {
+              "max_abs": 0.0056362152099609375,
+              "normalized_rmse": 0.00044674024072116516
+            },
+            "q16": {
+              "max_abs": 0.003864288330078125,
+              "normalized_rmse": 0.00048167589073917213
+            },
+            "v16": {
+              "max_abs": 0.0012166500091552734,
+              "normalized_rmse": 0.00060179083813892
+            }
+          },
+          "decode_proj_L10": {
+            "k16": {
+              "max_abs": 0.003951072692871094,
+              "normalized_rmse": 0.0005124364359108501
+            },
+            "q16": {
+              "max_abs": 0.0039520263671875,
+              "normalized_rmse": 0.0005340875789209779
+            },
+            "v16": {
+              "max_abs": 0.0046901702880859375,
+              "normalized_rmse": 0.0005065050816660859
+            }
+          },
+          "decode_proj_L11": {
+            "k16": {
+              "max_abs": 0.004358768463134766,
+              "normalized_rmse": 0.0005058622933517611
+            },
+            "q16": {
+              "max_abs": 0.004897117614746094,
+              "normalized_rmse": 0.0005349162478180889
+            },
+            "v16": {
+              "max_abs": 0.0070285797119140625,
+              "normalized_rmse": 0.0004913950723131147
+            }
+          },
+          "decode_proj_L1": {
+            "k16": {
+              "max_abs": 0.0037164688110351562,
+              "normalized_rmse": 0.0005098110752570229
+            },
+            "q16": {
+              "max_abs": 0.004093170166015625,
+              "normalized_rmse": 0.0004842302923634173
+            },
+            "v16": {
+              "max_abs": 0.002074718475341797,
+              "normalized_rmse": 0.0005494077724632222
+            }
+          },
+          "decode_proj_L2": {
+            "k16": {
+              "max_abs": 0.004154682159423828,
+              "normalized_rmse": 0.0004357537943028237
+            },
+            "q16": {
+              "max_abs": 0.0039653778076171875,
+              "normalized_rmse": 0.00048605741564330496
+            },
+            "v16": {
+              "max_abs": 0.002410411834716797,
+              "normalized_rmse": 0.0005415122354520762
+            }
+          },
+          "decode_proj_L3": {
+            "k16": {
+              "max_abs": 0.004458904266357422,
+              "normalized_rmse": 0.0004676899620816959
+            },
+            "q16": {
+              "max_abs": 0.0036211013793945312,
+              "normalized_rmse": 0.0005119663223738218
+            },
+            "v16": {
+              "max_abs": 0.0027785301208496094,
+              "normalized_rmse": 0.0005315112661597789
+            }
+          },
+          "decode_proj_L4": {
+            "k16": {
+              "max_abs": 0.0074138641357421875,
+              "normalized_rmse": 0.00046493416658542196
+            },
+            "q16": {
+              "max_abs": 0.00629425048828125,
+              "normalized_rmse": 0.0005189734395248193
+            },
+            "v16": {
+              "max_abs": 0.003052234649658203,
+              "normalized_rmse": 0.000512040510482298
+            }
+          },
+          "decode_proj_L5": {
+            "k16": {
+              "max_abs": 0.005530834197998047,
+              "normalized_rmse": 0.0005268223827850824
+            },
+            "q16": {
+              "max_abs": 0.0048961639404296875,
+              "normalized_rmse": 0.0005278303160054784
+            },
+            "v16": {
+              "max_abs": 0.003665924072265625,
+              "normalized_rmse": 0.0005300906966597993
+            }
+          },
+          "decode_proj_L6": {
+            "k16": {
+              "max_abs": 0.004126548767089844,
+              "normalized_rmse": 0.0005166367154699732
+            },
+            "q16": {
+              "max_abs": 0.004345893859863281,
+              "normalized_rmse": 0.0005343728926026298
+            },
+            "v16": {
+              "max_abs": 0.0029077529907226562,
+              "normalized_rmse": 0.0005075558254108713
+            }
+          },
+          "decode_proj_L7": {
+            "k16": {
+              "max_abs": 0.004514217376708984,
+              "normalized_rmse": 0.0005187385648601427
+            },
+            "q16": {
+              "max_abs": 0.004150867462158203,
+              "normalized_rmse": 0.0005371546831649809
+            },
+            "v16": {
+              "max_abs": 0.0037202835083007812,
+              "normalized_rmse": 0.000509517636749457
+            }
+          },
+          "decode_proj_L8": {
+            "k16": {
+              "max_abs": 0.0047054290771484375,
+              "normalized_rmse": 0.0005117891063167336
+            },
+            "q16": {
+              "max_abs": 0.0042629241943359375,
+              "normalized_rmse": 0.0005281973290223583
+            },
+            "v16": {
+              "max_abs": 0.0031769275665283203,
+              "normalized_rmse": 0.0005184572982421364
+            }
+          },
+          "decode_proj_L9": {
+            "k16": {
+              "max_abs": 0.0037665367126464844,
+              "normalized_rmse": 0.0005001427237495946
+            },
+            "q16": {
+              "max_abs": 0.0036683082580566406,
+              "normalized_rmse": 0.0005179796424568446
+            },
+            "v16": {
+              "max_abs": 0.004022121429443359,
+              "normalized_rmse": 0.0005081964355992
+            }
+          },
+          "prefill_attn_L0": {
+            "hidden": {
+              "max_abs": 0.020586490631103516,
+              "normalized_rmse": 0.0007600717389062183,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.0056362152099609375,
+              "normalized_rmse": 0.00044674024072116516,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0012166500091552734,
+              "normalized_rmse": 0.00060179083813892,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L10": {
+            "hidden": {
+              "max_abs": 0.1010284423828125,
+              "normalized_rmse": 0.0009227720494130501,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.003951072692871094,
+              "normalized_rmse": 0.0005124364359108501,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0046901702880859375,
+              "normalized_rmse": 0.0005065050816660859,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L11": {
+            "hidden": {
+              "max_abs": 0.5785999298095703,
+              "normalized_rmse": 0.0011074157324721065,
+              "close_fraction": 0.9999186197916666
+            },
+            "k_cache": {
+              "max_abs": 0.004358768463134766,
+              "normalized_rmse": 0.0005058622933517611,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0070285797119140625,
+              "normalized_rmse": 0.0004913950723131147,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L1": {
+            "hidden": {
+              "max_abs": 0.03096294403076172,
+              "normalized_rmse": 0.0008898718078149972,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.0037164688110351562,
+              "normalized_rmse": 0.0005098110752570229,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.002074718475341797,
+              "normalized_rmse": 0.0005494077724632222,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L2": {
+            "hidden": {
+              "max_abs": 0.01129913330078125,
+              "normalized_rmse": 0.0009843428790155392,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.004154682159423828,
+              "normalized_rmse": 0.0004357537943028237,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.002410411834716797,
+              "normalized_rmse": 0.0005415122354520762,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L3": {
+            "hidden": {
+              "max_abs": 0.03052806854248047,
+              "normalized_rmse": 0.001008794178064866,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.004458904266357422,
+              "normalized_rmse": 0.0004676899620816959,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0027785301208496094,
+              "normalized_rmse": 0.0005315112661597789,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L4": {
+            "hidden": {
+              "max_abs": 0.026328086853027344,
+              "normalized_rmse": 0.0010167334017094315,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.0074138641357421875,
+              "normalized_rmse": 0.00046493416658542196,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.003052234649658203,
+              "normalized_rmse": 0.000512040510482298,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L5": {
+            "hidden": {
+              "max_abs": 0.03488779067993164,
+              "normalized_rmse": 0.0010045481359513397,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.005530834197998047,
+              "normalized_rmse": 0.0005268223827850824,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.003665924072265625,
+              "normalized_rmse": 0.0005300906966597993,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L6": {
+            "hidden": {
+              "max_abs": 0.029109954833984375,
+              "normalized_rmse": 0.0009152855086151806,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.004126548767089844,
+              "normalized_rmse": 0.0005166367154699732,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0029077529907226562,
+              "normalized_rmse": 0.0005075558254108713,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L7": {
+            "hidden": {
+              "max_abs": 0.030673980712890625,
+              "normalized_rmse": 0.0009662836070992278,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.004514217376708984,
+              "normalized_rmse": 0.0005187385648601427,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0037202835083007812,
+              "normalized_rmse": 0.000509517636749457,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L8": {
+            "hidden": {
+              "max_abs": 0.028146743774414062,
+              "normalized_rmse": 0.0010077427669605283,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.0047054290771484375,
+              "normalized_rmse": 0.0005117891063167336,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.0031769275665283203,
+              "normalized_rmse": 0.0005184572982421364,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_attn_L9": {
+            "hidden": {
+              "max_abs": 0.039775848388671875,
+              "normalized_rmse": 0.0009238311686097813,
+              "close_fraction": 1.0
+            },
+            "k_cache": {
+              "max_abs": 0.0037665367126464844,
+              "normalized_rmse": 0.0005001427237495946,
+              "close_fraction": 1.0
+            },
+            "v_cache": {
+              "max_abs": 0.004022121429443359,
+              "normalized_rmse": 0.0005081964355992,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L0": {
+            "hidden": {
+              "max_abs": 0.1368408203125,
+              "normalized_rmse": 0.0005032674027948507,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L10": {
+            "hidden": {
+              "max_abs": 0.209930419921875,
+              "normalized_rmse": 0.0009023648830776395,
+              "close_fraction": 0.9999593098958334
+            }
+          },
+          "prefill_ffn_L11": {
+            "hidden": {
+              "max_abs": 0.45904541015625,
+              "normalized_rmse": 0.0006567976349770162,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L1": {
+            "hidden": {
+              "max_abs": 0.211944580078125,
+              "normalized_rmse": 0.0009109627481829332,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L2": {
+            "hidden": {
+              "max_abs": 0.567626953125,
+              "normalized_rmse": 0.0008673232512293167,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L3": {
+            "hidden": {
+              "max_abs": 0.22896575927734375,
+              "normalized_rmse": 0.0012644062179608955,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L4": {
+            "hidden": {
+              "max_abs": 0.1710357666015625,
+              "normalized_rmse": 0.001176532143301317,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L5": {
+            "hidden": {
+              "max_abs": 0.14707183837890625,
+              "normalized_rmse": 0.0013716828229628677,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L6": {
+            "hidden": {
+              "max_abs": 0.1008148193359375,
+              "normalized_rmse": 0.0012751569214873254,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L7": {
+            "hidden": {
+              "max_abs": 0.0832977294921875,
+              "normalized_rmse": 0.0012654342937361157,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L8": {
+            "hidden": {
+              "max_abs": 0.06467866897583008,
+              "normalized_rmse": 0.0011528001310387613,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_ffn_L9": {
+            "hidden": {
+              "max_abs": 0.09300994873046875,
+              "normalized_rmse": 0.0010165544101036045,
+              "close_fraction": 1.0
+            }
+          },
+          "prefill_final_ln_L-1": {
+            "hidden": {
+              "max_abs": 0.030611038208007812,
+              "normalized_rmse": 0.0004393180951540675
+            }
+          },
+          "hybrid_generation": [
+            {
+              "max_abs": 0.08935546875,
+              "normalized_rmse": 0.0007389902560081715
+            },
+            {
+              "max_abs": 0.1734466552734375,
+              "normalized_rmse": 0.001250268824310334
+            },
+            {
+              "max_abs": 0.0860595703125,
+              "normalized_rmse": 0.0005113537692481432
+            },
+            {
+              "max_abs": 0.1604156494140625,
+              "normalized_rmse": 0.0010004324538149638
+            }
+          ]
+        }
+      },
+      "generation": {
+        "stdout": "Hello world, you're going to be a lot more fun when you're playing with me.\n\nI'm just so excited to be playing with you.\n\n\n",
+        "stderr": "Package integrity: 392 files PASS\nANE device: /dev/accel/accel0\nCPU matrices: NEON packed Q4/Q8/FP16 (integer dot products), 4 CPU threads\nChecking decode_ffn_L0...\nChecking decode_ffn_L10...\nChecking decode_ffn_L11...\nChecking decode_ffn_L1...\nChecking decode_ffn_L2...\nChecking decode_ffn_L3...\nChecking decode_ffn_L4...\nChecking decode_ffn_L5...\nChecking decode_ffn_L6...\nChecking decode_ffn_L7...\nChecking decode_ffn_L8...\nChecking decode_ffn_L9...\nChecking decode_proj_L0...\nChecking decode_proj_L10...\nChecking decode_proj_L11...\nChecking decode_proj_L1...\nChecking decode_proj_L2...\nChecking decode_proj_L3...\nChecking decode_proj_L4...\nChecking decode_proj_L5...\nChecking decode_proj_L6...\nChecking decode_proj_L7...\nChecking decode_proj_L8...\nChecking decode_proj_L9...\nANE parity: 24 kernels PASS\nANE full generation parity: PASS\nBackend: ane; prompt=2; generated=32; elapsed=0.39s\n"
+      }
+    }
+  }
+}

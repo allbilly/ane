@@ -49,7 +49,11 @@ class GGUFWeights:
         self.records = {tensor.name: tensor for tensor in self.reader.tensors}
         require(len(self.records) == len(self.reader.tensors), "duplicate GGUF tensor names")
         self.supported_types = {GGMLQuantizationType.F32, GGMLQuantizationType.F16,
-                                GGMLQuantizationType.Q8_0, GGMLQuantizationType.Q4_0}
+                                GGMLQuantizationType.BF16,
+                                GGMLQuantizationType.Q8_0, GGMLQuantizationType.Q4_0,
+                                GGMLQuantizationType.Q2_K, GGMLQuantizationType.Q3_K,
+                                GGMLQuantizationType.Q4_K, GGMLQuantizationType.Q5_K,
+                                GGMLQuantizationType.Q6_K}
         self._validate_metadata(tokenizer_root or Path(__file__).parent / "tokenizer")
         self.entries["lm_head"] = ("output.weight" if "output.weight" in self.records else "token_embd.weight",
                                    (50257, 768), None)
@@ -57,7 +61,8 @@ class GGUFWeights:
             require(name in self.records, f"missing GPT-2 GGUF tensor: {name}")
             tensor = self.records[name]
             require(tensor.tensor_type in self.supported_types,
-                    f"unsupported GGUF tensor type: {name}: {tensor.tensor_type.name}; supported: F32, F16, Q8_0, Q4_0")
+                    f"unsupported GGUF tensor type: {name}: {tensor.tensor_type.name}; supported: "
+                    + ", ".join(sorted(kind.name for kind in self.supported_types)))
             actual = tuple(int(n) for n in reversed(tensor.shape))
             require(actual == shape, f"GGUF tensor shape mismatch: {name}; expected {shape}, got {actual}")
             require(tensor.data.size * tensor.data.dtype.itemsize == tensor.n_bytes

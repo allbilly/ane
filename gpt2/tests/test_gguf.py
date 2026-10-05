@@ -145,6 +145,84 @@ class GGUFValidationTests(unittest.TestCase):
         expected = np.stack((values * 0.5, values * -2))
         np.testing.assert_array_equal(self.decoded(blocks, gguf.GGMLQuantizationType.Q8_0, (2, 32)), expected)
 
+    def test_q4_k_q5_k_six_bit_scales_minima_and_high_bits(self):
+        scales = np.array([1, 17, 31, 63, 3, 28, 52, 62], np.uint8)
+        minima = np.array([0, 3, 7, 55, 63, 42, 23, 1], np.uint8)
+        packed = np.zeros(12, np.uint8)
+        for j in range(4):
+            packed[j] = scales[j] | ((scales[j + 4] >> 4) << 6)
+            packed[j + 4] = minima[j] | ((minima[j + 4] >> 4) << 6)
+            packed[j + 8] = (scales[j + 4] & 15) | ((minima[j + 4] & 15) << 4)
+        d, dm = np.float16(0.0625), np.float16(0.03125)
+        for kind, bits in ((gguf.GGMLQuantizationType.Q4_K, 4), (gguf.GGMLQuantizationType.Q5_K, 5)):
+            q = (np.arange(256) * 7 + 9) % (1 << bits)
+            low, high = np.zeros(128, np.uint8), np.zeros(32, np.uint8)
+            for i, value in enumerate(q):
+                group, offset = divmod(i, 32)
+                low[(group // 2) * 32 + offset] |= (int(value) & 15) << ((group % 2) * 4)
+                high[offset] |= (int(value) >> 4) << group
+            raw = d.tobytes() + dm.tobytes() + packed.tobytes()
+            if bits == 5:
+                raw += high.tobytes()
+            raw += low.tobytes()
+            expected = np.array([float(d) * int(scales[i // 32]) * value
+                                 - float(dm) * int(minima[i // 32]) for i, value in enumerate(q)], np.float32)
+            actual = self.decoded(np.frombuffer(raw, np.uint8), kind, (1, 256))
+            np.testing.assert_array_equal(actual, expected.astype(np.float16).astype(np.float32)[None, :])
+
+    def test_q6_k_signed_group_scales_and_split_high_bits(self):
+        q = (np.arange(256) * 13 + 7) % 64
+        scales = np.array([-128, -64, -3, -1, 0, 1, 5, 127] * 2, np.int8)
+        low, high = np.zeros(128, np.uint8), np.zeros(64, np.uint8)
+        for i, value in enumerate(q):
+            segment, offset = divmod(i, 128)
+            low[segment * 64 + offset % 64] |= (int(value) & 15) << ((offset // 64) * 4)
+            high[segment * 32 + offset % 32] |= (int(value) >> 4) << ((offset // 32) * 2)
+        d = np.float16(0.03125)
+        raw = low.tobytes() + high.tobytes() + scales.tobytes() + d.tobytes()
+        expected = np.array([float(d) * int(scales[i // 16]) * (int(value) - 32)
+                             for i, value in enumerate(q)], np.float32)
+        actual = self.decoded(np.frombuffer(raw, np.uint8), gguf.GGMLQuantizationType.Q6_K, (1, 256))
+        np.testing.assert_array_equal(actual, expected.astype(np.float16).astype(np.float32)[None, :])
+
+    def test_q2_k_and_q3_k_group_order_and_packed_scales(self):
+        q2 = (np.arange(256) * 7 + 3) % 4
+        scales2 = np.arange(16, dtype=np.uint8)
+        minima2 = 15 - scales2
+        packed2 = scales2 | (minima2 << 4)
+        low2 = np.zeros(64, np.uint8)
+        for i, value in enumerate(q2):
+            low2[(i // 128) * 32 + i % 32] |= int(value) << (((i % 128) // 32) * 2)
+        d, dm = np.float16(0.125), np.float16(0.25)
+        raw2 = packed2.tobytes() + low2.tobytes() + d.tobytes() + dm.tobytes()
+        expected2 = np.array([float(d) * int(scales2[i // 16]) * value
+                              - float(dm) * int(minima2[i // 16]) for i, value in enumerate(q2)], np.float32)
+        actual2 = self.decoded(np.frombuffer(raw2, np.uint8), gguf.GGMLQuantizationType.Q2_K, (1, 256))
+        np.testing.assert_array_equal(actual2, expected2[None, :])
+
+        q3 = (np.arange(256) * 5 + 1) % 8 - 4
+        scales3 = np.array([-32, -24, -17, -9, -3, -1, 0, 1, 7, 13, 17, 22, 27, 29, 30, 31])
+        packed3, low3, high3 = np.zeros(12, np.uint8), np.zeros(64, np.uint8), np.zeros(32, np.uint8)
+        for j, value in enumerate(scales3 + 32):
+            packed3[j % 8] |= (int(value) & 15) << ((j // 8) * 4)
+            packed3[8 + j % 4] |= (int(value) >> 4) << ((j // 4) * 2)
+        for i, value in enumerate(q3):
+            low3[(i // 128) * 32 + i % 32] |= (int(value) & 3) << (((i % 128) // 32) * 2)
+            high3[i % 32] |= int(value >= 0) << (i // 32)
+        raw3 = high3.tobytes() + low3.tobytes() + packed3.tobytes() + d.tobytes()
+        expected3 = np.array([float(d) * int(scales3[i // 16]) * value for i, value in enumerate(q3)], np.float32)
+        actual3 = self.decoded(np.frombuffer(raw3, np.uint8), gguf.GGMLQuantizationType.Q3_K, (1, 256))
+        np.testing.assert_array_equal(actual3, expected3[None, :])
+
+    def test_bf16_bit_patterns_and_finite_fp16_conversion(self):
+        bits = np.array([0, 0x8000, 0x3f80, 0xc000, 0x3eab, 0x0080], dtype="<u2")
+        expected = (bits.astype(np.uint32) << 16).view(np.float32).astype(np.float16).astype(np.float32)
+        actual = self.decoded(bits.view(np.uint8), gguf.GGMLQuantizationType.BF16, (2, 3))
+        np.testing.assert_array_equal(actual, expected.reshape(2, 3))
+        for invalid in (0x7f80, 0x7fc0, 0x7f7f):
+            with self.assertRaisesRegex(ValueError, "nonfinite/fp16-overflow"):
+                self.decoded(np.array([invalid], dtype="<u2").view(np.uint8), gguf.GGMLQuantizationType.BF16, (1,))
+
     def test_nonfinite_and_fp16_overflow_rejected(self):
         for value in (float("nan"), float("inf"), 1e8):
             with self.subTest(value=value), self.assertRaisesRegex(ValueError, "nonfinite/fp16-overflow"):
@@ -159,6 +237,20 @@ class GGUFValidationTests(unittest.TestCase):
 
 
 class CheckpointPackingTests(unittest.TestCase):
+    def test_fp16_ffn_tolerance_limits_outliers_and_global_error(self):
+        expected = np.ones(24576, np.float32)
+        expected[:3] = 0
+        actual = expected.copy()
+        actual[:2] = 0.06
+        compare(actual, expected, "custom FP16 FFN", rtol=0.02, atol=0.05, min_close_fraction=0.9999)
+        actual[2] = 0.06
+        with self.assertRaisesRegex(ValueError, "numerical mismatch"):
+            compare(actual, expected, "too many FFN outliers", rtol=0.02, atol=0.05, min_close_fraction=0.9999)
+        actual = expected.copy()
+        actual[0] = 1
+        with self.assertRaisesRegex(ValueError, "numerical mismatch"):
+            compare(actual, expected, "large FFN error", rtol=0.02, atol=0.05, min_close_fraction=0.9999)
+
     def test_fp16_attention_tolerance_keeps_global_error_gate(self):
         expected = np.ones(2000, dtype=np.float32)
         expected[0] = 0
@@ -268,7 +360,8 @@ class GGUFIntegrationTests(unittest.TestCase):
         metadata(writer)
         for tensor in self.weights.reader.tensors:
             writer.add_tensor(tensor.name, tensor.data)
-        writer.add_tensor("output.weight", np.zeros((50257, 768), dtype=np.float16))
+        output = gguf.quantize(np.zeros((50257, 768), dtype=np.float32), gguf.GGMLQuantizationType.BF16)
+        writer.add_tensor("output.weight", output, raw_dtype=gguf.GGMLQuantizationType.BF16)
         finish(writer)
         weights = load_weights(source)
         verify_weights(source, ROOT, weights=weights)
