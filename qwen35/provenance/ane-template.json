@@ -1,0 +1,136 @@
+{
+  "architecture": "H13G/T8103",
+  "reference": "~/ane/gpt2/training/orion/kernels",
+  "sources": [
+    {
+      "primitive": "linear_32_768_768_forward",
+      "hwx_sha256": "421625fc9d5054dffaaf78c2df4783b11a31c55a05f8d2a7432d81b409aa66e5"
+    },
+    {
+      "primitive": "linear_32_768_3072_forward",
+      "hwx_sha256": "e8f91f8423825dd32aa4b954cc09e3fc87dc39af2eebe71fc225d3357f98769c"
+    },
+    {
+      "primitive": "linear_32_3072_768_forward",
+      "hwx_sha256": "d6e9e3a251225d129a9551b8a40d2a2d82fbe5b66cca727262c3828700465d53"
+    }
+  ],
+  "template_sha256": "b7806029cc215b8a70ff3e14d4dd188988a49b24831b4909de82aea6e0e4d680",
+  "learned_weights_in_template": false,
+  "adapted_backend": {
+    "repository": "https://github.com/AdrianCable/qwen3.c",
+    "local_revision": "69d81fc2f7679b6678578a757fa9b2bc69ffbd28",
+    "original_source_sha256": "cb18789aca07dbe4ff00048fc47d82b6ed3db0912aaf81f8234e75ce69d00be8",
+    "adaptation": "Accept FP16 matrices directly; preserve Linux driver ABI and command stream."
+  },
+  "validation": {
+    "submissions": 15,
+    "results": [
+      {
+        "k": 1024,
+        "n": 8224,
+        "rows": 1,
+        "normalized_rmse": 0.00024999058223329484,
+        "max_abs": 0.0014824867248535156
+      },
+      {
+        "k": 1024,
+        "n": 8224,
+        "rows": 8,
+        "normalized_rmse": 0.0002508600882720202,
+        "max_abs": 0.001934051513671875
+      },
+      {
+        "k": 1024,
+        "n": 8224,
+        "rows": 32,
+        "normalized_rmse": 0.0002518855908419937,
+        "max_abs": 0.0018014907836914062
+      },
+      {
+        "k": 1024,
+        "n": 5120,
+        "rows": 1,
+        "normalized_rmse": 0.00025607403949834406,
+        "max_abs": 0.0011343955993652344
+      },
+      {
+        "k": 1024,
+        "n": 5120,
+        "rows": 8,
+        "normalized_rmse": 0.00025326726608909667,
+        "max_abs": 0.0014140605926513672
+      },
+      {
+        "k": 1024,
+        "n": 5120,
+        "rows": 32,
+        "normalized_rmse": 0.0002523060538806021,
+        "max_abs": 0.0019888877868652344
+      },
+      {
+        "k": 2048,
+        "n": 1024,
+        "rows": 1,
+        "normalized_rmse": 0.00028852091054432094,
+        "max_abs": 0.0012316703796386719
+      },
+      {
+        "k": 2048,
+        "n": 1024,
+        "rows": 8,
+        "normalized_rmse": 0.0002922753046732396,
+        "max_abs": 0.0013360977172851562
+      },
+      {
+        "k": 2048,
+        "n": 1024,
+        "rows": 32,
+        "normalized_rmse": 0.0002898513339459896,
+        "max_abs": 0.0017161369323730469
+      },
+      {
+        "k": 1024,
+        "n": 7168,
+        "rows": 1,
+        "normalized_rmse": 0.00025449899840168655,
+        "max_abs": 0.0013151168823242188
+      },
+      {
+        "k": 1024,
+        "n": 7168,
+        "rows": 8,
+        "normalized_rmse": 0.0002523018920328468,
+        "max_abs": 0.0016589164733886719
+      },
+      {
+        "k": 1024,
+        "n": 7168,
+        "rows": 32,
+        "normalized_rmse": 0.000252729922067374,
+        "max_abs": 0.0017843246459960938
+      },
+      {
+        "k": 3584,
+        "n": 1024,
+        "rows": 1,
+        "normalized_rmse": 0.00034407409839332104,
+        "max_abs": 0.0013012886047363281
+      },
+      {
+        "k": 3584,
+        "n": 1024,
+        "rows": 8,
+        "normalized_rmse": 0.00034061676706187427,
+        "max_abs": 0.001689910888671875
+      },
+      {
+        "k": 3584,
+        "n": 1024,
+        "rows": 32,
+        "normalized_rmse": 0.0003411333600524813,
+        "max_abs": 0.0016548633575439453
+      }
+    ]
+  }
+}
