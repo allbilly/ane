@@ -41,11 +41,14 @@ For **base M1 (T8103)**, [the runtime overlay and loadable KMD](kmod/README.md)
 can supply the missing ANE device tree nodes without rebuilding the kernel or
 changing boot files. Build with `make -C kmod`, install with
 `sudo make -C kmod install`, then load with `sudo modprobe ane`.
-Tested on a base M1 MacBook Air running `7.1.13+`: all ten operation checks,
-runtime autosuspend, and driver unload/reload passed with the runtime overlay.
-See the linked instructions for kernel requirements, permissions and hardware
-validation. This replaces the incomplete old `libane/ane-overlay.dts` recipe;
-do not apply that old overlay to the boot device tree.
+Revalidated on a base M1 MacBook Air after upgrading to Fedora Asahi Remix 44
+and booting `7.1.13+`: all ten operation checks, runtime autosuspend, driver
+unload/reload, and kernel fault checks passed with the runtime overlay. GPT-2
+ANE inference also passed all 49 reference kernels and a fresh 32-token
+generation; see [the inference results](gpt2/README.md). See the linked
+instructions for kernel requirements, permissions and hardware validation.
+This replaces the incomplete old `libane/ane-overlay.dts` recipe; do not apply
+that old overlay to the boot device tree.
 
 The earlier Asahi Linux Fedora 6.14.8 overlay setup worked once, but its boot
 installation steps were not reproducible. Use the documented runtime path
@@ -69,6 +72,7 @@ After Asahi Linux is installed, build kernel with ANE (and typec dp) support
 
 ```bash
 git clone https://github.com/AsahiLinux/linux.git --branch fairydust --single-branch
+cd linux
 
 # for M1
 curl -L https://github.com/eiln/linux/commit/bf6651bb55212f2cfab573bd0d49bf5c601b4703 | git apply
@@ -79,11 +83,29 @@ curl -L https://github.com/eiln/linux/commit/297491ef3126f057d708d24bdcb658356d9
 # Below steps are from https://grzegorz-smajdor.com/blog/2026-monitor-asahi-fedora/
 
 sudo dnf install -y gcc gcc-c++ make bc bison flex elfutils-libelf-devel ncurses-devel \
-  python3 zlib-devel libuuid-devel dwarves xz zstd clang llvm lld git
-cp /boot/config-$(uname -r) .config
+  python3 zlib-devel libuuid-devel dwarves xz zstd clang llvm lld git \
+  rust rust-src bindgen-cli
+task_running_kernel=$(uname -r)
+if [ -r "/boot/config-$task_running_kernel" ]; then
+  cp "/boot/config-$task_running_kernel" .config
+elif [ -r "/lib/modules/$task_running_kernel/build/.config" ]; then
+  # Custom kernels may keep their config only in the build tree. If this is
+  # that same tree, its .config is already in place.
+  if [ ! "/lib/modules/$task_running_kernel/build/.config" -ef .config ]; then
+    cp "/lib/modules/$task_running_kernel/build/.config" .config
+  fi
+else
+  echo "Cannot find the running kernel config; select an Asahi kernel config first." >&2
+  exit 1
+fi
+
+# The Asahi GPU driver requires Rust, even though the ANE KMD is written in C.
+# Stop and resolve any toolchain errors reported by this check before building.
+make LLVM=1 rustavailable || exit 1
+scripts/config --enable RUST --module DRM_ASAHI
 
 # Press Enter for default answers
-make oldconfig
+make LLVM=1 oldconfig
 
 # Edit the .config to ensure Alt Mode support is built as modules:
 vim .config
@@ -93,16 +115,24 @@ CONFIG_TYPEC_TBT_ALTMODE=m
 CONFIG_EFI_SBAT_FILE=""
 CONFIG_QRTR_MHI=n
 
-make -j$(nproc)
-make dtbs -j$(nproc)
+# Resolve dependencies again, then verify GPU support was retained. Kconfig
+# can drop DRM_ASAHI when Rust or another required option is unavailable.
+make LLVM=1 olddefconfig
+if ! grep -q '^CONFIG_RUST=y$' .config || ! grep -q '^CONFIG_DRM_ASAHI=m$' .config; then
+  echo "Rust/Asahi GPU support is missing; fix the toolchain/configuration before building." >&2
+  exit 1
+fi
 
-sudo make modules_install
-sudo make dtbs_install
+make LLVM=1 -j$(nproc)
+make LLVM=1 dtbs -j$(nproc)
 
-# 6.19.11 on mainline fariy-dust at the time of wriing, check Makefile for latest version
-sudo mkdir -p /usr/lib/modules/6.19.11+/dtb
-sudo cp -r arch/arm64/boot/dts/* /usr/lib/modules/6.19.11+/dtb/
-sudo make install
+sudo make LLVM=1 modules_install
+sudo make LLVM=1 dtbs_install
+
+task_kernel_release=$(make LLVM=1 -s kernelrelease)
+sudo mkdir -p "/usr/lib/modules/$task_kernel_release/dtb"
+sudo cp -r arch/arm64/boot/dts/* "/usr/lib/modules/$task_kernel_release/dtb/"
+sudo make LLVM=1 install
 
 # Edit /etc/default/grub to show boot menu
 vim /etc/default/grub 
@@ -121,10 +151,95 @@ sudo modprobe typec_nvidia
 sudo modprobe typec_thunderbolt
 ls /sys/bus/typec/devices/
 ls /sys/class/drm/
+sudo modprobe asahi
+ls -l /dev/dri/renderD*
 echo -e "typec_displayport\ntypec_nvidia\ntypec_thunderbolt" | sudo tee /etc/modules-load.d/fairydust.conf
 
 # Note monitor suport only on one blessed typec port on M1
 ```
+
+### Add GPU support to an existing GCC kernel build
+
+An existing `~/linux` build can reuse its object files only when the source,
+compiler, linker, flags and relevant configuration remain unchanged. The
+current `7.1.13+` tree recorded GCC 15.2.1 and GNU binutils in its build
+configuration. Set the paths below to that exact compiler and linker. Kbuild
+rebuilds all C objects when the compiler version differs, so do not use generic
+`gcc` or `ld` after a Fedora upgrade without checking them. If the matching
+toolchain is unavailable, use the fresh LLVM build above. Keep the existing
+`.config`, `.o` and `.cmd` files for this incremental path.
+
+Rust support can work with GCC for compatible configurations. The current
+ARM64 configuration has no LTO, KASAN or randstruct enabled and has the BTF
+language-exclusion support required by Rust. Check toolchain availability
+and the resolved configuration before building:
+
+```bash
+sudo dnf install -y rust rust-src bindgen-cli
+cd ~/linux
+task_cc=/path/to/matching-gcc
+task_ld=/path/to/matching-ld
+if [ ! -x "$task_cc" ] || [ ! -x "$task_ld" ]; then
+  echo "Set task_cc and task_ld to the matching executable paths before continuing." >&2
+  exit 1
+fi
+task_kernel_cc=$(sed -n 's/^CONFIG_CC_VERSION_TEXT="\(.*\)"$/\1/p' .config)
+task_build_cc=$(LC_ALL=C "$task_cc" --version | head -n 1)
+task_kernel_ld=$(sed -n 's/^CONFIG_LD_VERSION=//p' .config)
+task_build_ld=$(scripts/ld-version.sh "$task_ld" | awk '{print $2}')
+if [ "$task_build_cc" != "$task_kernel_cc" ] ||
+   [ "$task_build_ld" != "$task_kernel_ld" ]; then
+  echo "Use the exact compiler and linker versions recorded in .config, or use the fresh LLVM build." >&2
+  exit 1
+fi
+cp -p .config .config.before-rust-gpu
+make CC="$task_cc" LD="$task_ld" rustavailable || exit 1
+scripts/config --enable RUST --module DRM_ASAHI
+make CC="$task_cc" LD="$task_ld" olddefconfig
+if ! grep -q '^CONFIG_RUST=y$' .config || ! grep -q '^CONFIG_DRM_ASAHI=m$' .config; then
+  echo "Rust/Asahi GPU support was not retained; resolve the configuration before building." >&2
+  exit 1
+fi
+make CC="$task_cc" LD="$task_ld" -j"$(nproc)" vmlinuz.efi modules dtbs
+```
+
+Kbuild rebuilds the Rust support, GPU driver, selected dependencies and any
+existing objects affected by the configuration changes, then relinks the
+kernel. The total depends on those dependencies; it is not restricted to
+`drivers/gpu/drm/asahi/`. Existing unchanged DTBs can be reused.
+
+This configuration installs `vmlinuz.efi`. Building only `Image modules`
+leaves that EFI boot image unchanged, so refresh it before installation.
+Install the fairydust DTBs in the location used by Fedora's kernel hooks:
+
+```bash
+cd ~/linux
+make CC="$task_cc" LD="$task_ld" -j"$(nproc)" vmlinuz.efi dtbs
+task_kernel_release=$(make CC="$task_cc" LD="$task_ld" -s kernelrelease)
+sudo make CC="$task_cc" LD="$task_ld" modules_install
+sudo make CC="$task_cc" LD="$task_ld" dtbs_install \
+  INSTALL_DTBS_PATH="/usr/lib/modules/$task_kernel_release/dtb"
+sudo ln -sfn "/usr/lib/modules/$task_kernel_release/dtb" "/boot/dtb-$task_kernel_release"
+sudo install -m 644 .config "/boot/config-$task_kernel_release"
+sudo install -m 644 System.map "/boot/System.map-$task_kernel_release"
+sudo make CC="$task_cc" LD="$task_ld" install
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+```
+
+Fedora's install hooks select `/boot/dtb-$task_kernel_release`, update m1n1,
+generate the initramfs and register the boot entry. Check that installation
+finishes successfully before rebooting. This build retains release `7.1.13+`,
+so installation replaces the existing entry for that release.
+
+Reboot into the updated kernel, then run `sudo modprobe asahi` and check
+`ls -l /dev/dri/renderD*`. The running Rust-disabled kernel cannot load the
+new Rust driver by itself. Rebuild and reinstall the [ANE runtime overlay
+and KMD](kmod/README.md) against the updated kernel before loading ANE.
+Do not run `make clean` or `make mrproper` for this incremental path.
+
+[Kernel Rust toolchain requirements](https://docs.kernel.org/rust/quick-start.html)
+describe GCC configuration limits; a complete LLVM build remains the best
+supported alternative if the GCC build encounters a toolchain limitation.
 
 Install KMD of ANE, 
 ```bash
@@ -137,9 +252,9 @@ if make failed, git clone my fork and retry https://github.com/allbilly/libane
 Note: After dnf update / kernel update, the boot.bin is replaced and external monitor and ANE device tree was no longer supported.
 run theses install command again
 ```
-sudo make modules_install
-sudo make dtbs_install
-sudo make install
+sudo make LLVM=1 modules_install
+sudo make LLVM=1 dtbs_install
+sudo make LLVM=1 install
 sudo reboot
 ```
 

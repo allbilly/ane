@@ -52,12 +52,14 @@ compared against recorded macOS ANE outputs, and the complete generation flow
 is checked against macOS ANE logits and four greedy tokens. A failure exits
 with a diagnostic. The selected ANE backend never falls back to CPU.
 
-**All 49 Linux ANE reference kernels and generation parity passed on base M1
-Asahi on 2026-10-04**, running `7.1.13+` with the runtime device tree overlay.
-This includes all 24 decode kernels and all 25 prefill reference kernels.
-A fresh 32-token generation completed successfully. `package.json` and
-[asahi-runtime-validation.json](asahi-runtime-validation.json) record this
-validation. The earlier decode performance measurements remain in
+**ANE inference was revalidated on base M1 Asahi on 2026-10-05**, after
+upgrading to Fedora Asahi Remix 44 and booting `7.1.13+` with the runtime
+device tree overlay. All 49 Linux ANE reference kernels matched exactly,
+full generation parity passed, and a fresh 32-token generation from
+`The Apple Neural Engine` completed successfully. The original 2026-10-04
+validation is recorded in `package.json` and
+[asahi-runtime-validation.json](asahi-runtime-validation.json). The earlier
+decode performance measurements remain in
 [asahi-decode-performance.json](asahi-decode-performance.json).
 
 Packing can be tested without an ANE device, on macOS or Linux:

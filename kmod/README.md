@@ -131,20 +131,23 @@ interrupt, IOMMU and power controller checks. Hardware validation requires
 running the privileged load script; compilation and offline merging alone do
 not establish hardware operation.
 
-**Hardware tested on 2026-10-04:** base M1 MacBook Air (J313), running
-`7.1.13+` with no ANE nodes in the boot tree. The runtime overlay created
-`/dev/accel/accel0`; all ten operation checks passed, submission after runtime
-autosuspend passed, and unloading/reloading `ane.ko` and repeating all ten
-checks passed without a reboot or kernel rebuild. Final kernel logs had no
-new faults or unhandled IRQs. Stock Fedora versions were compile checked;
-they were not booted for hardware testing in this session.
+**Hardware revalidated on 2026-10-05 after upgrading Fedora:** base M1 MacBook
+Air (J313), running Fedora Asahi Remix 44 and `7.1.13+` with no ANE nodes in
+the boot tree. The runtime overlay created `/dev/accel/accel0`; all ten
+operation checks passed, submission after runtime autosuspend passed, and
+unloading/reloading `ane.ko` and repeating all ten checks passed without a
+reboot or kernel rebuild. Final kernel logs had no new faults or unhandled
+IRQs. GPT-2 inference also passed all 49 reference kernels, full generation
+parity, and a fresh 32-token generation. Stock Fedora kernel versions were
+compile checked; they were not booted for hardware testing in this session.
 
 The first runtime attempt exposed a difference from `fdtoverlay`: the kernel
 rejects an overlay exporting `__symbols__` when the live tree has no symbol
 table. The corrected build omits `dtc -@`, retains `__local_fixups__`, and the
 embedding script rejects exported symbols or external symbol fixups.
 
-DeepWiki was consulted for the nine repositories listed in `AGENTS.md`.
+DeepWiki was consulted for the nine repositories listed in
+[REFERENCE.md](../REFERENCE.md).
 [The query result](https://deepwiki.com/search/we-are-implementing-an-outoftr_678e1254-d4e7-47f6-97db-8be9024bc35c)
 points to `eiln/ane` for the Linux KMD; those reference projects did not supply
 a Linux runtime overlay implementation.
