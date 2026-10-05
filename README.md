@@ -18,9 +18,12 @@ an independent Uzu BF16 reference check, and experimental Linux M1 ANE
 projections. Start with `qwen35/first-run.sh setup`, then `verify` or
 `generate`. Separate [prefill and decode measurements](qwen35/README.md#measured-performance)
 now cover short, 128-token and 512-token prompts on CPU and ANE. CPU SDOT
-matched every saved token choice; full ANE inference still fails the logit
-accuracy gate. The CPU path is the default. Active desktop load and paging
-limit speed comparisons. No new macOS dump was used.
+matched every saved token choice. The corrected ANE policy scales and
+compensates FP16 projections using spare batch rows, with one hardware
+submission per projection. Three matched runs now passed all 576 decode
+choices with maximum full-logit NRMSE **0.381%**, down from 17.30%. Paired
+ANE decode fell from 17.38 to 11.57 tok/s. The CPU path is the default.
+Active desktop load and paging limit speed comparisons. No new macOS dump was used.
 
 [GPT-2 training on Asahi](gpt2/training/README-asahi.md) replays the captured
 forward and backward kernels through the same driver. A full 124M parameter
