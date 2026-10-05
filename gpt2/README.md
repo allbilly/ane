@@ -266,6 +266,40 @@ retain the conditions and checkpoint hashes. `--safetensors /path/to/model.safet
 adds the reference comparison; `--include-exact` measures the native FP32
 activation path too.
 
+CPU-only measurements on 2026-10-05 used the same two-token prompt and saved
+64-token trace, four M1 performance-core workers, and one OpenBLAS thread.
+Each checkpoint ran in seven rotated fresh processes, with three trials per
+process. The default native OpenMP policy is `PASSIVE`, which lets workers
+sleep while the main thread uses ANE. A second CPU-only run explicitly selected
+`OMP_WAIT_POLICY=ACTIVE`. Both runs held the shared benchmark locks.
+
+| Checkpoint | CPU default steps/s | CPU ACTIVE steps/s | ACTIVE trial range |
+| --- | ---: | ---: | ---: |
+| Q4_0 GGUF | 42.95 | 83.49 | 34.41–142.26 |
+| Q8_0 GGUF | 51.17 | 76.04 | 31.93–129.86 |
+| Q4_K_M fixture | 29.34 | 63.09 | 27.74–108.49 |
+| Q4_K_XL compatibility fixture | 52.95 | 71.30 | 27.51–107.35 |
+| Reference safetensors | 27.65 | 66.40 | 28.44–109.22 |
+
+These are medians over 21 trials per checkpoint and policy. The desktop was
+active, and browser activity and memory pressure were observed during the
+default-policy run. The large variation prevents a controlled CPU-versus-ANE
+comparison or a worker-policy speedup claim; the ANE table above was measured
+in a separate session. The causes of the variation have not been isolated.
+K-format CPU matrices currently use decoded FP16 storage.
+[CPU raw samples, ranges, settings and vocabulary checks](provenance/orion-performance/m1-gguf-cpu.json)
+include the runner source for both policies. Other supported tensor encodings
+have not received separate matched CPU benchmarks.
+
+To measure the three main checkpoints on CPU with active workers:
+
+```sh
+OMP_WAIT_POLICY=ACTIVE ./gpt2/.venv/bin/python gpt2/tools/benchmark_quantized.py \
+  --backend cpu --q4 /path/to/gpt2-Q4_0.gguf --q8 /path/to/gpt2-Q8_0.gguf \
+  --safetensors /path/to/model.safetensors --rounds 7 --trials 3 \
+  --output /tmp/gpt2-cpu-benchmark.json
+```
+
 Validation passed 44 tests, all 49 ANE kernels for both GGUF files, and
 checkpoint generation checks. Over 66 teacher-forced steps per format, the
 optimized head retained every top-token choice against the previous backend;
