@@ -3,6 +3,7 @@ import hashlib
 import json
 import math
 import struct
+import subprocess
 from pathlib import Path
 
 import numpy as np
@@ -10,6 +11,7 @@ import numpy as np
 MODEL_ID = "trymirai/Qwen3.5-0.8B-M"
 REVISION = "c12202e4c764e559960827761566aaa1fd15a87a"
 MODEL_SHA256 = "fa595349afb112763731f5d548a7af4baff7b6088c99f1f2cada29c89442870c"
+CONFIG_SHA256 = "95fe76fdca82d8f257ac2970ed787b760e33bb8b7a0a1bad0f42dd3132704afa"
 TOKENIZER_SHA256 = "87a7830d63fcf43bf241c3c5242e96e62dd3fdc29224ca26fed8ea333db72de4"
 DEFAULT_MODEL = Path.home() / ".cache/ane-qwen35/model"
 
@@ -20,6 +22,25 @@ def sha256(path):
         while block := f.read(8 << 20):
             h.update(block)
     return h.hexdigest()
+
+
+def download(directory):
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+    for name, expected in (("config.json", CONFIG_SHA256), ("model.safetensors", MODEL_SHA256),
+                           ("tokenizer.json", TOKENIZER_SHA256)):
+        destination = directory / name
+        if destination.exists():
+            if expected and sha256(destination) != expected:
+                raise ValueError(f"existing {name} differs from the pinned checkpoint")
+            continue
+        temporary = destination.with_suffix(destination.suffix + ".part")
+        url = f"https://huggingface.co/{MODEL_ID}/resolve/{REVISION}/{name}"
+        subprocess.run(["curl", "-fL", "--retry", "5", "--retry-all-errors", "-C", "-",
+                        "-o", str(temporary), url], check=True)
+        if expected and sha256(temporary) != expected:
+            raise ValueError(f"downloaded {name} failed its checksum")
+        temporary.replace(destination)
 
 
 def bf16_round(x):

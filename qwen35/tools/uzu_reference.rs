@@ -14,6 +14,7 @@ impl LanguageModel<Cpu> {
         let context = &self.engine.context;
         let mut state = self.create_empty_state(Some(tokens.len() as u32 + 32), 0)?;
         let mut file = File::create(output)?;
+        let mut layer_file = File::create(output.with_extension("layers.bin"))?;
         for (position, &token) in tokens.iter().enumerate() {
             state.transformer_state.prepare(position as u32, 1, context)?;
             let mut command = context.create_command_buffer(Some("reference"), None)?;
@@ -22,12 +23,21 @@ impl LanguageModel<Cpu> {
             let nodes = [TrieNode {trie_start: 0, trie_end: 1, height: 0}];
             let batch = BatchTopology::new(&nodes, true);
             let range = if position + 1 == tokens.len() { Some((0..1).into()) } else {None};
-            let output = self.decoder.encode(&input, &batch, range, None, &mut state.transformer_state, &mut command)?;
+            let indices: Vec<u32> = (0..24).collect();
+            let capture = if position + 1 == tokens.len() {Some(indices.as_slice())} else {None};
+            let output = self.decoder.encode(&input, &batch, range, capture, &mut state.transformer_state, &mut command)?;
             state.transformer_state.encode_accept(&[0], &mut command)?;
             command.end_encoding().submit().wait_until_completed()?;
             if let Some(logits) = output.logits {
                 for &value in (&logits).as_slice::<bf16>() {
                     file.write_all(&value.to_f32().to_le_bytes())?;
+                }
+            }
+            if let Some(features) = output.hidden_features {
+                for feature in &features {
+                    for &value in feature.as_slice::<bf16>() {
+                        layer_file.write_all(&value.to_f32().to_le_bytes())?;
+                    }
                 }
             }
             eprintln!("reference {}/{}", position + 1, tokens.len());

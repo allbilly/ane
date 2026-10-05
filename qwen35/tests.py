@@ -104,6 +104,19 @@ class QuantTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 SafeTensors(path)
 
+    def test_dot_activation_precision_and_zero_correction(self):
+        kernel = Native(threads=1, integer=True)
+        with tempfile.TemporaryDirectory() as directory:
+            m, dense, inp, out = self.matrix(directory)
+            rng = np.random.default_rng(40)
+            for x in [rng.normal(size=m.cols).astype(np.float32),
+                      np.zeros(m.cols, dtype=np.float32),
+                      np.full(m.cols, 1e-36, dtype=np.float32)]:
+                expected = self.native.linear(m, x)
+                actual = kernel.linear(m, x)
+                difference = np.linalg.norm(actual - expected)
+                self.assertLess(difference / max(np.linalg.norm(expected), 1e-20), 1e-4)
+
     def test_bf16_ties_to_even(self):
         u = np.array([0x3f808000, 0x3f818000, 0xbf808000, 0xbf818000], dtype=np.uint32)
         np.testing.assert_array_equal(bf16_round(u.view(np.float32)).view(np.uint32),

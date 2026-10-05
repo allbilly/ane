@@ -1,0 +1,68 @@
+{
+  "uzu_revision": "4d880766f5a4137b63d56c3924e7a2e403b0ccc6",
+  "model_revision": "c12202e4c764e559960827761566aaa1fd15a87a",
+  "precision": "bf16",
+  "checks": [
+    {
+      "label": "first",
+      "tokens": [
+        248045
+      ],
+      "argmax": 846,
+      "normalized_rmse": 0.0,
+      "max_abs": 0.0,
+      "bitwise_equal": true,
+      "layers_bitwise_equal": 24,
+      "fixture": "uzu-first.npz",
+      "fixture_sha256": "c7f40ffa47e113ddd9677dc8df8e5d7b8c6770fc1db801dc3811dc7fcfa37cd8"
+    },
+    {
+      "label": "two",
+      "tokens": [
+        248045,
+        846
+      ],
+      "argmax": 198,
+      "normalized_rmse": 0.0,
+      "max_abs": 0.0,
+      "bitwise_equal": true,
+      "layers_bitwise_equal": 24,
+      "fixture": "uzu-two.npz",
+      "fixture_sha256": "8fc642eb517f616be9e6203e6c87edcd7e030062474587329207809e075c3af4"
+    },
+    {
+      "label": "arithmetic",
+      "tokens": [
+        248045,
+        846,
+        198,
+        3710,
+        369,
+        220,
+        17,
+        478,
+        220,
+        17,
+        30,
+        21134,
+        25899,
+        13,
+        248046,
+        198,
+        248045,
+        74455,
+        198,
+        248068,
+        271,
+        248069,
+        271
+      ],
+      "argmax": 17,
+      "normalized_rmse": 0.0,
+      "max_abs": 0.0,
+      "bitwise_equal": true,
+      "fixture": "uzu-arithmetic.npz",
+      "fixture_sha256": "588fd9339a6dac2ba6ce2ebb43180d510d80334299a5c89ad2ca6920cb00e129"
+    }
+  ]
+}

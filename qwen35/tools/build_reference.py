@@ -26,9 +26,18 @@ def main():
     content = module.read_text()
     if "pub mod ane_reference;" not in content:
         module.write_text(content + "\npub mod ane_reference;\n")
-    examples = engine / "examples"
-    examples.mkdir(exist_ok=True)
-    (examples / "ane_reference.rs").write_text('''use std::path::Path;
+    # A separate crate avoids the engine's large, unrelated dev dependencies.
+    cli = args.uzu.parent / "uzu-reference-cli"
+    (cli / "src").mkdir(parents=True, exist_ok=True)
+    (cli / "Cargo.toml").write_text('''[package]
+name = "uzu-reference-cli"
+version = "0.1.0"
+edition = "2024"
+[workspace]
+[dependencies]
+uzu-engine = {path = "''' + str(engine.resolve()) + '''", default-features = false, features = ["cpu"]}
+''')
+    (cli / "src/main.rs").write_text('''use std::path::Path;
 use uzu_engine::{backends::cpu::Cpu, engine::Engine};
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = std::env::args().collect();
@@ -38,8 +47,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     model.ane_reference(&tokens, Path::new(&args[3]))
 }
 ''')
-    subprocess.run([args.cargo, "build", "--release", "-p", "uzu-engine", "--no-default-features",
-                    "--features", "cpu", "--example", "ane_reference", "-j", "4"], cwd=args.uzu, check=True)
+    subprocess.run([args.cargo, "build", "--release", "-j", "4"], cwd=cli, check=True)
 
 
 if __name__ == "__main__":

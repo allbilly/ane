@@ -17,7 +17,8 @@ def pointer(x):
 
 
 class Native:
-    def __init__(self, threads=None):
+    def __init__(self, threads=None, integer=False):
+        self.integer = integer
         cpus = sorted(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else []
         capacity = {c: int(Path(f"/sys/devices/system/cpu/cpu{c}/cpu_capacity").read_text())
                     for c in cpus if Path(f"/sys/devices/system/cpu/cpu{c}/cpu_capacity").exists()}
@@ -50,6 +51,20 @@ class Native:
         p, i = ctypes.c_void_p, ctypes.c_int
         self.lib.qwen35_w4.argtypes = [p, p, p, p, p, i, i, i]
         self.lib.qwen35_w4.restype = None
+        self.lib.qwen35_w4_dot.argtypes = self.lib.qwen35_w4.argtypes
+        self.lib.qwen35_w4_dot.restype = None
+        self.lib.qwen35_w4_serial.argtypes = self.lib.qwen35_w4.argtypes
+        self.lib.qwen35_w4_serial.restype = None
+        self.lib.qwen35_rms_bf16.argtypes = [p, p, p, i, i]
+        self.lib.qwen35_rms_bf16.restype = None
+        self.lib.qwen35_rope_bf16.argtypes = [p, i, i]
+        self.lib.qwen35_rope_bf16.restype = None
+        self.lib.qwen35_attention_bf16.argtypes = [p, p, p, p, p, i]
+        self.lib.qwen35_attention_bf16.restype = None
+        self.lib.qwen35_conv_bf16.argtypes = [p, p, p]
+        self.lib.qwen35_conv_bf16.restype = None
+        self.lib.qwen35_mlp_bf16.argtypes = [p, p]
+        self.lib.qwen35_mlp_bf16.restype = None
         self.lib.qwen35_gdn.argtypes = [p, p, p, p, p, p]
         self.lib.qwen35_gdn.restype = None
 
@@ -62,8 +77,10 @@ class Native:
         if transformed.ndim != 1:
             raise ValueError("native matvec accepts one token")
         y = np.empty(matrix.rows, dtype=np.float32)
-        self.lib.qwen35_w4(pointer(matrix.weights), pointer(matrix.scales), pointer(matrix.zeros),
-                           pointer(transformed), pointer(y), matrix.rows, matrix.cols, self.threads)
+        function = (self.lib.qwen35_w4_dot if self.integer else
+                    self.lib.qwen35_w4_serial if precision == "bf16" else self.lib.qwen35_w4)
+        function(pointer(matrix.weights), pointer(matrix.scales), pointer(matrix.zeros),
+                 pointer(transformed), pointer(y), matrix.rows, matrix.cols, self.threads)
         if precision == "bf16":
             y = bf16_round(y)
         if not matrix.embedding:
@@ -71,6 +88,28 @@ class Native:
             if precision == "bf16":
                 y = bf16_round(y)
         return np.asarray(y, dtype=np.float32)
+
+    def rms_bf16(self, x, scale):
+        x = np.ascontiguousarray(x, dtype=np.float32)
+        y = np.empty_like(x)
+        self.lib.qwen35_rms_bf16(pointer(x), pointer(scale), pointer(y), x.size // x.shape[-1], x.shape[-1])
+        return y
+
+    def rope_bf16(self, x, position):
+        self.lib.qwen35_rope_bf16(pointer(x), len(x), position)
+
+    def conv_bf16(self, projected, state, weights):
+        self.lib.qwen35_conv_bf16(pointer(projected), pointer(state), pointer(weights))
+
+    def mlp_bf16(self, projected):
+        y = np.empty(3584, dtype=np.float32)
+        self.lib.qwen35_mlp_bf16(pointer(projected), pointer(y))
+        return y
+
+    def attention_bf16(self, q, keys, values, gate, length):
+        y = np.empty(2048, dtype=np.float32)
+        self.lib.qwen35_attention_bf16(*(pointer(v) for v in (q, keys, values, gate, y)), length)
+        return y
 
     def gdn(self, state, projected, a_log, dt_bias, norm):
         output = np.empty(2048, dtype=np.float32)
