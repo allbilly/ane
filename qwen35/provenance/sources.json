@@ -1,0 +1,27 @@
+{
+  "model": {
+    "id": "trymirai/Qwen3.5-0.8B-M",
+    "revision": "c12202e4c764e559960827761566aaa1fd15a87a",
+    "model_bytes": 439161360,
+    "model_sha256": "fa595349afb112763731f5d548a7af4baff7b6088c99f1f2cada29c89442870c",
+    "tokenizer_sha256": "87a7830d63fcf43bf241c3c5242e96e62dd3fdc29224ca26fed8ea333db72de4"
+  },
+  "math_reference": {
+    "repository": "https://github.com/trymirai/uzu",
+    "revision": "4d880766f5a4137b63d56c3924e7a2e403b0ccc6",
+    "paths": [
+      "crates/uzu-engine/src/encodable_block/weight_matrix.rs",
+      "crates/uzu-engine/src/encodable_block/linear/rht_wrapper.rs",
+      "crates/uzu-engine/src/backends/cpu/kernel/embedding/input_embedding_lookup.rs",
+      "crates/uzu-engine/src/backends/cpu/kernel/gdn/update.rs",
+      "crates/uzu-engine/src/backends/cpu/kernel/gated_act_mul/gated_act_mul.rs",
+      "crates/uzu-engine/src/backends/cpu/kernel/attention/attention_prepare.rs"
+    ],
+    "license": "LICENSE-Uzu"
+  },
+  "optimization_reference": {
+    "repository": "https://github.com/alesha-pro/llama.cpp-mirai-s",
+    "codec": "Mirai S trellis, different from this checkpoint's Mirai M asymmetric W4",
+    "technique": "rotate activations once, use two int8 planes and correct quantization offsets"
+  }
+}
