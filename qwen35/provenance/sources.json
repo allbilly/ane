@@ -4,7 +4,8 @@
     "revision": "c12202e4c764e559960827761566aaa1fd15a87a",
     "model_bytes": 439161360,
     "model_sha256": "fa595349afb112763731f5d548a7af4baff7b6088c99f1f2cada29c89442870c",
-    "tokenizer_sha256": "87a7830d63fcf43bf241c3c5242e96e62dd3fdc29224ca26fed8ea333db72de4"
+    "tokenizer_sha256": "87a7830d63fcf43bf241c3c5242e96e62dd3fdc29224ca26fed8ea333db72de4",
+    "config_sha256": "95fe76fdca82d8f257ac2970ed787b760e33bb8b7a0a1bad0f42dd3132704afa"
   },
   "math_reference": {
     "repository": "https://github.com/trymirai/uzu",
@@ -22,6 +23,7 @@
   "optimization_reference": {
     "repository": "https://github.com/alesha-pro/llama.cpp-mirai-s",
     "codec": "Mirai S trellis, different from this checkpoint's Mirai M asymmetric W4",
-    "technique": "rotate activations once, use two int8 planes and correct quantization offsets"
+    "technique": "rotate activations once, use two int8 planes and correct quantization offsets",
+    "revision": "b59ae80f419a5415cb950f2a7b2284a500fe74cb"
   }
 }

@@ -32,15 +32,16 @@ def prompt_tokens(directory, config, text, raw=False, thinking=False):
 
 def main():
     parser = argparse.ArgumentParser(description="Exact Mirai Qwen3.5-0.8B-M checkpoint")
-    parser.add_argument("command", choices=("setup", "inspect", "generate", "bench"))
+    parser.add_argument("command", choices=("setup", "inspect", "verify", "generate", "bench"))
     parser.add_argument("--model", type=Path, default=DEFAULT_MODEL)
     parser.add_argument("--prompt", default="What is 2 + 2? Answer briefly.")
     parser.add_argument("--raw", action="store_true")
     parser.add_argument("--thinking", action="store_true")
     parser.add_argument("--max-tokens", type=int, default=32)
     parser.add_argument("--precision", choices=("fp32", "bf16"), default="fp32")
-    parser.add_argument("--kernels", choices=("native", "numpy", "dot"), default="native")
-    parser.add_argument("--backend", choices=("cpu", "ane"), default="cpu")
+    parser.add_argument("--kernels", choices=("auto", "native", "numpy", "dot"), default="auto")
+    parser.add_argument("--backend", choices=("cpu", "ane"), default="cpu",
+                        help="ANE uses experimental FP16 body projections; see README for accuracy results")
     parser.add_argument("--threads", type=int)
     parser.add_argument("--context", type=int, default=4096)
     parser.add_argument("--output", type=Path)
@@ -50,6 +51,13 @@ def main():
         download(args.model)
         print(f"Pinned checkpoint ready: {args.model}")
         return
+    if args.command == "verify":
+        from .verify import verify
+        result = verify(args.model)
+        print(json.dumps(result, indent=2))
+        if args.output:
+            args.output.write_text(json.dumps(result, indent=2) + "\n")
+        return
     if args.max_tokens < 1:
         parser.error("--max-tokens must be positive")
     if args.check_hashes:
@@ -58,17 +66,18 @@ def main():
                 raise ValueError(f"{file}: checksum mismatch for pinned revision")
     start = time.perf_counter()
     model = Model(args.model, args.precision, args.kernels, args.threads, context=args.context)
+    load = time.perf_counter() - start
+    if args.command == "inspect":
+        print(json.dumps(dict(model=MODEL_ID, revision=REVISION, tensors=len(model.tensors.header) - 1,
+                              layers=len(model.layers), load_seconds=load), indent=2))
+        return
     if args.backend == "ane":
         from .ane import Ane
         model.backend = Ane()
         for layer in model.layers:
             for name in ("proj", "out", "up", "down"):
                 model.backend.prepare(layer[name])
-    load = time.perf_counter() - start
-    if args.command == "inspect":
-        print(json.dumps(dict(model=MODEL_ID, revision=REVISION, tensors=len(model.tensors.header) - 1,
-                              layers=len(model.layers), load_seconds=load), indent=2))
-        return
+        load = time.perf_counter() - start
     tokenizer, tokens, rendered = prompt_tokens(args.model, model.config, args.prompt, args.raw, args.thinking)
     if not tokens or len(tokens) + args.max_tokens > args.context:
         parser.error("prompt is empty or exceeds the context capacity")
@@ -86,15 +95,13 @@ def main():
     for i in range(args.max_tokens):
         token = int(np.argmax(logits))
         generated.append(token)
-        if args.command == "generate":
-            print(tokenizer.decode(generated, skip_special_tokens=True)[len(tokenizer.decode(generated[:-1], skip_special_tokens=True)):], end="", flush=True)
         if token in stop and args.command == "generate":
             break
         if i + 1 < args.max_tokens:
             start = time.perf_counter()
             logits = model.step(token)
             latencies.append(time.perf_counter() - start)
-    result = dict(model=MODEL_ID, revision=REVISION, precision=args.precision, kernels=args.kernels,
+    result = dict(model=MODEL_ID, revision=REVISION, precision=args.precision, kernels=model.kernels,
                   backend=args.backend, ane_submissions=model.backend.submissions if model.backend else 0,
                   load_seconds=load, prompt_tokens=tokens, generated_tokens=generated,
                   generated_text=tokenizer.decode(generated, skip_special_tokens=True),
@@ -102,7 +109,7 @@ def main():
                   decode_steps_per_second=len(latencies) / sum(latencies) if latencies else None,
                   components_seconds=dict(model.timings))
     if args.command == "generate":
-        print()
+        print(result["generated_text"])
     print(json.dumps(result, indent=2), file=sys.stderr if args.command == "generate" else sys.stdout)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

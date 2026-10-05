@@ -13,6 +13,14 @@ copies and defaulting OpenBLAS to one thread, four 32-token runs measured
 for the two-token prompt. See the
 [Asahi measurements](gpt2/README.md#measured-asahi-generation) for timing scope.
 
+[Mirai Qwen3.5-0.8B-M](qwen35/README.md) now has a packed W4 CPU runtime,
+an independent Uzu BF16 reference check, and experimental Linux M1 ANE
+projections. Start with `qwen35/first-run.sh setup`, then `verify` or
+`generate`. CPU integer-dot decode measured **28.78 steps/s**, versus
+18.56 for floating packed W4 over the same traces on an active desktop.
+The CPU path is the default; full ANE inference currently has larger logit
+error and is slower than the optimized CPU path. No new macOS dump was used.
+
 [GPT-2 training on Asahi](gpt2/training/README-asahi.md) replays the captured
 forward and backward kernels through the same driver. A full 124M parameter
 run completed ten Adam updates on this machine; its fixed-batch loss fell

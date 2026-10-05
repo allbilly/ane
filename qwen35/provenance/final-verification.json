@@ -1,0 +1,23 @@
+{
+  "vendor": [
+    {
+      "label": "first",
+      "logits_bitwise_equal": true,
+      "layers_bitwise_equal": 24
+    },
+    {
+      "label": "two",
+      "logits_bitwise_equal": true,
+      "layers_bitwise_equal": 24
+    },
+    {
+      "label": "arithmetic",
+      "logits_bitwise_equal": true,
+      "layers_bitwise_equal": null
+    }
+  ],
+  "dot_steps": 16,
+  "dot_argmax_matches": 16,
+  "dot_max_normalized_rmse": 0.00010116516205016524,
+  "status": "pass"
+}

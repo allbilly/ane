@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .native import Native
+from .native import Native, dot_supported
 from .weights import Matrix, SafeTensors, bf16_round
 
 
@@ -22,7 +22,10 @@ def silu(x):
 
 
 class Model:
-    def __init__(self, directory, precision="fp32", kernels="native", threads=None, backend=None, context=4096):
+    def __init__(self, directory, precision="fp32", kernels="auto", threads=None, backend=None, context=4096):
+        if kernels == "auto":
+            kernels = "dot" if precision == "fp32" and dot_supported() else "native"
+        self.kernels = kernels
         if precision not in ("fp32", "bf16") or kernels not in ("native", "numpy", "dot"):
             raise ValueError("unsupported precision or CPU kernels")
         self.precision, self.context = precision, context

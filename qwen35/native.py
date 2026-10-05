@@ -12,6 +12,13 @@ import numpy as np
 from .weights import bf16_round, hadamard
 
 
+def dot_supported():
+    if platform.machine() not in ("aarch64", "arm64"):
+        return False
+    return ("asimddp" in Path("/proc/cpuinfo").read_text()
+            if platform.system() == "Linux" else platform.system() == "Darwin")
+
+
 def pointer(x):
     return ctypes.c_void_p(x.ctypes.data)
 
@@ -35,7 +42,7 @@ class Native:
         compiler = os.environ.get("CC", "cc")
         flags = ["-O3", "-ffp-contract=off", "-std=c11", "-fPIC", "-shared", "-fopenmp"]
         if platform.machine() in ("aarch64", "arm64"):
-            flags.append("-march=armv8.2-a+fp16+dotprod")
+            flags.append("-march=armv8.2-a+fp16" + ("+dotprod" if dot_supported() else ""))
         version = subprocess.check_output([compiler, "--version"])
         identity = hashlib.sha256(source.read_bytes() + version + json.dumps(flags).encode()).hexdigest()
         cache = Path.home() / ".cache/ane-qwen35/native" / identity
@@ -74,6 +81,8 @@ class Native:
         if precision == "bf16":
             transformed = bf16_round(transformed)
         transformed = np.ascontiguousarray(transformed, dtype=np.float32)
+        if not np.isfinite(transformed).all():
+            raise ValueError(f"nonfinite projection input: {matrix.name}")
         if transformed.ndim != 1:
             raise ValueError("native matvec accepts one token")
         y = np.empty(matrix.rows, dtype=np.float32)
