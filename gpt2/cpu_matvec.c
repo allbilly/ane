@@ -1,13 +1,15 @@
 /* Packed GPT-2 CPU matrix-vector kernels for ARMv8.2 FP16 + NEON.
  * Weights are rounded to FP16, matching the ANE/NumPy weight contract;
- * activations and accumulation remain FP32. No activation quantization.
+ * The exact kernels keep FP32 activations. Integer dot kernels use the raw
+ * GGUF block scale and 16-bit block-quantized activations, accumulating FP32.
  */
 #include <arm_neon.h>
+#include <float.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
-int gpt2_matvec_abi(void) { return 2; }
+int gpt2_matvec_abi(void) { return 3; }
 int gpt2_matvec_openmp(void) {
 #ifdef _OPENMP
     return 1;
@@ -109,3 +111,111 @@ void gpt2_f16(const uint8_t *weights, const float *x, float *out, int rows, int 
         out[i] = vaddvq_f32(vaddq_f32(vaddq_f32(s[0], s[1]), vaddq_f32(s[2], s[3])));
     }
 }
+
+int gpt2_matvec_dotprod(void) {
+#ifdef __ARM_FEATURE_DOTPROD
+    return 1;
+#else
+    return 0;
+#endif
+}
+
+#ifdef __ARM_FEATURE_DOTPROD
+/* Quantize each activation block once, then reuse its two signed byte
+ * planes across all rows. The balanced base-256 representation supports
+ * 16-bit precision using SDOT. |error| <= max(|x|)/(2*32639), plus FP32
+ * rounding. Extreme blocks use the exact floating-point kernels instead.
+ */
+typedef struct { int8_t a0[32], a1[32]; float scale; } QuantizedInput;
+
+static inline int8x16_t narrow4(int32x4_t a, int32x4_t b, int32x4_t c, int32x4_t d) {
+    return vcombine_s8(vmovn_s16(vcombine_s16(vmovn_s32(a), vmovn_s32(b))),
+                      vmovn_s16(vcombine_s16(vmovn_s32(c), vmovn_s32(d))));
+}
+
+static int quantize_input(const float *x, QuantizedInput *a, int blocks) {
+    for (int b = 0; b < blocks; ++b) {
+        float32x4_t xx[8], m = vdupq_n_f32(0);
+        for (int i = 0; i < 8; ++i) {
+            xx[i] = vld1q_f32(x + b * 32 + i * 4);
+            m = vmaxq_f32(m, vabsq_f32(xx[i]));
+        }
+        float max = vmaxvq_f32(m);
+        if (max != 0 && (max < FLT_MIN * 32639.0f || max > FLT_MAX / 32639.0f))
+            return 0;
+        a[b].scale = max > 0 ? max / 32639.0f : 1;
+        float inv = max > 0 ? 32639.0f / max : 0;
+        for (int h = 0; h < 2; ++h) {
+            int32x4_t q[4], mid[4];
+            for (int i = 0; i < 4; ++i) {
+                q[i] = vcvtnq_s32_f32(vmulq_n_f32(xx[h * 4 + i], inv));
+                mid[i] = vshrq_n_s32(vaddq_s32(q[i], vdupq_n_s32(128)), 8);
+            }
+            vst1q_s8(a[b].a0 + h * 16, narrow4(q[0], q[1], q[2], q[3]));
+            vst1q_s8(a[b].a1 + h * 16, narrow4(mid[0], mid[1], mid[2], mid[3]));
+        }
+    }
+    return 1;
+}
+
+static inline float dot16(int8x16_t w0,int8x16_t w1,const QuantizedInput *a) {
+    int32x4_t z=vdupq_n_s32(0);
+    int32x4_t p0=vdotq_s32(vdotq_s32(z,w0,vld1q_s8(a->a0)),w1,vld1q_s8(a->a0+16));
+    int32x4_t p1=vdotq_s32(vdotq_s32(z,w0,vld1q_s8(a->a1)),w1,vld1q_s8(a->a1+16));
+    return (float)vaddvq_s32(p0)+256.f*(float)vaddvq_s32(p1);
+}
+void gpt2_q4_dot(const uint8_t *w, const float *x, float *out, int rows, int cols, int threads) {
+    int blocks=cols/32;
+    QuantizedInput a[blocks];
+    if (!quantize_input(x, a, blocks)) {
+        gpt2_q4(w, x, out, rows, cols, threads);
+        return;
+    }
+    #pragma omp parallel for num_threads(threads) if(rows >= 2048 && threads > 1)
+    for(int i=0;i<rows;i+=4){
+        float32x4_t sums=vdupq_n_f32(0);
+        const uint8_t *group=w+(size_t)(i/4)*blocks*72;
+        for(int b=0;b<blocks;++b){
+            float f[4];
+            #pragma GCC unroll 4
+            for(int r=0;r<4;++r){
+                const uint8_t *p=group+b*72+r*18;
+                float16_t d;memcpy(&d,p,2);
+                uint8x16_t q=vld1q_u8(p+2);
+                int8x16_t lo=vreinterpretq_s8_u8(vsubq_u8(vandq_u8(q,vdupq_n_u8(15)),vdupq_n_u8(8)));
+                int8x16_t hi=vreinterpretq_s8_u8(vsubq_u8(vshrq_n_u8(q,4),vdupq_n_u8(8)));
+                f[r]=dot16(lo,hi,&a[b])*((float)d*a[b].scale);
+            }
+            sums=vaddq_f32(sums,vld1q_f32(f));
+        }
+        float all[4];vst1q_f32(all,sums);
+        for(int r=0;r<4&&i+r<rows;++r)out[i+r]=all[r];
+    }
+}
+void gpt2_q8_dot(const uint8_t *w, const float *x, float *out, int rows, int cols, int threads) {
+    int blocks=cols/32;
+    QuantizedInput a[blocks];
+    if (!quantize_input(x, a, blocks)) {
+        gpt2_q8(w, x, out, rows, cols, threads);
+        return;
+    }
+    #pragma omp parallel for num_threads(threads) if(rows >= 2048 && threads > 1)
+    for(int i=0;i<rows;i+=4){
+        float32x4_t sums=vdupq_n_f32(0);
+        const uint8_t *group=w+(size_t)(i/4)*blocks*136;
+        for(int b=0;b<blocks;++b){
+            float f[4];
+            #pragma GCC unroll 4
+            for(int r=0;r<4;++r){
+                const uint8_t *p=group+b*136+r*34;
+                float16_t d;memcpy(&d,p,2);
+                f[r]=dot16(vld1q_s8((const int8_t*)p+2),vld1q_s8((const int8_t*)p+18),&a[b])*((float)d*a[b].scale);
+            }
+            sums=vaddq_f32(sums,vld1q_f32(f));
+        }
+        float all[4];vst1q_f32(all,sums);
+        for(int r=0;r<4&&i+r<rows;++r)out[i+r]=all[r];
+    }
+}
+
+#endif

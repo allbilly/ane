@@ -63,8 +63,14 @@ def child(args):
             elapsed = (time.perf_counter_ns() - start) / 1e6
             if i >= 10:
                 samples.append(elapsed)
+        actual = matvec('lm_head', (50257, 768), x)
+        expected = weights.get('lm_head', (50257, 768)) @ x
+        difference = actual.astype(np.float64) - expected
+        error = dict(max_abs=float(np.max(np.abs(difference))),
+                     normalized_rmse=float(np.linalg.norm(difference) / np.linalg.norm(expected)),
+                     argmax_equal=int(actual.argmax()) == int(expected.argmax()))
         return dict(trials=trials, vocabulary_ms=samples, cpu_kernels=matvec.description,
-                    cpu_threads=matvec.threads, prefix_tokens=len(case['prompt_ids']))
+                    cpu_threads=matvec.threads, prefix_tokens=len(case['prompt_ids']), vocabulary_error=error)
     finally:
         if device:
             device.close()
@@ -74,22 +80,27 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--q4', type=Path)
     parser.add_argument('--q8', type=Path)
+    parser.add_argument('--safetensors', type=Path, help='optional reference checkpoint for the same decoder comparison')
     parser.add_argument('--output', type=Path)
     parser.add_argument('--backend', choices=('ane', 'cpu'), default='ane')
     parser.add_argument('--rounds', type=int, default=5)
     parser.add_argument('--trials', type=int, default=2)
     parser.add_argument('--context-case', type=int, choices=(0, 1, 2), default=0)
     parser.add_argument('--include-numpy', action='store_true')
+    parser.add_argument('--include-exact', action='store_true')
     parser.add_argument('--weights', type=Path, help=argparse.SUPPRESS)
-    parser.add_argument('--cpu-kernels', choices=('native', 'numpy'), default='native', help=argparse.SUPPRESS)
+    parser.add_argument('--cpu-kernels', choices=('native', 'exact', 'numpy'), default='native', help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.weights:
         print(json.dumps(child(args)))
         return
     if not (args.q4 and args.q8 and args.output) or args.rounds < 1 or args.trials < 1:
         parser.error('--q4, --q8, --output and positive rounds/trials are required')
-    cases = [(kind, mode, path) for mode in ('native', 'numpy') if mode == 'native' or args.include_numpy
-             for kind, path in (('Q4_0', args.q4), ('Q8_0', args.q8))]
+    formats = [('Q4_0', args.q4), ('Q8_0', args.q8)]
+    if args.safetensors:
+        formats.append(('safetensors', args.safetensors))
+    modes = ['native'] + (['exact'] if args.include_exact else []) + (['numpy'] if args.include_numpy else [])
+    cases = [(kind, mode, path) for mode in modes for kind, path in formats]
     report = dict(backend=args.backend, openblas_threads=1, rounds=args.rounds,
                   conditions='Warm coefficient and OS file caches; fastest available CPU cluster; active desktop, no resource isolation.',
                   timing='model.step on identical saved 64-token traces after 32 warmup steps; includes CPU work and ANE transfers/submission; excludes checkpoint loading, checks and prompt ingestion.',

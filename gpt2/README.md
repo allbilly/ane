@@ -46,7 +46,10 @@ under `~/.cache/orion-gpt2/cpu-neon-v1`. GCC/OpenMP enables up to four workers
 on the fastest available CPU cluster, respecting the initial process affinity
 and explicit OpenMP settings. Workers sleep during ANE execution.
 `GPT2_CPU_THREADS=1` selects one worker; `--cpu-kernels numpy` selects the
-decoded NumPy path. If the compiler or instructions are unavailable, `auto`
+decoded NumPy path. On CPUs with integer dot instructions, the Q4/Q8 vocabulary
+head uses SDOT with 16-bit block-quantized activations. `--cpu-kernels exact` keeps FP32
+activations and FP16-rounded weights in the native floating-point kernels.
+If the compiler or instructions are unavailable, `auto`
 uses NumPy; `--cpu-kernels native` reports the missing requirement.
 Subsequent launches reuse the installed dependencies; pip runs again only when
 requirements change or a required import is missing. Downloads use a pinned HF
@@ -170,11 +173,20 @@ GGUF models are not downloaded automatically. The loader memory-maps the
 file, decodes each tensor once, rounds it to FP16, and shares slices of fused
 QKV tensors. Native CPU kernels retain packed Q4_0/Q8_0 matrices for the
 vocabulary head and attention output projections, and for the other linear
-layers with `--backend cpu`. Q4 uses a 16-byte code lookup held in registers;
-both formats interleave four output rows to reuse activation loads without
-expanding the model tensor. FP16-rounded weights, FP32 activations and FP32
-accumulation match the existing contract, with normal reduction-order rounding
-differences. The NumPy path continues to use decoded FP32 arrays. ANE uses
+layers with `--backend cpu`. Both formats interleave four output rows without
+expanding the model tensor. The vocabulary head's integer dot kernels quantize each activation block
+once to two signed byte planes, retaining 16-bit precision, and apply the
+original GGUF block scale after the integer dot product. Accumulation is FP32.
+Activation error is bounded by the block maximum divided by `2 * 32639`, plus
+FP32 rounding. Extreme activation magnitudes fall back to floating-point
+execution. These kernels avoid the additional FP16 rounding of decoded weights,
+so results differ slightly from the FP16-rounded NumPy/ANE reference.
+The other CPU projections retain FP16-rounded weights and FP32 activations;
+this avoids propagating small rounding changes through normalization layers.
+`--cpu-kernels exact` uses FP16-rounded weights and FP32 activations; its Q4
+decoder uses a 16-byte code lookup held in registers. CPUs without SDOT use
+these floating-point kernels automatically. The NumPy path continues to use
+decoded FP32 arrays containing FP16-rounded weights. ANE uses
 the existing FP16 coefficient layout and kernels. An optional
 `output.weight` supplies the vocabulary head; otherwise token embeddings
 are shared with the head. No Linux driver change or ANE recompilation is needed.
@@ -217,6 +229,32 @@ fresh processes. This measures decoding separately from load/verification time:
   --q4 /path/to/gpt2-Q4_0.gguf --q8 /path/to/gpt2-Q8_0.gguf \
   --include-numpy --output /tmp/gpt2-quantized-benchmark.json
 ```
+
+On base M1 Asahi Linux, the optimized vocabulary head gave these median rates
+over seven rotated fresh processes per format, with three 64-token trials each:
+
+| Checkpoint | Decode steps/s | Vocabulary projection |
+| --- | ---: | ---: |
+| Q4_0 GGUF | 99.64 | 0.539 ms |
+| Q8_0 GGUF | 96.78 | 0.969 ms |
+| Reference safetensors | 90.55 | 1.777 ms |
+
+All formats used their optimized native CPU kernels and the same FP16 ANE
+programs. Q4_0 was 2.95% faster than Q8_0 and 10.03% faster than safetensors
+in this short-context trace. Loading and verification are excluded; the
+unchanged ANE work limits the overall benefit of the faster CPU head.
+[Raw samples and numerical checks](provenance/orion-performance/m1-gguf-dot.json)
+retain the conditions and checkpoint hashes. `--safetensors /path/to/model.safetensors`
+adds the reference comparison; `--include-exact` measures the native FP32
+activation path too.
+
+Validation passed 44 tests, all 49 ANE kernels for both GGUF files, and
+checkpoint generation checks. Over 66 teacher-forced steps per format, the
+optimized head retained every top-token choice against the previous backend;
+maximum normalized logit error was below 0.14%. The Q4 trace also exposes
+existing ANE-versus-NumPy logit drift at some later positions, reaching 31.8%
+normalized RMSE while retaining the same top tokens. The report includes
+these baseline differences separately from the head's numerical error.
 
 The Asahi training adapter accepts these checkpoints as initial weights when
 the vocabulary head is tied to the embeddings. Original-checkpoint loss and
@@ -803,7 +841,8 @@ isolation, and corruption recovery. They use an existing safetensors cache
 for integration tests and do not download a checkpoint.
 Native CPU tests additionally compare actual NEON kernels against independently
 decoded NumPy weights, including row padding, multithreaded row groups, negative
-and subnormal scales, nibble ordering, strided inputs, and complete CPU logits.
+and subnormal scales, nibble ordering, strided inputs, integer-dot error bounds,
+extreme-activation fallback, and complete CPU logits.
 
 To regenerate data from the original sources:
 

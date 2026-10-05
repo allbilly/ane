@@ -69,11 +69,60 @@ class NativeMatvecTests(unittest.TestCase):
                 return "Q4_0", raw
             def get(self, name, shape):
                 raise AssertionError("native packed matvec must not request decoded weights")
-        matvec = CPUMatvec(Weights(), "native", threads=1)
+        matvec = CPUMatvec(Weights(), "exact", threads=1)
         x = rng.normal(size=768).astype(np.float32)
         expected = gguf.dequantize(raw, gguf.GGMLQuantizationType.Q4_0).astype(np.float16).astype(np.float32) @ x
         np.testing.assert_allclose(matvec("test", (5, 768), x), expected, rtol=2e-5, atol=2e-5)
         self.assertIs(matvec.matrix("test", (5, 768)), matvec.matrix("test", (5, 768)))
+
+    def test_integer_dot_precision_and_extreme_activation_fallback(self):
+        if not self.library.gpt2_matvec_dotprod():
+            self.skipTest("integer dot instructions unavailable")
+        rng = np.random.default_rng(4381)
+        for kind in (gguf.GGMLQuantizationType.Q4_0, gguf.GGMLQuantizationType.Q8_0):
+            for rows, cols in ((1, 32), (5, 768), (9, 3072), (2049, 32)):
+                source = rng.normal(0, 0.3, (rows, cols)).astype(np.float32)
+                raw = gguf.quantize(source, kind)
+                x = rng.normal(size=cols * 2).astype(np.float32)[::2]
+                decoded = gguf.dequantize(raw, kind)
+                expected = decoded @ x
+                for threads in (1, 4):
+                    with self.subTest(kind=kind.name, rows=rows, cols=cols, threads=threads):
+                        matrix = PackedMatrix(kind.name, raw, source.shape, self.library, threads, integer=True)
+                        actual = matrix(x)
+                        relative = np.linalg.norm(actual - expected) / np.linalg.norm(expected)
+                        self.assertLess(relative, 4e-5)
+                        # Per-block rounding bounds each activation error;
+                        # this also covers outputs near cancellation.
+                        maxima = np.max(np.abs(x.reshape(-1, 32)), axis=1)
+                        bound = (np.abs(decoded).reshape(rows, -1, 32).sum(axis=2)
+                                 @ (maxima / (2 * 32639)))
+                        np.testing.assert_array_less(np.abs(actual - expected), bound + 2e-5)
+                        np.testing.assert_array_equal(matrix(np.zeros(cols, np.float32)), np.zeros(rows, np.float32))
+                exact = PackedMatrix(kind.name, raw, source.shape, self.library, 1)
+                integer = PackedMatrix(kind.name, raw, source.shape, self.library, 1, integer=True)
+                for magnitude in (1e-35, 1e35):
+                    extreme = rng.uniform(-magnitude, magnitude, cols).astype(np.float32)
+                    extreme[0] = magnitude
+                    np.testing.assert_array_equal(integer(extreme), exact(extreme))
+
+    def test_native_integer_dispatch_retains_packed_weights(self):
+        if not self.library.gpt2_matvec_dotprod():
+            self.skipTest("integer dot instructions unavailable")
+        rng = np.random.default_rng(4279)
+        raw = gguf.quantize(rng.normal(size=(8, 768)).astype(np.float32), gguf.GGMLQuantizationType.Q4_0)
+        class Weights:
+            def packed_matrix(self, name, shape):
+                return "Q4_0", raw
+            def get(self, name, shape):
+                raise AssertionError("integer matvec must keep compressed weights")
+        matvec = CPUMatvec(Weights(), "native", threads=1)
+        x = rng.normal(size=768).astype(np.float32)
+        expected = gguf.dequantize(raw, gguf.GGMLQuantizationType.Q4_0) @ x
+        actual = matvec("lm_head", (8, 768), x)
+        self.assertTrue(matvec.matrix("lm_head", (8, 768)).integer)
+        self.assertFalse(matvec.matrix("layer0/wo", (8, 768)).integer)
+        self.assertLess(np.linalg.norm(actual - expected) / np.linalg.norm(expected), 4e-5)
 
     def test_explicit_numpy_and_unavailable_native_modes(self):
         class Weights:

@@ -16,7 +16,7 @@ def main():
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("command", choices=("generate", "verify", "doctor", "setup", "pack"))
     cli.add_argument("--backend", choices=("ane", "cpu"), default="ane")
-    cli.add_argument("--cpu-kernels", choices=("auto", "native", "numpy"), default="auto",
+    cli.add_argument("--cpu-kernels", choices=("auto", "native", "exact", "numpy"), default="auto",
                      help="CPU matrix-vector implementation; auto uses packed NEON kernels when available")
     cli.add_argument("--device", help="ANE /dev/accel node (otherwise discovered by driver name)")
     cli.add_argument("--prompt", default="Hello world")

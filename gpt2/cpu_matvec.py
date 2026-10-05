@@ -1,4 +1,4 @@
-"""FP32-accumulating NEON matvecs over packed Q4/Q8 or FP16 weights."""
+"""Packed NEON matvecs, with integer dot products or exact FP16 weights."""
 from functools import lru_cache
 import ctypes
 import hashlib
@@ -36,6 +36,12 @@ def neon_supported():
     return platform.system() == "Darwin"
 
 
+def dot_supported():
+    if platform.system() == "Linux":
+        return "asimddp" in Path("/proc/cpuinfo").read_text()
+    return platform.machine().lower() in ("aarch64", "arm64") and platform.system() == "Darwin"
+
+
 def build_library():
     """Compile into the external cache; verify cached library bytes before load."""
     from external_weights import cache_root
@@ -43,7 +49,8 @@ def build_library():
     require(compiler is not None, "packed CPU kernels require a C compiler (cc)")
     version = subprocess.run([compiler, "--version"], capture_output=True, check=True).stdout
     source = ROOT / "cpu_matvec.c"
-    base_flags = ["-O3", "-std=c11", "-fPIC", "-shared", "-march=armv8.2-a+fp16"]
+    arch = "armv8.2-a+fp16" + ("+dotprod" if dot_supported() else "")
+    base_flags = ["-O3", "-std=c11", "-fPIC", "-shared", "-march=" + arch]
     errors = []
     for openmp in (True, False):
         flags = base_flags + (["-fopenmp"] if openmp else [])
@@ -89,20 +96,26 @@ def native_library():
         library = ctypes.CDLL(str(build_library()))
         library.default_threads = default_threads
         library.gpt2_matvec_abi.restype = ctypes.c_int
-        require(library.gpt2_matvec_abi() == 2, "packed CPU kernel ABI mismatch")
+        require(library.gpt2_matvec_abi() == 3, "packed CPU kernel ABI mismatch")
         pointer, integer = ctypes.c_void_p, ctypes.c_int
         library.gpt2_q4.argtypes = library.gpt2_q8.argtypes = library.gpt2_f16.argtypes = [pointer, pointer, pointer, integer, integer, integer]
         for name in ("gpt2_q4", "gpt2_q8", "gpt2_f16"):
             getattr(library, name).restype = None
         library.gpt2_matvec_openmp.restype = ctypes.c_int
+        library.gpt2_matvec_dotprod.restype = ctypes.c_int
+        if library.gpt2_matvec_dotprod():
+            for name in ("gpt2_q4_dot", "gpt2_q8_dot"):
+                getattr(library, name).argtypes = [pointer, pointer, pointer, integer, integer, integer]
+                getattr(library, name).restype = None
         return library, None
     except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
         return None, str(error)
 
 
 class PackedMatrix:
-    def __init__(self, kind, data, shape, library, threads):
+    def __init__(self, kind, data, shape, library, threads, integer=False):
         self.kind, self.shape, self.library, self.threads = kind, tuple(shape), library, threads
+        self.integer = bool(integer and kind in ("Q4_0", "Q8_0") and library.gpt2_matvec_dotprod())
         rows, cols = self.shape
         require(rows > 0 and cols > 0 and cols % 16 == 0, "native matrix columns must be a positive multiple of 16")
         if kind in ("Q4_0", "Q8_0"):
@@ -124,7 +137,9 @@ class PackedMatrix:
         x = np.ascontiguousarray(x)
         output = np.empty(self.shape[0], dtype=np.float32)
         args = (self.data.ctypes.data, x.ctypes.data, output.ctypes.data, *self.shape)
-        function = {"Q4_0": self.library.gpt2_q4, "Q8_0": self.library.gpt2_q8, "F16": self.library.gpt2_f16}[self.kind]
+        function = (getattr(self.library, "gpt2_q4_dot" if self.kind == "Q4_0" else "gpt2_q8_dot")
+                    if self.integer else
+                    {"Q4_0": self.library.gpt2_q4, "Q8_0": self.library.gpt2_q8, "F16": self.library.gpt2_f16}[self.kind])
         function(*args, self.threads)
         require(bool(np.isfinite(output).all()), "nonfinite native CPU output")
         return output
@@ -132,10 +147,10 @@ class PackedMatrix:
 
 class CPUMatvec:
     def __init__(self, weights, mode="auto", threads=None):
-        require(mode in ("auto", "native", "numpy"), "CPU kernels must be auto, native, or numpy")
+        require(mode in ("auto", "native", "exact", "numpy"), "CPU kernels must be auto, native, exact, or numpy")
         self.weights, self.mode, self.cache = weights, mode, {}
         self.library, self.reason = (None, None) if mode == "numpy" else native_library()
-        if mode == "native":
+        if mode in ("native", "exact"):
             require(self.library is not None, self.reason)
         default_threads = self.library.default_threads if self.library is not None else 1
         selected_threads = os.environ.get("GPT2_CPU_THREADS", os.environ.get("OMP_NUM_THREADS", str(default_threads)).split(",")[0])
@@ -152,7 +167,11 @@ class CPUMatvec:
             raw = self.weights.packed_matrix(name, shape) if hasattr(self.weights, "packed_matrix") else None
             if raw is None:
                 raw = ("F16", self.weights.get(name, shape).astype("<f2"))
-            self.cache[key] = PackedMatrix(*raw, shape, self.library, self.threads)
+            # Keep the body on the FP16-rounded contract: small differences
+            # there can be amplified by subsequent normalization layers.
+            # The final vocabulary projection has no such feedback.
+            self.cache[key] = PackedMatrix(*raw, shape, self.library, self.threads,
+                                           integer=self.mode != "exact" and name == "lm_head")
         return self.cache[key]
 
     def __call__(self, name, shape, x):
@@ -164,7 +183,10 @@ class CPUMatvec:
 
     @property
     def description(self):
-        return f"NEON packed Q4/Q8/FP16, {self.threads} CPU threads" if self.library is not None else "NumPy"
+        if self.library is None:
+            return "NumPy"
+        arithmetic = "integer dot products" if self.mode != "exact" and self.library.gpt2_matvec_dotprod() else "FP16 weights / FP32 activations"
+        return f"NEON packed Q4/Q8/FP16 ({arithmetic}), {self.threads} CPU threads"
 
 
 def make_matvec(weights, selection):
