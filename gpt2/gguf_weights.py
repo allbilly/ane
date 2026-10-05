@@ -117,6 +117,19 @@ class GGUFWeights:
         from model import LAYER_SHAPES
         return self.get(f"layer{index}/{name}", LAYER_SHAPES[name])
 
+    def packed_matrix(self, name, shape):
+        """Expose original packed rows to CPU kernels, without tensor decoding."""
+        require(name in self.entries, f"unknown GPT-2 tensor: {name}")
+        source, full_shape, section = self.entries[name]
+        expected = (768,) + full_shape[1:] if section is not None else full_shape
+        require(tuple(shape) == expected and len(shape) == 2, f"GGUF matrix shape mismatch: {name}")
+        tensor = self.records[source]
+        kind = tensor.tensor_type.name
+        if kind not in ("F16", "Q4_0", "Q8_0"):
+            return None
+        rows = tensor.data.reshape(full_shape[0], -1)
+        return kind, rows[section] if section is not None else rows
+
     def validate(self, package):
         """Check every decoded tensor and detect equivalent reference weights."""
         from external_weights import blob_bytes

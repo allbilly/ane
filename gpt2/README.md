@@ -40,6 +40,14 @@ the checkpoint is absent from the cache. `GPT2_PYTHON=/path/to/python3` selects
 another Python. There is no network access during inference.
 The CLI defaults `OPENBLAS_NUM_THREADS` to `1` before importing NumPy for
 batch-one matrix-vector operations. An explicitly set value is preserved.
+On ARM CPUs with NEON/FP16 instructions, `--cpu-kernels auto` (the default)
+builds native CPU matrix-vector kernels using `cc`, caching the shared library
+under `~/.cache/orion-gpt2/cpu-neon-v1`. GCC/OpenMP enables up to four workers
+on the fastest available CPU cluster, respecting the initial process affinity
+and explicit OpenMP settings. Workers sleep during ANE execution.
+`GPT2_CPU_THREADS=1` selects one worker; `--cpu-kernels numpy` selects the
+decoded NumPy path. If the compiler or instructions are unavailable, `auto`
+uses NumPy; `--cpu-kernels native` reports the missing requirement.
 Subsequent launches reuse the installed dependencies; pip runs again only when
 requirements change or a required import is missing. Downloads use a pinned HF
 revision and separate temporary files, so concurrent setup processes cannot
@@ -160,8 +168,14 @@ tensors, including mixed tensor types. Select the file explicitly:
 A directory containing exactly one GGUF file can be passed to `--weights`.
 GGUF models are not downloaded automatically. The loader memory-maps the
 file, decodes each tensor once, rounds it to FP16, and shares slices of fused
-QKV tensors. The CPU uses FP32 arrays containing those rounded values; ANE
-uses the existing FP16 coefficient layout and kernels. An optional
+QKV tensors. Native CPU kernels retain packed Q4_0/Q8_0 matrices for the
+vocabulary head and attention output projections, and for the other linear
+layers with `--backend cpu`. Q4 uses a 16-byte code lookup held in registers;
+both formats interleave four output rows to reuse activation loads without
+expanding the model tensor. FP16-rounded weights, FP32 activations and FP32
+accumulation match the existing contract, with normal reduction-order rounding
+differences. The NumPy path continues to use decoded FP32 arrays. ANE uses
+the existing FP16 coefficient layout and kernels. An optional
 `output.weight` supplies the vocabulary head; otherwise token embeddings
 are shared with the head. No Linux driver change or ANE recompilation is needed.
 
@@ -189,9 +203,20 @@ tokens after prompt ingestion. All comparisons require normalized RMSE below
 tolerance to account for FP16 reductions and cancellation; decode kernels,
 logits, and original macOS fixture checks require every element to pass.
 CPU-only verification performs finite-logit smoke checks on three
-prompts; it does not claim parity with the original model. Quantization can
-change generated tokens. Decoding into FP16 reduces the input file size but
-does not retain Q4/Q8 storage or arithmetic during ANE execution.
+prompts; it does not claim parity with the original model. The independent
+NumPy oracle is always used for ANE checkpoint checks, even when generation
+uses native CPU kernels. Quantization can change generated tokens. Packed
+Q4/Q8 execution currently applies to CPU matrix-vector operations; ANE
+coefficient storage and arithmetic remain FP16.
+
+Compare formats using the same saved input tokens, warming kernels and rotating
+fresh processes. This measures decoding separately from load/verification time:
+
+```sh
+./gpt2/.venv/bin/python gpt2/tools/benchmark_quantized.py \
+  --q4 /path/to/gpt2-Q4_0.gguf --q8 /path/to/gpt2-Q8_0.gguf \
+  --include-numpy --output /tmp/gpt2-quantized-benchmark.json
+```
 
 The Asahi training adapter accepts these checkpoints as initial weights when
 the vocabulary head is tied to the embeddings. Original-checkpoint loss and
@@ -776,6 +801,9 @@ parity, quantized QKV orientation and splitting, hand-authored Q4/Q8 blocks,
 metadata and tokenizer rejection, finite FP16 conversion, checkpoint cache
 isolation, and corruption recovery. They use an existing safetensors cache
 for integration tests and do not download a checkpoint.
+Native CPU tests additionally compare actual NEON kernels against independently
+decoded NumPy weights, including row padding, multithreaded row groups, negative
+and subnormal scales, nibble ordering, strided inputs, and complete CPU logits.
 
 To regenerate data from the original sources:
 

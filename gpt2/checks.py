@@ -128,7 +128,7 @@ def cpu_checkpoint_check(root, model, tokenizer):
 def cpu_kernel_outputs(weights, name, x):
     """Independent NumPy computations for the fixed GPT-2 kernel shapes."""
     from model import CPUKernels, layernorm
-    cpu = CPUKernels(weights)
+    cpu = CPUKernels(weights, cpu_matvec="numpy")
     if name == "prefill_final_ln_L-1":
         return {"hidden": layernorm(x.T, weights.get("ln_f_g", (768,)), weights.get("ln_f_b", (768,))).T}
     layer = int(name.rsplit("_L", 1)[1])
@@ -174,7 +174,7 @@ def ane_checkpoint_parity(root, device, weights, all_kernels=False, progress=Non
 
 def checkpoint_hybrid_parity(root, model, tokenizer, weights):
     from model import GPT2, CPUKernels
-    cpu = GPT2(weights, CPUKernels(weights))
+    cpu = GPT2(weights, CPUKernels(weights, cpu_matvec="numpy"), cpu_matvec="numpy")
     fixture = json.loads((root / "fixtures/hybrid.json").read_text())
     tokens = fixture["tokens"]
     require(tokenizer.encode(fixture["prompt"]) == tokens, "hybrid tokenizer mismatch")

@@ -16,6 +16,8 @@ def main():
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("command", choices=("generate", "verify", "doctor", "setup", "pack"))
     cli.add_argument("--backend", choices=("ane", "cpu"), default="ane")
+    cli.add_argument("--cpu-kernels", choices=("auto", "native", "numpy"), default="auto",
+                     help="CPU matrix-vector implementation; auto uses packed NEON kernels when available")
     cli.add_argument("--device", help="ANE /dev/accel node (otherwise discovered by driver name)")
     cli.add_argument("--prompt", default="Hello world")
     cli.add_argument("--max-tokens", "--max_tokens", type=int, default=32)
@@ -81,8 +83,11 @@ def main():
             if device:
                 from packing import PackedAssets
                 device.assets = PackedAssets(ROOT, weights)
-            kernels = ANEKernels(device) if device else CPUKernels(weights)
-            model = GPT2(weights, kernels)
+            from cpu_matvec import CPUMatvec
+            matvec = CPUMatvec(weights, args.cpu_kernels)
+            print(f"CPU matrices: {matvec.description}", file=sys.stderr)
+            kernels = ANEKernels(device) if device else CPUKernels(weights, cpu_matvec=matvec)
+            model = GPT2(weights, kernels, cpu_matvec=matvec)
             if device:
                 progress = lambda name: print(f"Checking {name}...", file=sys.stderr, flush=True)
                 results = (ane_parity(ROOT, device, args.all_kernels, progress) if reference else

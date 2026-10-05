@@ -33,21 +33,23 @@ def layernorm(x, gamma, beta):
 
 
 class CPUKernels:
-    def __init__(self, weights):
+    def __init__(self, weights, cpu_matvec="auto"):
+        from cpu_matvec import make_matvec
         self.weights = weights
+        self.matvec = make_matvec(weights, cpu_matvec)
 
     def project(self, layer, x):
         w = lambda n: self.weights.layer(layer, n)
         normalized = layernorm(x, w("ln1_g"), w("ln1_b"))
-        return tuple(w("w" + n) @ normalized + w("b" + n) for n in "qkv")
+        return tuple(self.matvec(f"layer{layer}/w{n}", (D, D), normalized) + w("b" + n) for n in "qkv")
 
     def ffn(self, layer, x):
         w = lambda n: self.weights.layer(layer, n)
         normalized = layernorm(x, w("ln2_g"), w("ln2_b"))
-        fc = w("wfc") @ normalized + w("bfc")
+        fc = self.matvec(f"layer{layer}/wfc", (3072, D), normalized) + w("bfc")
         activated = np.float32(0.5) * fc * (np.float32(1) + np.tanh(
             np.float32(np.sqrt(2 / np.pi)) * (fc + np.float32(0.044715) * fc * fc * fc)))
-        return x + w("wproj") @ activated + w("bproj")
+        return x + self.matvec(f"layer{layer}/wproj", (D, 3072), activated) + w("bproj")
 
 
 class ANEKernels:
@@ -63,8 +65,10 @@ class ANEKernels:
 
 
 class GPT2:
-    def __init__(self, weights, kernels):
+    def __init__(self, weights, kernels, cpu_matvec="auto"):
+        from cpu_matvec import make_matvec
         self.weights, self.kernels = weights, kernels
+        self.matvec = make_matvec(weights, cpu_matvec)
         self.reset()
 
     def reset(self):
@@ -89,10 +93,10 @@ class GPT2:
             attention = np.exp(scores)
             attention /= attention.sum(axis=-1, keepdims=True)
             attended = np.einsum("ht,htd->hd", attention, self.values[layer, :, :pos + 1]).reshape(D)
-            x = x + self.weights.layer(layer, "wo") @ attended + self.weights.layer(layer, "bo")
+            x = x + self.matvec(f"layer{layer}/wo", (D, D), attended) + self.weights.layer(layer, "bo")
             x = self.kernels.ffn(layer, x)
         x = layernorm(x, self.weights.get("ln_f_g", (D,)), self.weights.get("ln_f_b", (D,)))
-        logits = self.weights.get("lm_head", (50257, D)) @ x
+        logits = self.matvec("lm_head", (50257, D), x)
         if not np.isfinite(logits).all():
             raise RuntimeError("nonfinite logits")
         self.position += 1
