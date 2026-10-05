@@ -12,7 +12,8 @@ from .weights import bf16_round, hadamard
 
 
 class Ane:
-    def __init__(self):
+    def __init__(self, scale_inputs=True):
+        self.scale_inputs = scale_inputs
         source = Path(__file__).with_name("ane_matmul.c")
         header = source.with_suffix(".h")
         template = source.with_name("linear_template.h")
@@ -42,6 +43,8 @@ class Ane:
         if not self.device:
             raise RuntimeError("M1 ANE device is unavailable")
         self.plans = {}
+        self.input_limits = {}
+        self.dimensions = {}
 
     def create(self, weights):
         w = np.ascontiguousarray(weights, dtype=np.float16)
@@ -51,17 +54,49 @@ class Ane:
         plan = self.lib.ane_plan_create_f16(self.device, pointer(w), k, n)
         if not plan:
             raise RuntimeError(f"ANE could not prepare {k} x {n} matrix")
+        # A conservative triangle-inequality bound keeps every partial sum
+        # below FP16 overflow after scaling. Mirai's matrices permit a peak
+        # activation of 64, which avoids the small-product loss in this stream.
+        bound = float(np.max(np.sum(np.abs(w).astype(np.float32), axis=1)))
+        self.input_limits[plan] = min(64., 32768. / max(bound, 1.))
+        self.dimensions[plan] = (k, n)
         return plan
 
     def run(self, plan, x, outputs):
         x = np.ascontiguousarray(x, dtype=np.float32)
         if x.ndim not in (1, 2):
             raise ValueError("ANE accepts a vector or matrix")
-        rows = 1 if x.ndim == 1 else len(x)
+        if not np.isfinite(x).all():
+            raise ValueError("ANE input must be finite")
+        vector_input = x.ndim == 1
+        rows = 1 if vector_input else len(x)
+        if not 1 <= rows <= 32:
+            raise ValueError("ANE batch must have 1..32 rows")
+        if self.dimensions.get(plan) != (x.shape[-1], outputs):
+            raise ValueError("ANE input/output dimensions differ from its plan")
+        if self.scale_inputs:
+            vectors = x.reshape(rows, -1)
+            peak = np.max(np.abs(vectors), axis=1).astype(np.float64)
+            # ldexp supports FP32 subnormal inputs without materializing an
+            # overflowing gain. Power-of-two scaling adds no rounding in FP32
+            # within the normal range. Zero rows require no scaling.
+            shifts = np.floor(np.log2(self.input_limits[plan]) -
+                              np.log2(np.where(peak > 0, peak, 1.))).astype(np.int32)
+            shifts[peak == 0] = 0
+            x = np.ascontiguousarray(np.ldexp(vectors, shifts[:, None]), dtype=np.float32)
         y = np.empty((rows, outputs), dtype=np.float32)
         if not self.lib.ane_plan_run_batch(plan, pointer(x), pointer(y), rows):
             raise RuntimeError("ANE submission returned invalid output")
-        return y[0] if x.ndim == 1 else y
+        if self.scale_inputs:
+            y = np.ldexp(y, -shifts[:, None])
+            if not np.isfinite(y).all():
+                raise RuntimeError("ANE output exceeds FP32 range after restoring scale")
+        return y[0] if vector_input else y
+
+    def free(self, plan):
+        self.lib.ane_plan_free(plan)
+        self.input_limits.pop(plan, None)
+        self.dimensions.pop(plan, None)
 
     def prepare(self, matrix):
         if matrix.name not in self.plans:
@@ -86,8 +121,10 @@ class Ane:
     def close(self):
         if self.device:
             for plan in self.plans.values():
-                self.lib.ane_plan_free(plan)
+                self.free(plan)
             self.plans.clear()
+            self.input_limits.clear()
+            self.dimensions.clear()
             self.lib.ane_device_close(self.device)
             self.device = None
 

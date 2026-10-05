@@ -28,7 +28,25 @@ def main():
                     if not error < .005:
                         raise RuntimeError(f"ANE shape check failed: {result}")
             finally:
-                ane.lib.ane_plan_free(plan)
+                ane.free(plan)
+        # This stream used to lose small dynamic coefficients even when their
+        # sum was a normal FP16 value. Exact powers of two make this a hardware
+        # regression check rather than a tolerance comparison against itself.
+        plan = ane.create(np.full((32, 1024), 2 ** -5, dtype=np.float16))
+        try:
+            amplitudes = np.array([2 ** -5, 2 ** -14, 2 ** -24, 2 ** -100,
+                                   2 ** -149, 0., 2 ** 15], dtype=np.float32)
+            x = np.repeat(amplitudes[:, None], 1024, axis=1)
+            expected = np.repeat((32 * amplitudes)[:, None], 32, axis=1)
+            actual = ane.run(plan, x, 32)
+            np.testing.assert_array_equal(actual, expected)
+            # A matrix with one row must retain its batch dimension.
+            np.testing.assert_array_equal(ane.run(plan, x[:1], 32), expected[:1])
+            np.testing.assert_array_equal(ane.run(plan, x[0], 32), expected[0])
+            results.append(dict(case="power_of_two_dynamic_range", amplitudes=amplitudes.tolist(),
+                                exact_match=True))
+        finally:
+            ane.free(plan)
         result = dict(submissions=ane.submissions, results=results)
     if len(sys.argv) > 1:
         Path(sys.argv[1]).write_text(json.dumps(result, indent=2) + "\n")
