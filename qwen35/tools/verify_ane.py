@@ -45,8 +45,13 @@ def main():
             # A matrix with one row must retain its batch dimension.
             np.testing.assert_array_equal(ane.run(plan, x[:1], 32), expected[:1])
             np.testing.assert_array_equal(ane.run(plan, x[0], 32), expected[0])
+            for value, reference in zip(x, expected):
+                before = ane.submissions
+                np.testing.assert_array_equal(ane._project(plan, value), reference)
+                if ane.submissions - before != 1:
+                    raise RuntimeError("compensated dynamic range check used multiple submissions")
             results.append(dict(case="power_of_two_dynamic_range", amplitudes=amplitudes.tolist(),
-                                exact_match=True))
+                                exact_match=True, compensated_exact_match=True))
         finally:
             ane.free(plan)
         # Mirai's BF16 group scales times W4 codes are not always exactly

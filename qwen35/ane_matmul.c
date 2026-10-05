@@ -312,6 +312,7 @@ int ane_plan_run_compensated(AnePlan *p, const float *input, float *output,
     AneDevice *d=p->device;
     __fp16 *source=d->host_input, *result=d->host_output;
     float factors[BATCH]={0}, residual[width];
+    int restore_shifts[BATCH]={0}, active[BATCH]={0}, slow_restore=0;
     memset(source,0,(size_t)p->k*BATCH*2);
     for (int replica=0;replica<replicas;replica++) {
         float gain=gains[replica];
@@ -350,6 +351,9 @@ int ane_plan_run_compensated(AnePlan *p, const float *input, float *output,
                 low_peak=fmaxf(low_peak,fabsf(residual[k]));
             }
             factors[row]=(float)ldexp(1.,-shift);
+            restore_shifts[row]=-shift;
+            active[row]=1;
+            slow_restore |= factors[row]==0 || !isfinite(factors[row]);
             if (low_peak) {
                 int low_shift=(int)floor(log2((double)input_limit)-log2((double)low_peak));
                 float low_scale=scalbnf(1.,low_shift);
@@ -365,10 +369,33 @@ int ane_plan_run_compensated(AnePlan *p, const float *input, float *output,
                 for (;k<width;k++)
                     source[(size_t)(row+1)*p->k+start+k]=(__fp16)scalbnf(residual[k],low_shift);
                 factors[row+1]=(float)ldexp(1.,-shift-low_shift);
+                restore_shifts[row+1]=-shift-low_shift;
+                active[row+1]=1;
+                slow_restore |= factors[row+1]==0 || !isfinite(factors[row+1]);
             }
         }
     }
     if (!submit_rows(p,rows)) return 0;
+    // For extreme FP32 values, materializing 2^-shift itself can underflow
+    // although the restored dot product is representable. Scale each result
+    // directly in that rare case, as the public batch wrapper does with ldexp.
+    if (slow_restore) {
+        for (int n=0;n<p->outputs;n++) {
+            float sum=0;
+            for (int replica=0;replica<replicas;replica++) {
+                float partial=0;
+                for (int row=replica*2*partitions;row<(replica+1)*2*partitions;row++) {
+                    float value=result[(size_t)row*p->n+n];
+                    if (!isfinite(value)) return 0;
+                    if (active[row]) partial+=scalbnf(value,restore_shifts[row]);
+                }
+                sum+=partial/gains[replica];
+            }
+            output[n]=sum/replicas;
+            if (!isfinite(output[n])) return 0;
+        }
+        return 1;
+    }
     // Convert and reduce eight outputs at a time, avoiding a rows*N FP32 copy.
     for (int n=0;n<p->outputs;n+=8) {
         float32x4_t lo=vdupq_n_f32(0), hi=vdupq_n_f32(0);
