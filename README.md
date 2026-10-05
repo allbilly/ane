@@ -16,10 +16,11 @@ for the two-token prompt. See the
 [Mirai Qwen3.5-0.8B-M](qwen35/README.md) now has a packed W4 CPU runtime,
 an independent Uzu BF16 reference check, and experimental Linux M1 ANE
 projections. Start with `qwen35/first-run.sh setup`, then `verify` or
-`generate`. CPU integer-dot decode measured **28.78 steps/s**, versus
-18.56 for floating packed W4 over the same traces on an active desktop.
-The CPU path is the default; full ANE inference currently has larger logit
-error and is slower than the optimized CPU path. No new macOS dump was used.
+`generate`. Separate [prefill and decode measurements](qwen35/README.md#measured-performance)
+now cover short, 128-token and 512-token prompts on CPU and ANE. CPU SDOT
+matched every saved token choice; full ANE inference still fails the logit
+accuracy gate. The CPU path is the default. Active desktop load and paging
+limit speed comparisons. No new macOS dump was used.
 
 [GPT-2 training on Asahi](gpt2/training/README-asahi.md) replays the captured
 forward and backward kernels through the same driver. A full 124M parameter

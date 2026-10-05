@@ -82,6 +82,50 @@ The `bench` CLI also reports prefill tok/s, warm TTFT and decode tok/s; its
 `--max-tokens 32` includes the first prediction from prefill, so it times 31
 decode calls.
 
+The 2026-10-05 run on base M1, 8 GB, Asahi Linux used three fresh processes
+per path and 32 teacher-forced decode calls per prompt. Each path ingested
+2,163 timed prompt tokens and made 576 timed decode calls. Rates below are
+aggregate token counts divided by aggregate engine time; warm TTFT is the
+mean per request. All paths used four performance-core workers, one OpenBLAS
+thread and passive OpenMP waiting.
+
+| Path | Prompt tokens | Prefill tok/s | Warm TTFT s | Decode tok/s |
+| --- | ---: | ---: | ---: | ---: |
+| CPU floating packed W4 | 18–23 | 16.81 | 1.205 | 12.60 |
+| CPU floating packed W4 | 128 | 11.73 | 10.908 | 7.52 |
+| CPU floating packed W4 | 512 | 10.51 | 48.723 | 7.56 |
+| CPU SDOT packed W4 (default) | 18–23 | 18.33 | 1.105 | 13.84 |
+| CPU SDOT packed W4 (default) | 128 | 17.57 | 7.283 | 13.48 |
+| CPU SDOT packed W4 (default) | 512 | 11.97 | 42.757 | 10.83 |
+| ANE FP16 body + CPU SDOT head (experimental) | 18–23 | 19.51 | 1.038 | 18.22 |
+| ANE FP16 body + CPU SDOT head (experimental) | 128 | 19.53 | 6.554 | 17.95 |
+| ANE FP16 body + CPU SDOT head (experimental) | 512 | 19.23 | 26.623 | 17.53 |
+
+Across all six prompts, CPU floating, CPU SDOT and ANE measured respectively
+**10.30, 13.17 and 18.06 decode tok/s**. Every CPU prediction matched the
+floating reference: 18 first predictions and 576 decode predictions per
+path. CPU SDOT's maximum full-logit NRMSE was 0.0433%. ANE matched all 18
+first predictions and 570/576 decode predictions, with maximum full-logit
+NRMSE 17.30%; its accuracy gate still fails. ANE counters confirmed all 96
+projections for every timed input: 262,944 submissions across its three runs.
+
+These are active-desktop measurements with substantial CPU variation and
+observed paging. Individual prompt decode rates ranged 4.39–14.55 tok/s
+for floating CPU, 6.20–18.51 for CPU SDOT and 17.11–18.91 for ANE. Shared
+hardware locks serialized jobs, but setup from queued jobs and desktop
+activity were present. Two 60-second lock timeouts never reached inference;
+their attempts were retained and the missing paths were rerun successfully.
+The retry capture held the ANE reservation throughout both workloads.
+These conditions do not establish an isolated kernel speed comparison.
+
+[Full prefill/decode receipts, saved inputs, component timers and numerical checks](provenance/m1-prefill-decode.json)
+include both Coreglass capture hashes and the failed lock attempts. The two
+captures retained 9,628 samples over 964.7 seconds. Whole marked process
+counter averages include setup, comparisons and lock waits; engine timers
+exclude them. The [local prefill/decode report](http://127.0.0.1:8777/out/qwen35-prefill-decode/index.html)
+uses only this workload and these captures. Prompt ingestion remains
+sequential; batching prefill is still an optimization opportunity.
+
 The earlier decode-only measurements below used the previous timing contract:
 their first timed step consumed the last prompt token. Retained receipts are
 unchanged; new measurements use the boundary described above.
@@ -130,6 +174,8 @@ passed against FP32 matmul at batches 1, 8 and 32, with normalized error below
 
 Full-model FP16 error accumulates beyond the projection-level tolerance:
 this path fails the 0.5% full-logit gate and changed six of 384 token choices.
-It is experimental and slower than CPU SDOT in these measurements. Hardware
-submission failures raise an error; there is no silent CPU projection fallback.
+It remains experimental. The earlier short-prompt run favored CPU SDOT;
+the newer prefill/decode run favored ANE under different desktop and paging
+conditions. Its failed accuracy gate prevents treating that as a validated
+fast path. Hardware submission failures raise an error; there is no silent CPU projection fallback.
 Concurrent hardware benchmarks should hold the site's shared ANE/GPU locks.
