@@ -25,6 +25,11 @@ choices with maximum full-logit NRMSE **0.381%**, down from 17.30%. Paired
 ANE decode fell from 17.38 to 11.57 tok/s. The CPU path is the default.
 Active desktop load and paging limit speed comparisons. No new macOS dump was used.
 
+For a separate macOS Core ML comparison, see the
+[Core ML Qwen3.5 notes](coreml/README.md). They record graph-lowering and
+placement lessons from an upstream ANEMLL port; this repository's runtime
+remains the direct-register Asahi implementation described here.
+
 [GPT-2 training on Asahi](gpt2/training/README-asahi.md) replays the captured
 forward and backward kernels through the same driver. A full 124M parameter
 run completed ten Adam updates on this machine; its fixed-batch loss fell
