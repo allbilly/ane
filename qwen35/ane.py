@@ -12,8 +12,16 @@ from .weights import bf16_round, hadamard
 
 
 class Ane:
-    def __init__(self, scale_inputs=True):
+    def __init__(self, scale_inputs=True, split_k=2, gains=(1., 1.375)):
+        if split_k not in (0, 1, 2, 4, 8, 16):
+            raise ValueError("ANE split_k must be 0, 1, 2, 4, 8 or 16")
         self.scale_inputs = scale_inputs
+        self.split_k = split_k if scale_inputs else 0
+        self.gains = np.ascontiguousarray(gains, dtype=np.float32)
+        if (self.gains.ndim != 1 or not len(self.gains) or not np.isfinite(self.gains).all()
+                or np.any(self.gains < 1) or np.any(self.gains >= 2)
+                or self.split_k and 2 * self.split_k * len(self.gains) > 32):
+            raise ValueError("ANE gains must be in [1,2) and precision rows must fit batch 32")
         source = Path(__file__).with_name("ane_matmul.c")
         header = source.with_suffix(".h")
         template = source.with_name("linear_template.h")
@@ -36,6 +44,8 @@ class Ane:
         self.lib.ane_plan_create_f16.restype = p
         self.lib.ane_plan_run_batch.argtypes = [p, p, p, i]
         self.lib.ane_plan_run_batch.restype = i
+        self.lib.ane_plan_run_compensated.argtypes = [p, p, p, i, p, i, ctypes.c_float]
+        self.lib.ane_plan_run_compensated.restype = i
         self.lib.ane_plan_free.argtypes = [p]
         self.lib.ane_device_submissions.argtypes = [p]
         self.lib.ane_device_submissions.restype = ctypes.c_ulonglong
@@ -103,12 +113,32 @@ class Ane:
             self.plans[matrix.name] = self.create(matrix.decode())
         return self.plans[matrix.name]
 
+    def _project(self, plan, transformed):
+        if not self.split_k:
+            return self.run(plan, transformed, self.dimensions[plan][1])
+        # Compute high/residual activation planes for each K partition and
+        # average replicas with different output rounding grids. The native
+        # wrapper packs the spare batch rows and combines outputs in FP32;
+        # all matrix products use ONE ANE submission and the original weights.
+        x = np.ascontiguousarray(transformed, dtype=np.float32)
+        if x.shape != (self.dimensions[plan][0],):
+            raise ValueError("ANE input dimensions differ from its plan")
+        outputs = self.dimensions[plan][1]
+        y = np.empty(outputs, dtype=np.float32)
+        if not self.lib.ane_plan_run_compensated(plan, pointer(x), pointer(y),
+                                                self.split_k, pointer(self.gains), len(self.gains),
+                                                self.input_limits[plan]):
+            raise RuntimeError("ANE compensated submission returned invalid output")
+        return y
+
     def linear(self, matrix, x, precision="fp32"):
         plan = self.prepare(matrix)
         transformed = hadamard(np.asarray(x, dtype=np.float32) * matrix.input_signs)
+        if transformed.ndim != 1:
+            raise ValueError("ANE model projection accepts a single token")
         if precision == "bf16":
             transformed = bf16_round(transformed)
-        y = self.run(plan, transformed, matrix.rows)
+        y = self._project(plan, transformed)
         if precision == "bf16":
             y = bf16_round(y)
         y = hadamard(y) * matrix.output_signs

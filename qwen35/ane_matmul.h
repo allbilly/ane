@@ -8,6 +8,9 @@ void ane_device_close(AneDevice *device);
 AnePlan *ane_plan_create_f16(AneDevice *device, const uint16_t *weights,
                             int inputs, int outputs);
 int ane_plan_run_batch(AnePlan *plan, const float *input, float *output, int rows);
+int ane_plan_run_compensated(AnePlan *plan, const float *input, float *output,
+                             int partitions, const float *gains, int replicas,
+                             float input_limit);
 int ane_plan_run(AnePlan *plan, const float *input, float *output);
 void ane_plan_free(AnePlan *plan);
 unsigned long long ane_device_submissions(const AneDevice *device);

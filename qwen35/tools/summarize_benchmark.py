@@ -75,7 +75,21 @@ def main():
                 raise ValueError("receipt token counts differ from the timing contract")
         if run["timed_steps"] != sum(r["decode_steps"] for r in run["results"]):
             raise ValueError("receipt timed step count differs from its records")
-        grouped.setdefault(f'{run["backend"]}-{run["kernels"]}', []).append(run)
+        if run["backend"] == "cpu" or run.get("ane_mode") == "accurate":
+            if any(check["max_normalized_rmse"] > .005
+                   or check["argmax_matches"] != check["predictions"]
+                   for r in run["results"]
+                   for check in (r["prefill_accuracy"], r["decode_accuracy"])):
+                raise ValueError("a measured receipt failed its numerical gate")
+        if run["backend"] == "ane":
+            for r in run["results"]:
+                if (r["prefill_ane_submissions"] != 96 * r["prompt_tokens"]
+                        or r["decode_ane_submissions"] != 96 * r["decode_steps"]):
+                    raise ValueError("ANE receipt did not execute all 96 body projections per token")
+        path = f'{run["backend"]}-{run["kernels"]}'
+        if run.get("ane_mode"):
+            path += f'-{run["ane_mode"]}'
+        grouped.setdefault(path, []).append(run)
     counts = {len(items) for items in grouped.values()}
     if len(counts) != 1:
         raise ValueError("paths must have an equal number of repeated runs")
@@ -124,12 +138,6 @@ def main():
                     failed.append(dict(capture_file=capture.name, label=step["label"], rc=step["rc"]))
         if any(path.stem not in successful for path in a.runs):
             raise ValueError("a measured receipt has no successful Coreglass workload step")
-        for run in runs.values():
-            if run["backend"] == "cpu" and any(check["max_normalized_rmse"] > .005
-                                               or check["argmax_matches"] != check["predictions"]
-                                               for r in run["results"]
-                                               for check in (r["prefill_accuracy"], r["decode_accuracy"])):
-                raise ValueError("a measured CPU receipt failed the numerical gate")
         result["coreglass"] = dict(captures=captures, failed_attempts=failed)
     a.output.parent.mkdir(parents=True, exist_ok=True)
     a.output.write_text(json.dumps(result, indent=2) + "\n")

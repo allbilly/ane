@@ -2,6 +2,7 @@
 // Direct M1 ANE register programming. ABI and GEMV stream from ~/ane.
 #define _GNU_SOURCE
 #include "ane_matmul.h"
+#include <arm_neon.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <glob.h>
@@ -227,18 +228,9 @@ AnePlan *ane_plan_create_f16(AneDevice *d, const uint16_t *w,
     return p;
 }
 
-int ane_plan_run_batch(AnePlan *p, const float *input, float *output, int rows) {
-    if (!p || !input || !output || rows<1 || rows>BATCH) return 0;
+static int submit_rows(AnePlan *p, int rows) {
     AneDevice *d=p->device;
     __fp16 *source=d->host_input, *result=d->host_output;
-    memset(source,0,(size_t)p->k*BATCH*2);
-    for (int row=0;row<rows;row++) {
-        for (int k=0;k<p->inputs;k++) {
-            float x=input[(size_t)row*p->inputs+k];
-            if (!isfinite(x) || fabsf(x)>65504) return 0;
-            source[(size_t)row*p->k+k]=(__fp16)x;
-        }
-    }
     memcpy(d->input.map,source,(size_t)p->k*BATCH*2);
     // Detect a successful ioctl that did not write its advertised output.
     uint16_t *bits=(uint16_t *)result;
@@ -262,14 +254,148 @@ int ane_plan_run_batch(AnePlan *p, const float *input, float *output, int rows) 
     }
     d->submissions++;
     read_output(result,d->output.map,(size_t)rows*p->n*2);
+    return 1;
+}
+
+int ane_plan_run_batch(AnePlan *p, const float *input, float *output, int rows) {
+    if (!p || !input || !output || rows<1 || rows>BATCH) return 0;
+    AneDevice *d=p->device;
+    __fp16 *source=d->host_input, *result=d->host_output;
+    memset(source,0,(size_t)p->k*BATCH*2);
+    for (int row=0;row<rows;row++) {
+        int k=0;
+        for (;k+8<=p->inputs;k+=8) {
+            float32x4_t a=vld1q_f32(input+(size_t)row*p->inputs+k);
+            float32x4_t b=vld1q_f32(input+(size_t)row*p->inputs+k+4);
+            uint32x4_t valid=vandq_u32(vcleq_f32(vabsq_f32(a),vdupq_n_f32(65504)),
+                                     vcleq_f32(vabsq_f32(b),vdupq_n_f32(65504)));
+            if (!vminvq_u32(valid)) return 0;
+            vst1q_f16(source+(size_t)row*p->k+k,vcombine_f16(vcvt_f16_f32(a),vcvt_f16_f32(b)));
+        }
+        for (;k<p->inputs;k++) {
+            float x=input[(size_t)row*p->inputs+k];
+            if (!isfinite(x) || fabsf(x)>65504) return 0;
+            source[(size_t)row*p->k+k]=(__fp16)x;
+        }
+    }
+    if (!submit_rows(p,rows)) return 0;
     // All input rows are in the device buffer before writing output: alias safe.
     for (int row=0;row<rows;row++) {
-        for (int n=0;n<p->outputs;n++) {
+        int n=0;
+        for (;n+8<=p->outputs;n+=8) {
+            float16x8_t h=vld1q_f16(result+(size_t)row*p->n+n);
+            uint16x8_t exponent=vandq_u16(vreinterpretq_u16_f16(h),vdupq_n_u16(0x7c00));
+            if (vmaxvq_u16(vceqq_u16(exponent,vdupq_n_u16(0x7c00)))) return 0;
+            vst1q_f32(output+(size_t)row*p->outputs+n,vcvt_f32_f16(vget_low_f16(h)));
+            vst1q_f32(output+(size_t)row*p->outputs+n+4,vcvt_f32_f16(vget_high_f16(h)));
+        }
+        for (;n<p->outputs;n++) {
             float value=result[(size_t)row*p->n+n];
             if (!isfinite(value)) return 0;
             output[(size_t)row*p->outputs+n]=value;
         }
     }
+    return 1;
+}
+
+// Use spare batch rows to compute two FP16 activation planes per K partition.
+// Replicas with distinct gains average different FP16 output rounding grids.
+// Every matrix product still runs on ANE, once; CPU combines partial outputs.
+int ane_plan_run_compensated(AnePlan *p, const float *input, float *output,
+                             int partitions, const float *gains, int replicas,
+                             float input_limit) {
+    if (!p || !input || !output || !gains || partitions<1 || replicas<1 ||
+        partitions>BATCH/2 || replicas>BATCH/(2*partitions) ||
+        p->inputs%(32*partitions) || !isfinite(input_limit) ||
+        input_limit<=0 || input_limit>65504) return 0;
+    int width=p->inputs/partitions, rows=2*partitions*replicas;
+    AneDevice *d=p->device;
+    __fp16 *source=d->host_input, *result=d->host_output;
+    float factors[BATCH]={0}, residual[width];
+    memset(source,0,(size_t)p->k*BATCH*2);
+    for (int replica=0;replica<replicas;replica++) {
+        float gain=gains[replica];
+        if (!isfinite(gain) || gain<1 || gain>=2) return 0;
+        for (int part=0;part<partitions;part++) {
+            int start=part*width, row=2*(replica*partitions+part);
+            float peak=0;
+            for (int k=0;k<width;k++) {
+                float x=input[start+k];
+                if (!isfinite(x)) return 0;
+                peak=fmaxf(peak,fabsf(x));
+            }
+            if (!peak) continue;
+            int shift=(int)floor(log2((double)input_limit)-log2((double)peak*gain));
+            float low_peak=0;
+            float scale=scalbnf(1.,shift);
+            int k=0;
+            if (isfinite(scale) && scale>0) {
+                float32x4_t maximum=vdupq_n_f32(0);
+                for (;k+8<=width;k+=8) {
+                    float32x4_t a=vmulq_n_f32(vmulq_n_f32(vld1q_f32(input+start+k),scale),gain);
+                    float32x4_t b=vmulq_n_f32(vmulq_n_f32(vld1q_f32(input+start+k+4),scale),gain);
+                    float16x4_t ha=vcvt_f16_f32(a), hb=vcvt_f16_f32(b);
+                    vst1q_f16(source+(size_t)row*p->k+start+k,vcombine_f16(ha,hb));
+                    float32x4_t ra=vsubq_f32(a,vcvt_f32_f16(ha)), rb=vsubq_f32(b,vcvt_f32_f16(hb));
+                    vst1q_f32(residual+k,ra); vst1q_f32(residual+k+4,rb);
+                    maximum=vmaxq_f32(maximum,vmaxq_f32(vabsq_f32(ra),vabsq_f32(rb)));
+                }
+                low_peak=vmaxvq_f32(maximum);
+            }
+            for (;k<width;k++) {
+                float x=scalbnf(input[start+k],shift)*gain;
+                __fp16 high=(__fp16)x;
+                source[(size_t)row*p->k+start+k]=high;
+                residual[k]=x-(float)high;
+                low_peak=fmaxf(low_peak,fabsf(residual[k]));
+            }
+            factors[row]=(float)ldexp(1.,-shift);
+            if (low_peak) {
+                int low_shift=(int)floor(log2((double)input_limit)-log2((double)low_peak));
+                float low_scale=scalbnf(1.,low_shift);
+                int k=0;
+                if (isfinite(low_scale) && low_scale>0) {
+                    for (;k+8<=width;k+=8) {
+                        float32x4_t a=vmulq_n_f32(vld1q_f32(residual+k),low_scale);
+                        float32x4_t b=vmulq_n_f32(vld1q_f32(residual+k+4),low_scale);
+                        vst1q_f16(source+(size_t)(row+1)*p->k+start+k,
+                                  vcombine_f16(vcvt_f16_f32(a),vcvt_f16_f32(b)));
+                    }
+                }
+                for (;k<width;k++)
+                    source[(size_t)(row+1)*p->k+start+k]=(__fp16)scalbnf(residual[k],low_shift);
+                factors[row+1]=(float)ldexp(1.,-shift-low_shift);
+            }
+        }
+    }
+    if (!submit_rows(p,rows)) return 0;
+    // Convert and reduce eight outputs at a time, avoiding a rows*N FP32 copy.
+    for (int n=0;n<p->outputs;n+=8) {
+        float32x4_t lo=vdupq_n_f32(0), hi=vdupq_n_f32(0);
+        for (int replica=0;replica<replicas;replica++) {
+            float32x4_t part_lo=vdupq_n_f32(0), part_hi=vdupq_n_f32(0);
+            for (int row=replica*2*partitions;row<(replica+1)*2*partitions;row++) {
+                float16x8_t h=vld1q_f16(result+(size_t)row*p->n+n);
+                uint16x8_t exponent=vandq_u16(vreinterpretq_u16_f16(h),vdupq_n_u16(0x7c00));
+                if (vmaxvq_u16(vceqq_u16(exponent,vdupq_n_u16(0x7c00)))) return 0;
+                part_lo=vaddq_f32(part_lo,vmulq_n_f32(vcvt_f32_f16(vget_low_f16(h)),factors[row]));
+                part_hi=vaddq_f32(part_hi,vmulq_n_f32(vcvt_f32_f16(vget_high_f16(h)),factors[row]));
+            }
+            lo=vaddq_f32(lo,vdivq_f32(part_lo,vdupq_n_f32(gains[replica])));
+            hi=vaddq_f32(hi,vdivq_f32(part_hi,vdupq_n_f32(gains[replica])));
+        }
+        lo=vdivq_f32(lo,vdupq_n_f32(replicas));
+        hi=vdivq_f32(hi,vdupq_n_f32(replicas));
+        if (n+8<=p->outputs) {
+            vst1q_f32(output+n,lo);
+            vst1q_f32(output+n+4,hi);
+        } else {
+            float tail[8];
+            vst1q_f32(tail,lo); vst1q_f32(tail+4,hi);
+            for (int j=n;j<p->outputs;j++) output[j]=tail[j-n];
+        }
+    }
+    for (int n=0;n<p->outputs;n++) if (!isfinite(output[n])) return 0;
     return 1;
 }
 

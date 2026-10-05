@@ -58,6 +58,8 @@ def main():
     p.add_argument("--model", type=Path, default=DEFAULT_MODEL)
     p.add_argument("--kernels", choices=("native", "dot"), default="native")
     p.add_argument("--backend", choices=("cpu", "ane"), default="cpu")
+    p.add_argument("--ane-mode", choices=("legacy", "scaled", "accurate"), default="accurate",
+                   help="Compensated ANE by default; legacy/scaled are diagnostic modes")
     p.add_argument("--threads", type=int, default=4)
     p.add_argument("--steps", type=int, default=32, help="Generated-token decode calls, after full prefill")
     p.add_argument("--lengths", type=int, nargs="*", default=[128, 512],
@@ -84,7 +86,8 @@ def main():
     model = Model(a.model, kernels=a.kernels, threads=a.threads, context=context)
     if a.backend == "ane":
         from qwen35.ane import Ane
-        model.backend = Ane()
+        model.backend = (Ane(scale_inputs=False) if a.ane_mode == "legacy" else
+                         Ane(split_k=0) if a.ane_mode == "scaled" else Ane())
         for layer in model.layers:
             for name in ("proj", "out", "up", "down"):
                 model.backend.prepare(layer[name])
@@ -175,12 +178,22 @@ def main():
                       trace_sha256=sha256(traces), backend=a.backend, kernels=a.kernels, threads=a.threads,
                       context=context, timed_steps=a.steps * len(results), results=results,
                       ane_submissions=model.backend.submissions - submissions if model.backend else 0)
+        if model.backend:
+            result.update(ane_mode=a.ane_mode, ane_precision_chunks=model.backend.split_k,
+                          ane_precision_replicas=len(model.backend.gains) if model.backend.split_k else 1,
+                          ane_precision_rows=2 * model.backend.split_k * len(model.backend.gains) if model.backend.split_k else 1,
+                          ane_precision_gains=model.backend.gains.tolist() if model.backend.split_k else [1.],
+                          ane_coefficient_bytes=sum(k * n * 2 for k, n in model.backend.dimensions.values()))
         a.output.parent.mkdir(parents=True, exist_ok=True)
         a.output.write_text(json.dumps(result, indent=2) + "\n")
         if a.backend == "cpu" and any(check["max_normalized_rmse"] > .005
                                       or check["argmax_matches"] != check["predictions"]
                                       for r in results for check in (r["prefill_accuracy"], r["decode_accuracy"])):
             raise RuntimeError("CPU numerical gate failed")
+        if a.backend == "ane" and a.ane_mode == "accurate" and any(
+                check["max_normalized_rmse"] > .005 or check["argmax_matches"] != check["predictions"]
+                for r in results for check in (r["prefill_accuracy"], r["decode_accuracy"])):
+            raise RuntimeError("ANE numerical gate failed")
     finally:
         if model.backend:
             model.backend.close()

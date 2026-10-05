@@ -42,6 +42,8 @@ def main():
     parser.add_argument("--kernels", choices=("auto", "native", "numpy", "dot"), default="auto")
     parser.add_argument("--backend", choices=("cpu", "ane"), default="cpu",
                         help="ANE uses experimental FP16 body projections; see README for accuracy results")
+    parser.add_argument("--ane-mode", choices=("legacy", "scaled", "accurate"), default="accurate",
+                        help="ANE projection accuracy policy; legacy/scaled are diagnostic modes")
     parser.add_argument("--threads", type=int)
     parser.add_argument("--context", type=int, default=4096)
     parser.add_argument("--output", type=Path)
@@ -73,7 +75,8 @@ def main():
         return
     if args.backend == "ane":
         from .ane import Ane
-        model.backend = Ane()
+        model.backend = (Ane(scale_inputs=False) if args.ane_mode == "legacy" else
+                         Ane(split_k=0) if args.ane_mode == "scaled" else Ane())
         for layer in model.layers:
             for name in ("proj", "out", "up", "down"):
                 model.backend.prepare(layer[name])
@@ -121,6 +124,12 @@ def main():
                   decode_steps_per_second=len(latencies) / sum(latencies) if latencies else None,
                   decode_components_seconds=decode_components, decode_ane_submissions=decode_submissions,
                   components_seconds=components)
+    if model.backend:
+        result.update(ane_mode=args.ane_mode, ane_precision_chunks=model.backend.split_k,
+                      ane_precision_replicas=len(model.backend.gains) if model.backend.split_k else 1,
+                      ane_precision_rows=2 * model.backend.split_k * len(model.backend.gains) if model.backend.split_k else 1,
+                      ane_precision_gains=model.backend.gains.tolist() if model.backend.split_k else [1.],
+                      ane_coefficient_bytes=sum(k * n * 2 for k, n in model.backend.dimensions.values()))
     if args.command == "generate":
         print(result["generated_text"])
     print(json.dumps(result, indent=2), file=sys.stderr if args.command == "generate" else sys.stdout)

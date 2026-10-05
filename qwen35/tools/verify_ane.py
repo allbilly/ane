@@ -2,10 +2,12 @@
 import json
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 
 from qwen35.ane import Ane
+from qwen35.weights import bf16_round, hadamard
 
 
 def main():
@@ -47,6 +49,34 @@ def main():
                                 exact_match=True))
         finally:
             ane.free(plan)
+        # Mirai's BF16 group scales times W4 codes are not always exactly
+        # representable in FP16. Compare complete RHT projections against an
+        # independent float64 matmul, including small and nonuniform inputs.
+        for k, n in [(1024, 8224), (1024, 5120), (2048, 1024), (1024, 7168), (3584, 1024)]:
+            codes = rng.integers(0, 16, (n, k), dtype=np.uint8).reshape(n, k // 32, 32)
+            zeros = rng.integers(0, 16, (n, k // 32, 1), dtype=np.uint8)
+            scales = bf16_round(rng.uniform(.002, .025, (n, k // 32, 1)).astype(np.float32))
+            w = ((codes.astype(np.float32) - zeros) * scales).reshape(n, k)
+            matrix = SimpleNamespace(name=f"mirai-fixture-{k}-{n}", rows=n, cols=k,
+                                     input_signs=rng.choice([-1, 1], k).astype(np.int32),
+                                     output_signs=rng.choice([-1, 1], n).astype(np.int32),
+                                     decode=lambda: w)
+            ane.prepare(matrix)
+            x = rng.normal(size=k).astype(np.float32)
+            x[::7] *= 2 ** -16
+            for amplitude in (1., 2 ** -14):
+                value = x * np.float32(amplitude)
+                z = hadamard(value * matrix.input_signs)
+                expected = hadamard((w.astype(np.float64) @ z.astype(np.float64)).astype(np.float32)) * matrix.output_signs
+                before = ane.submissions
+                actual = ane.linear(matrix, value)
+                error = float(np.linalg.norm(actual.astype(np.float64) - expected) / np.linalg.norm(expected))
+                record = dict(case="compensated_mirai_projection", k=k, n=n, amplitude=amplitude,
+                              normalized_rmse=error, submissions=ane.submissions - before)
+                print(json.dumps(record), flush=True)
+                results.append(record)
+                if error >= .0002 or record["submissions"] != 1:
+                    raise RuntimeError(f"ANE compensated projection failed: {record}")
         result = dict(submissions=ane.submissions, results=results)
     if len(sys.argv) > 1:
         Path(sys.argv[1]).write_text(json.dumps(result, indent=2) + "\n")
