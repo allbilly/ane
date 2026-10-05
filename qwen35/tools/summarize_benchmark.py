@@ -45,7 +45,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("runs", type=Path, nargs="+")
     p.add_argument("--traces", type=Path, required=True)
-    p.add_argument("--capture", type=Path)
+    p.add_argument("--capture", type=Path, nargs="+", help="Coreglass captures, including any retried attempts")
     p.add_argument("--output", type=Path, required=True)
     a = p.parse_args()
     runs = {path.name: json.loads(path.read_text()) for path in a.runs}
@@ -101,21 +101,36 @@ def main():
                   timing_scope="Full warm prefill through vocabulary head; warm TTFT also includes first argmax. "
                                "Decode calls ingest saved generated tokens, never prompt tokens. "
                                "Exclude loading, preparation, tokenization, reset and logit comparison; continue beyond EOS.",
-                  limitations=["Active desktop; no concurrent hardware benchmark. No isolated sustained throughput claim.",
+                  limitations=["Active desktop; shared hardware locks serialize workloads. Setup from queued jobs may overlap.",
+                               "CPU timing varied considerably; paging was observed. No isolated sustained throughput claim.",
                                "Sequential prompt ingestion on all paths; no batched prefill kernel.",
                                "ANE FP16 body is experimental; numerical drift is measured separately.",
                                "GPU/ANE busy counters and measured DRAM bandwidth unavailable."],
                   traces=trace_metadata, trace_sha256=sha256(traces), summary=summary, runs=runs,
                   receipt_sha256={path.name: sha256(path) for path in a.runs})
     if a.capture:
-        manifest = a.capture.with_suffix(".run.json")
-        receipt = json.loads(manifest.read_text())
-        if any(step["rc"] != 0 for step in receipt["steps"]):
-            raise ValueError("Coreglass recorded a failed workload step")
-        result["coreglass"] = dict(capture_file=a.capture.name, capture_sha256=sha256(a.capture),
-                                    manifest_sha256=sha256(manifest),
-                                    commit=receipt.get("coreglass_commit"),
-                                    load_gate_overridden=bool(receipt.get("forced_over")))
+        captures, successful, failed = [], set(), []
+        for capture in a.capture:
+            manifest = capture.with_suffix(".run.json")
+            receipt = json.loads(manifest.read_text())
+            captures.append(dict(capture_file=capture.name, capture_sha256=sha256(capture),
+                                 manifest_sha256=sha256(manifest), commit=receipt.get("coreglass_commit"),
+                                 samples=receipt["samples"], seconds=receipt["seconds"],
+                                 load_gate_overridden=bool(receipt.get("forced_over"))))
+            for step in receipt["steps"]:
+                if step["rc"] == 0:
+                    successful.add(step["label"])
+                else:
+                    failed.append(dict(capture_file=capture.name, label=step["label"], rc=step["rc"]))
+        if any(path.stem not in successful for path in a.runs):
+            raise ValueError("a measured receipt has no successful Coreglass workload step")
+        for run in runs.values():
+            if run["backend"] == "cpu" and any(check["max_normalized_rmse"] > .005
+                                               or check["argmax_matches"] != check["predictions"]
+                                               for r in run["results"]
+                                               for check in (r["prefill_accuracy"], r["decode_accuracy"])):
+                raise ValueError("a measured CPU receipt failed the numerical gate")
+        result["coreglass"] = dict(captures=captures, failed_attempts=failed)
     a.output.parent.mkdir(parents=True, exist_ok=True)
     a.output.write_text(json.dumps(result, indent=2) + "\n")
     print("| Path | Prompt | Prefill tok/s | Warm TTFT s | Decode tok/s |")
