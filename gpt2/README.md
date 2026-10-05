@@ -273,13 +273,26 @@ process. The default native OpenMP policy is `PASSIVE`, which lets workers
 sleep while the main thread uses ANE. A second CPU-only run explicitly selected
 `OMP_WAIT_POLICY=ACTIVE`. Both runs held the shared benchmark locks.
 
-| Checkpoint | CPU default steps/s | CPU ACTIVE steps/s | ACTIVE trial range |
-| --- | ---: | ---: | ---: |
-| Q4_0 GGUF | 42.95 | 83.49 | 34.41–142.26 |
-| Q8_0 GGUF | 51.17 | 76.04 | 31.93–129.86 |
-| Q4_K_M fixture | 29.34 | 63.09 | 27.74–108.49 |
-| Q4_K_XL compatibility fixture | 52.95 | 71.30 | 27.51–107.35 |
-| Reference safetensors | 27.65 | 66.40 | 28.44–109.22 |
+| Supported encoding / checkpoint | Bits/weight including block overhead | CPU default steps/s | CPU ACTIVE steps/s | ACTIVE trial range | ANE + CPU steps/s |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| F32 GGUF | 32 | — | — | — | — |
+| F16 GGUF | 16 | — | — | — | — |
+| BF16 GGUF | 16 | — | — | — | — |
+| Q2_K GGUF | 2.625 | — | — | — | — |
+| Q3_K GGUF | 3.4375 | — | — | — | — |
+| Q4_0 GGUF | 4.5 | 42.95 | 83.49 | 34.41–142.26 | 99.64 |
+| Q4_K GGUF | 4.5 | — | — | — | — |
+| Q5_K GGUF | 5.5 | — | — | — | — |
+| Q6_K GGUF | 6.5625 | — | — | — | — |
+| Q8_0 GGUF | 8.5 | 51.17 | 76.04 | 31.93–129.86 | 96.78 |
+| Q4_K_M fixture | Mixed | 29.34 | 63.09 | 27.74–108.49 | — |
+| Q4_K_XL compatibility fixture | Mixed | 52.95 | 71.30 | 27.51–107.35 | — |
+| Reference safetensors | 32 | 27.65 | 66.40 | 28.44–109.22 | 90.55 |
+
+All rows describe GPT-2 124M support. A dash means no separate throughput
+measurement; support does not imply that an encoding has been benchmarked.
+Preset mixtures have no single bits/weight value, and checkpoint metadata,
+unquantized tensors and alignment also contribute to file size.
 
 These are medians over 21 trials per checkpoint and policy. The desktop was
 active, and browser activity and memory pressure were observed during the
