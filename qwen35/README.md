@@ -55,6 +55,37 @@ the first two fixtures also matched all 24 residual layer outputs.
 
 ## Measured performance
 
+The matched benchmark now measures the complete prompt, including its last
+token and the vocabulary head, as prefill. Warm TTFT also includes greedy
+selection of the first output token. Decode starts by feeding that generated
+token and measures 32 further model calls. Model loading, tokenization, state
+reset and full-logit comparisons stay outside both timers. Prefill and decode
+component timers and ANE submission counts are reported separately.
+
+```sh
+# Use a new reference directory; the benchmark refuses to overwrite one.
+env OPENBLAS_NUM_THREADS=1 OMP_WAIT_POLICY=PASSIVE \
+  qwen35/.venv/bin/python -m qwen35.tools.benchmark \
+  --prepare-traces --traces ~/.cache/ane-qwen35/prefill-decode-traces
+env OPENBLAS_NUM_THREADS=1 OMP_WAIT_POLICY=PASSIVE \
+  qwen35/.venv/bin/python -m qwen35.tools.benchmark \
+  --kernels dot --backend cpu --traces ~/.cache/ane-qwen35/prefill-decode-traces \
+  --output /tmp/qwen35-prefill-decode.json
+```
+
+The default suite has four short chats and two longer chats cropped to exactly
+128 and 512 input tokens. Each path replays the floating CPU reference's saved
+tokens, continues beyond EOS for a fixed number of steps, and checks every
+logit outside the timers. Use `--backend ane --kernels dot` for the experimental
+ANE body; coordinate the shared hardware locks for both CPU and ANE runs.
+The `bench` CLI also reports prefill tok/s, warm TTFT and decode tok/s; its
+`--max-tokens 32` includes the first prediction from prefill, so it times 31
+decode calls.
+
+The earlier decode-only measurements below used the previous timing contract:
+their first timed step consumed the last prompt token. Retained receipts are
+unchanged; new measurements use the boundary described above.
+
 Base M1, 8 GB, Asahi Linux: three rotated fresh processes per path, four
 actual chat prompts per process and 32 saved input tokens per prompt.
 Each path received 384 timed teacher-forced decode steps. All used four

@@ -85,15 +85,21 @@ def main():
         model.step(tokens[0])
         model.reset()
         model.timings.clear()
+    submissions_start = model.backend.submissions if model.backend else 0
     start = time.perf_counter()
     for token in tokens[:-1]:
         model.step(token, logits=False)
     logits = model.step(tokens[-1])
     prefill = time.perf_counter() - start
+    first_token = int(np.argmax(logits))
+    warm_ttft = time.perf_counter() - start
+    prefill_components = dict(model.timings)
+    prefill_submissions = (model.backend.submissions - submissions_start) if model.backend else 0
+    model.timings.clear()
     generated, latencies = [], []
     stop = set(model.config["generation_config"]["stop_token_ids"])
     for i in range(args.max_tokens):
-        token = int(np.argmax(logits))
+        token = first_token if i == 0 else int(np.argmax(logits))
         generated.append(token)
         if token in stop and args.command == "generate":
             break
@@ -101,13 +107,20 @@ def main():
             start = time.perf_counter()
             logits = model.step(token)
             latencies.append(time.perf_counter() - start)
+    decode_components = dict(model.timings)
+    decode_submissions = (model.backend.submissions - submissions_start - prefill_submissions) if model.backend else 0
+    components = {name: prefill_components.get(name, 0) + decode_components.get(name, 0)
+                  for name in prefill_components.keys() | decode_components.keys()}
     result = dict(model=MODEL_ID, revision=REVISION, precision=args.precision, kernels=model.kernels,
-                  backend=args.backend, ane_submissions=model.backend.submissions if model.backend else 0,
+                  backend=args.backend, ane_submissions=prefill_submissions + decode_submissions,
                   load_seconds=load, prompt_tokens=tokens, generated_tokens=generated,
                   generated_text=tokenizer.decode(generated, skip_special_tokens=True),
-                  prefill_seconds=prefill, decode_seconds=latencies,
+                  prefill_seconds=prefill, prefill_tokens_per_second=len(tokens) / prefill,
+                  warm_ttft_seconds=warm_ttft, prefill_components_seconds=prefill_components,
+                  prefill_ane_submissions=prefill_submissions, decode_seconds=latencies, decode_steps=len(latencies),
                   decode_steps_per_second=len(latencies) / sum(latencies) if latencies else None,
-                  components_seconds=dict(model.timings))
+                  decode_components_seconds=decode_components, decode_ane_submissions=decode_submissions,
+                  components_seconds=components)
     if args.command == "generate":
         print(result["generated_text"])
     print(json.dumps(result, indent=2), file=sys.stderr if args.command == "generate" else sys.stdout)
