@@ -12,6 +12,8 @@ class Weights:
         self.root, self.cache = root, {}
 
     def get(self, name, shape):
+        if name == "lm_head":
+            name = "wte"
         if name not in self.cache:
             path = self.root / (name + ".bin")
             expected = 128 + 2 * int(np.prod(shape))
@@ -90,7 +92,7 @@ class GPT2:
             x = x + self.weights.layer(layer, "wo") @ attended + self.weights.layer(layer, "bo")
             x = self.kernels.ffn(layer, x)
         x = layernorm(x, self.weights.get("ln_f_g", (D,)), self.weights.get("ln_f_b", (D,)))
-        logits = wte @ x
+        logits = self.weights.get("lm_head", (50257, D)) @ x
         if not np.isfinite(logits).all():
             raise RuntimeError("nonfinite logits")
         self.position += 1

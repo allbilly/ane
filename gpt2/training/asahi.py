@@ -18,7 +18,8 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT.parent))
-from external_weights import find_weights, model_tensors, verify_weights
+from external_weights import find_weights, load_weights as external_load_weights, verify_weights
+from model import LAYER_SHAPES
 from hwx import parse_container, parse_tasks, relocate, require
 from replay import Buffer, Submit, SUBMIT, device_path, ioctl
 from backends import Primitives
@@ -187,14 +188,17 @@ class Backend:
             os.close(self.fd)
 
 
-def training_weights(source):
+def training_weights(source, prepared=None):
     if source.is_dir():
         return load_weights(source)
-    from safetensors.numpy import load_file
-    state = load_file(str(source))
+    prepared = prepared or external_load_weights(source)
+    require(np.array_equal(prepared.get("wte", (50257, 768)), prepared.get("lm_head", (50257, 768))),
+            "training requires tied token embeddings and output weights")
     weights = {}
-    for name, value in model_tensors(state):
-        array = value.astype("<f2").astype(np.float32)
+    shapes = {"wte": (50257, 768), "wpe": (1024, 768), "ln_f_g": (768,), "ln_f_b": (768,)}
+    shapes.update({f"layer{i}/{name}": shape for i in range(12) for name, shape in LAYER_SHAPES.items()})
+    for name, shape in shapes.items():
+        array = prepared.get(name, shape)
         if name in ("wte", "wpe"):
             pass
         elif name.rsplit("/", 1)[-1].startswith("w"):
@@ -208,8 +212,11 @@ def training_weights(source):
 def train(backend, args, report):
     source = find_weights(args.weights)
     require(source is not None, "cached GPT-2 weights missing; run gpt2/gpt2.py setup")
-    report["verified_weight_files"] = verify_weights(source, ROOT.parent)
-    weights = training_weights(source)
+    prepared = external_load_weights(source)
+    report["verified_weight_files"] = verify_weights(source, ROOT.parent, weights=prepared)
+    reference = getattr(prepared, "reference", True)
+    report["reference_checkpoint"] = reference
+    weights = training_weights(source, prepared)
     tokens = np.array(Tokenizer(ROOT.parent / "tokenizer").encode(TEXT)[:33], np.int64)
     protocol = json.loads((ROOT / backend.source / "results.json").read_text())
     require(tokens.tolist() == protocol["tokens"], "training batch differs from captured reference")
@@ -223,7 +230,8 @@ def train(backend, args, report):
     loss, cache = model.forward()
     report["initial_loss"] = loss
     report["macos_reference_loss"] = protocol["initial_loss"]
-    require(abs(loss - protocol["initial_loss"]) < 0.01, "initial loss differs from macOS reference")
+    if reference:
+        require(abs(loss - protocol["initial_loss"]) < 0.01, "initial loss differs from macOS reference")
     del cache
     print(f"Initial loss: {loss:.8f}", flush=True)
     with (args.output / "loss.csv").open("w") as stream:
@@ -240,7 +248,7 @@ def train(backend, args, report):
             backward = time.perf_counter()
             norm = optimizer.update(weights, grads)
             finish = time.perf_counter()
-            if step == 1:
+            if step == 1 and reference:
                 reference_norm = protocol["phase_times"][0]["gradient_norm"]
                 report["initial_gradient_norm"] = norm
                 report["macos_reference_gradient_norm"] = reference_norm

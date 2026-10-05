@@ -1,4 +1,4 @@
-"""Use cached HF weights directly, outside the replay package."""
+"""Use external safetensors, GGUF, or Orion BLOBFILE weights."""
 import hashlib
 import json
 import os
@@ -25,6 +25,10 @@ def find_weights(requested=None):
         require(path.exists(), f"weight path missing: {path}")
         if path.is_dir() and (path / "model.safetensors").is_file():
             return path / "model.safetensors"
+        if path.is_dir() and not (path / "wte.bin").is_file():
+            candidates = sorted(path.glob("*.gguf"))
+            require(len(candidates) == 1, "select a GGUF file explicitly when the directory has zero or multiple GGUF files")
+            return candidates[0]
         return path
     hf_home = Path(os.environ.get("HF_HOME", str(cache_root().parent / "huggingface")))
     hub = Path(os.environ.get("HF_HUB_CACHE", str(hf_home / "hub")))
@@ -36,9 +40,15 @@ def find_weights(requested=None):
     return next((p for p in candidates if p.is_file() or (p / "wte.bin").is_file()), None)
 
 
-def verify_weights(root, package):
+def verify_weights(root, package, weights=None):
     records = json.loads((package / "model-checksums.json").read_text())
     require(len(records) == 196, "invalid external model manifest")
+    if root.is_file() and root.suffix.lower() == ".gguf":
+        from gguf_weights import GGUFWeights
+        selected = weights if weights is not None else GGUFWeights(root, package / "tokenizer")
+        require(isinstance(selected, GGUFWeights) and selected.source.resolve() == root.resolve(),
+                "GGUF validation source mismatch")
+        return selected.validate(package)
     if root.is_file():
         require(digest(root) == HF_SHA256, "cached HF checkpoint differs from the model used for the ANE dump")
         return len(records)
@@ -87,8 +97,12 @@ def blob_bytes(value):
 
 def load_weights(source):
     from model import Weights
+    source = Path(source)
     if source.is_dir():
         return Weights(source)
+    if source.suffix.lower() == ".gguf":
+        from gguf_weights import GGUFWeights
+        return GGUFWeights(source)
     return HFWeights(source)
 
 
@@ -102,6 +116,8 @@ class HFWeights:
         self.cache = {}
 
     def get(self, name, shape):
+        if name == "lm_head":
+            name = "wte"
         if name not in self.cache:
             value = self.tensors[name]
             require(value.shape == shape, f"HF tensor shape mismatch: {name}")

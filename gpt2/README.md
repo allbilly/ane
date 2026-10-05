@@ -4,7 +4,7 @@ Complete GPT-2 124M text generation, ported from `~/Desktop/Orion`. Standard
 model weights stay in your Hugging Face cache. ANE coefficients are regenerated
 from that checkpoint on the target machine; the dump supplies reference hashes
 and packing recipes. Linux execution uses Python, NumPy,
-`regex`, `safetensors`, and the `ane` kernel driver; it needs no Apple
+`regex`, `safetensors`, `gguf`, and the `ane` kernel driver; it needs no Apple
 frameworks, `anecc`, or Python `libane` binding.
 
 The runner, replay/reference data, and benchmark reports are about **12 MiB**, versus about
@@ -22,8 +22,8 @@ running Asahi Linux with the ANE device tree and `ane` driver installed:
 ~/ane/gpt2/first-run.sh --prompt 'Hello world' --max-tokens 32
 ```
 
-The script creates a local Python environment and installs NumPy, `regex`, and
-`safetensors`. It discovers GPT-2 in `~/.cache/huggingface/hub` (respecting
+The script creates a local Python environment and installs NumPy, `regex`,
+`safetensors`, and llama.cpp's Python `gguf` reader. It discovers GPT-2 in `~/.cache/huggingface/hub` (respecting
 `HF_HOME`, `HF_HUB_CACHE`, and `XDG_CACHE_HOME`) and reads `model.safetensors`
 directly. There is no model copying or download when a matching cache exists.
 On the first ANE run, the loader packs the required matrices, biases, and folded
@@ -32,7 +32,7 @@ layer-norm coefficients into `~/.cache/orion-gpt2/h13g-packed-v1` (under
 dump's SHA256 before submission. Later runs reuse verified cache entries;
 corrupt entries are regenerated. Nothing is written back into the HF cache.
 If no weights exist, it downloads the standard checkpoint into an external
-cache. `--weights PATH` or `GPT2_WEIGHTS` selects an existing checkpoint or an
+cache. `--weights PATH` or `GPT2_WEIGHTS` selects an existing safetensors/GGUF checkpoint or an
 Orion BLOBFILE directory explicitly.
 Python 3.10 or newer, Python's venv/pip support, and internet access for the
 initial dependency install are required. A model download is only needed if
@@ -117,7 +117,8 @@ training batch; see the linked guide for timing scope and limitations.
 ## CPU generation and sampling
 
 The explicit CPU backend works on macOS and Linux and verifies its logits
-against Orion's independent C/Accelerate implementation before generation:
+against Orion's independent C/Accelerate implementation before generation
+when the selected weights match the captured reference model:
 
 ```sh
 ~/ane/gpt2/first-run.sh --backend cpu --prompt 'Hello world' --max-tokens 18
@@ -142,6 +143,59 @@ This permits prompts of up to 1024 tokens without treating the captured
 32-position prefill bucket as a larger graph. It may be slower than Orion's
 bucketed prefill. The 25 captured prefill kernels remain available for replay
 and reference, and are covered by `verify --all-kernels`.
+
+## GGUF checkpoints
+
+The same CLI accepts **GPT-2 124M GGUF** files with F32, F16, Q8_0, or Q4_0
+tensors, including mixed tensor types. Select the file explicitly:
+
+```sh
+./gpt2/first-run.sh generate --weights /path/to/gpt2-Q4_0.gguf \
+  --backend ane --prompt 'Hello world' --max-tokens 32
+./gpt2/first-run.sh verify --weights /path/to/gpt2-Q8_0.gguf --all-kernels
+./gpt2/first-run.sh generate --weights /path/to/gpt2-F16.gguf --backend cpu
+```
+
+`setup --checkpoint FILE.gguf` and `pack --weights FILE.gguf` also work.
+A directory containing exactly one GGUF file can be passed to `--weights`.
+GGUF models are not downloaded automatically. The loader memory-maps the
+file, decodes each tensor once, rounds it to FP16, and shares slices of fused
+QKV tensors. The CPU uses FP32 arrays containing those rounded values; ANE
+uses the existing FP16 coefficient layout and kernels. An optional
+`output.weight` supplies the vocabulary head; otherwise token embeddings
+are shared with the head. No Linux driver change or ANE recompilation is needed.
+
+The loader requires a single little-endian file with 12 layers, width 768,
+12 attention heads, FFN width 3072, context 1024, layer-norm epsilon 1e-5,
+and the bundled GPT-2 vocabulary, token IDs, merges, and pre-tokenization.
+Other architectures, sizes, tensor encodings, split files, and automatic
+BOS/EOS insertion are rejected with a diagnostic. ANE packing also requires
+nonzero layer-norm gamma and finite FP16 coefficients.
+
+An F32/F16 conversion whose rounded tensors match the reference retains all
+original checksum and macOS-output checks. Quantized or changed weights use
+checkpoint-specific packing caches under
+`h13g-packed-v1/checkpoints/<checkpoint-sha256>/`. Cache identity includes
+the complete packing recipe; each atomically written `.packed` file contains
+a 32-byte SHA256 followed by the payload. Corrupt entries are rebuilt, and
+the original model's cached coefficients cannot be reused for another
+checkpoint. Static program bytes retain their reference hash checks.
+
+For changed weights, ANE verification compares all requested kernel outputs
+against NumPy computations using the selected decoded tensors, then compares
+full-vocabulary logits against the CPU backend while feeding both the same
+tokens after prompt ingestion. All comparisons require normalized RMSE below
+0.5%. Prefill attention permits up to 0.1% of elements outside the pointwise
+tolerance to account for FP16 reductions and cancellation; decode kernels,
+logits, and original macOS fixture checks require every element to pass.
+CPU-only verification performs finite-logit smoke checks on three
+prompts; it does not claim parity with the original model. Quantization can
+change generated tokens. Decoding into FP16 reduces the input file size but
+does not retain Q4/Q8 storage or arithmetic during ANE execution.
+
+The Asahi training adapter accepts these checkpoints as initial weights when
+the vocabulary head is tied to the embeddings. Original-checkpoint loss and
+gradient fixtures apply only when the decoded weights match the reference.
 
 ## Measured Asahi generation
 
@@ -716,6 +770,12 @@ reject wrong tensors, recover corrupt generated caches, and check that no
 compiled learned coefficient bank remains in the portable directory. Mocked DRM
 tests validate requests and lifecycle; they do not substitute for Linux
 hardware verification.
+
+GGUF tests exercise real upstream-written GPT-2 files, reference tensor/logit
+parity, quantized QKV orientation and splitting, hand-authored Q4/Q8 blocks,
+metadata and tokenizer rejection, finite FP16 conversion, checkpoint cache
+isolation, and corruption recovery. They use an existing safetensors cache
+for integration tests and do not download a checkpoint.
 
 To regenerate data from the original sources:
 

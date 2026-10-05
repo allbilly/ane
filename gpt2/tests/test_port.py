@@ -150,8 +150,10 @@ class GenerationTests(unittest.TestCase):
         selected = find_weights()
         if selected is None:
             raise unittest.SkipTest("set GPT2_WEIGHTS to run generation tests without downloading weights")
-        verify_weights(selected, ROOT)
         cls.weights = load_weights(selected)
+        verify_weights(selected, ROOT, weights=cls.weights)
+        if not getattr(cls.weights, "reference", True):
+            raise unittest.SkipTest("original-model fixtures require reference-equivalent weights")
 
     def model(self):
         return GPT2(self.weights, CPUKernels(self.weights))
@@ -275,8 +277,8 @@ class ReplayTests(unittest.TestCase):
         selected = find_weights()
         if selected is None:
             raise unittest.SkipTest("external GPT-2 weights required for reconstructed replay tests")
-        verify_weights(selected, ROOT)
         cls.weights = load_weights(selected)
+        verify_weights(selected, ROOT, weights=cls.weights)
 
     def assets(self):
         directory = tempfile.TemporaryDirectory()

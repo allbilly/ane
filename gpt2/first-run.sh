@@ -7,7 +7,7 @@ if [ ! -x "$gpt2_root/.venv/bin/python" ]; then
 fi
 gpt2_requirements="$gpt2_root/.venv/.requirements-installed"
 if ! cmp -s "$gpt2_root/requirements.txt" "$gpt2_requirements" ||
-   ! "$gpt2_root/.venv/bin/python" -c 'import numpy, regex, safetensors' >/dev/null 2>&1; then
+   ! "$gpt2_root/.venv/bin/python" -c 'import numpy, regex, safetensors, gguf' >/dev/null 2>&1; then
     "$gpt2_root/.venv/bin/python" -m pip install --disable-pip-version-check -r "$gpt2_root/requirements.txt"
     cp "$gpt2_root/requirements.txt" "$gpt2_requirements"
 fi

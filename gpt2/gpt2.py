@@ -22,8 +22,8 @@ def main():
     cli.add_argument("--temperature", type=float, default=0)
     cli.add_argument("--top-k", type=int, default=40)
     cli.add_argument("--seed", type=int, default=0)
-    cli.add_argument("--weights", type=Path, help="cached HF model.safetensors or external Orion BLOBFILE directory")
-    cli.add_argument("--checkpoint", type=Path, help="local HF model.safetensors for setup")
+    cli.add_argument("--weights", type=Path, help="GPT-2 safetensors, GGUF, or external Orion BLOBFILE directory")
+    cli.add_argument("--checkpoint", type=Path, help="local GPT-2 safetensors or GGUF for setup")
     cli.add_argument("--all-kernels", action="store_true", help="also verify 25 reference prefill kernels")
     args = cli.parse_args()
     if not 0 <= args.temperature < float("inf") or not 1 <= args.top_k <= 50257 or args.max_tokens < 0:
@@ -35,6 +35,7 @@ def main():
         from bpe import Tokenizer
         from model import ANEKernels, CPUKernels, GPT2
         from checks import integrity, cpu_parity, ane_parity, hybrid_parity
+        from checks import cpu_checkpoint_check, ane_checkpoint_parity, checkpoint_hybrid_parity
         from external_weights import find_weights, verify_weights, setup, load_weights
         files = integrity(ROOT)
         print(f"Package integrity: {files} files PASS", file=sys.stderr)
@@ -46,13 +47,15 @@ def main():
                 selected = setup(ROOT, checkpoint=args.checkpoint, progress=lambda s: print(s, file=sys.stderr, flush=True))
             if selected is None:
                 raise ValueError("no external weights found; run setup first or specify --weights")
-            verify_weights(selected, ROOT)
-            assets = PackedAssets(ROOT, load_weights(selected))
+            weights = load_weights(selected)
+            verify_weights(selected, ROOT, weights=weights)
+            assets = PackedAssets(ROOT, weights)
             names = json.loads((ROOT / "package.json").read_text())["kernels"]
             if not args.all_kernels:
                 names = [name for name in names if name.startswith("decode_")]
             count = assets.verify(names, lambda name: print(f"Packing/checking {name}...", file=sys.stderr, flush=True))
-            print(f"Byte-exact ANE packing: {len(names)} kernels, {count} unique payloads PASS; cache: {assets.cache}")
+            label = "Byte-exact ANE packing" if assets.reference else "Checkpoint-specific ANE packing"
+            print(f"{label}: {len(names)} kernels, {count} unique payloads PASS; cache: {assets.cache}")
             return 0
         device = None
         if args.backend == "ane":
@@ -63,7 +66,8 @@ def main():
             selected = find_weights(args.weights)
             if args.command == "doctor":
                 if selected:
-                    verify_weights(selected, ROOT)
+                    weights = load_weights(selected)
+                    verify_weights(selected, ROOT, weights=weights)
                     print(f"External model: {selected}", file=sys.stderr)
                 else:
                     print("External model missing; generate/setup will download HF weights into the external cache.", file=sys.stderr)
@@ -71,8 +75,9 @@ def main():
                 return 0
             if selected is None:
                 selected = setup(ROOT, checkpoint=args.checkpoint, progress=lambda s: print(s, file=sys.stderr, flush=True))
-            verify_weights(selected, ROOT)
             weights = load_weights(selected)
+            verify_weights(selected, ROOT, weights=weights)
+            reference = getattr(weights, "reference", True)
             if device:
                 from packing import PackedAssets
                 device.assets = PackedAssets(ROOT, weights)
@@ -80,13 +85,16 @@ def main():
             model = GPT2(weights, kernels)
             if device:
                 progress = lambda name: print(f"Checking {name}...", file=sys.stderr, flush=True)
-                results = ane_parity(ROOT, device, args.all_kernels, progress)
+                results = (ane_parity(ROOT, device, args.all_kernels, progress) if reference else
+                           ane_checkpoint_parity(ROOT, device, weights, args.all_kernels, progress))
                 print(f"ANE parity: {len(results)} kernels PASS", file=sys.stderr)
-                results["hybrid_generation"] = hybrid_parity(ROOT, model, tokenizer)
+                results["hybrid_generation"] = (hybrid_parity(ROOT, model, tokenizer) if reference else
+                                                 checkpoint_hybrid_parity(ROOT, model, tokenizer, weights))
                 print("ANE full generation parity: PASS", file=sys.stderr)
             else:
-                results = cpu_parity(ROOT, model, tokenizer)
-                print(f"Orion CPU parity: {len(results)} prompts PASS", file=sys.stderr)
+                results = cpu_parity(ROOT, model, tokenizer) if reference else cpu_checkpoint_check(ROOT, model, tokenizer)
+                label = "Orion CPU parity" if reference else "GGUF CPU smoke checks"
+                print(f"{label}: {len(results)} prompts PASS", file=sys.stderr)
             if args.command == "verify":
                 print(json.dumps(dict(backend=args.backend, status="PASS", results=results), indent=2))
                 return 0
