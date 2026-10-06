@@ -1,0 +1,80 @@
+{
+  "status": "PASS",
+  "method": "One warmup, three warm in-process JFK transcriptions; four workers on M1 performance cores 4-7; profiling enabled; stage timer overhead included",
+  "runs": [
+    {
+      "projections_plan_ms": 24.419,
+      "projections_scale_ms": 121.844,
+      "projections_run_ms": 237.749,
+      "projections_restore_ms": 91.471,
+      "device_pack_ms": 3.581,
+      "device_write_ms": 6.094,
+      "device_ioctl_ms": 43.903,
+      "device_read_ms": 180.521,
+      "device_unpack_ms": 3.434,
+      "encode_ms": 768.62,
+      "phase": "warmup",
+      "index": 1
+    },
+    {
+      "projections_plan_ms": 0.015,
+      "projections_scale_ms": 118.688,
+      "projections_run_ms": 235.708,
+      "projections_restore_ms": 88.702,
+      "device_pack_ms": 3.486,
+      "device_write_ms": 5.999,
+      "device_ioctl_ms": 43.831,
+      "device_read_ms": 178.788,
+      "device_unpack_ms": 3.354,
+      "encode_ms": 731.83,
+      "phase": "measure",
+      "index": 1
+    },
+    {
+      "projections_plan_ms": 0.011,
+      "projections_scale_ms": 121.145,
+      "projections_run_ms": 239.191,
+      "projections_restore_ms": 91.442,
+      "device_pack_ms": 3.512,
+      "device_write_ms": 6.143,
+      "device_ioctl_ms": 44.488,
+      "device_read_ms": 181.37,
+      "device_unpack_ms": 3.437,
+      "encode_ms": 743.51,
+      "phase": "measure",
+      "index": 2
+    },
+    {
+      "projections_plan_ms": 0.011,
+      "projections_scale_ms": 119.925,
+      "projections_run_ms": 237.741,
+      "projections_restore_ms": 89.779,
+      "device_pack_ms": 3.527,
+      "device_write_ms": 6.105,
+      "device_ioctl_ms": 44.283,
+      "device_read_ms": 180.216,
+      "device_unpack_ms": 3.371,
+      "encode_ms": 716.87,
+      "phase": "measure",
+      "index": 3
+    }
+  ],
+  "median": {
+    "projections_plan_ms": 0.011,
+    "projections_scale_ms": 119.925,
+    "projections_run_ms": 237.741,
+    "projections_restore_ms": 89.779,
+    "device_pack_ms": 3.512,
+    "device_write_ms": 6.105,
+    "device_ioctl_ms": 44.283,
+    "device_read_ms": 180.216,
+    "device_unpack_ms": 3.371,
+    "encode_ms": 731.83
+  },
+  "source_sha256": {
+    "whisper/asahi_encoder.cpp": "a9c1513a94330f68e9932ca7b8f790645a55955c61fd4f6356109e11e5399bf6",
+    "qwen35/ane_matmul.c": "c84bae6aa03daacd557c0e918228cb7100039f657e467bfba54008e1a214f224",
+    "qwen35/ane_matmul.h": "793b7f06e5f60da58a6fe969b55825555850e55a19aa785b89d8f2a643d494f0"
+  },
+  "log_sha256": "a168d7b36c5c6c1c8cdae6aafd05c30c9a241e69e9301cae7fccac6201d7b03f"
+}

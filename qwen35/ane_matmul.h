@@ -3,7 +3,12 @@
 #include <stdint.h>
 typedef struct AneDevice AneDevice;
 typedef struct AnePlan AnePlan;
+typedef struct {
+    uint64_t pack_ns, write_ns, ioctl_ns, read_ns, unpack_ns;
+} AneTimings;
 AneDevice *ane_device_open(void);
+void ane_device_profile(AneDevice *device, int enabled);
+AneTimings ane_device_timings(const AneDevice *device);
 void ane_device_close(AneDevice *device);
 AnePlan *ane_plan_create_f16(AneDevice *device, const uint16_t *weights,
                             int inputs, int outputs);

@@ -15,6 +15,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <time.h>
 #include <unistd.h>
 #include "linear_template.h"
 
@@ -39,7 +40,21 @@ struct AneDevice {
     __fp16 *host_input, *host_output;
     size_t host_input_size, host_output_size;
     unsigned long long submissions;
+    int profiling;
+    AneTimings timings;
 };
+
+static uint64_t profile_ns(const AneDevice *d) {
+    if (!d->profiling) return 0;
+    struct timespec t;
+    clock_gettime(CLOCK_MONOTONIC, &t);
+    return (uint64_t)t.tv_sec*1000000000ull + (uint64_t)t.tv_nsec;
+}
+
+void ane_device_profile(AneDevice *d, int enabled) { if (d) d->profiling = !!enabled; }
+AneTimings ane_device_timings(const AneDevice *d) {
+    return d ? d->timings : (AneTimings){0};
+}
 struct AnePlan {
     AneDevice *device;
     int inputs, outputs, k, n;
@@ -231,6 +246,7 @@ AnePlan *ane_plan_create_f16(AneDevice *d, const uint16_t *w,
 static int submit_rows(AnePlan *p, int rows) {
     AneDevice *d=p->device;
     __fp16 *source=d->host_input, *result=d->host_output;
+    uint64_t start=profile_ns(d);
     memcpy(d->input.map,source,(size_t)p->k*BATCH*2);
     // Detect a successful ioctl that did not write its advertised output.
     uint16_t *bits=(uint16_t *)result;
@@ -248,12 +264,17 @@ static int submit_rows(AnePlan *p, int rows) {
     request.handles[5]=p->weights.handle;
     request.handles[6]=d->bias.handle;
     request.handles[7]=d->output.handle;
+    d->timings.write_ns += profile_ns(d)-start;
+    start=profile_ns(d);
     if (ioctl(d->fd,SUBMIT,&request)) {
         fprintf(stderr,"ANE submission failed: %s\n",strerror(errno));
         return 0;
     }
     d->submissions++;
+    d->timings.ioctl_ns += profile_ns(d)-start;
+    start=profile_ns(d);
     read_output(result,d->output.map,(size_t)rows*p->n*2);
+    d->timings.read_ns += profile_ns(d)-start;
     return 1;
 }
 
@@ -261,6 +282,7 @@ int ane_plan_run_batch(AnePlan *p, const float *input, float *output, int rows) 
     if (!p || !input || !output || rows<1 || rows>BATCH) return 0;
     AneDevice *d=p->device;
     __fp16 *source=d->host_input, *result=d->host_output;
+    uint64_t start=profile_ns(d);
     memset(source,0,(size_t)p->k*BATCH*2);
     for (int row=0;row<rows;row++) {
         int k=0;
@@ -278,7 +300,9 @@ int ane_plan_run_batch(AnePlan *p, const float *input, float *output, int rows) 
             source[(size_t)row*p->k+k]=(__fp16)x;
         }
     }
+    d->timings.pack_ns += profile_ns(d)-start;
     if (!submit_rows(p,rows)) return 0;
+    start=profile_ns(d);
     // All input rows are in the device buffer before writing output: alias safe.
     for (int row=0;row<rows;row++) {
         int n=0;
@@ -295,6 +319,7 @@ int ane_plan_run_batch(AnePlan *p, const float *input, float *output, int rows) 
             output[(size_t)row*p->outputs+n]=value;
         }
     }
+    d->timings.unpack_ns += profile_ns(d)-start;
     return 1;
 }
 

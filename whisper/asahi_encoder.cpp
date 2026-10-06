@@ -18,6 +18,9 @@ struct WhisperAsahi::Impl {
     std::map<const ggml_tensor *, Plan> plans;
     unsigned long long projections = 0, previous_submissions = 0;
     std::vector<float> input, output;
+    bool profiling = false;
+    int64_t plan_us = 0, scale_us = 0, run_us = 0, restore_us = 0;
+    AneTimings previous_timings{};
 };
 
 bool whisper_asahi_enabled() {
@@ -30,6 +33,8 @@ bool whisper_asahi_enabled() {
 WhisperAsahi::WhisperAsahi() : impl(new Impl) {
     impl->device = ane_device_open();
     if (!impl->device) GGML_ABORT("Asahi ANE requested but device initialization failed");
+    impl->profiling = std::getenv("WHISPER_ASAHI_PROFILE") != nullptr;
+    ane_device_profile(impl->device, impl->profiling);
     std::fprintf(stderr, "ASAHI_ANE ready: encoder dense projections; CPU conv/attention/decoder\n");
 }
 
@@ -57,6 +62,7 @@ void WhisperAsahi::compute(ggml_tensor * dst, int ith, int nth, void * userdata)
     if (ith) return;
     auto & state = *static_cast<WhisperAsahi *>(userdata)->impl;
     const ggml_tensor * weight = dst->src[0], * activation = dst->src[1];
+    const auto plan_start = state.profiling ? ggml_time_us() : 0;
     auto found = state.plans.find(weight);
     if (found == state.plans.end()) {
         Impl::Plan plan{};
@@ -79,11 +85,13 @@ void WhisperAsahi::compute(ggml_tensor * dst, int ith, int nth, void * userdata)
         found = state.plans.emplace(weight, plan).first;
     }
     const auto & plan = found->second;
+    if (state.profiling) state.plan_us += ggml_time_us() - plan_start;
     state.input.resize(32*plan.k); state.output.resize(32*plan.n);
     int shifts[32];
     constexpr int positions_per_batch = 32;
     for (int position = 0; position < activation->ne[1]; position += positions_per_batch) {
         const int rows = int(std::min<int64_t>(positions_per_batch, activation->ne[1] - position));
+        const auto scale_start = state.profiling ? ggml_time_us() : 0;
         for (int row = 0; row < rows; ++row) {
             const float * source = reinterpret_cast<const float *>(
                 static_cast<const char *>(activation->data) + (position + row)*activation->nb[1]);
@@ -97,8 +105,12 @@ void WhisperAsahi::compute(ggml_tensor * dst, int ith, int nth, void * userdata)
                 state.input[row*plan.k + k] = std::ldexp(source[k], shifts[row]);
             }
         }
+        if (state.profiling) state.scale_us += ggml_time_us() - scale_start;
+        const auto run_start = state.profiling ? ggml_time_us() : 0;
         if (!ane_plan_run_batch(plan.handle, state.input.data(), state.output.data(), rows))
             GGML_ABORT("Asahi encoder submission failed; no CPU fallback");
+        if (state.profiling) state.run_us += ggml_time_us() - run_start;
+        const auto restore_start = state.profiling ? ggml_time_us() : 0;
         for (int row = 0; row < rows; ++row) {
             float * target = reinterpret_cast<float *>(
                 static_cast<char *>(dst->data) + (position + row)*dst->nb[1]);
@@ -107,6 +119,7 @@ void WhisperAsahi::compute(ggml_tensor * dst, int ith, int nth, void * userdata)
                 if (!std::isfinite(target[n])) GGML_ABORT("nonfinite Asahi encoder output");
             }
         }
+        if (state.profiling) state.restore_us += ggml_time_us() - restore_start;
     }
     ++state.projections;
 }
@@ -119,6 +132,17 @@ void WhisperAsahi::finish_encoder(int layers, int positions) {
         GGML_ABORT("Asahi encoder projection/submission count mismatch");
     std::fprintf(stderr, "ASAHI_ANE encoder: projections=%llu submissions=%llu plans=%zu replicas=1\n",
                  impl->projections, submissions, impl->plans.size());
+    if (impl->profiling) {
+        const auto t = ane_device_timings(impl->device), p = impl->previous_timings;
+        std::fprintf(stderr, "ASAHI_PROFILE projections: plan=%.3f scale=%.3f run=%.3f restore=%.3f ms\n",
+                     impl->plan_us/1000., impl->scale_us/1000., impl->run_us/1000., impl->restore_us/1000.);
+        std::fprintf(stderr, "ASAHI_PROFILE device: pack=%.3f write=%.3f ioctl=%.3f read=%.3f unpack=%.3f ms\n",
+                     (t.pack_ns-p.pack_ns)/1e6, (t.write_ns-p.write_ns)/1e6,
+                     (t.ioctl_ns-p.ioctl_ns)/1e6, (t.read_ns-p.read_ns)/1e6,
+                     (t.unpack_ns-p.unpack_ns)/1e6);
+        impl->previous_timings = t;
+        impl->plan_us = impl->scale_us = impl->run_us = impl->restore_us = 0;
+    }
     impl->projections = 0;
     impl->previous_submissions = total;
 }
