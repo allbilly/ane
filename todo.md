@@ -1,4 +1,4 @@
-# macOS follow-ups
+# macOS and Asahi follow-ups
 
 - [x] Benchmark full-model Qwen3.5-0.8B-M on macOS with ANE body projections
   and CPU recurrence, attention and vocabulary head. Use the same pinned Mirai
@@ -20,39 +20,46 @@
   cross-host trace hashes differ, so identical reference histories and an
   isolated operating-system speed comparison are not established.
 
-- [ ] Dump the complete Whisper `tiny.en` ANE encoder kernels on macOS for
-  native Asahi replay. Recover the already validated 1,783-task dense encoder
-  export first; regenerate and dump on macOS if it cannot be recovered.
-  Commit compact command templates and checkpoint packing recipes, keeping
-  learned weights and full dumps outside Git, as requested. Include actual
-  register/command streams in task order, reconstructible coefficient layouts,
-  buffer sizes and relocations,
-  input/output ports and tensor layouts, scratch/intermediate buffers, source
-  MIL, checkpoint revision/hashes, and target ANE generation plus compiler/runtime
-  versions. Retain the three real-audio FP16 fixtures and HF references locally,
-  with their hashes and reproduction/validation commands in Git. Export hashes
-  alone do not supply executable tasks.
-  Use the complete dump to build a compact encoder replay path, replacing the
-  CPU convolution/attention work and 1,128 separate projection submissions.
-  The older `~/old_whisper.cpp/asahi/whisper-tiny-encoder.hwx` contains one
-  convolution task, not the complete encoder. After Linux validation, benchmark
+- [x] Capture and commit the complete Whisper `tiny.en` ANE encoder kernels
+  and checkpoint packing logic for Asahi reproduction.
+  Completed 2026-10-07 in commit `7aba9fe`: all 1,783 tasks are included in
+  `whisper/kernels/tiny-en-encoder/`, totaling 150,350 bytes (approximately
+  147 KiB). Learned weights, full HWX dumps and numerical arrays stay outside
+  Git. The package includes command templates, coefficient recipes, buffer
+  and port layouts, relocations, scratch sizes, source MIL and compiler/runtime
+  provenance. Three real-audio fixtures and independent HF references remain
+  local with committed hashes and macOS validation evidence.
+  Repacking reproduces every command, constant, coefficient, source MIL weight
+  and position byte, with SHA-256 checks. A fresh Asahi checkout needs only the
+  pinned HF safetensors checkpoint and Python/NumPy to reconstruct the payloads;
+  no macOS compiler, ANEForge or additional full dump is required.
+  See `whisper/docs/compact-encoder.md` and `whisper/encoder_kernel.py`.
+
+- [ ] Validate the complete Whisper encoder on native base-M1/T8103 Asahi.
+  Use `whisper/replay_encoder.py` with the committed kernels and external
+  `openai/whisper-tiny.en` safetensors revision
+  `87c7102498dcde7456f24cfd30239ca606ed9063`. Reconstruct and check all payload
+  hashes, then run the complete 1,783-task chain through the ANE accel driver.
+  Supply frontend FP16 mel input `[80,3000]`; checkpoint position embeddings
+  are repacked automatically. Check captured-output relative L2 < 0.005,
+  allclose rtol=0.01/atol=0.03 and independent HF encoder cosine >= 0.999
+  across all three clips. Byte-exact reconstruction is verified; Linux
+  hardware execution remains unverified. Hold the shared ANE/GPU locks.
+
+- [ ] Integrate the validated complete encoder with the whisper.cpp decoder
+  on Asahi, replacing CPU convolution/attention and the current 1,128 separate
+  projection submissions. Preserve transcript and full-logit checks.
+  The existing projection path is independently validated across three clips:
+  all 80 raw argmaxes match CPU/HF and maximum HF logit NRMSE is 0.333%.
+  It remains a separate path until complete-encoder integration passes.
+
+- [ ] After complete-encoder Linux validation and integration, benchmark
   matching CPU/CPU and ANE/CPU encode, decoder prompt setup, token decode and
-  whole-transcription latency; retain transcript checks and the same timing
-  boundaries as the macOS warm benchmark. The separate Linux projection path
-  now runs without a fresh dump: all 80 raw logit argmaxes match CPU and an
-  independent HF model across three clips; maximum full-logit NRMSE versus HF
-  is 0.333%. Host and CPU optimizations reduced warm encode time from 721.41
-  to 345.80 ms. Whole-transcription latency is 468.18 ms versus CPU's 417.49 ms
-  for the 11-second JFK sample.
-  That path leaves convolutions, attention and decoding on CPU and is not a
-  replay of this complete exported encoder.
-  Completed macOS packaging 2026-10-07: `whisper/kernels/tiny-en-encoder/`
-  contains approximately 147 KiB of weights-free kernels and recipes.
-  Repacking from the pinned safetensors reproduces every command, constant,
-  coefficient, source MIL weight and position byte. The complete one-submission
-  Python Asahi replay entry point is ready; hardware validation, whisper.cpp
-  decoder integration and matching transcription benchmarks remain pending
-  native Linux. See `whisper/docs/compact-encoder.md`.
+  whole-transcription latency. Retain repeated warm runs, transcript checks,
+  host observations and the same timing boundaries as macOS.
+  Existing projection-path baselines: warm encode 345.80 ms, versus its earlier
+  721.41 ms; whole transcription 468.18 ms versus CPU's 417.49 ms for the
+  11-second JFK sample. See `whisper/docs/benchmark-asahi.md`.
 
 - [ ] Transfer the existing macOS all-prefix Qwen BF16 oracle captures
   (`uzu-macos-all.npz` and `native-macos-all.npz`) with their report and hashes.
