@@ -1,0 +1,349 @@
+{
+  "status": "completed_with_remaining_limits",
+  "finished_utc": "2026-10-06T04:49:56.860576+00:00",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "capture_directory": "/Users/yeren/ane/qwen35/local-results/macos-review-20261006T042840Z",
+  "excluded": [
+    "mlx-ane-sd/task.md",
+    "concurrent whisper source/docs/build changes"
+  ],
+  "historical_capture": "/Users/yeren/ane/qwen35/local-results/macos-unrestricted-20261006T024951Z",
+  "historical_sources": "The earlier capture-time snapshots and archives remain unchanged. This review has a separate current-source snapshot.",
+  "verification": {
+    "status": "pass",
+    "replay_preflight": [
+      {
+        "kit": "training64",
+        "programs": 27,
+        "outputs": 27,
+        "checks": 27
+      },
+      {
+        "kit": "qwen-silu-exp-rerun",
+        "programs": 4,
+        "outputs": 8,
+        "checks": 32
+      },
+      {
+        "kit": "whisper-dense",
+        "programs": 1,
+        "outputs": 1,
+        "checks": 3
+      }
+    ],
+    "excluded": "mlx-ane-sd/task.md and concurrent whisper source/build changes",
+    "historical_artifacts_verified": 864,
+    "historical_archive_sha256": "2367323f7754f6640e626f8b7bf942d72509acb3c6e7705fc65e2390f0b39fb1",
+    "gpt2_sealed_files_verified": 394,
+    "existing_qwen_inputs_pass_new_shape_and_position_checks": true,
+    "client_mil_outputs_independently_verified": 128
+  },
+  "regression_tests": {
+    "count": 11,
+    "status": "pass",
+    "python": "qwen35/.venv/bin/python",
+    "log": "regression-tests.log"
+  },
+  "source_manifest": {
+    "path": "source-sha256.json",
+    "sha256": "3494683a337b97e5684fbc599a76c3fc84cb571d3c6bd1ae36c563324112e806",
+    "files": 22
+  },
+  "standalone_loading": {
+    "matrix": {
+      "status": "completed",
+      "cases": [
+        {
+          "variant": "minimal",
+          "model": "nn-mul",
+          "returncode": 1,
+          "loaded": false,
+          "error": {
+            "code": 53,
+            "user_info": {
+              "_ANEErrorUnderlyingStatus": 1,
+              "NSLocalizedDescription": "createProgramInstanceForModel:modelToken:modelFilePath:qos:isPreCompiled:enablePowerSaving:skipPreparePhase:statsMask:memoryPoolID:enableLateLatch:modelIdentityStr:owningPid:cacheUrlIdentifier:aotCacheUrlIdentifier:optOutOfModelMemoryUnwiring:intermediateBufferSizeHint:error:: Program load failed \u2014 no memory (transient; retry under lower memory pressure) (underlying=0x1)",
+              "_ANEErrorLoadStage": 4
+            },
+            "domain": "com.apple.appleneuralengine"
+          },
+          "hwx_sha256": "d8621205eed8a36bc08fc5a7a288bc39edbf3fc919bc77dafec498574b56b00d"
+        },
+        {
+          "variant": "minimal",
+          "model": "mil-mul",
+          "returncode": 1,
+          "loaded": false,
+          "error": {
+            "code": 53,
+            "user_info": {
+              "_ANEErrorUnderlyingStatus": 1,
+              "NSLocalizedDescription": "createProgramInstanceForModel:modelToken:modelFilePath:qos:isPreCompiled:enablePowerSaving:skipPreparePhase:statsMask:memoryPoolID:enableLateLatch:modelIdentityStr:owningPid:cacheUrlIdentifier:aotCacheUrlIdentifier:optOutOfModelMemoryUnwiring:intermediateBufferSizeHint:error:: Program load failed \u2014 no memory (transient; retry under lower memory pressure) (underlying=0x1)",
+              "_ANEErrorLoadStage": 4
+            },
+            "domain": "com.apple.appleneuralengine"
+          },
+          "hwx_sha256": "59e5a988b93bdfbf587d7bc19a222cf14a560df6201e11bfe30d2be8e2363c7d"
+        },
+        {
+          "variant": "minimal",
+          "model": "weighted-qwen",
+          "returncode": 1,
+          "loaded": false,
+          "error": {
+            "code": 53,
+            "user_info": {
+              "_ANEErrorUnderlyingStatus": 1,
+              "NSLocalizedDescription": "createProgramInstanceForModel:modelToken:modelFilePath:qos:isPreCompiled:enablePowerSaving:skipPreparePhase:statsMask:memoryPoolID:enableLateLatch:modelIdentityStr:owningPid:cacheUrlIdentifier:aotCacheUrlIdentifier:optOutOfModelMemoryUnwiring:intermediateBufferSizeHint:error:: Program load failed \u2014 no memory (transient; retry under lower memory pressure) (underlying=0x1)",
+              "_ANEErrorLoadStage": 4
+            },
+            "domain": "com.apple.appleneuralengine"
+          },
+          "hwx_sha256": "5ca356cd120d72812b73c370989c6efc98e7d670f4c78d23f5f723873ae71a70"
+        },
+        {
+          "variant": "minimal",
+          "model": "training-layernorm",
+          "returncode": 1,
+          "loaded": false,
+          "error": {
+            "code": 53,
+            "user_info": {
+              "_ANEErrorUnderlyingStatus": 1,
+              "NSLocalizedDescription": "createProgramInstanceForModel:modelToken:modelFilePath:qos:isPreCompiled:enablePowerSaving:skipPreparePhase:statsMask:memoryPoolID:enableLateLatch:modelIdentityStr:owningPid:cacheUrlIdentifier:aotCacheUrlIdentifier:optOutOfModelMemoryUnwiring:intermediateBufferSizeHint:error:: Program load failed \u2014 no memory (transient; retry under lower memory pressure) (underlying=0x1)",
+              "_ANEErrorLoadStage": 4
+            },
+            "domain": "com.apple.appleneuralengine"
+          },
+          "hwx_sha256": "981e50b07abba29431ad461d4fd537bdf0702f254d096b392729f60ee3119f41"
+        },
+        {
+          "variant": "minimal",
+          "model": "system",
+          "returncode": 0,
+          "loaded": true,
+          "error": null,
+          "hwx_sha256": "ee3a3f24c802eae67a2f43a2772c94dc0457866f012bc49e297e8d1764c0c92b"
+        },
+        {
+          "variant": "profiling",
+          "model": "nn-mul",
+          "returncode": 1,
+          "loaded": false,
+          "error": {
+            "code": 53,
+            "user_info": {
+              "_ANEErrorUnderlyingStatus": 1,
+              "NSLocalizedDescription": "createProgramInstanceForModel:modelToken:modelFilePath:qos:isPreCompiled:enablePowerSaving:skipPreparePhase:statsMask:memoryPoolID:enableLateLatch:modelIdentityStr:owningPid:cacheUrlIdentifier:aotCacheUrlIdentifier:optOutOfModelMemoryUnwiring:intermediateBufferSizeHint:error:: Program load failed \u2014 no memory (transient; retry under lower memory pressure) (underlying=0x1)",
+              "_ANEErrorLoadStage": 4
+            },
+            "domain": "com.apple.appleneuralengine"
+          },
+          "hwx_sha256": "d8621205eed8a36bc08fc5a7a288bc39edbf3fc919bc77dafec498574b56b00d"
+        },
+        {
+          "variant": "profiling",
+          "model": "mil-mul",
+          "returncode": 1,
+          "loaded": false,
+          "error": {
+            "code": 53,
+            "user_info": {
+              "_ANEErrorUnderlyingStatus": 1,
+              "NSLocalizedDescription": "createProgramInstanceForModel:modelToken:modelFilePath:qos:isPreCompiled:enablePowerSaving:skipPreparePhase:statsMask:memoryPoolID:enableLateLatch:modelIdentityStr:owningPid:cacheUrlIdentifier:aotCacheUrlIdentifier:optOutOfModelMemoryUnwiring:intermediateBufferSizeHint:error:: Program load failed \u2014 no memory (transient; retry under lower memory pressure) (underlying=0x1)",
+              "_ANEErrorLoadStage": 4
+            },
+            "domain": "com.apple.appleneuralengine"
+          },
+          "hwx_sha256": "59e5a988b93bdfbf587d7bc19a222cf14a560df6201e11bfe30d2be8e2363c7d"
+        },
+        {
+          "variant": "profiling",
+          "model": "weighted-qwen",
+          "returncode": 1,
+          "loaded": false,
+          "error": {
+            "code": 53,
+            "user_info": {
+              "_ANEErrorUnderlyingStatus": 1,
+              "NSLocalizedDescription": "createProgramInstanceForModel:modelToken:modelFilePath:qos:isPreCompiled:enablePowerSaving:skipPreparePhase:statsMask:memoryPoolID:enableLateLatch:modelIdentityStr:owningPid:cacheUrlIdentifier:aotCacheUrlIdentifier:optOutOfModelMemoryUnwiring:intermediateBufferSizeHint:error:: Program load failed \u2014 no memory (transient; retry under lower memory pressure) (underlying=0x1)",
+              "_ANEErrorLoadStage": 4
+            },
+            "domain": "com.apple.appleneuralengine"
+          },
+          "hwx_sha256": "5ca356cd120d72812b73c370989c6efc98e7d670f4c78d23f5f723873ae71a70"
+        },
+        {
+          "variant": "profiling",
+          "model": "training-layernorm",
+          "returncode": 1,
+          "loaded": false,
+          "error": {
+            "code": 53,
+            "user_info": {
+              "_ANEErrorUnderlyingStatus": 1,
+              "NSLocalizedDescription": "createProgramInstanceForModel:modelToken:modelFilePath:qos:isPreCompiled:enablePowerSaving:skipPreparePhase:statsMask:memoryPoolID:enableLateLatch:modelIdentityStr:owningPid:cacheUrlIdentifier:aotCacheUrlIdentifier:optOutOfModelMemoryUnwiring:intermediateBufferSizeHint:error:: Program load failed \u2014 no memory (transient; retry under lower memory pressure) (underlying=0x1)",
+              "_ANEErrorLoadStage": 4
+            },
+            "domain": "com.apple.appleneuralengine"
+          },
+          "hwx_sha256": "981e50b07abba29431ad461d4fd537bdf0702f254d096b392729f60ee3119f41"
+        },
+        {
+          "variant": "profiling",
+          "model": "system",
+          "returncode": 0,
+          "loaded": true,
+          "error": null,
+          "hwx_sha256": "ee3a3f24c802eae67a2f43a2772c94dc0457866f012bc49e297e8d1764c0c92b"
+        }
+      ],
+      "source_sha256": "65ad908baed7818a4ca0823d8b3a0aa16d70495499de5357f85cc3a11cffe78d"
+    },
+    "runtime_comparison": {
+      "status": "completed",
+      "cases": [
+        {
+          "route": "client-mil-compile",
+          "returncode": 0,
+          "compiled": true,
+          "loaded": true,
+          "compile_error": null,
+          "load_error": null
+        }
+      ],
+      "e5rt_exact": true,
+      "e5rt_cache_files": [
+        "weights.bin",
+        "model.mil",
+        "e5rt-output.npy",
+        "cache/com.apple.e5rt.e5bundlecache/26A434/08F9EA443966CBB468DDDA17FBAB0CBBA9E8A84E6653073D97F8D13E15C9771B/88A0802B9C3B58513B804B1C99BBC4435082C7D5BB08159F34F7BC1C15155306.bundle/H13G.bundle/H13G.e5",
+        "cache/com.apple.e5rt.e5bundlecache/26A434/08F9EA443966CBB468DDDA17FBAB0CBBA9E8A84E6653073D97F8D13E15C9771B/88A0802B9C3B58513B804B1C99BBC4435082C7D5BB08159F34F7BC1C15155306.bundle/H13G.bundle/main/main_ane/model.anehash"
+      ]
+    },
+    "numerical": {
+      "status": "pass",
+      "cases": [
+        {
+          "mode": "constant",
+          "returncode": 0,
+          "status": "pass",
+          "loaded": true,
+          "executed": true,
+          "values": 64,
+          "modelURL": "file:///Users/yeren/ane/qwen35/local-results/macos-review-20261006T042840Z/runtime-mul/",
+          "sourceURL": null,
+          "cacheURLIdentifier": "12571745D65EEA67452420380FF4D11A116CDA12C1935F8D56B1C5A43021A571_A08A0FCBDEAFD3C1B3A4B495B9A9C9D96850F08946B52BC0622347D3B6E73B78"
+        },
+        {
+          "mode": "pattern",
+          "returncode": 0,
+          "status": "pass",
+          "loaded": true,
+          "executed": true,
+          "values": 64,
+          "modelURL": "file:///Users/yeren/ane/qwen35/local-results/macos-review-20261006T042840Z/runtime-mul/",
+          "sourceURL": null,
+          "cacheURLIdentifier": "12571745D65EEA67452420380FF4D11A116CDA12C1935F8D56B1C5A43021A571_A08A0FCBDEAFD3C1B3A4B495B9A9C9D96850F08946B52BC0622347D3B6E73B78"
+        }
+      ]
+    },
+    "final_comparison_tool": {
+      "status": "failed",
+      "started_utc": "2026-10-06T04:38:10.845203+00:00",
+      "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+      "cases": [],
+      "source_sha256": {
+        "model.mil": "448b58e97742848e7ade0af48cff22c87e5be721663f5ef1b82d9872a7808393",
+        "weights.bin": "78554a3a0c8f62e32db9906f946b2bb3ac03b88618170e9e67c011ee4f7096d1"
+      },
+      "scope": "64-value MUL: exact constant and signed fractional checks; system control loads only",
+      "compiler_route": "_ANEClient compileModel with kANEFModelMIL, then loadModel and evaluate",
+      "offline_hwx_sha256": "59e5a988b93bdfbf587d7bc19a222cf14a560df6201e11bfe30d2be8e2363c7d",
+      "system_hwx_sha256": "ee3a3f24c802eae67a2f43a2772c94dc0457866f012bc49e297e8d1764c0c92b",
+      "checker_source_sha256": "815838c62250827640184667fa21a2bf8fb166e9c9481fa1d70aa2de8c8bd8be",
+      "error": "shared hardware lock remained busy: ane.lock",
+      "ended_utc": "2026-10-06T04:48:13.246399+00:00"
+    },
+    "conclusion": "Custom offline HWX exports are assigned to guarded native Asahi replay. macOS execution uses ANEForge private E5RT compilation of MIL and service-managed executable operations; the independently verified daemon MIL route also works. Historical standalone-HWX rejection controls do not constitute a pending macOS MUL execution failure. Their error classification alone does not establish physical OOM or the precise signature-check cause.",
+    "independent_output_checks": "Both client MIL output files match all 64 exact mathematical expectations, including signed binary fractions."
+  },
+  "findings": [
+    {
+      "priority": "P1",
+      "file": "experimental/verify_macos_capture.py",
+      "problem": "Empty fixture arrays allowed a vacuous successful report; mutable manifest gates could weaken the claimed fixed replay gate.",
+      "fix": "Validate nonempty and consistent fixtures, exact gates, port counts, finite values and hashes before either hardware runtime, then require all expected comparisons.",
+      "status": "fixed"
+    },
+    {
+      "priority": "P2",
+      "file": "qwen35/tools/quiet_benchmark.py",
+      "problem": "Periodic samples could miss exit-tail paging and classify an affected run as passing host gates. Lock timeout failed before a session receipt was written.",
+      "fix": "Bracket child launch/exit with samples; retain lock-timeout failure receipts; document the historical sampling limit.",
+      "status": "fixed"
+    },
+    {
+      "priority": "P2",
+      "file": "experimental/capture_qwen_recurrence.py",
+      "problem": "Four reused captures could contain duplicate positions or come from a different checkpoint while appearing to cover the declared prefixes.",
+      "fix": "Require the same checkpoint, distinct positions 0/1/7/22, expected finite shapes, finite representable gains, and capture the reused-input hash.",
+      "status": "fixed"
+    },
+    {
+      "priority": "P3",
+      "file": "experimental/probe_static_options.py",
+      "problem": "Repeating compiler patching nested the temporary-path environment wrapper.",
+      "fix": "Skip that replacement when the environment override is already present.",
+      "status": "fixed"
+    },
+    {
+      "priority": "P3",
+      "file": "problem.md",
+      "problem": "The historical KDMA/NE explanation presented the cause of zero output and the cleanup as established without a retained native Asahi raw-versus-cleaned comparison.",
+      "fix": "Label the causal explanation as a hypothesis and register cleanup as a candidate fix requiring a same-runtime raw, cleaned and direct-register comparison.",
+      "status": "fixed"
+    }
+  ],
+  "remaining": [
+    "Native Asahi execution of custom exported HWX is pending. Standalone macOS loading is removed from pending execution work; the private MIL/E5RT routes already pass their macOS numerical checks.",
+    "Native Asahi hardware replay, model-level checks and cross-host BF16 oracle capture still require Linux.",
+    "No rerun of the full CPU timing sweep was needed for this review; historical host-gate counts retain their periodic-sampling limitation."
+  ],
+  "artifact_manifest": {
+    "path": "artifact-sha256.json",
+    "sha256": "5a4d852d5b38a3ca2377af85793ae4da6a1b9e6a1afffbca7ab0881b96d3c8bc",
+    "files": 87,
+    "bytes": 1819285
+  },
+  "archive": {
+    "path": "/Users/yeren/ane/qwen35/local-results/macos-review-20261006T042840Z.tar.gz",
+    "bytes": 376617,
+    "sha256": "fe681a3b783afe22934988278e4de356d143611686c7d7a1cd2bec61ac47f28f",
+    "verified_payloads": 87,
+    "pre_archive_receipt_sha256": "b82acb39bb7e8d6eecb95e65e0d12cbc2bd2ec10e790c3a9d0fa0a61c9afd3f7"
+  },
+  "interpretation_update": {
+    "updated_utc": "2026-10-06T05:35:14.665936+00:00",
+    "reason": "User corrected the custom-HWX execution target and directed verification against the Desktop ANEForge checkout.",
+    "aneforge_checkout": "/Users/yeren/Desktop/ANEForge",
+    "aneforge_commit": "d0c666192ebd8d0428e0647fc4d87f57c11759fa",
+    "evidence": {
+      "aneforge/_runtime.py": "0bb71d905d7e09eada68bdc429a7c27145bd5b37f105510efa460eba0c4a58b0",
+      "aneforge/_lib/ane_e5rt_dispatch.mm": "b99fa37a7a4be6891604e9012174dd7d0231902a8d3554f5a06f60b1f1f585ae",
+      "aneforge/_capabilities.py": "311f6b2db048e73107747401516e2cc13dd42eec40a0478163a40a90b7f6bda5",
+      "docs/glossary.md": "b28759089f75565fef5f9fec935b773c68ebe7104818cbe31ac8ced6c73e6a8b",
+      "docs/e5rt-dispatch-reference.md": "c2767b7b2a64a1153391f1c5680433e6c288b96aba24e18430b8a041716f4d08"
+    },
+    "superseded_interpretation": "The same MIL source works through ANE-only E5RT and daemon compile/load with kANEFModelMIL. Offline HWX loading also fails for Qwen and training exports. Exact binary/runtime mismatch unresolved; error classification alone does not establish physical OOM.",
+    "historical_capture_receipt": "/Users/yeren/ane/qwen35/local-results/macos-review-20261006T042840Z/final-receipt.json",
+    "archive_scope": "The archive, measurement records and original capture-time source snapshots are unchanged. This live receipt has a later interpretation update.",
+    "updated_repository_source_sha256": {
+      "README.md": "71017dd7169fee085b278933044dca153030a1fbc7232830649dc6f6c7cd5fd9",
+      "problem.md": "b300a6d8151f94967e129185c4737d6ef27d52d5c5c25f439a2992a27b33ac92",
+      "experimental/macos-followups.md": "719b1227758da345273313488446f36140c39e6f833939d0eb4c25a5ba5b0edf",
+      "experimental/probe_static_loading.py": "11c62a889c6bbbb884495df82ac2fb0708278d0f86f2cdb02569af74fd66758a"
+    },
+    "documentation_review": "Qualified the KDMA/NE zero-output mechanism and cleanup as hypotheses pending native Asahi numerical comparison; historical measurements and sealed archive remain unchanged."
+  }
+}

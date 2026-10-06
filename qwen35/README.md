@@ -17,6 +17,19 @@ directory with `--model` when it contains this same checkpoint.
 ./qwen35/.venv/bin/python -m unittest qwen35.tests -v
 ```
 
+CPU execution also works on macOS. Use a compiler with OpenMP support; Apple's
+default `cc` rejects `-fopenmp`. On the tested M1, Homebrew GCC 16 works:
+
+```sh
+env CC=gcc-16 OPENBLAS_NUM_THREADS=1 OMP_WAIT_POLICY=PASSIVE \
+  ./qwen35/first-run.sh generate --threads 4 --prompt 'Hello'
+env CC=gcc-16 ./qwen35/.venv/bin/python -m unittest qwen35.tests -v
+```
+
+Use `--model` for an existing copy of the pinned checkpoint. Select worker
+counts explicitly for macOS comparisons; Linux CPU affinity selection is
+unavailable there.
+
 Mirai M uses asymmetric 4-bit weights, groups of 32, BF16 scales, packed
 4-bit zero points and signed 32-element Hadamard transforms. This differs
 from GGUF Q4_0 and Mirai S's trellis codec. Body matrices store scales and
@@ -29,9 +42,11 @@ dot product, keeping the original scales and packed weights.
 `--kernels native` selects floating packed matvec. DeltaNet's convolution
 and recurrent states use FP32. `--precision bf16` reproduces the vendor's
 BF16 activation boundaries and sequential accumulation; this slower
-reference mode matched Uzu exactly on the retained fixtures. FP32 is the
-default. Four workers use M1 performance cores within the process's allowed
-affinity; `--threads` and explicit OpenMP settings can override this.
+reference mode matched Uzu exactly on the retained Asahi fixtures. The
+[retained Asahi arithmetic fixture differs on macOS](#macos-cpu-measurements),
+while a fresh independent macOS Uzu capture matches the macOS implementation exactly.
+FP32 is the default. Four workers use M1 performance cores within the
+process's allowed affinity; `--threads` and explicit OpenMP settings can override this.
 Builds require a C compiler with OpenMP. `first-run.sh` installs the Python
 requirements into `qwen35/.venv`.
 
@@ -47,7 +62,7 @@ recurrent-state update. They do not establish full-model parity. An optional
 Uzu CPU oracle can be built with `tools/build_reference.py`; its instrumentation
 exports decoder logits without changing the decoder or its kernels.
 The retained Uzu fixtures cover all 248,320 logits after one token, two
-tokens and a 23-token chat prompt. All matched bit for bit in BF16 mode;
+tokens and a 23-token chat prompt. All matched bit for bit in BF16 mode on Asahi;
 the first two fixtures also matched all 24 residual layer outputs.
 `verify` replays these fixtures and checks a rolling FP32 integer-dot trace.
 [Vendor validation](provenance/vendor-validation.json) and
@@ -186,6 +201,121 @@ rate-limit messages; no ANE warning or error appeared in those excerpts.
 are retained. Raw capture and run manifest stay in the user's Coreglass data
 directory. The [local report](http://127.0.0.1:8777/out/qwen35-mirai/index.html)
 combines the measured benchmark data and that capture.
+
+## macOS CPU measurements
+
+The same base M1 / 8 GB machine was measured on macOS 27.0.1 on 2026-10-06,
+using GCC 16, one BLAS thread and passive OpenMP waiting. Three rotated
+fresh-process runs per configuration used the same six prompts and 32 decode
+calls as the Linux prefill/decode suite: 2,163 prefill tokens and 576 decode
+calls per configuration. Regenerated floating references reproduced every
+saved Linux prompt token, generated input and prediction.
+
+| CPU kernels | Workers | Prefill tok/s | Decode tok/s | Per-prompt decode range |
+| --- | ---: | ---: | ---: | ---: |
+| Floating packed W4 | 1 | 7.73 | 5.82 | 3.22–7.70 |
+| Floating packed W4 | 2 | 7.70 | 5.49 | 2.77–11.35 |
+| Floating packed W4 | 4 | 9.10 | 6.66 | 3.03–14.40 |
+| SDOT packed W4 | 1 | 16.18 | 12.66 | 8.69–17.11 |
+| SDOT packed W4 | 2 | 9.83 | 5.14 | 0.78–20.70 |
+| SDOT packed W4 | 4 | 15.01 | 11.78 | 6.42–19.41 |
+
+Every configuration passed all 18 first choices and 576 decode choices.
+Floating outputs matched the local reference exactly; SDOT's maximum full-logit
+NRMSE was 0.0582%, below the unchanged 0.5% gate. The separate 16-step rolling
+SDOT verification also passed. All eight small-matrix/recurrent tests passed.
+
+These are active-desktop measurements. Another session was assigned Metal/ANE
+work, shared workload isolation was not established, and the sampled one-minute
+host load ranged from 1.90 to 168.88. The two-worker SDOT configuration's second
+run was especially affected. These aggregate rates do not establish a best
+worker count or an isolated macOS-versus-Linux speed difference.
+
+Strict BF16 parity against the retained Asahi fixtures fails on macOS: the one- and
+two-token fixtures, including all 24 layer outputs, matched exactly, while the
+23-token arithmetic fixture had 1.5815% logit NRMSE and maximum absolute error
+0.1875. Its argmax still matched. GCC and Clang produced identical macOS
+outputs and layer traces, so switching these compilers did not resolve the
+fixture difference. A fresh build of pinned Uzu on macOS, with all-token
+instrumentation, matched native BF16 bit for bit at all 23 arithmetic tokens:
+552 residual-layer vectors and 5,711,360 logits. The instrumented final logits
+also matched the uninstrumented final-token capture exactly. macOS Uzu itself
+has the same 1.5815% difference from the retained Asahi arithmetic logits.
+This establishes same-host vendor parity and narrows the unresolved question
+to cross-host reference reproducibility; it does not establish the underlying
+cause. The original fixtures and exact gate remain unchanged.
+
+[The macOS CPU receipt](provenance/m1-macos-cpu.json) records all configurations,
+failed checks, successful reruns, host observations and the evidence archive's
+SHA256. Raw timings, reference logits, compiler diagnostics and layer dumps
+remain under the ignored `local-results/` directory. GPT-2's accompanying
+macOS checks passed all 49 tests, packed all 49 kernels/110 unique payloads,
+and passed NumPy, exact floating and native CPU parity. Its four-trial warmed
+CPU decode measurement ranged from 108.07 to 115.03 steps/s across three prompts.
+
+### Follow-up validation
+
+Review on 2026-10-06 rechecked all 97 baseline artifact hashes, the archive
+SHA256 and all 18 baseline benchmark receipt hashes. The subsequent
+[follow-up receipt](provenance/m1-macos-followup.json) records the expanded
+checks and [capture commands](../experimental/macos-followups.md).
+The subsequent [unrestricted rerun](provenance/m1-macos-unrestricted.json)
+provides actual macOS ANE training and Whisper fixtures, successful Metal
+transcriptions and Core ML hardware placement. Its repeated CPU sweep uses
+complete host observations again. Earlier restricted attempts remain retained.
+
+1. **Compare the two hosts' BF16 oracle captures.** The macOS capture is
+   complete and matches native BF16 exactly at every arithmetic prefix and
+   layer. Run `tools/capture_vendor_macos.py` on Asahi with `--tag asahi` and
+   `--compare-capture` pointing to the saved `uzu-macos-all.npz`; the helper
+   reports the first differing prefix and layer between independent oracles.
+   `tools/build_reference.py --lockfile` accepts the retained Cargo lock so
+   the cross-host build can use the same pinned dependency resolution.
+   Capture operation inputs and recurrent state around that first cross-host
+   mismatch if layer outputs alone do not explain it. Keep the bitwise gate.
+2. **Repeated CPU correctness passed; quiet timing remains limited.**
+   Three additional floating/SDOT, 1/2/4-worker sweeps passed all 54 numerical
+   runs: 324 first predictions and 10,368 decode choices matched. Thirteen runs
+   passed the predeclared host-activity gates and 41 timings were affected.
+   All 18 second-phase runs lacked process/swap queries under the workspace
+   sandbox and were marked affected. The unrestricted third phase passed all
+   18 runs with complete observations: 108 first predictions and 3,456 decode
+   choices matched; five timings passed the host gates and 13 were affected.
+   All attempts are retained. Desktop activity and repeated phases on one
+   boot do not establish an optimum worker count or an isolated OS comparison.
+3. **Longer-context and free greedy CPU checks passed.** Four short prompts
+   and exact 1,024/2,048-token prompts each completed 64 decode calls: all
+   six first predictions and all 384 decode choices matched the floating
+   reference. Maximum full-logit NRMSE was 0.058167%, below the unchanged
+   0.5% gate. Four separate 64-step greedy streams covering arithmetic,
+   Python, Chinese and household advice matched all 256 choices, with
+   maximum NRMSE 0.010210%. The fixed calls continue beyond EOS and do not
+   measure response quality or application throughput. The saved floating
+   traces and `long-context/asahi-replay.json` are ready for the accurate
+   ANE policy on Asahi; Linux hardware parity remains pending. These checks
+   use the existing projection shapes and do not resolve the cross-host
+   BF16 oracle difference.
+
+The unrestricted repeat retained three runs per configuration. The rates
+below aggregate every attempt, including affected timings; the final column
+counts runs passing the host-activity gates. Each configuration covers 2,163
+timed prefill tokens and 576 decode calls. Maximum SDOT full-logit NRMSE
+remained 0.058167%, below the unchanged 0.5% gate.
+
+| CPU path | Workers | Prefill tok/s | Decode tok/s | Host gates passed |
+| --- | ---: | ---: | ---: | ---: |
+| Floating packed W4 | 1 | 10.51 | 7.55 | 1/3 |
+| SDOT packed W4 | 1 | 20.69 | 16.13 | 0/3 |
+| Floating packed W4 | 2 | 15.26 | 11.83 | 1/3 |
+| SDOT packed W4 | 2 | 26.66 | 22.50 | 1/3 |
+| Floating packed W4 | 4 | 20.00 | 16.95 | 0/3 |
+| SDOT packed W4 | 4 | 29.62 | 26.18 | 2/3 |
+
+These historical host-gate counts use periodic observations. The
+[subsequent review](provenance/m1-macos-review.json) found that the final
+interval before process exit could miss paging; the helper now brackets
+launch and exit with observations. Existing classifications retain that
+sampling limit and do not establish isolated throughput.
 
 ## Experimental ANE backend
 

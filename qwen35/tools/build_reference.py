@@ -11,11 +11,18 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--uzu", type=Path, default=Path.home() / ".cache/ane-qwen35/uzu")
     parser.add_argument("--cargo", default=shutil.which("cargo"))
+    parser.add_argument("--lockfile", type=Path, help="Reuse a captured Cargo lock for cross-host comparison")
     args = parser.parse_args()
     if not args.cargo:
         parser.error("cargo is required for the optional independent reference")
     if not args.uzu.exists():
-        subprocess.run(["git", "clone", "https://github.com/trymirai/uzu", str(args.uzu)], check=True)
+        # Fetch the recorded revision, rather than cloning today's HEAD and
+        # immediately failing the revision check on a new machine.
+        subprocess.run(["git", "init", str(args.uzu)], check=True)
+        subprocess.run(["git", "-C", str(args.uzu), "remote", "add", "origin",
+                        "https://github.com/trymirai/uzu"], check=True)
+        subprocess.run(["git", "-C", str(args.uzu), "fetch", "--depth", "1", "origin", REVISION], check=True)
+        subprocess.run(["git", "-C", str(args.uzu), "checkout", "--detach", "FETCH_HEAD"], check=True)
     revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=args.uzu, text=True).strip()
     if revision != REVISION:
         raise ValueError(f"reference requires Uzu {REVISION}, found {revision}")
@@ -47,7 +54,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     model.ane_reference(&tokens, Path::new(&args[3]))
 }
 ''')
-    subprocess.run([args.cargo, "build", "--release", "-j", "4"], cwd=cli, check=True)
+    command = [args.cargo, "build", "--release", "-j", "4"]
+    if args.lockfile:
+        if args.lockfile.resolve() != (cli / "Cargo.lock").resolve():
+            shutil.copyfile(args.lockfile, cli / "Cargo.lock")
+        command.append("--locked")
+    subprocess.run(command, cwd=cli, check=True)
 
 
 if __name__ == "__main__":

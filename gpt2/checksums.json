@@ -367,7 +367,7 @@
   "replay.py": "d5bccc76fd87e86d0d167dc0e7ee8e796539ec95542b59469c21390ffb5e6b34",
   "requirements.txt": "d98da269baa1419aaa7362087dc4c62a528777571f0c09cd1d4a70ac857ca165",
   "tests/test_cpu_matvec.py": "407b288a680346f2c4f42fbe4ef2e93c67ea515f087e6f5141c8107158f25520",
-  "tests/test_gguf.py": "d5164ff7045a1e9c6f431d7c616ce33ecc158c523a4508e89f3dfa22b08ad6cc",
+  "tests/test_gguf.py": "f4ed9c821759b7078d4d46bc96364c4fe5c1c09c2cd6e6f8d76926216fc7201f",
   "tests/test_port.py": "a2a67d8c8cd566419b0c5e340c0aeec905d2184d2346acc3791040317850c5f1",
   "tokenizer/merges.txt": "1ce1664773c50f3e0cc8842619a93edc4624525b728b188a9e0be33b7726adc5",
   "tokenizer/vocab.json": "196139668be63f3b5d6574427317ae82f612a97c5d1cdaf36ed2256dbf636783",

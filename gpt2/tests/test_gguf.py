@@ -119,7 +119,7 @@ class GGUFValidationTests(unittest.TestCase):
 
     def test_explicit_directory_discovery_and_ambiguous_files(self):
         target = self.checkpoint()
-        self.assertEqual(find_weights(target.parent), target)
+        self.assertEqual(find_weights(target.parent), target.resolve())
         (target.parent / "other.gguf").touch()
         with self.assertRaisesRegex(ValueError, "explicitly"):
             find_weights(target.parent)

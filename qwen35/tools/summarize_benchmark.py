@@ -105,7 +105,10 @@ def main():
     sources = ["qwen35/tools/benchmark.py", "qwen35/tools/summarize_benchmark.py",
                "qwen35/model.py", "qwen35/native.py", "qwen35/cpu.c", "qwen35/weights.py",
                "qwen35/ane.py", "qwen35/ane_matmul.c", "qwen35/linear_template.h"]
-    result = dict(protocol=PROTOCOL, hardware="base M1 MacBook Air, 8 GB, Asahi Linux",
+    host_os = {"Darwin": "macOS", "Linux": "Asahi Linux"}.get(platform.system(), platform.system())
+    result = dict(protocol=PROTOCOL, hardware=f"base M1 MacBook Air, 8 GB, {host_os}",
+                  host=dict(platform=platform.platform(), system=platform.system(),
+                            machine=platform.machine(), macos=platform.mac_ver()[0]),
                   kernel=platform.release(), runtime_source_commit=subprocess.check_output(
                       ["git", "rev-parse", "HEAD"], cwd=root, text=True).strip(),
                   source_sha256={path: sha256(root / path) for path in sources},
@@ -115,8 +118,8 @@ def main():
                   timing_scope="Full warm prefill through vocabulary head; warm TTFT also includes first argmax. "
                                "Decode calls ingest saved generated tokens, never prompt tokens. "
                                "Exclude loading, preparation, tokenization, reset and logit comparison; continue beyond EOS.",
-                  limitations=["Active desktop; shared hardware locks serialize workloads. Setup from queued jobs may overlap.",
-                               "CPU timing varied considerably; paging was observed. No isolated sustained throughput claim.",
+                  limitations=["Active desktop; external workload isolation is not established.",
+                               "No isolated sustained throughput claim; inspect the run-specific host observations.",
                                "Sequential prompt ingestion on all paths; no batched prefill kernel.",
                                "ANE FP16 body is experimental; numerical drift is measured separately.",
                                "GPU/ANE busy counters and measured DRAM bandwidth unavailable."],

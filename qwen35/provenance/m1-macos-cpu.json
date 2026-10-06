@@ -1,0 +1,4050 @@
+{
+  "schema": 1,
+  "measured_utc": "2026-10-05T16:43:17.518647+00:00",
+  "session": {
+    "run_directory": "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z",
+    "model_directory": "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+    "source_commit": "9c5d3c21ee941a6bb6b2440ef86c0494cfd698cf",
+    "initial_git_status": "",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "macos": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434\n",
+    "compiler": "gcc-16 (Homebrew GCC 16.1.0) 16.1.0\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+    "limitations": [
+      "Active desktop; another Codex session may run Metal/ANE workloads.",
+      "Host CPU timings do not establish an isolated OS performance comparison."
+    ]
+  },
+  "protocol": "qwen35-prefill-decode/v2",
+  "summary": {
+    "cpu-native-t1": {
+      "rounds": 3,
+      "overall": {
+        "requests": 18,
+        "prefill_tokens": 2163,
+        "prefill_seconds": 279.82988295999917,
+        "prefill_tokens_per_second": 7.72969626088574,
+        "mean_warm_ttft_seconds": 15.5462465071111,
+        "warm_ttft_range_seconds": [
+          1.7051578750001681,
+          83.81894858399983
+        ],
+        "prefill_rate_range": [
+          3.832730947381122,
+          10.601100562050453
+        ],
+        "decode_steps": 576,
+        "decode_seconds": 98.959699481999,
+        "decode_steps_per_second": 5.820551224539397,
+        "decode_rate_range": [
+          3.21540204330871,
+          7.695171491076125
+        ],
+        "median_decode_ms": 143.71718749998763,
+        "components_ms_per_token": {
+          "prefill": {
+            "attention": 1.4333250281973455,
+            "head": 0.40159903282483206,
+            "mixer_output": 12.953424801185687,
+            "mixer_projection": 41.784765330553306,
+            "mlp_down": 21.727692533039985,
+            "mlp_up": 39.43164803559377,
+            "recurrent": 10.0238032514798
+          },
+          "decode": {
+            "attention": 1.2467121892526398,
+            "head": 48.8490315364566,
+            "mixer_output": 12.37037191489776,
+            "mixer_projection": 39.807650534716764,
+            "mlp_down": 20.735588637159925,
+            "mlp_up": 37.58839239064374,
+            "recurrent": 9.590339869818918
+          }
+        },
+        "accuracy": {
+          "prefill": {
+            "predictions": 18,
+            "argmax_matches": 18,
+            "max_normalized_rmse": 0.0
+          },
+          "decode": {
+            "predictions": 576,
+            "argmax_matches": 576,
+            "max_normalized_rmse": 0.0
+          }
+        },
+        "prefill_ane_submissions": 0,
+        "decode_ane_submissions": 0
+      },
+      "groups": {
+        "short-chat": {
+          "requests": 12,
+          "prefill_tokens": 243,
+          "prefill_seconds": 30.923973083999726,
+          "prefill_tokens_per_second": 7.85798122834772,
+          "mean_warm_ttft_seconds": 2.5771422154166808,
+          "warm_ttft_range_seconds": [
+            1.7051578750001681,
+            4.957526374999816
+          ],
+          "prefill_rate_range": [
+            3.832730947381122,
+            10.571656181024606
+          ],
+          "decode_steps": 384,
+          "decode_seconds": 66.70529232599915,
+          "decode_steps_per_second": 5.756664675470309,
+          "decode_rate_range": [
+            3.21540204330871,
+            7.695171491076125
+          ],
+          "median_decode_ms": 142.75593750005555,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 1.023275621366465,
+              "head": 2.3752475967066182,
+              "mixer_output": 12.584303592595102,
+              "mixer_projection": 40.43690812342019,
+              "mlp_down": 21.161582530874945,
+              "mlp_up": 38.370260213980835,
+              "recurrent": 9.747962481448065
+            },
+            "decode": {
+              "attention": 1.0846412604272142,
+              "head": 49.43042208594169,
+              "mixer_output": 12.537515067724788,
+              "mixer_projection": 40.19888688021034,
+              "mlp_down": 21.003106531265914,
+              "mlp_up": 38.08593126820566,
+              "recurrent": 9.701109515646067
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 12,
+              "argmax_matches": 12,
+              "max_normalized_rmse": 0.0
+            },
+            "decode": {
+              "predictions": 384,
+              "argmax_matches": 384,
+              "max_normalized_rmse": 0.0
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        },
+        "context-128": {
+          "requests": 3,
+          "prefill_tokens": 384,
+          "prefill_seconds": 44.001057416999856,
+          "prefill_tokens_per_second": 8.727062996709737,
+          "mean_warm_ttft_seconds": 14.667144777999965,
+          "warm_ttft_range_seconds": [
+            12.098048082999867,
+            18.599576916999922
+          ],
+          "prefill_rate_range": [
+            6.881934257354921,
+            10.580313417866904
+          ],
+          "decode_steps": 96,
+          "decode_seconds": 14.66395416200021,
+          "decode_steps_per_second": 6.546665308649962,
+          "decode_rate_range": [
+            5.486327264594887,
+            7.54700620860132
+          ],
+          "median_decode_ms": 143.6719795000272,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 1.045965851541671,
+              "head": 0.3383300781253003,
+              "mixer_output": 11.439309734367242,
+              "mixer_projection": 37.34346431510005,
+              "mlp_down": 19.237479317674538,
+              "mlp_up": 34.99654709897134,
+              "recurrent": 8.879093877613542
+            },
+            "decode": {
+              "attention": 1.1656094375330401,
+              "head": 43.36552644790714,
+              "mixer_output": 10.878187208253584,
+              "mixer_projection": 35.99485188541962,
+              "mlp_down": 18.314813156232884,
+              "mlp_up": 33.31009767712345,
+              "recurrent": 8.46238558343515
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 3,
+              "argmax_matches": 3,
+              "max_normalized_rmse": 0.0
+            },
+            "decode": {
+              "predictions": 96,
+              "argmax_matches": 96,
+              "max_normalized_rmse": 0.0
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        },
+        "context-512": {
+          "requests": 3,
+          "prefill_tokens": 1536,
+          "prefill_seconds": 204.90485245899958,
+          "prefill_tokens_per_second": 7.496162153150306,
+          "mean_warm_ttft_seconds": 68.30176540299992,
+          "warm_ttft_range_seconds": [
+            48.296986957999934,
+            83.81894858399983
+          ],
+          "prefill_rate_range": [
+            6.1084152741103095,
+            10.601100562050453
+          ],
+          "decode_steps": 96,
+          "decode_seconds": 17.590452993999634,
+          "decode_steps_per_second": 5.45750584324048,
+          "decode_rate_range": [
+            4.771046103990091,
+            7.5608627334518275
+          ],
+          "median_decode_ms": 197.3006874999328,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 1.5950359199263058,
+              "head": 0.1051789010418543,
+              "mixer_output": 13.390349696593104,
+              "mixer_projection": 43.10832580663885,
+              "mlp_down": 22.43980620831761,
+              "mlp_up": 40.70833813996548,
+              "recurrent": 10.35361946676779
+            },
+            "decode": {
+              "attention": 1.9760986562739429,
+              "head": 52.0069744270657,
+              "mixer_output": 13.193984010233825,
+              "mixer_projection": 42.055503802039595,
+              "mlp_down": 22.086292541663017,
+              "mlp_up": 39.87653159391632,
+              "recurrent": 10.275215572894089
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 3,
+              "argmax_matches": 3,
+              "max_normalized_rmse": 0.0
+            },
+            "decode": {
+              "predictions": 96,
+              "argmax_matches": 96,
+              "max_normalized_rmse": 0.0
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        }
+      }
+    },
+    "cpu-dot-t1": {
+      "rounds": 3,
+      "overall": {
+        "requests": 18,
+        "prefill_tokens": 2163,
+        "prefill_seconds": 133.71960583199984,
+        "prefill_tokens_per_second": 16.175638467836272,
+        "mean_warm_ttft_seconds": 7.4290218911667,
+        "warm_ttft_range_seconds": [
+          0.8516125000001011,
+          41.94292983300011
+        ],
+        "prefill_rate_range": [
+          12.057667805891771,
+          21.965743872334272
+        ],
+        "decode_steps": 576,
+        "decode_seconds": 45.50041081799691,
+        "decode_steps_per_second": 12.659226359604055,
+        "decode_rate_range": [
+          8.690849584456053,
+          17.105517840910455
+        ],
+        "median_decode_ms": 70.9428545000037,
+        "components_ms_per_token": {
+          "prefill": {
+            "attention": 1.3582653670777896,
+            "head": 0.14933059639386215,
+            "mixer_output": 5.86646282293396,
+            "mixer_projection": 17.612143897371,
+            "mlp_down": 8.970711493743236,
+            "mlp_up": 16.29423212528557,
+            "recurrent": 10.166814446142707
+          },
+          "decode": {
+            "attention": 1.241278883686192,
+            "head": 17.871917017357774,
+            "mixer_output": 5.780086666689105,
+            "mixer_projection": 17.686078550354978,
+            "mlp_down": 8.862222069499381,
+            "mlp_up": 16.028165927126043,
+            "recurrent": 10.052688368034918
+          }
+        },
+        "accuracy": {
+          "prefill": {
+            "predictions": 18,
+            "argmax_matches": 18,
+            "max_normalized_rmse": 0.00018815402762622436
+          },
+          "decode": {
+            "predictions": 576,
+            "argmax_matches": 576,
+            "max_normalized_rmse": 0.0005816712216334624
+          }
+        },
+        "prefill_ane_submissions": 0,
+        "decode_ane_submissions": 0
+      },
+      "groups": {
+        "short-chat": {
+          "requests": 12,
+          "prefill_tokens": 243,
+          "prefill_seconds": 14.746874372999855,
+          "prefill_tokens_per_second": 16.47806808776443,
+          "mean_warm_ttft_seconds": 1.2290591283333658,
+          "warm_ttft_range_seconds": [
+            0.8516125000001011,
+            1.8746284580001884
+          ],
+          "prefill_rate_range": [
+            12.057667805891771,
+            21.965743872334272
+          ],
+          "decode_steps": 384,
+          "decode_seconds": 29.886919616998966,
+          "decode_steps_per_second": 12.848430180191269,
+          "decode_rate_range": [
+            9.665170553639587,
+            17.105517840910455
+          ],
+          "median_decode_ms": 70.18293750002158,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 0.9531697571814512,
+              "head": 0.8605305061715297,
+              "mixer_output": 5.7212049053739396,
+              "mixer_projection": 17.168087226293675,
+              "mlp_down": 8.765826362119741,
+              "mlp_up": 15.918404748939711,
+              "recurrent": 9.945151781900224
+            },
+            "decode": {
+              "attention": 1.0473566510421268,
+              "head": 17.657543700516715,
+              "mixer_output": 5.712527054732537,
+              "mixer_projection": 17.414641414050653,
+              "mlp_down": 8.761592231826043,
+              "mlp_up": 15.841754859421778,
+              "recurrent": 9.937207515608412
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 12,
+              "argmax_matches": 12,
+              "max_normalized_rmse": 0.00010363138196489508
+            },
+            "decode": {
+              "predictions": 384,
+              "argmax_matches": 384,
+              "max_normalized_rmse": 0.0005816712216334624
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        },
+        "context-128": {
+          "requests": 3,
+          "prefill_tokens": 384,
+          "prefill_seconds": 23.50216199999977,
+          "prefill_tokens_per_second": 16.338922351058756,
+          "mean_warm_ttft_seconds": 7.834218888999961,
+          "warm_ttft_range_seconds": [
+            6.317267417000039,
+            10.34908812499998
+          ],
+          "prefill_rate_range": [
+            12.368507605484751,
+            20.26234218928687
+          ],
+          "decode_steps": 96,
+          "decode_seconds": 7.994337870999061,
+          "decode_steps_per_second": 12.008499208953596,
+          "decode_rate_range": [
+            8.690849584456053,
+            15.895501321185407
+          ],
+          "median_decode_ms": 71.66570850006337,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 1.1429477005169275,
+              "head": 0.15201692708425676,
+              "mixer_output": 5.796889934892728,
+              "mixer_projection": 17.649370307315355,
+              "mlp_down": 8.839829739551774,
+              "mlp_up": 16.183698937496754,
+              "recurrent": 10.01803915368408
+            },
+            "decode": {
+              "attention": 1.417894333345752,
+              "head": 18.741591604173397,
+              "mixer_output": 6.04547395829987,
+              "mixer_projection": 18.985120166713426,
+              "mlp_down": 9.26225108343696,
+              "mlp_up": 16.731344322939396,
+              "recurrent": 10.53498290627175
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 3,
+              "argmax_matches": 3,
+              "max_normalized_rmse": 0.00014949018765055407
+            },
+            "decode": {
+              "predictions": 96,
+              "argmax_matches": 96,
+              "max_normalized_rmse": 0.0002425950306076755
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        },
+        "context-512": {
+          "requests": 3,
+          "prefill_tokens": 1536,
+          "prefill_seconds": 95.47056945900022,
+          "prefill_tokens_per_second": 16.088727748289323,
+          "mean_warm_ttft_seconds": 31.823675944666775,
+          "warm_ttft_range_seconds": [
+            25.483360542000128,
+            41.94292983300011
+          ],
+          "prefill_rate_range": [
+            12.207119677681751,
+            20.091639294755122
+          ],
+          "decode_steps": 96,
+          "decode_seconds": 7.6191533299988805,
+          "decode_steps_per_second": 12.599825182939862,
+          "decode_rate_range": [
+            9.918015461939554,
+            15.855497310210195
+          ],
+          "median_decode_ms": 73.18352100003267,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 1.4761821751273867,
+              "head": 0.03614496549471843,
+              "mixer_output": 5.906836301433256,
+              "mixer_projection": 17.673088447926443,
+              "mlp_down": 9.035845400379975,
+              "mlp_up": 16.381322487631245,
+              "recurrent": 10.23907599543635
+            },
+            "decode": {
+              "attention": 1.840352364602893,
+              "head": 17.85973569790637,
+              "mixer_output": 5.784937822904605,
+              "mixer_projection": 17.472785479213826,
+              "mlp_down": 8.864712406255157,
+              "mlp_up": 16.070631802129753,
+              "recurrent": 10.032317239504115
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 3,
+              "argmax_matches": 3,
+              "max_normalized_rmse": 0.00018815402762622436
+            },
+            "decode": {
+              "predictions": 96,
+              "argmax_matches": 96,
+              "max_normalized_rmse": 0.00022788000226677086
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        }
+      }
+    },
+    "cpu-native-t2": {
+      "rounds": 3,
+      "overall": {
+        "requests": 18,
+        "prefill_tokens": 2163,
+        "prefill_seconds": 280.79935808300115,
+        "prefill_tokens_per_second": 7.7030090622950835,
+        "mean_warm_ttft_seconds": 15.60021310183341,
+        "warm_ttft_range_seconds": [
+          1.1823732079999445,
+          102.3380682500001
+        ],
+        "prefill_rate_range": [
+          3.476038802930931,
+          15.23781190463137
+        ],
+        "decode_steps": 576,
+        "decode_seconds": 104.99858437299736,
+        "decode_steps_per_second": 5.485788245999732,
+        "decode_rate_range": [
+          2.772546481961794,
+          11.351876504881742
+        ],
+        "median_decode_ms": 148.97464599994237,
+        "components_ms_per_token": {
+          "prefill": {
+            "attention": 2.185000584835712,
+            "head": 0.5109029514558641,
+            "mixer_output": 13.714418877034984,
+            "mixer_projection": 37.77305748175657,
+            "mlp_down": 20.887126215918318,
+            "mlp_up": 36.08789130144672,
+            "recurrent": 15.707127832630716
+          },
+          "decode": {
+            "attention": 2.2948349982642293,
+            "head": 44.14725000693862,
+            "mixer_output": 14.688984480956593,
+            "mixer_projection": 40.14282463890556,
+            "mlp_down": 22.115149840273556,
+            "mlp_up": 38.33664927776602,
+            "recurrent": 16.893446659672012
+          }
+        },
+        "accuracy": {
+          "prefill": {
+            "predictions": 18,
+            "argmax_matches": 18,
+            "max_normalized_rmse": 0.0
+          },
+          "decode": {
+            "predictions": 576,
+            "argmax_matches": 576,
+            "max_normalized_rmse": 0.0
+          }
+        },
+        "prefill_ane_submissions": 0,
+        "decode_ane_submissions": 0
+      },
+      "groups": {
+        "short-chat": {
+          "requests": 12,
+          "prefill_tokens": 243,
+          "prefill_seconds": 34.888821207000774,
+          "prefill_tokens_per_second": 6.964981664420343,
+          "mean_warm_ttft_seconds": 2.907653541583405,
+          "warm_ttft_range_seconds": [
+            1.1823732079999445,
+            5.98002333400018
+          ],
+          "prefill_rate_range": [
+            3.476038802930931,
+            15.23781190463137
+          ],
+          "decode_steps": 384,
+          "decode_seconds": 69.68154570499792,
+          "decode_steps_per_second": 5.510784758215511,
+          "decode_rate_range": [
+            3.0264364067154044,
+            11.351876504881742
+          ],
+          "median_decode_ms": 150.2262710002924,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 1.8549743374272714,
+              "head": 2.2372103950584896,
+              "mixer_output": 15.594975876704707,
+              "mixer_projection": 41.468938119325884,
+              "mlp_down": 22.755130913671675,
+              "mlp_up": 39.2971145103136,
+              "recurrent": 16.902322917711498
+            },
+            "decode": {
+              "attention": 1.973670768247023,
+              "head": 44.143615119779156,
+              "mixer_output": 14.435580742273876,
+              "mixer_projection": 40.206017010416296,
+              "mlp_down": 22.052502737016866,
+              "mlp_up": 38.212584039018914,
+              "recurrent": 16.970581867170747
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 12,
+              "argmax_matches": 12,
+              "max_normalized_rmse": 0.0
+            },
+            "decode": {
+              "predictions": 384,
+              "argmax_matches": 384,
+              "max_normalized_rmse": 0.0
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        },
+        "context-128": {
+          "requests": 3,
+          "prefill_tokens": 384,
+          "prefill_seconds": 53.53179983400014,
+          "prefill_tokens_per_second": 7.173306356049448,
+          "mean_warm_ttft_seconds": 17.84419004166678,
+          "warm_ttft_range_seconds": [
+            8.55372829199996,
+            31.190273958000034
+          ],
+          "prefill_rate_range": [
+            4.1038971621402895,
+            14.964462834411076
+          ],
+          "decode_steps": 96,
+          "decode_seconds": 16.333323378998784,
+          "decode_steps_per_second": 5.877554602478256,
+          "decode_rate_range": [
+            3.6461695365730398,
+            11.24565580447984
+          ],
+          "median_decode_ms": 146.30514550003682,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 2.0667877812604964,
+              "head": 0.33973632812411836,
+              "mixer_output": 14.901823559883454,
+              "mixer_projection": 40.820402210975125,
+              "mlp_down": 22.414166143279957,
+              "mlp_up": 38.96210679687447,
+              "recurrent": 16.37061541406896
+            },
+            "decode": {
+              "attention": 2.1390843125033143,
+              "head": 42.89734465628925,
+              "mixer_output": 13.059595072957583,
+              "mixer_projection": 37.40160166668952,
+              "mlp_down": 20.288348416552065,
+              "mlp_up": 35.05722971875495,
+              "recurrent": 16.259790833212644
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 3,
+              "argmax_matches": 3,
+              "max_normalized_rmse": 0.0
+            },
+            "decode": {
+              "predictions": 96,
+              "argmax_matches": 96,
+              "max_normalized_rmse": 0.0
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        },
+        "context-512": {
+          "requests": 3,
+          "prefill_tokens": 1536,
+          "prefill_seconds": 192.37873704200024,
+          "prefill_tokens_per_second": 7.984250357484464,
+          "mean_warm_ttft_seconds": 64.12647440300005,
+          "warm_ttft_range_seconds": [
+            34.272522250000065,
+            102.3380682500001
+          ],
+          "prefill_rate_range": [
+            5.003041595229186,
+            14.939139292503718
+          ],
+          "decode_steps": 96,
+          "decode_seconds": 18.983715289000656,
+          "decode_steps_per_second": 5.05696585407722,
+          "decode_rate_range": [
+            2.772546481961794,
+            11.063749714815403
+          ],
+          "median_decode_ms": 141.2393544999304,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 2.2667649694015544,
+              "head": 0.28058737500010383,
+              "mixer_output": 13.120057712234493,
+              "mixer_projection": 36.42652143296147,
+              "mlp_down": 20.20984205337865,
+              "mlp_up": 34.86162828712451,
+              "recurrent": 15.352172339826737
+            },
+            "decode": {
+              "attention": 3.735242604093969,
+              "head": 45.41169490622584,
+              "mixer_output": 17.331988843686474,
+              "mixer_projection": 42.63127812507861,
+              "mlp_down": 24.192539677021802,
+              "mlp_up": 42.112329791765525,
+              "recurrent": 17.218561656136444
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 3,
+              "argmax_matches": 3,
+              "max_normalized_rmse": 0.0
+            },
+            "decode": {
+              "predictions": 96,
+              "argmax_matches": 96,
+              "max_normalized_rmse": 0.0
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        }
+      }
+    },
+    "cpu-dot-t2": {
+      "rounds": 3,
+      "overall": {
+        "requests": 18,
+        "prefill_tokens": 2163,
+        "prefill_seconds": 220.1028104600009,
+        "prefill_tokens_per_second": 9.827225720014512,
+        "mean_warm_ttft_seconds": 12.228259092555554,
+        "warm_ttft_range_seconds": [
+          0.7337914170000204,
+          64.44873099999995
+        ],
+        "prefill_rate_range": [
+          0.9326236133083327,
+          25.897931231547723
+        ],
+        "decode_steps": 576,
+        "decode_seconds": 111.96226049799998,
+        "decode_steps_per_second": 5.1445906633002405,
+        "decode_rate_range": [
+          0.777570815120682,
+          20.701515034689475
+        ],
+        "median_decode_ms": 84.684708499708,
+        "components_ms_per_token": {
+          "prefill": {
+            "attention": 2.392849497925504,
+            "head": 1.8173880989368474,
+            "mixer_output": 11.879136715202916,
+            "mixer_projection": 24.575277305136748,
+            "mlp_down": 15.308430142881141,
+            "mlp_up": 23.730303993088445,
+            "recurrent": 18.337033584386024
+          },
+          "decode": {
+            "attention": 3.2371667951037373,
+            "head": 32.55948169791426,
+            "mixer_output": 23.50259569273779,
+            "mixer_projection": 39.804858642393114,
+            "mlp_down": 26.596052626741496,
+            "mlp_up": 39.69833604164603,
+            "recurrent": 22.18763208510784
+          }
+        },
+        "accuracy": {
+          "prefill": {
+            "predictions": 18,
+            "argmax_matches": 18,
+            "max_normalized_rmse": 0.00018815402762622436
+          },
+          "decode": {
+            "predictions": 576,
+            "argmax_matches": 576,
+            "max_normalized_rmse": 0.0005816712216334624
+          }
+        },
+        "prefill_ane_submissions": 0,
+        "decode_ane_submissions": 0
+      },
+      "groups": {
+        "short-chat": {
+          "requests": 12,
+          "prefill_tokens": 243,
+          "prefill_seconds": 62.43299771000056,
+          "prefill_tokens_per_second": 3.8921725515844656,
+          "mean_warm_ttft_seconds": 5.2030884583333545,
+          "warm_ttft_range_seconds": [
+            0.7337914170000204,
+            22.804622375000235
+          ],
+          "prefill_rate_range": [
+            0.9326236133083327,
+            25.897931231547723
+          ],
+          "decode_steps": 384,
+          "decode_seconds": 92.41411908300029,
+          "decode_steps_per_second": 4.155209223550748,
+          "decode_rate_range": [
+            0.777570815120682,
+            20.701515034689475
+          ],
+          "median_decode_ms": 84.78133349990458,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 2.7812963333131107,
+              "head": 14.514984053498235,
+              "mixer_output": 36.64998693410679,
+              "mixer_projection": 61.151222790083644,
+              "mlp_down": 43.26697293825778,
+              "mlp_up": 59.442730016533446,
+              "recurrent": 30.033315814910157
+            },
+            "decode": {
+              "attention": 3.5245024791326074,
+              "head": 40.635958986981656,
+              "mixer_output": 30.37111366406779,
+              "mixer_projection": 49.23145486205153,
+              "mlp_down": 33.72326683854195,
+              "mlp_up": 49.42643000262237,
+              "recurrent": 25.16282978129662
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 12,
+              "argmax_matches": 12,
+              "max_normalized_rmse": 0.00010363138196489508
+            },
+            "decode": {
+              "predictions": 384,
+              "argmax_matches": 384,
+              "max_normalized_rmse": 0.0005816712216334624
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        },
+        "context-128": {
+          "requests": 3,
+          "prefill_tokens": 384,
+          "prefill_seconds": 36.92386229199997,
+          "prefill_tokens_per_second": 10.399778792458518,
+          "mean_warm_ttft_seconds": 12.308219902666602,
+          "warm_ttft_range_seconds": [
+            5.4866673750000245,
+            19.873489999999947
+          ],
+          "prefill_rate_range": [
+            6.4408735014521,
+            23.329934924289812
+          ],
+          "decode_steps": 96,
+          "decode_seconds": 11.3964352459991,
+          "decode_steps_per_second": 8.423686699198534,
+          "decode_rate_range": [
+            4.515509257582324,
+            20.029141913271665
+          ],
+          "median_decode_ms": 84.36635450016183,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 2.2727787838358418,
+              "head": 0.16069596614620707,
+              "mixer_output": 10.910981955760827,
+              "mixer_projection": 24.156649981726137,
+              "mlp_down": 13.919924440167838,
+              "mlp_up": 23.011683875055294,
+              "recurrent": 17.871311372383403
+            },
+            "decode": {
+              "attention": 2.6796327916969176,
+              "head": 19.075526437508945,
+              "mixer_output": 12.13769438553669,
+              "mixer_projection": 25.180988781241826,
+              "mlp_down": 14.920079885385462,
+              "mlp_up": 24.02902577062349,
+              "recurrent": 16.668543354147875
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 3,
+              "argmax_matches": 3,
+              "max_normalized_rmse": 0.00014949018765055407
+            },
+            "decode": {
+              "predictions": 96,
+              "argmax_matches": 96,
+              "max_normalized_rmse": 0.0002425950306076755
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        },
+        "context-512": {
+          "requests": 3,
+          "prefill_tokens": 1536,
+          "prefill_seconds": 120.74595045800038,
+          "prefill_tokens_per_second": 12.7209235106752,
+          "mean_warm_ttft_seconds": 40.248980819333305,
+          "warm_ttft_range_seconds": [
+            21.53302041699999,
+            64.44873099999995
+          ],
+          "prefill_rate_range": [
+            7.944373928212583,
+            23.777604949017732
+          ],
+          "decode_steps": 96,
+          "decode_seconds": 8.15170616900059,
+          "decode_steps_per_second": 11.776675705641845,
+          "decode_rate_range": [
+            8.292029913927326,
+            20.094746188233017
+          ],
+          "median_decode_ms": 84.73187449999386,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 2.361413673193239,
+              "head": 0.22276177213553794,
+              "mixer_output": 8.20234949152591,
+              "mixer_projection": 18.893505260441163,
+              "mlp_down": 11.23242772788465,
+              "mlp_up": 18.260141624356407,
+              "recurrent": 16.60307573763579
+            },
+            "decode": {
+              "attention": 2.6453580623950756,
+              "head": 13.737527802049954,
+              "mixer_output": 7.393425114618897,
+              "mixer_projection": 16.722343624910724,
+              "mlp_down": 9.763168520895723,
+              "mlp_up": 16.4552704687632,
+              "recurrent": 15.805930031312698
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 3,
+              "argmax_matches": 3,
+              "max_normalized_rmse": 0.00018815402762622436
+            },
+            "decode": {
+              "predictions": 96,
+              "argmax_matches": 96,
+              "max_normalized_rmse": 0.00022788000226677086
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        }
+      }
+    },
+    "cpu-native-t4": {
+      "rounds": 3,
+      "overall": {
+        "requests": 18,
+        "prefill_tokens": 2163,
+        "prefill_seconds": 237.63655541599928,
+        "prefill_tokens_per_second": 9.102134964940552,
+        "mean_warm_ttft_seconds": 13.202328300833338,
+        "warm_ttft_range_seconds": [
+          1.0763349170001675,
+          86.33498658299959
+        ],
+        "prefill_rate_range": [
+          5.9175352531324314,
+          18.58948696829998
+        ],
+        "decode_steps": 576,
+        "decode_seconds": 86.5273638369988,
+        "decode_steps_per_second": 6.656853675619601,
+        "decode_rate_range": [
+          3.033031178372776,
+          14.399224160449938
+        ],
+        "median_decode_ms": 122.98039600011634,
+        "components_ms_per_token": {
+          "prefill": {
+            "attention": 2.5455232279280944,
+            "head": 0.368523635229043,
+            "mixer_output": 11.966746646789593,
+            "mixer_projection": 29.081776140079015,
+            "mlp_down": 16.863239668062178,
+            "mlp_up": 27.54930834675737,
+            "recurrent": 18.230789974555588
+          },
+          "decode": {
+            "attention": 2.6500891041681345,
+            "head": 27.720873642371103,
+            "mixer_output": 13.882311835082028,
+            "mixer_projection": 32.56491152603323,
+            "mlp_down": 19.296041380145585,
+            "mlp_up": 31.190041114600813,
+            "recurrent": 18.939684607637336
+          }
+        },
+        "accuracy": {
+          "prefill": {
+            "predictions": 18,
+            "argmax_matches": 18,
+            "max_normalized_rmse": 0.0
+          },
+          "decode": {
+            "predictions": 576,
+            "argmax_matches": 576,
+            "max_normalized_rmse": 0.0
+          }
+        },
+        "prefill_ane_submissions": 0,
+        "decode_ane_submissions": 0
+      },
+      "groups": {
+        "short-chat": {
+          "requests": 12,
+          "prefill_tokens": 243,
+          "prefill_seconds": 25.386708957999417,
+          "prefill_tokens_per_second": 9.571937835740227,
+          "mean_warm_ttft_seconds": 2.1158472014166896,
+          "warm_ttft_range_seconds": [
+            1.0763349170001675,
+            3.784900916999959
+          ],
+          "prefill_rate_range": [
+            5.9175352531324314,
+            18.58948696829998
+          ],
+          "decode_steps": 384,
+          "decode_seconds": 52.17673729500052,
+          "decode_steps_per_second": 7.359601613817163,
+          "decode_rate_range": [
+            4.463354785379438,
+            14.399224160449938
+          ],
+          "median_decode_ms": 120.09806200001094,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 1.8234383868535595,
+              "head": 1.1310282880658782,
+              "mixer_output": 11.342721382773115,
+              "mixer_projection": 27.544135209869644,
+              "mlp_down": 15.912431761368564,
+              "mlp_up": 25.951410786080146,
+              "recurrent": 17.64642606583596
+            },
+            "decode": {
+              "attention": 2.0601469739762734,
+              "head": 25.45438271615848,
+              "mixer_output": 12.279411182312572,
+              "mixer_projection": 29.23352489582302,
+              "mlp_down": 17.092993182229677,
+              "mlp_up": 28.05025159115478,
+              "recurrent": 18.127460429690007
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 12,
+              "argmax_matches": 12,
+              "max_normalized_rmse": 0.0
+            },
+            "decode": {
+              "predictions": 384,
+              "argmax_matches": 384,
+              "max_normalized_rmse": 0.0
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        },
+        "context-128": {
+          "requests": 3,
+          "prefill_tokens": 384,
+          "prefill_seconds": 41.408810958000004,
+          "prefill_tokens_per_second": 9.273388709216555,
+          "mean_warm_ttft_seconds": 13.803222694000018,
+          "warm_ttft_range_seconds": [
+            7.713896916000067,
+            19.942129083000054
+          ],
+          "prefill_rate_range": [
+            6.4187078053016355,
+            16.593799344076935
+          ],
+          "decode_steps": 96,
+          "decode_seconds": 12.546895375000531,
+          "decode_steps_per_second": 7.651295171495438,
+          "decode_rate_range": [
+            5.30412535465256,
+            12.37651525768245
+          ],
+          "median_decode_ms": 120.40593749998152,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 2.2488820885347613,
+              "head": 0.19138628385443704,
+              "mixer_output": 11.604192018261609,
+              "mixer_projection": 28.18088603384557,
+              "mlp_down": 16.4309808776076,
+              "mlp_up": 26.933492695311756,
+              "recurrent": 18.889699807257188
+            },
+            "decode": {
+              "attention": 2.484498812483101,
+              "head": 24.52294792710319,
+              "mixer_output": 11.254706906330606,
+              "mixer_projection": 27.905444885358104,
+              "mlp_down": 16.035689854161223,
+              "mlp_up": 26.256259177100578,
+              "recurrent": 18.986637406217238
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 3,
+              "argmax_matches": 3,
+              "max_normalized_rmse": 0.0
+            },
+            "decode": {
+              "predictions": 96,
+              "argmax_matches": 96,
+              "max_normalized_rmse": 0.0
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        },
+        "context-512": {
+          "requests": 3,
+          "prefill_tokens": 1536,
+          "prefill_seconds": 170.84103549999986,
+          "prefill_tokens_per_second": 8.990814153663926,
+          "mean_warm_ttft_seconds": 56.94735830533326,
+          "warm_ttft_range_seconds": [
+            30.720182083000054,
+            86.33498658299959
+          ],
+          "prefill_rate_range": [
+            5.9304195027998645,
+            16.66666537814672
+          ],
+          "decode_steps": 96,
+          "decode_seconds": 21.80373116699775,
+          "decode_steps_per_second": 4.402916146081737,
+          "decode_rate_range": [
+            3.033031178372776,
+            12.823479997047428
+          ],
+          "median_decode_ms": 251.55579150009544,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 2.7339195911495473,
+              "head": 0.2921773541668671,
+              "mixer_output": 12.156108050767946,
+              "mixer_projection": 29.550258266924402,
+              "mlp_down": 17.121725147789462,
+              "mlp_up": 27.956054647147784,
+              "recurrent": 18.158510712876847
+            },
+            "decode": {
+              "attention": 5.175447916620612,
+              "head": 39.98476306248951,
+              "mixer_output": 22.92151937491127,
+              "mixer_projection": 50.54992468754923,
+              "mlp_down": 31.368585697793588,
+              "mlp_up": 48.68298114588517,
+              "recurrent": 22.14162852084674
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 3,
+              "argmax_matches": 3,
+              "max_normalized_rmse": 0.0
+            },
+            "decode": {
+              "predictions": 96,
+              "argmax_matches": 96,
+              "max_normalized_rmse": 0.0
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        }
+      }
+    },
+    "cpu-dot-t4": {
+      "rounds": 3,
+      "overall": {
+        "requests": 18,
+        "prefill_tokens": 2163,
+        "prefill_seconds": 144.09298650100027,
+        "prefill_tokens_per_second": 15.011140045910457,
+        "mean_warm_ttft_seconds": 8.005424969944418,
+        "warm_ttft_range_seconds": [
+          0.7646409170001789,
+          47.442265083000166
+        ],
+        "prefill_rate_range": [
+          6.585609190591667,
+          24.73247300497544
+        ],
+        "decode_steps": 576,
+        "decode_seconds": 48.876976812000976,
+        "decode_steps_per_second": 11.784689593538285,
+        "decode_rate_range": [
+          6.424554539517141,
+          19.413152496857496
+        ],
+        "median_decode_ms": 66.38952100001916,
+        "components_ms_per_token": {
+          "prefill": {
+            "attention": 2.083155927410818,
+            "head": 0.09354099167824198,
+            "mixer_output": 7.233143374479119,
+            "mixer_projection": 15.006781092935313,
+            "mlp_down": 9.249344167836762,
+            "mlp_up": 14.099680306992516,
+            "recurrent": 16.314151137317722
+          },
+          "decode": {
+            "attention": 2.190472772572684,
+            "head": 9.684319437515477,
+            "mixer_output": 8.149785378435187,
+            "mixer_projection": 17.44814260762616,
+            "mlp_down": 10.32250126212454,
+            "mlp_up": 15.849976168370558,
+            "recurrent": 17.89398760069479
+          }
+        },
+        "accuracy": {
+          "prefill": {
+            "predictions": 18,
+            "argmax_matches": 18,
+            "max_normalized_rmse": 0.00018815402762622436
+          },
+          "decode": {
+            "predictions": 576,
+            "argmax_matches": 576,
+            "max_normalized_rmse": 0.0005816712216334624
+          }
+        },
+        "prefill_ane_submissions": 0,
+        "decode_ane_submissions": 0
+      },
+      "groups": {
+        "short-chat": {
+          "requests": 12,
+          "prefill_tokens": 243,
+          "prefill_seconds": 17.544048044000192,
+          "prefill_tokens_per_second": 13.85085126252276,
+          "mean_warm_ttft_seconds": 1.4622609271666345,
+          "warm_ttft_range_seconds": [
+            0.7646409170001789,
+            3.492819916999906
+          ],
+          "prefill_rate_range": [
+            6.585609190591667,
+            24.73247300497544
+          ],
+          "decode_steps": 384,
+          "decode_seconds": 33.61563372400133,
+          "decode_steps_per_second": 11.42325630844278,
+          "decode_rate_range": [
+            6.424554539517141,
+            19.413152496857496
+          ],
+          "median_decode_ms": 74.23137499995391,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 1.6229627695613515,
+              "head": 0.6195565761323758,
+              "mixer_output": 7.775750016464274,
+              "mixer_projection": 16.611427975284727,
+              "mlp_down": 10.32240869962893,
+              "mlp_up": 15.615297954768478,
+              "recurrent": 16.922688744845217
+            },
+            "decode": {
+              "attention": 1.9590401718693566,
+              "head": 10.372939757833896,
+              "mixer_output": 8.404921927027686,
+              "mixer_projection": 18.172550153630358,
+              "mlp_down": 10.696117135381064,
+              "mlp_up": 16.54603218224852,
+              "recurrent": 17.948805109391824
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 12,
+              "argmax_matches": 12,
+              "max_normalized_rmse": 0.00010363138196489508
+            },
+            "decode": {
+              "predictions": 384,
+              "argmax_matches": 384,
+              "max_normalized_rmse": 0.0005816712216334624
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        },
+        "context-128": {
+          "requests": 3,
+          "prefill_tokens": 384,
+          "prefill_seconds": 26.690504291000025,
+          "prefill_tokens_per_second": 14.387139179287965,
+          "mean_warm_ttft_seconds": 8.897105027999942,
+          "warm_ttft_range_seconds": [
+            6.781522499999937,
+            12.676542708999932
+          ],
+          "prefill_rate_range": [
+            10.097712526920496,
+            18.875379454573327
+          ],
+          "decode_steps": 96,
+          "decode_seconds": 8.001133797999273,
+          "decode_steps_per_second": 11.998299543997792,
+          "decode_rate_range": [
+            7.846737599671341,
+            16.759889887947672
+          ],
+          "median_decode_ms": 63.066020500059494,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 1.8717358828220416,
+              "head": 0.06680739843763679,
+              "mixer_output": 7.581810044301325,
+              "mixer_projection": 16.137726270872104,
+              "mlp_down": 9.571426789074522,
+              "mlp_up": 14.82152044017108,
+              "recurrent": 16.72562275260721
+            },
+            "decode": {
+              "attention": 2.430587989617076,
+              "head": 8.947061250005106,
+              "mixer_output": 8.065786374918579,
+              "mixer_projection": 16.794880260448508,
+              "mlp_down": 10.104380229137178,
+              "mlp_up": 15.25424902083472,
+              "recurrent": 18.444838499974026
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 3,
+              "argmax_matches": 3,
+              "max_normalized_rmse": 0.00014949018765055407
+            },
+            "decode": {
+              "predictions": 96,
+              "argmax_matches": 96,
+              "max_normalized_rmse": 0.0002425950306076755
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        },
+        "context-512": {
+          "requests": 3,
+          "prefill_tokens": 1536,
+          "prefill_seconds": 99.85843416600005,
+          "prefill_tokens_per_second": 15.381775338542006,
+          "mean_warm_ttft_seconds": 33.28640108300002,
+          "warm_ttft_range_seconds": [
+            23.61527275000003,
+            47.442265083000166
+          ],
+          "prefill_rate_range": [
+            10.79215862734764,
+            21.681025502766882
+          ],
+          "decode_steps": 96,
+          "decode_seconds": 7.260209290000375,
+          "decode_steps_per_second": 13.22275931249291,
+          "decode_rate_range": [
+            9.354572273446367,
+            18.224003892975347
+          ],
+          "median_decode_ms": 61.75979150009425,
+          "components_ms_per_token": {
+            "prefill": {
+              "attention": 2.2088149342334162,
+              "head": 0.017007080729047885,
+              "mixer_output": 7.06013464061576,
+              "mixer_projection": 14.470184647141929,
+              "mlp_down": 8.99906135027114,
+              "mlp_up": 13.679444825514567,
+              "recurrent": 16.115010682304476
+            },
+            "decode": {
+              "attention": 2.8760879583416,
+              "head": 7.667096343752178,
+              "mixer_output": 7.213238187581794,
+              "mixer_projection": 15.203774770787012,
+              "mlp_down": 9.046158802085813,
+              "mlp_up": 13.661479260394552,
+              "recurrent": 17.123866666627425
+            }
+          },
+          "accuracy": {
+            "prefill": {
+              "predictions": 3,
+              "argmax_matches": 3,
+              "max_normalized_rmse": 0.00018815402762622436
+            },
+            "decode": {
+              "predictions": 96,
+              "argmax_matches": 96,
+              "max_normalized_rmse": 0.00022788000226677086
+            }
+          },
+          "prefill_ane_submissions": 0,
+          "decode_ane_submissions": 0
+        }
+      }
+    }
+  },
+  "numerical_gates": {
+    "full_logit_nrmse_limit": 0.005,
+    "require_all_argmax_matches": true
+  },
+  "cross_os_token_trace_identity": {
+    "chat-0": {
+      "tokens": true,
+      "inputs": true,
+      "predictions": true
+    },
+    "chat-1": {
+      "tokens": true,
+      "inputs": true,
+      "predictions": true
+    },
+    "chat-2": {
+      "tokens": true,
+      "inputs": true,
+      "predictions": true
+    },
+    "chat-3": {
+      "tokens": true,
+      "inputs": true,
+      "predictions": true
+    },
+    "context-128": {
+      "tokens": true,
+      "inputs": true,
+      "predictions": true
+    },
+    "context-512": {
+      "tokens": true,
+      "inputs": true,
+      "predictions": true
+    }
+  },
+  "vendor_bf16_diagnosis": [
+    {
+      "label": "first",
+      "tokens": [
+        248045
+      ],
+      "bitwise_equal": true,
+      "equal_logits": 248320,
+      "total_logits": 248320,
+      "finite": true,
+      "max_abs": 0.0,
+      "normalized_rmse": 0.0,
+      "actual_argmax": 846,
+      "expected_argmax": 846,
+      "layers_bitwise_equal": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "label": "two",
+      "tokens": [
+        248045,
+        846
+      ],
+      "bitwise_equal": true,
+      "equal_logits": 248320,
+      "total_logits": 248320,
+      "finite": true,
+      "max_abs": 0.0,
+      "normalized_rmse": 0.0,
+      "actual_argmax": 198,
+      "expected_argmax": 198,
+      "layers_bitwise_equal": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "label": "arithmetic",
+      "tokens": [
+        248045,
+        846,
+        198,
+        3710,
+        369,
+        220,
+        17,
+        478,
+        220,
+        17,
+        30,
+        21134,
+        25899,
+        13,
+        248046,
+        198,
+        248045,
+        74455,
+        198,
+        248068,
+        271,
+        248069,
+        271
+      ],
+      "bitwise_equal": false,
+      "equal_logits": 28944,
+      "total_logits": 248320,
+      "finite": true,
+      "max_abs": 0.1875,
+      "normalized_rmse": 0.015814627938110365,
+      "actual_argmax": 17,
+      "expected_argmax": 17
+    }
+  ],
+  "vendor_bf16_clang_diagnosis": [
+    {
+      "label": "first",
+      "tokens": [
+        248045
+      ],
+      "bitwise_equal": true,
+      "equal_logits": 248320,
+      "total_logits": 248320,
+      "finite": true,
+      "max_abs": 0.0,
+      "normalized_rmse": 0.0,
+      "actual_argmax": 846,
+      "expected_argmax": 846,
+      "layers_bitwise_equal": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "label": "two",
+      "tokens": [
+        248045,
+        846
+      ],
+      "bitwise_equal": true,
+      "equal_logits": 248320,
+      "total_logits": 248320,
+      "finite": true,
+      "max_abs": 0.0,
+      "normalized_rmse": 0.0,
+      "actual_argmax": 198,
+      "expected_argmax": 198,
+      "layers_bitwise_equal": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "label": "arithmetic",
+      "tokens": [
+        248045,
+        846,
+        198,
+        3710,
+        369,
+        220,
+        17,
+        478,
+        220,
+        17,
+        30,
+        21134,
+        25899,
+        13,
+        248046,
+        198,
+        248045,
+        74455,
+        198,
+        248068,
+        271,
+        248069,
+        271
+      ],
+      "bitwise_equal": false,
+      "equal_logits": 28944,
+      "total_logits": 248320,
+      "finite": true,
+      "max_abs": 0.1875,
+      "normalized_rmse": 0.015814627938110365,
+      "actual_argmax": 17,
+      "expected_argmax": 17
+    }
+  ],
+  "compiler_output_identity": {
+    "first": {
+      "logits": true,
+      "layers": true,
+      "token_layers": true,
+      "tokens": true
+    },
+    "two": {
+      "logits": true,
+      "layers": true,
+      "token_layers": true,
+      "tokens": true
+    },
+    "arithmetic": {
+      "logits": true,
+      "layers": true,
+      "token_layers": true,
+      "tokens": true
+    }
+  },
+  "rolling_dot_verification": {
+    "steps": 16,
+    "argmax_matches": 16,
+    "max_normalized_rmse": 8.310032717417926e-05,
+    "errors": [
+      8.310032717417926e-05,
+      7.978575740708038e-05,
+      3.985638250014745e-05,
+      4.198516035103239e-05,
+      2.3314918507821858e-05,
+      3.730512617039494e-05,
+      3.315846697660163e-05,
+      3.628862032201141e-05,
+      4.1809715185081586e-05,
+      2.308728471689392e-05,
+      2.7538857466424815e-05,
+      3.089608435402624e-05,
+      3.449526411714032e-05,
+      5.789540955447592e-05,
+      3.539337558322586e-05,
+      6.040567677700892e-05
+    ],
+    "status": "pass"
+  },
+  "gpt2_cpu_benchmark": {
+    "format_version": 1,
+    "date": "2026-10-06",
+    "backend": "cpu",
+    "host": {
+      "platform": "macOS-27.0.1-arm64-arm-64bit",
+      "python": "3.12.7",
+      "numpy": "2.5.3",
+      "openblas_num_threads": "1"
+    },
+    "reference": "provenance/orion-performance/m1-contexts.json",
+    "reference_sha256": "a5cabd815fd6df8eef93ae86fc4d7a18e95a80b5cf552efb6cd6aaeadba59197",
+    "checkpoint_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+    "checkpoint_sha256": "248dfc3911869ec493c76e65bf2fcf7f615828b0254c12b473182f0f81d3a707",
+    "configuration": {
+      "batch_size": 1,
+      "decode_steps": 64,
+      "trials": 4,
+      "warmups_per_trial": 2,
+      "warmup_decode_steps": 16,
+      "engine_timer": "Synchronous model.step returning full-vocabulary logits; includes embeddings, CPU attention, ANE dispatch/transfers and internal finite checks. Excludes prefill, allocation, input lookup, argmax, printing and diagnostic replays.",
+      "prompt_processing": "Sequential decode kernels; differs from native macOS Orion bucketed prefill"
+    },
+    "runtime_source_sha256": {
+      "gpt2.py": "6ec6521402c3f13063b2dff564f3d5dff8c98beb64a37ea20ff39e3c3a454e6a",
+      "model.py": "4a579e97712aa99a6356b63a45c32b32fac9767dfb187c954edd1ea5606a0d2e",
+      "replay.py": "d5bccc76fd87e86d0d167dc0e7ee8e796539ec95542b59469c21390ffb5e6b34",
+      "packing.py": "64a9440216571be7cebd930edb65d09742256260b949e6113f473b99e6d70ae0",
+      "tools/bench_asahi.py": "2e29e93bc92afb8c5b481ff1d3277e11e96896584720d38a7ed8b9fcf57e08ed"
+    },
+    "limitations": [
+      "Active desktop; no resource isolation or cross-OS paired session.",
+      "Token-choice and greedy checks cover these traces; HF KL and full-logit parity were not measured.",
+      "Graph/frontend and prompt-processing implementations differ from native macOS Orion."
+    ],
+    "cases": [
+      {
+        "prompt": "Hello world",
+        "prompt_tokens": 2,
+        "prompt_ids": [
+          15496,
+          995
+        ],
+        "token_trace": [
+          11,
+          314,
+          1101,
+          407,
+          1654,
+          644,
+          284,
+          910,
+          13,
+          198,
+          198,
+          1,
+          40,
+          1101,
+          7926,
+          11,
+          475,
+          314,
+          1101,
+          407,
+          1654,
+          644,
+          284,
+          910,
+          13,
+          198,
+          198,
+          1,
+          40,
+          1101,
+          7926,
+          11,
+          475,
+          314,
+          1101,
+          407,
+          1654,
+          644,
+          284,
+          910,
+          13,
+          198,
+          198,
+          1,
+          40,
+          1101,
+          7926,
+          11,
+          475,
+          314,
+          1101,
+          407,
+          1654,
+          644,
+          284,
+          910,
+          13,
+          198,
+          198,
+          1,
+          40,
+          1101,
+          7926,
+          11
+        ],
+        "trials": [
+          {
+            "trial": 1,
+            "raw_decode_ms": [
+              8.504083,
+              8.437375,
+              8.468958,
+              8.612625,
+              8.63525,
+              8.598292,
+              8.638959,
+              8.704167,
+              9.363208,
+              8.657292,
+              8.582208,
+              8.759833,
+              8.5135,
+              8.781583,
+              8.513083,
+              8.814375,
+              8.850875,
+              8.84975,
+              8.516583,
+              8.668042,
+              8.490833,
+              8.813667,
+              8.448791,
+              8.78725,
+              8.599125,
+              8.578875,
+              8.837458,
+              8.6095,
+              8.639625,
+              8.43725,
+              8.913625,
+              8.582083,
+              8.797,
+              8.542542,
+              8.775083,
+              8.542375,
+              8.825417,
+              8.510792,
+              8.724083,
+              8.638084,
+              8.9485,
+              8.618209,
+              8.79875,
+              8.566583,
+              8.686333,
+              8.557416,
+              8.820834,
+              8.532709,
+              8.64175,
+              8.693166,
+              8.93625,
+              9.016833,
+              9.10675,
+              8.874667,
+              8.710167,
+              9.392,
+              8.80525,
+              8.854583,
+              8.707375,
+              9.011125,
+              8.954792,
+              8.980666,
+              8.770125,
+              9.084
+            ],
+            "decode_engine_steps_per_second": 114.56551354782665
+          },
+          {
+            "trial": 2,
+            "raw_decode_ms": [
+              8.410334,
+              8.682584,
+              8.655375,
+              9.259042,
+              8.446,
+              8.889292,
+              8.464708,
+              8.78025,
+              8.408542,
+              8.70275,
+              8.52475,
+              8.719,
+              8.469,
+              8.68725,
+              8.533667,
+              8.588334,
+              8.450542,
+              8.55175,
+              8.762458,
+              8.6555,
+              8.917791,
+              9.1015,
+              8.87225,
+              8.546125,
+              8.647375,
+              8.645,
+              8.826959,
+              8.532708,
+              8.715958,
+              8.508333,
+              8.741042,
+              8.566584,
+              8.878083,
+              8.571792,
+              8.834833,
+              8.657166,
+              9.036375,
+              8.524708,
+              8.752666,
+              8.735167,
+              8.70375,
+              8.754,
+              8.720084,
+              8.825958,
+              8.652584,
+              8.823625,
+              8.638667,
+              8.801333,
+              8.736375,
+              8.828834,
+              8.646708,
+              8.835667,
+              8.784625,
+              8.795541,
+              8.697167,
+              8.853708,
+              8.619292,
+              8.935417,
+              8.668375,
+              9.095334,
+              9.163,
+              9.36,
+              9.242166,
+              8.894833
+            ],
+            "decode_engine_steps_per_second": 114.42249289045672
+          },
+          {
+            "trial": 3,
+            "raw_decode_ms": [
+              8.443459,
+              8.497708,
+              8.461583,
+              8.502125,
+              8.447041,
+              8.567833,
+              8.514709,
+              8.688583,
+              8.596375,
+              8.49075,
+              8.435375,
+              8.456708,
+              8.561042,
+              8.560625,
+              8.507083,
+              8.479542,
+              8.652292,
+              8.544291,
+              8.513917,
+              8.523875,
+              8.559875,
+              8.64875,
+              8.6235,
+              8.532416,
+              8.775125,
+              8.617417,
+              8.593792,
+              8.49825,
+              8.69625,
+              8.7165,
+              8.533791,
+              8.624583,
+              8.559,
+              8.677917,
+              8.587583,
+              8.541,
+              8.636333,
+              8.568042,
+              8.663375,
+              8.62,
+              8.657333,
+              8.542625,
+              8.652209,
+              8.562208,
+              8.669875,
+              8.558791,
+              8.625958,
+              8.551791,
+              8.687125,
+              8.623,
+              8.690917,
+              8.640167,
+              8.822542,
+              8.675417,
+              8.623292,
+              9.086833,
+              9.074208,
+              8.694583,
+              8.659667,
+              8.771,
+              8.680791,
+              8.673583,
+              8.677625,
+              8.608625
+            ],
+            "decode_engine_steps_per_second": 116.10428472340821
+          },
+          {
+            "trial": 4,
+            "raw_decode_ms": [
+              8.251958,
+              8.325583,
+              8.30375,
+              8.339416,
+              8.311334,
+              8.373,
+              8.368416,
+              8.376083,
+              8.463125,
+              8.573958,
+              8.65175,
+              8.509875,
+              8.593916,
+              8.528833,
+              8.646708,
+              8.596209,
+              8.650333,
+              8.51875,
+              8.560583,
+              8.571584,
+              8.510834,
+              8.553041,
+              8.626291,
+              8.563583,
+              8.680708,
+              8.573417,
+              8.596,
+              8.61725,
+              8.570459,
+              8.617792,
+              8.616333,
+              8.482084,
+              8.72475,
+              8.6455,
+              9.023375,
+              8.931375,
+              8.750416,
+              9.234208,
+              8.672083,
+              9.075792,
+              9.061875,
+              8.853,
+              8.574834,
+              8.877875,
+              8.592333,
+              8.802291,
+              8.591375,
+              8.821042,
+              8.626542,
+              9.262917,
+              8.960833,
+              8.759042,
+              9.125209,
+              8.844458,
+              9.045084,
+              8.76,
+              9.117708,
+              8.748792,
+              9.082875,
+              8.7475,
+              9.350375,
+              8.808041,
+              8.995667,
+              8.761583
+            ],
+            "decode_engine_steps_per_second": 114.9524991307346
+          }
+        ],
+        "decode_engine_steps_per_second": 115.00742675732708,
+        "decode_mean_ms": 8.695090640625,
+        "decode_p50_ms": 8.6522505,
+        "decode_p90_ms": 8.988166499999998,
+        "hf_top1_mismatches": 0,
+        "hf_greedy_16_token_match": true
+      },
+      {
+        "prompt": "The scientist carefully measured the experiment, recorded the observations, and compared the results with the predictions. The scientist carefully measured the experiment, recorded the observations, and compared",
+        "prompt_tokens": 32,
+        "prompt_ids": [
+          464,
+          11444,
+          7773,
+          8630,
+          262,
+          6306,
+          11,
+          6264,
+          262,
+          13050,
+          11,
+          290,
+          3688,
+          262,
+          2482,
+          351,
+          262,
+          16277,
+          13,
+          383,
+          11444,
+          7773,
+          8630,
+          262,
+          6306,
+          11,
+          6264,
+          262,
+          13050,
+          11,
+          290,
+          3688
+        ],
+        "token_trace": [
+          262,
+          2482,
+          351,
+          262,
+          16277,
+          13,
+          198,
+          198,
+          464,
+          11444,
+          7773,
+          8630,
+          262,
+          6306,
+          11,
+          6264,
+          262,
+          13050,
+          11,
+          290,
+          3688,
+          262,
+          2482,
+          351,
+          262,
+          16277,
+          13,
+          198,
+          198,
+          464,
+          11444,
+          7773,
+          8630,
+          262,
+          6306,
+          11,
+          6264,
+          262,
+          13050,
+          11,
+          290,
+          3688,
+          262,
+          2482,
+          351,
+          262,
+          16277,
+          13,
+          198,
+          198,
+          464,
+          11444,
+          7773,
+          8630,
+          262,
+          6306,
+          11,
+          6264,
+          262,
+          13050,
+          11,
+          290,
+          3688,
+          262
+        ],
+        "trials": [
+          {
+            "trial": 1,
+            "raw_decode_ms": [
+              8.892125,
+              8.920291,
+              8.956459,
+              8.906166,
+              8.900875,
+              8.88125,
+              9.073875,
+              9.892625,
+              10.208833,
+              9.299834,
+              9.633083,
+              9.768125,
+              10.183792,
+              9.95825,
+              9.475417,
+              14.067583,
+              9.195583,
+              9.23125,
+              9.155583,
+              9.103,
+              9.068,
+              9.246708,
+              9.227125,
+              9.026125,
+              8.658875,
+              8.668792,
+              8.83175,
+              8.627042,
+              8.489667,
+              8.542167,
+              8.549833,
+              8.5085,
+              8.595041,
+              8.520916,
+              8.592792,
+              8.540958,
+              8.554208,
+              8.614708,
+              8.666834,
+              8.583667,
+              8.635791,
+              9.354459,
+              9.584625,
+              9.10775,
+              9.175834,
+              9.115666,
+              9.190541,
+              9.182459,
+              9.084208,
+              9.215375,
+              9.134708,
+              9.081042,
+              8.722208,
+              8.739,
+              8.716666,
+              9.632375,
+              9.440584,
+              9.435125,
+              9.231417,
+              9.232292,
+              9.242916,
+              9.314083,
+              9.301917,
+              9.248083
+            ],
+            "decode_engine_steps_per_second": 109.226791377448
+          },
+          {
+            "trial": 2,
+            "raw_decode_ms": [
+              9.096625,
+              9.371417,
+              8.84775,
+              8.652125,
+              8.877708,
+              8.871,
+              9.609875,
+              9.504459,
+              8.620917,
+              8.449125,
+              8.51275,
+              8.434875,
+              9.061875,
+              8.915583,
+              9.042333,
+              9.030375,
+              8.989875,
+              9.000375,
+              8.74,
+              8.7815,
+              8.761625,
+              8.877125,
+              8.690292,
+              8.909166,
+              9.294208,
+              8.712125,
+              9.951417,
+              10.248875,
+              8.977375,
+              8.440292,
+              8.526417,
+              8.538041,
+              8.539083,
+              9.303291,
+              8.903292,
+              9.135708,
+              9.043208,
+              8.815791,
+              8.7855,
+              8.860958,
+              8.946084,
+              8.740834,
+              8.97325,
+              8.815583,
+              8.888125,
+              8.776958,
+              8.879166,
+              8.75275,
+              8.861625,
+              8.781625,
+              8.797375,
+              8.826334,
+              8.748959,
+              8.910958,
+              8.943708,
+              8.841,
+              9.090833,
+              9.625833,
+              9.921958,
+              8.793417,
+              9.005542,
+              9.430083,
+              9.019584,
+              9.286458
+            ],
+            "decode_engine_steps_per_second": 111.61835977821383
+          },
+          {
+            "trial": 3,
+            "raw_decode_ms": [
+              8.755958,
+              9.311542,
+              10.091209,
+              9.567292,
+              9.223125,
+              9.344125,
+              9.104333,
+              8.77125,
+              8.579708,
+              8.626375,
+              8.597125,
+              8.653209,
+              8.696458,
+              8.735459,
+              8.629584,
+              8.714583,
+              8.712834,
+              8.558666,
+              8.619708,
+              8.603334,
+              8.664625,
+              8.53025,
+              8.462458,
+              8.553125,
+              8.624833,
+              8.602125,
+              8.591417,
+              8.547042,
+              8.59425,
+              8.580083,
+              8.606166,
+              8.526333,
+              8.635792,
+              8.622625,
+              8.63675,
+              8.665583,
+              8.682667,
+              8.657083,
+              8.60975,
+              8.581916,
+              8.620958,
+              8.702209,
+              10.341417,
+              16.020709,
+              14.101458,
+              15.360416,
+              12.876875,
+              17.666458,
+              13.030666,
+              11.111167,
+              10.858708,
+              10.9765,
+              10.839959,
+              11.013542,
+              10.803417,
+              13.839208,
+              10.317833,
+              9.408833,
+              9.374833,
+              8.968292,
+              9.325083,
+              9.435917,
+              9.527959,
+              8.866208
+            ],
+            "decode_engine_steps_per_second": 103.01655407614574
+          },
+          {
+            "trial": 4,
+            "raw_decode_ms": [
+              8.721541,
+              8.500875,
+              8.693,
+              8.570334,
+              8.480958,
+              8.487792,
+              8.494667,
+              8.518917,
+              8.484125,
+              8.48125,
+              8.476375,
+              8.490916,
+              8.458084,
+              8.52175,
+              8.471708,
+              8.464125,
+              8.49825,
+              8.466875,
+              8.497166,
+              8.492083,
+              8.725125,
+              8.507458,
+              8.56625,
+              9.027625,
+              10.853416,
+              14.396167,
+              9.777542,
+              9.453834,
+              9.3345,
+              9.549417,
+              9.740667,
+              9.89125,
+              10.224167,
+              11.136667,
+              12.738958,
+              12.110833,
+              13.800584,
+              9.23275,
+              8.717042,
+              8.527625,
+              8.447625,
+              8.458875,
+              8.467875,
+              10.172959,
+              9.764875,
+              9.162,
+              8.778792,
+              9.219958,
+              8.838416,
+              8.973625,
+              8.673875,
+              8.671167,
+              8.545334,
+              9.0175,
+              8.735959,
+              8.961417,
+              8.966292,
+              9.009792,
+              8.939333,
+              8.799,
+              8.844959,
+              8.794083,
+              8.763208,
+              8.663125
+            ],
+            "decode_engine_steps_per_second": 108.79677848387038
+          }
+        ],
+        "decode_engine_steps_per_second": 108.07016986504338,
+        "decode_mean_ms": 9.25324723046875,
+        "decode_p50_ms": 8.878437,
+        "decode_p90_ms": 10.178375500000001,
+        "hf_top1_mismatches": 0,
+        "hf_greedy_16_token_match": true
+      },
+      {
+        "prompt": "The scientist carefully measured the experiment, recorded the observations, and compared the results with the predictions. The scientist carefully measured the experiment, recorded the observations, and compared the results with the predictions. The scientist carefully measured the experiment, recorded the observations, and compared the results with the predictions. The scientist carefully measured the experiment,",
+        "prompt_tokens": 64,
+        "prompt_ids": [
+          464,
+          11444,
+          7773,
+          8630,
+          262,
+          6306,
+          11,
+          6264,
+          262,
+          13050,
+          11,
+          290,
+          3688,
+          262,
+          2482,
+          351,
+          262,
+          16277,
+          13,
+          383,
+          11444,
+          7773,
+          8630,
+          262,
+          6306,
+          11,
+          6264,
+          262,
+          13050,
+          11,
+          290,
+          3688,
+          262,
+          2482,
+          351,
+          262,
+          16277,
+          13,
+          383,
+          11444,
+          7773,
+          8630,
+          262,
+          6306,
+          11,
+          6264,
+          262,
+          13050,
+          11,
+          290,
+          3688,
+          262,
+          2482,
+          351,
+          262,
+          16277,
+          13,
+          383,
+          11444,
+          7773,
+          8630,
+          262,
+          6306,
+          11
+        ],
+        "token_trace": [
+          6264,
+          262,
+          13050,
+          11,
+          290,
+          3688,
+          262,
+          2482,
+          351,
+          262,
+          16277,
+          13,
+          383,
+          11444,
+          7773,
+          8630,
+          262,
+          6306,
+          11,
+          6264,
+          262,
+          13050,
+          11,
+          290,
+          3688,
+          262,
+          2482,
+          351,
+          262,
+          16277,
+          13,
+          383,
+          11444,
+          7773,
+          8630,
+          262,
+          6306,
+          11,
+          6264,
+          262,
+          13050,
+          11,
+          290,
+          3688,
+          262,
+          2482,
+          351,
+          262,
+          16277,
+          13,
+          383,
+          11444,
+          7773,
+          8630,
+          262,
+          6306,
+          11,
+          6264,
+          262,
+          13050,
+          11,
+          290,
+          3688,
+          262
+        ],
+        "trials": [
+          {
+            "trial": 1,
+            "raw_decode_ms": [
+              8.465542,
+              8.482208,
+              8.812292,
+              8.776375,
+              8.636958,
+              8.554542,
+              8.53375,
+              8.575875,
+              8.609667,
+              8.575875,
+              8.555833,
+              8.662334,
+              8.582167,
+              8.580208,
+              8.562958,
+              8.625292,
+              8.579625,
+              8.564084,
+              8.604625,
+              8.656042,
+              8.706167,
+              8.618833,
+              8.64925,
+              8.649583,
+              8.655625,
+              8.631959,
+              8.590459,
+              8.59975,
+              8.614541,
+              8.639958,
+              8.618542,
+              8.625541,
+              10.291334,
+              9.635125,
+              9.53925,
+              9.455375,
+              9.651959,
+              9.838792,
+              9.877458,
+              9.876292,
+              9.766916,
+              9.652875,
+              9.593625,
+              9.894708,
+              9.681875,
+              10.176584,
+              10.7375,
+              9.237292,
+              9.611709,
+              10.420167,
+              9.413958,
+              9.277458,
+              9.180083,
+              9.226709,
+              8.910083,
+              9.234375,
+              9.052375,
+              9.072667,
+              9.040208,
+              8.913209,
+              8.931791,
+              8.930667,
+              8.872458,
+              8.879958
+            ],
+            "decode_engine_steps_per_second": 110.44550532912939
+          },
+          {
+            "trial": 2,
+            "raw_decode_ms": [
+              8.661833,
+              8.536667,
+              8.61525,
+              8.5545,
+              8.608833,
+              8.4955,
+              8.545625,
+              8.4945,
+              8.512292,
+              8.591667,
+              8.527792,
+              8.446916,
+              8.55175,
+              8.581958,
+              8.583959,
+              8.652541,
+              8.735834,
+              8.739083,
+              8.710667,
+              8.711459,
+              8.693125,
+              8.702583,
+              8.600708,
+              8.70725,
+              8.723625,
+              8.53675,
+              8.578875,
+              8.614875,
+              8.620375,
+              8.713416,
+              8.634125,
+              8.5895,
+              8.563375,
+              8.544584,
+              8.722333,
+              9.07625,
+              9.685417,
+              9.546875,
+              8.846833,
+              9.221375,
+              9.076958,
+              9.140291,
+              9.150833,
+              9.1755,
+              9.031042,
+              8.744,
+              9.027333,
+              9.002458,
+              9.0275,
+              8.975584,
+              8.723792,
+              8.681334,
+              8.770875,
+              8.649875,
+              8.626125,
+              8.654792,
+              8.59325,
+              8.638917,
+              8.62375,
+              8.672875,
+              8.654209,
+              8.56625,
+              8.539167,
+              8.786042
+            ],
+            "decode_engine_steps_per_second": 114.42596230540258
+          },
+          {
+            "trial": 3,
+            "raw_decode_ms": [
+              8.499167,
+              8.556584,
+              8.414041,
+              8.555583,
+              8.474458,
+              8.443417,
+              8.418917,
+              8.451125,
+              8.405208,
+              8.37325,
+              8.451417,
+              8.43475,
+              8.514375,
+              8.498542,
+              8.4875,
+              8.405167,
+              8.462333,
+              8.415375,
+              8.414666,
+              8.402875,
+              8.407208,
+              8.432375,
+              8.439833,
+              8.460917,
+              8.463542,
+              8.438375,
+              8.440292,
+              8.441167,
+              8.445042,
+              8.440792,
+              8.468583,
+              8.456958,
+              8.45975,
+              8.498875,
+              8.52775,
+              8.443083,
+              8.465625,
+              8.45025,
+              8.468167,
+              8.468166,
+              8.549917,
+              8.465166,
+              8.541875,
+              8.591125,
+              8.591,
+              8.533125,
+              8.534,
+              8.608375,
+              8.649792,
+              8.562,
+              8.626167,
+              8.565833,
+              8.559042,
+              8.663125,
+              8.60725,
+              8.541833,
+              8.590292,
+              8.574417,
+              8.584291,
+              8.632667,
+              9.064167,
+              8.730042,
+              8.542917,
+              8.857625
+            ],
+            "decode_engine_steps_per_second": 117.439479578103
+          },
+          {
+            "trial": 4,
+            "raw_decode_ms": [
+              8.318167,
+              8.336875,
+              8.375542,
+              8.349791,
+              8.358209,
+              8.35675,
+              8.352458,
+              8.382167,
+              8.398583,
+              8.365541,
+              8.363833,
+              8.433708,
+              8.365959,
+              8.366375,
+              8.502584,
+              8.417459,
+              8.380792,
+              8.380417,
+              8.419792,
+              8.409125,
+              8.407667,
+              8.392875,
+              8.465208,
+              8.398792,
+              8.434542,
+              8.391583,
+              8.41875,
+              8.498459,
+              8.419458,
+              8.439334,
+              8.484125,
+              8.407334,
+              8.548333,
+              8.65725,
+              8.691875,
+              8.478083,
+              8.511416,
+              8.50775,
+              8.433292,
+              8.458166,
+              8.45175,
+              8.46475,
+              8.4355,
+              8.446459,
+              8.433708,
+              8.546209,
+              8.465917,
+              8.601208,
+              8.649125,
+              8.629542,
+              8.498791,
+              8.493,
+              8.522458,
+              8.506416,
+              8.520292,
+              8.492792,
+              8.48825,
+              8.564,
+              8.625542,
+              8.607292,
+              8.604167,
+              8.599875,
+              8.585667,
+              8.485625
+            ],
+            "decode_engine_steps_per_second": 118.1254769939061
+          }
+        ],
+        "decode_engine_steps_per_second": 115.02809642808378,
+        "decode_mean_ms": 8.69352819921875,
+        "decode_p50_ms": 8.577375,
+        "decode_p90_ms": 9.1777915,
+        "hf_top1_mismatches": 0,
+        "hf_greedy_16_token_match": true
+      }
+    ],
+    "cpu_reference_prompts_passed": 3
+  },
+  "tasks": [
+    {
+      "label": "qwen-tests",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "unittest",
+        "qwen35.tests",
+        "-v"
+      ],
+      "started_utc": "2026-10-05T16:02:58.410942+00:00",
+      "log": "qwen-tests.log",
+      "load_before": [
+        2.98095703125,
+        4.2978515625,
+        7.0751953125
+      ],
+      "returncode": 0,
+      "seconds": 0.7849110829999972,
+      "load_after": [
+        2.90234375,
+        4.25927734375,
+        7.04541015625
+      ],
+      "ended_utc": "2026-10-05T16:02:59.196386+00:00"
+    },
+    {
+      "label": "qwen-vendor-verify",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35",
+        "verify",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-vendor-verify.json"
+      ],
+      "started_utc": "2026-10-05T16:02:59.197034+00:00",
+      "log": "qwen-vendor-verify.log",
+      "load_before": [
+        2.90234375,
+        4.25927734375,
+        7.04541015625
+      ],
+      "returncode": 1,
+      "seconds": 14.954893833000142,
+      "load_after": [
+        4.79638671875,
+        4.58056640625,
+        7.10888671875
+      ],
+      "ended_utc": "2026-10-05T16:03:14.152173+00:00"
+    },
+    {
+      "label": "gpt2-tests",
+      "command": [
+        "/Users/yeren/ane/gpt2/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "gpt2/tests",
+        "-v"
+      ],
+      "started_utc": "2026-10-05T16:03:14.152656+00:00",
+      "log": "gpt2-tests.log",
+      "load_before": [
+        4.79638671875,
+        4.58056640625,
+        7.10888671875
+      ],
+      "returncode": 1,
+      "seconds": 33.86800333299993,
+      "load_after": [
+        3.794921875,
+        4.35009765625,
+        6.9365234375
+      ],
+      "ended_utc": "2026-10-05T16:03:48.020531+00:00"
+    },
+    {
+      "label": "gpt2-verify-numpy",
+      "command": [
+        "/Users/yeren/ane/gpt2/.venv/bin/python",
+        "/Users/yeren/ane/gpt2/gpt2.py",
+        "verify",
+        "--backend",
+        "cpu",
+        "--cpu-kernels",
+        "numpy"
+      ],
+      "started_utc": "2026-10-05T16:03:48.021427+00:00",
+      "log": "gpt2-verify-numpy.log",
+      "load_before": [
+        3.794921875,
+        4.35009765625,
+        6.9365234375
+      ],
+      "returncode": 0,
+      "seconds": 2.1171573750000334,
+      "load_after": [
+        3.49072265625,
+        4.27783203125,
+        6.8955078125
+      ],
+      "ended_utc": "2026-10-05T16:03:50.138795+00:00"
+    },
+    {
+      "label": "gpt2-verify-exact",
+      "command": [
+        "/Users/yeren/ane/gpt2/.venv/bin/python",
+        "/Users/yeren/ane/gpt2/gpt2.py",
+        "verify",
+        "--backend",
+        "cpu",
+        "--cpu-kernels",
+        "exact"
+      ],
+      "started_utc": "2026-10-05T16:03:50.139297+00:00",
+      "log": "gpt2-verify-exact.log",
+      "load_before": [
+        3.49072265625,
+        4.27783203125,
+        6.8955078125
+      ],
+      "returncode": 0,
+      "seconds": 1.1055582500000583,
+      "load_after": [
+        3.49072265625,
+        4.27783203125,
+        6.8955078125
+      ],
+      "ended_utc": "2026-10-05T16:03:51.245058+00:00"
+    },
+    {
+      "label": "gpt2-verify-native",
+      "command": [
+        "/Users/yeren/ane/gpt2/.venv/bin/python",
+        "/Users/yeren/ane/gpt2/gpt2.py",
+        "verify",
+        "--backend",
+        "cpu",
+        "--cpu-kernels",
+        "native"
+      ],
+      "started_utc": "2026-10-05T16:03:51.245517+00:00",
+      "log": "gpt2-verify-native.log",
+      "load_before": [
+        3.49072265625,
+        4.27783203125,
+        6.8955078125
+      ],
+      "returncode": 0,
+      "seconds": 0.9438461249999364,
+      "load_after": [
+        3.49072265625,
+        4.27783203125,
+        6.8955078125
+      ],
+      "ended_utc": "2026-10-05T16:03:52.189580+00:00"
+    },
+    {
+      "label": "gpt2-generation",
+      "command": [
+        "/Users/yeren/ane/gpt2/.venv/bin/python",
+        "/Users/yeren/ane/gpt2/gpt2.py",
+        "generate",
+        "--backend",
+        "cpu",
+        "--prompt",
+        "The Apple Neural Engine",
+        "--max-tokens",
+        "32"
+      ],
+      "started_utc": "2026-10-05T16:03:52.190184+00:00",
+      "log": "gpt2-generation.log",
+      "load_before": [
+        3.49072265625,
+        4.27783203125,
+        6.8955078125
+      ],
+      "returncode": 0,
+      "seconds": 1.2734800829998676,
+      "load_after": [
+        3.49072265625,
+        4.27783203125,
+        6.8955078125
+      ],
+      "ended_utc": "2026-10-05T16:03:53.463918+00:00"
+    },
+    {
+      "label": "gpt2-cpu-benchmark",
+      "command": [
+        "/Users/yeren/ane/gpt2/.venv/bin/python",
+        "/Users/yeren/ane/gpt2/tools/bench_asahi.py",
+        "--backend",
+        "cpu",
+        "--trials",
+        "4",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/gpt2-cpu-benchmark.json"
+      ],
+      "started_utc": "2026-10-05T16:03:53.464433+00:00",
+      "log": "gpt2-cpu-benchmark.log",
+      "load_before": [
+        3.49072265625,
+        4.27783203125,
+        6.8955078125
+      ],
+      "returncode": 0,
+      "seconds": 25.202437832999976,
+      "load_after": [
+        4.24951171875,
+        4.384765625,
+        6.85693359375
+      ],
+      "ended_utc": "2026-10-05T16:04:18.666866+00:00"
+    },
+    {
+      "label": "qwen-prepare-traces",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--prepare-traces",
+        "--threads",
+        "4"
+      ],
+      "started_utc": "2026-10-05T16:04:18.667431+00:00",
+      "log": "qwen-prepare-traces.log",
+      "load_before": [
+        4.24951171875,
+        4.384765625,
+        6.85693359375
+      ],
+      "returncode": 0,
+      "seconds": 51.56611304199987,
+      "load_after": [
+        4.521484375,
+        4.427734375,
+        6.7158203125
+      ],
+      "ended_utc": "2026-10-05T16:05:10.233315+00:00"
+    },
+    {
+      "label": "qwen-native-t1-r1",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "native",
+        "--threads",
+        "1",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t1-r1.json"
+      ],
+      "started_utc": "2026-10-05T16:05:10.237167+00:00",
+      "log": "qwen-native-t1-r1.log",
+      "load_before": [
+        4.521484375,
+        4.427734375,
+        6.7158203125
+      ],
+      "returncode": 0,
+      "seconds": 103.65431904100001,
+      "load_after": [
+        3.17529296875,
+        4.02490234375,
+        6.2900390625
+      ],
+      "ended_utc": "2026-10-05T16:06:53.890802+00:00"
+    },
+    {
+      "label": "qwen-dot-t1-r1",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "dot",
+        "--threads",
+        "1",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t1-r1.json"
+      ],
+      "started_utc": "2026-10-05T16:06:53.891841+00:00",
+      "log": "qwen-dot-t1-r1.log",
+      "load_before": [
+        3.17529296875,
+        4.02490234375,
+        6.2900390625
+      ],
+      "returncode": 0,
+      "seconds": 54.170675791999884,
+      "load_after": [
+        2.6337890625,
+        3.7421875,
+        6.0546875
+      ],
+      "ended_utc": "2026-10-05T16:07:48.062409+00:00"
+    },
+    {
+      "label": "qwen-native-t2-r1",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "native",
+        "--threads",
+        "2",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t2-r1.json"
+      ],
+      "started_utc": "2026-10-05T16:07:48.063258+00:00",
+      "log": "qwen-native-t2-r1.log",
+      "load_before": [
+        2.6337890625,
+        3.7421875,
+        6.0546875
+      ],
+      "returncode": 0,
+      "seconds": 73.22260637500017,
+      "load_after": [
+        2.19775390625,
+        3.3525390625,
+        5.70947265625
+      ],
+      "ended_utc": "2026-10-05T16:09:01.285474+00:00"
+    },
+    {
+      "label": "qwen-dot-t2-r1",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "dot",
+        "--threads",
+        "2",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t2-r1.json"
+      ],
+      "started_utc": "2026-10-05T16:09:01.286251+00:00",
+      "log": "qwen-dot-t2-r1.log",
+      "load_before": [
+        2.19775390625,
+        3.3525390625,
+        5.70947265625
+      ],
+      "returncode": 0,
+      "seconds": 45.8912499999999,
+      "load_after": [
+        2.1259765625,
+        3.18798828125,
+        5.52685546875
+      ],
+      "ended_utc": "2026-10-05T16:09:47.177425+00:00"
+    },
+    {
+      "label": "qwen-native-t4-r1",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "native",
+        "--threads",
+        "4",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t4-r1.json"
+      ],
+      "started_utc": "2026-10-05T16:09:47.178128+00:00",
+      "log": "qwen-native-t4-r1.log",
+      "load_before": [
+        2.1259765625,
+        3.18798828125,
+        5.52685546875
+      ],
+      "returncode": 0,
+      "seconds": 65.0465764999999,
+      "load_after": [
+        3.96630859375,
+        3.53759765625,
+        5.48388671875
+      ],
+      "ended_utc": "2026-10-05T16:10:52.224437+00:00"
+    },
+    {
+      "label": "qwen-dot-t4-r1",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "dot",
+        "--threads",
+        "4",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t4-r1.json"
+      ],
+      "started_utc": "2026-10-05T16:10:52.225321+00:00",
+      "log": "qwen-dot-t4-r1.log",
+      "load_before": [
+        3.96630859375,
+        3.53759765625,
+        5.48388671875
+      ],
+      "returncode": 0,
+      "seconds": 50.91259554199996,
+      "load_after": [
+        3.80419921875,
+        3.5615234375,
+        5.37890625
+      ],
+      "ended_utc": "2026-10-05T16:11:43.137849+00:00"
+    },
+    {
+      "label": "qwen-dot-t1-r2",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "dot",
+        "--threads",
+        "1",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t1-r2.json"
+      ],
+      "started_utc": "2026-10-05T16:11:43.138670+00:00",
+      "log": "qwen-dot-t1-r2.log",
+      "load_before": [
+        3.80419921875,
+        3.5615234375,
+        5.37890625
+      ],
+      "returncode": 0,
+      "seconds": 60.01837287500007,
+      "load_after": [
+        2.568359375,
+        3.24462890625,
+        5.134765625
+      ],
+      "ended_utc": "2026-10-05T16:12:43.156925+00:00"
+    },
+    {
+      "label": "qwen-native-t1-r2",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "native",
+        "--threads",
+        "1",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t1-r2.json"
+      ],
+      "started_utc": "2026-10-05T16:12:43.157688+00:00",
+      "log": "qwen-native-t1-r2.log",
+      "load_before": [
+        2.568359375,
+        3.24462890625,
+        5.134765625
+      ],
+      "returncode": 0,
+      "seconds": 135.09422308299986,
+      "load_after": [
+        3.2744140625,
+        3.126953125,
+        4.794921875
+      ],
+      "ended_utc": "2026-10-05T16:14:58.250977+00:00"
+    },
+    {
+      "label": "qwen-dot-t4-r2",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "dot",
+        "--threads",
+        "4",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t4-r2.json"
+      ],
+      "started_utc": "2026-10-05T16:14:58.252315+00:00",
+      "log": "qwen-dot-t4-r2.log",
+      "load_before": [
+        3.2744140625,
+        3.126953125,
+        4.794921875
+      ],
+      "returncode": 0,
+      "seconds": 64.79512079100004,
+      "load_after": [
+        4.1103515625,
+        3.49462890625,
+        4.8154296875
+      ],
+      "ended_utc": "2026-10-05T16:16:03.047382+00:00"
+    },
+    {
+      "label": "qwen-native-t4-r2",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "native",
+        "--threads",
+        "4",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t4-r2.json"
+      ],
+      "started_utc": "2026-10-05T16:16:03.048845+00:00",
+      "log": "qwen-native-t4-r2.log",
+      "load_before": [
+        4.1103515625,
+        3.49462890625,
+        4.8154296875
+      ],
+      "returncode": 0,
+      "seconds": 119.86026529200012,
+      "load_after": [
+        9.271484375,
+        4.84130859375,
+        5.1259765625
+      ],
+      "ended_utc": "2026-10-05T16:18:02.914602+00:00"
+    },
+    {
+      "label": "qwen-dot-t2-r2",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "dot",
+        "--threads",
+        "2",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t2-r2.json"
+      ],
+      "started_utc": "2026-10-05T16:18:02.917030+00:00",
+      "log": "qwen-dot-t2-r2.log",
+      "load_before": [
+        9.271484375,
+        4.84130859375,
+        5.1259765625
+      ],
+      "returncode": 0,
+      "seconds": 297.72164783300013,
+      "load_after": [
+        33.302734375,
+        54.052734375,
+        30.5322265625
+      ],
+      "ended_utc": "2026-10-05T16:23:00.637536+00:00"
+    },
+    {
+      "label": "qwen-native-t2-r2",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "native",
+        "--threads",
+        "2",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t2-r2.json"
+      ],
+      "started_utc": "2026-10-05T16:23:00.639631+00:00",
+      "log": "qwen-native-t2-r2.log",
+      "load_before": [
+        33.302734375,
+        54.052734375,
+        30.5322265625
+      ],
+      "returncode": 0,
+      "seconds": 236.55962624999984,
+      "load_after": [
+        6.83837890625,
+        27.75390625,
+        24.54638671875
+      ],
+      "ended_utc": "2026-10-05T16:26:57.198058+00:00"
+    },
+    {
+      "label": "qwen-native-t4-r3",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "native",
+        "--threads",
+        "4",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t4-r3.json"
+      ],
+      "started_utc": "2026-10-05T16:26:57.200330+00:00",
+      "log": "qwen-native-t4-r3.log",
+      "load_before": [
+        6.83837890625,
+        27.75390625,
+        24.54638671875
+      ],
+      "returncode": 0,
+      "seconds": 182.10904516699975,
+      "load_after": [
+        8.57958984375,
+        18.53759765625,
+        21.2412109375
+      ],
+      "ended_utc": "2026-10-05T16:29:59.308729+00:00"
+    },
+    {
+      "label": "qwen-dot-t4-r3",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "dot",
+        "--threads",
+        "4",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t4-r3.json"
+      ],
+      "started_utc": "2026-10-05T16:29:59.312074+00:00",
+      "log": "qwen-dot-t4-r3.log",
+      "load_before": [
+        8.57958984375,
+        18.53759765625,
+        21.2412109375
+      ],
+      "returncode": 0,
+      "seconds": 112.24186929200005,
+      "load_after": [
+        4.37158203125,
+        13.83642578125,
+        19.04248046875
+      ],
+      "ended_utc": "2026-10-05T16:31:51.554339+00:00"
+    },
+    {
+      "label": "qwen-native-t1-r3",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "native",
+        "--threads",
+        "1",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t1-r3.json"
+      ],
+      "started_utc": "2026-10-05T16:31:51.556445+00:00",
+      "log": "qwen-native-t1-r3.log",
+      "load_before": [
+        4.37158203125,
+        13.83642578125,
+        19.04248046875
+      ],
+      "returncode": 0,
+      "seconds": 177.134663542,
+      "load_after": [
+        2.171875,
+        8.6220703125,
+        15.8837890625
+      ],
+      "ended_utc": "2026-10-05T16:34:48.726032+00:00"
+    },
+    {
+      "label": "qwen-dot-t1-r3",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "dot",
+        "--threads",
+        "1",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t1-r3.json"
+      ],
+      "started_utc": "2026-10-05T16:34:48.727173+00:00",
+      "log": "qwen-dot-t1-r3.log",
+      "load_before": [
+        2.171875,
+        8.6220703125,
+        15.8837890625
+      ],
+      "returncode": 0,
+      "seconds": 89.56631408300018,
+      "load_after": [
+        2.17333984375,
+        6.91650390625,
+        14.4931640625
+      ],
+      "ended_utc": "2026-10-05T16:36:18.294171+00:00"
+    },
+    {
+      "label": "qwen-native-t2-r3",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "native",
+        "--threads",
+        "2",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t2-r3.json"
+      ],
+      "started_utc": "2026-10-05T16:36:18.295199+00:00",
+      "log": "qwen-native-t2-r3.log",
+      "load_before": [
+        2.17333984375,
+        6.91650390625,
+        14.4931640625
+      ],
+      "returncode": 0,
+      "seconds": 119.4188048750002,
+      "load_after": [
+        3.06396484375,
+        5.56494140625,
+        12.94775390625
+      ],
+      "ended_utc": "2026-10-05T16:38:17.714511+00:00"
+    },
+    {
+      "label": "qwen-dot-t2-r3",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.benchmark",
+        "--model",
+        "/Users/yeren/.cache/mirai/models/mirai/alibaba-qwen3.5-0.8b-mirai-mirai-m-4/c12202e4c764e559960827761566aaa1fd15a87a",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--backend",
+        "cpu",
+        "--kernels",
+        "dot",
+        "--threads",
+        "2",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t2-r3.json"
+      ],
+      "started_utc": "2026-10-05T16:38:17.715688+00:00",
+      "log": "qwen-dot-t2-r3.log",
+      "load_before": [
+        3.06396484375,
+        5.56494140625,
+        12.94775390625
+      ],
+      "returncode": 0,
+      "seconds": 76.7272183340001,
+      "load_after": [
+        2.55712890625,
+        4.845703125,
+        12.048828125
+      ],
+      "ended_utc": "2026-10-05T16:39:34.443554+00:00"
+    },
+    {
+      "label": "qwen-summary-t1",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.summarize_benchmark",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t1-r1.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t1-r1.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t1-r2.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t1-r2.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t1-r3.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t1-r3.json",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-summary-t1.json"
+      ],
+      "started_utc": "2026-10-05T16:39:34.444907+00:00",
+      "log": "qwen-summary-t1.log",
+      "load_before": [
+        2.55712890625,
+        4.845703125,
+        12.048828125
+      ],
+      "returncode": 0,
+      "seconds": 0.2973516669999299,
+      "load_after": [
+        2.55712890625,
+        4.845703125,
+        12.048828125
+      ],
+      "ended_utc": "2026-10-05T16:39:34.743117+00:00"
+    },
+    {
+      "label": "qwen-summary-t2",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.summarize_benchmark",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t2-r1.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t2-r1.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t2-r2.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t2-r2.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t2-r3.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t2-r3.json",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-summary-t2.json"
+      ],
+      "started_utc": "2026-10-05T16:39:34.744298+00:00",
+      "log": "qwen-summary-t2.log",
+      "load_before": [
+        2.55712890625,
+        4.845703125,
+        12.048828125
+      ],
+      "returncode": 0,
+      "seconds": 0.243266124999991,
+      "load_after": [
+        2.55712890625,
+        4.845703125,
+        12.048828125
+      ],
+      "ended_utc": "2026-10-05T16:39:34.988326+00:00"
+    },
+    {
+      "label": "qwen-summary-t4",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "-m",
+        "qwen35.tools.summarize_benchmark",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t4-r1.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t4-r1.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t4-r2.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t4-r2.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-native-t4-r3.json",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-dot-t4-r3.json",
+        "--traces",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/traces",
+        "--output",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/qwen-summary-t4.json"
+      ],
+      "started_utc": "2026-10-05T16:39:34.989285+00:00",
+      "log": "qwen-summary-t4.log",
+      "load_before": [
+        2.55712890625,
+        4.845703125,
+        12.048828125
+      ],
+      "returncode": 0,
+      "seconds": 0.18822645799991733,
+      "load_after": [
+        2.55712890625,
+        4.845703125,
+        12.048828125
+      ],
+      "ended_utc": "2026-10-05T16:39:35.178153+00:00"
+    }
+  ],
+  "supplemental_tasks": [
+    {
+      "label": "gpt2-tests-rerun",
+      "command": [
+        "/Users/yeren/ane/gpt2/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "gpt2/tests",
+        "-v"
+      ],
+      "started_utc": "2026-10-05T16:39:35.694403+00:00",
+      "returncode": 0,
+      "seconds": 37.84470579200024
+    },
+    {
+      "label": "gpt2-integrity-rerun",
+      "command": [
+        "/Users/yeren/ane/gpt2/.venv/bin/python",
+        "/Users/yeren/ane/gpt2/gpt2.py",
+        "verify",
+        "--backend",
+        "cpu",
+        "--cpu-kernels",
+        "native"
+      ],
+      "started_utc": "2026-10-05T16:40:13.539556+00:00",
+      "returncode": 0,
+      "seconds": 1.7278006250003273
+    },
+    {
+      "label": "qwen-vendor-diagnosis",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/diagnose_vendor.py"
+      ],
+      "started_utc": "2026-10-05T16:40:15.267799+00:00",
+      "returncode": 0,
+      "seconds": 18.00242904200013
+    },
+    {
+      "label": "qwen-clang-build",
+      "command": [
+        "/opt/homebrew/opt/llvm/bin/clang",
+        "-O3",
+        "-ffp-contract=off",
+        "-std=c11",
+        "-fPIC",
+        "-shared",
+        "-fopenmp",
+        "-march=armv8.2-a+fp16+dotprod",
+        "/Users/yeren/ane/qwen35/cpu.c",
+        "-lm",
+        "-L/opt/homebrew/opt/libomp/lib",
+        "-Wl,-rpath,/opt/homebrew/opt/libomp/lib",
+        "-o",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/cpu-clang.so"
+      ],
+      "started_utc": "2026-10-05T16:40:33.270918+00:00",
+      "returncode": 0,
+      "seconds": 1.0593709170002512
+    },
+    {
+      "label": "qwen-clang-vendor-diagnosis",
+      "command": [
+        "/Users/yeren/ane/qwen35/.venv/bin/python",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/diagnose_vendor.py",
+        "/Users/yeren/ane/qwen35/local-results/macos-20261005T155646Z/cpu-clang.so"
+      ],
+      "started_utc": "2026-10-05T16:40:34.330740+00:00",
+      "returncode": 0,
+      "seconds": 8.468100667000272
+    }
+  ],
+  "receipt_sha256": {
+    "qwen-native-t1-r1.json": "61df49d9d3d70e94f8403d2c7fecdb31d98300f7429107fec3ae0f37367428a7",
+    "qwen-dot-t1-r1.json": "3477cdb15ee4b4c9c0d1c2221287d4cb7b45895ce412f41eea66086c7d82b1cd",
+    "qwen-dot-t1-r2.json": "a898a41e3815b06f2e1c31fb5c00236867a0cf66787a1ac37a8264bd081f2ba9",
+    "qwen-native-t1-r2.json": "145b1abb12201d7b8bae91de3063ae56f056bbe1da49d90a4c45d732876967da",
+    "qwen-native-t1-r3.json": "618c0bc64d086866deec6385c8f96ac24a824bbb239397d34078fc8b966610e4",
+    "qwen-dot-t1-r3.json": "caa3c46262a602a829c5b795fba0ffd04862fa50a086d95e5940b423d3ac6878",
+    "qwen-native-t2-r1.json": "704056ab1dea44801ce9309d6ba3f3cec731632dc9bc4aeee7c6616dd5c2313f",
+    "qwen-dot-t2-r1.json": "6240f0f7edec7a32c2eae589975d18f7abf4e285e5c2026c800d5265c971e506",
+    "qwen-dot-t2-r2.json": "9b0ff69eeec73722b7f339bf125e93a52d7f9d34f74d59c33f6ba5550269141e",
+    "qwen-native-t2-r2.json": "0b4f5afb60be27d1e2279af6f9a8177c0f96d6f0ff080c9f2ec6509be8159470",
+    "qwen-native-t2-r3.json": "ea17d4f2488952682c962c40765b114975d240c8e770be8a037f3e0592a285a1",
+    "qwen-dot-t2-r3.json": "f7d04a017b12a033fa8427864ef488ab91e560e42e9c6caeb8134f1de2ed6f01",
+    "qwen-native-t4-r1.json": "d37ad46505e955a5f2c39134e16a1334d43ca53eb0e30828df7a225bfb7527be",
+    "qwen-dot-t4-r1.json": "e73b1b7b288a1cc21aa72e6f7f6f3208150571b6fd9905aaec429bf87c5551dc",
+    "qwen-dot-t4-r2.json": "0882bf33316d1aa60e2bfe61951019d8fd637c57d076acfcafa278e575e23dca",
+    "qwen-native-t4-r2.json": "7a301f373e3bdfcc1eef9b422bf72a2c6cd70f0897838e1a2f40a59261f683a8",
+    "qwen-native-t4-r3.json": "28378d591d6690009ec8c2f26968c84d7bc680b96e305d5e9e0cff68cadc0531",
+    "qwen-dot-t4-r3.json": "5d06d71e93c1c2c0a377766ea935733c982bed0647aec55d6b9b87d5a37e5555"
+  },
+  "host_observations": {
+    "samples": 398,
+    "cadence_seconds": 5,
+    "loadavg_1m_range": [
+      1.8974609375,
+      168.8828125
+    ],
+    "initial_swap": "total = 1024.00M  used = 673.06M  free = 350.94M  (encrypted)",
+    "final_swap": "total = 1024.00M  used = 505.06M  free = 518.94M  (encrypted)"
+  },
+  "archive": {
+    "path": "qwen35/local-results/macos-20261005T155646Z.tar.gz",
+    "sha256": "8321a1a275325053edaab668406ab36ed9184c0f0e41d576603c9d35b7797048",
+    "bytes": 184346404,
+    "manifest_sha256": "b3f00f1af1c35e372ffebebb34ae687bf4fd5d9dbe000d16c64e89d5b7eaf394"
+  },
+  "limitations": [
+    "Active desktop; another Codex session was assigned Metal/ANE captures. No cross-session isolation was established.",
+    "CPU sweeps were serial, but background system activity and thermal state were not controlled.",
+    "BF16 vendor arithmetic fixture failed the strict bitwise gate; the original gate was retained.",
+    "The 18 FP32 CPU runs use a locally regenerated floating reference whose token traces match the retained Linux suite.",
+    "No macOS ANE execution or new HWX capture is claimed by this CPU report."
+  ]
+}

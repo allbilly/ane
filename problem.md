@@ -2,59 +2,101 @@
 
 ## Current HWX Problem Statement
 
-We are trying to make a simple CoreML-generated elementwise MUL HWX usable both:
+For our custom exported HWX dumps, direct numerical replay belongs on
+Asahi/Linux. macOS numerical execution uses ANEForge's private MIL/ANECIR
+compile, load and dispatch paths. ANEForge's primary E5RT path compiles the
+MIL through the system service and creates an executable operation from the
+returned program library and function.
 
-- on macOS, through Apple's private HWX runtime path (`run_hwx_with_ane_client`)
-- on Asahi/Linux, after conversion to an `.ane` command buffer
+ANEForge documents the [custom-HWX code-signature boundary](https://github.com/sbryngelson/ANEForge/blob/main/docs/glossary.md)
+and the [private E5RT compile/dispatch sequence](https://github.com/sbryngelson/ANEForge/blob/main/docs/e5rt-dispatch-reference.md).
+Successful loading of an Apple system HWX control does not establish that
+our arbitrary offline exports are accepted through the same private client.
+Standalone macOS loading of those dumps is therefore removed from the
+pending execution tasks. The retained load-stage error alone does not
+identify a particular signature check or establish physical memory exhaustion.
 
-The important current finding is that a single system HWX file is enough for the macOS private runner. Copying a known-good system model such as:
+The macOS MUL numerical checks already pass through ANE-only E5RT and
+daemon-compiled MIL. The remaining execution work is guarded native Asahi
+replay of the exported commands, followed by model-level validation. The
+older Asahi descriptor/register compatibility problems below remain relevant
+to that replay.
 
-```bash
-/System/Library/PrivateFrameworks/VideoProcessing.framework/Versions/A/Resources/cnn_frame_enhancer_320p.H13.espresso.hwx
-```
-
-to `/tmp` still runs. Removing nearby `/tmp` companion metadata does not stop it. So the direct macOS runner does **not** require a full Espresso bundle at runtime for this path; the HWX itself contains enough program information.
-
-Our generated `/tmp/hwx_output/mul/model.hwx` is different: it is generated successfully from:
-
-```text
-/tmp/mul.mlmodel
-/tmp/espresso_ir_dump/net.plist
-/tmp/espresso_ir_dump/net.precompilation_info
-/tmp/espresso_ir_dump/net_aux.json
-/tmp/espresso_ir_dump/net.additional.weights
-```
-
-but does not behave like the system `.H13.espresso.hwx` under the macOS private runner. This means the problem is now more likely in the **compile inputs/options used to produce the HWX**, not in missing runtime companion files.
-
-Current suspected missing piece:
-
-```text
-OptionsFilePath -> net_options.plist
-```
-
-We should reconstruct the expected `net_options.plist` schema instead of passing random flags. Candidate fields seen in system-style metadata / notes include:
-
-```text
-ane_compiler_batch = 1
-anec_flags = SpatialSplitGenericDAG
-compress_sparse = 1
-per_network_configuration = 1
-export_method = Photon-v0.12.1
-ModuleCompilationFlags = ...
-```
-
-Open experiment:
-
-1. Generate `/tmp/espresso_ir_dump/net_options.plist` with the expected schema.
-2. Pass it through `OptionsFilePath` in `coreml_to_ane_hwx/coreml_util.m`.
-3. Recompile `/tmp/hwx_output/mul/model.hwx`.
-4. Compare against the working system `cnn_frame_enhancer_320p.H13.espresso.hwx` at the structural level: compiler strings, Mach-O sections, TD offset/size/magic, and register blocks.
-5. Test the regenerated HWX with `run_hwx_with_ane_client`.
-
-This is separate from `ANE-LM` / `_ANEInMemoryModel`: those APIs compile MIL text to in-memory ANE kernels and do not directly answer the static `.hwx` compile-options problem.
+The `OptionsFilePath -> net_options.plist` investigation is retained as a
+historical compiler-input hypothesis. Missing/empty options and observed
+system properties did not establish recognition of the options schema.
+Further compiler-input work should address a demonstrated Asahi replay or
+export problem, rather than treating direct macOS loading as a prerequisite.
 
 ## Current verified artifacts
+
+### Unrestricted macOS 27 checks (2026-10-06)
+
+The [new capture receipt](qwen35/provenance/m1-macos-unrestricted.json)
+retains seven newly compiled MUL variants, their compiler status and task
+structures, numerical fixtures, and all runtime failures. The h13/h13g,
+missing/empty options and observed system-property variants share the same
+one-task structure digest as the retained macOS-26 MUL. Those negative
+controls do not establish recognition of an options schema.
+
+After the execution sandbox was removed, every constant/pattern load of
+these variants and the three older controls failed with ANE error 53,
+underlying status 1, stage 4: the framework reports "Program load failed —
+no memory". A later retry after the CPU sweep failed identically. Physical
+memory exhaustion has not been established by that error classification.
+The system `cnn_frame_enhancer_320p.H13.espresso.hwx` successfully loads
+through the same `_ANEClient` checker. That control performs no inference
+and is explicitly reported as `load_pass`.
+
+A separate dense width-64 MIL MUL computes all 64 constant and patterned
+outputs exactly through ANE-only E5RT. Its independently exported HWX also
+fails standalone `_ANEClient` loading for both cases. This distinguishes
+working MUL execution through E5RT from acceptance of the exported file;
+changing the original width-one/channel-64 ports alone did not fix loading.
+These raw-loading failures are retained as historical controls. macOS
+execution uses the working private compilation path; native Asahi replay
+and compiler-option recognition remain separate questions.
+
+### Private macOS execution and historical HWX controls (2026-10-06)
+
+The [review receipt](qwen35/provenance/m1-macos-review.json) records historical
+standalone-export rejection controls. The same load-stage error
+also occurs with independently exported Qwen recurrence and training
+layernorm HWX files. It is therefore broader than elementwise MUL or its
+original padded ports. Two load-option variants (minimal precompiled options,
+and profiling enabled) used model key `net` and QoS 25. All eight generated-file
+loads failed; both system-control loads succeeded. Changing the identity
+option, model key, QoS or profiling option did not fix the failure.
+
+The identical dense MUL MIL source compiles, loads and executes successfully
+through `_ANEClient` when using `kANEFModelMIL`. Both 64-value tests pass
+exactly, including signed fractional inputs. The working sequence is:
+
+1. Create `_ANEModel` from the directory containing `model.mil` and its weights.
+2. Call `compileModel:options:qos:error:` with model type `kANEFModelMIL`.
+3. Call `loadModel:options:qos:error:` with that same type, then evaluate.
+
+This is a verified private macOS execution path; ANEForge's primary ANE-only
+E5RT MIL path also works. Custom offline HWX execution is assigned to Asahi,
+and standalone macOS loading is not a remaining requirement. Native Asahi
+replay remains unverified for these new captures.
+The older Asahi zero-output/register issue is a separate failure stage from
+the current macOS rejection before inference.
+
+For explicit historical loading research, the comparison tool remains:
+
+```bash
+python3 -m experimental.probe_static_loading \
+  --mil-dir qwen35/local-results/macos-unrestricted-20261006T024951Z/static-mil-control/bundle \
+  --hwx qwen35/local-results/macos-unrestricted-20261006T024951Z/static-mil-control/hwx/model.hwx \
+  --output qwen35/local-results/static-loading-new
+```
+
+The report separates `mil_numerical_pass`, `raw_hwx_numerical_pass` and the
+load-only system control. Exit zero means the comparison completed with a
+working MIL route and system control; inspect the raw HWX result separately.
+
+### Historical compiler artifacts
 
 The local `mul` artifacts show three different compiler generations:
 
@@ -139,7 +181,9 @@ The previously documented statement that compiled `.ane` files differ by "only 2
 | `hwx/mul.ane` vs `hwx/mul_macos26_h13.ane` | macOS 26 `.ane` is 128 bytes smaller; 203 differing bytes in shared prefix |
 | `hwx/mul_macos26_m4.ane` vs `hwx/mul_macos26_h13.ane` | byte-identical |
 
-The practical fix for elementwise `mul_macos14` is not "2 bytes"; it is cleaning the spurious KDMA/NE register state:
+The candidate Asahi fix for elementwise `mul_macos14` is to clear the extra
+KDMA/NE register state. Its numerical effect still requires a native Asahi
+comparison of the raw and cleaned command buffers:
 
 ```text
 KernelCfg = 0
@@ -150,7 +194,11 @@ CoeffBfrSize[0..15] = 0
 
 For Asahi conversion, these spurious registers can matter because they become part of the emitted `.ane` command buffer unless the converter normalizes them. The raw generated `.ane` files are not currently a "2-byte difference" case; local comparisons show dozens or hundreds of byte differences depending on which macOS-generated HWX is used.
 
-The logical reason output becomes `0.0` is that the macOS 14/26 elementwise HWX advertises coefficient/kernel DMA state even though elementwise MUL should not need a coefficient load. The hardware/runtime can then execute the PE MUL path with bogus NE/KDMA state, effectively feeding/using invalid coefficient-related state and producing zero instead of `2.0 * 3.0 = 6.0`.
+One hypothesis for zero output on Asahi is that the extra coefficient/kernel
+DMA state interferes with the PE MUL path, which should not need a coefficient
+load. The register differences alone do not establish that mechanism. Compare
+the raw and cleaned command buffers with the direct-register reference below
+on the same Asahi runtime before attributing `0.0` output to KDMA/NE state.
 
 ## How to test `mul_macos14.hwx` on Asahi
 
@@ -216,7 +264,10 @@ macOS 26 generates two HWX variants:
 | `mul_h16_macos26.hwx` | ❌ Garbage (6 regs) | ✅ Full H16 parse |
 | `mul_h16_macos26_nodebug.hwx` | ❌ Garbage (6 regs) | ✅ Full H16 parse |
 
-**Spurious KDMA pattern** (same on macOS 14 and 26 for elementwise): `KernelCfg=0x80`, `MACCfg=0x00100000`, 16× `CoeffDMAConfig=0x80`. Fix via `hwx2py --clean` or by normalizing the TD as documented above.
+**Extra KDMA pattern** (same on macOS 14 and 26 for elementwise):
+`KernelCfg=0x80`, `MACCfg=0x00100000`, 16× `CoeffDMAConfig=0x80`.
+`hwx2py --clean` or TD normalization applies the candidate cleanup above;
+native Asahi numerical validation remains pending.
 
 ## System Info
 

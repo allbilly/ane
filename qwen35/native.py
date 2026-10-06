@@ -45,7 +45,8 @@ class Native:
             flags.append("-march=armv8.2-a+fp16" + ("+dotprod" if dot_supported() else ""))
         version = subprocess.check_output([compiler, "--version"])
         identity = hashlib.sha256(source.read_bytes() + version + json.dumps(flags).encode()).hexdigest()
-        cache = Path.home() / ".cache/ane-qwen35/native" / identity
+        cache_root = Path(os.environ.get("QWEN35_CACHE_DIR", str(Path.home() / ".cache/ane-qwen35")))
+        cache = cache_root / "native" / identity
         cache.mkdir(parents=True, exist_ok=True)
         library = cache / "cpu.so"
         if not library.exists():

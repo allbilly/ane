@@ -30,11 +30,63 @@ For a separate macOS Core ML comparison, see the
 placement lessons from an upstream ANEMLL port; this repository's runtime
 remains the direct-register Asahi implementation described here.
 
+[Whisper](whisper/README.md) contains macOS ANEForge setup, Asahi driver notes,
+and reproducible CPU/GPU/ANE transcription checks. Its
+[warm benchmark table](whisper/docs/benchmark-macos.md) measures five
+encoder/decoder routes on M1; ANE encoder + CPU decoder was fastest for the
+tested tiny.en model and clip. The macOS measurements use ANEForge's private
+Apple runtime; the Asahi route is documented but has not been run here.
+
 [GPT-2 training on Asahi](gpt2/training/README-asahi.md) replays the captured
 forward and backward kernels through the same driver. A full 124M parameter
 run completed ten Adam updates on this machine; its fixed-batch loss fell
 from 4.42788 to 0.000207. The transformer runs on ANE, with the vocabulary
 head, loss and optimizer on CPU.
+
+## macOS follow-up review (2026-10-06)
+
+The [unrestricted rerun receipt](qwen35/provenance/m1-macos-unrestricted.json)
+records the latest hardware results after the execution sandbox was removed.
+The [initial follow-up receipt](qwen35/provenance/m1-macos-followup.json)
+retains the earlier restricted attempts. [Capture and replay commands](experimental/macos-followups.md)
+retain the measurement boundaries and remaining native Asahi checks.
+
+The [subsequent review](qwen35/provenance/m1-macos-review.json) verified
+macOS MUL execution through private MIL compilation: both 64-value cases
+pass exactly. ANEForge's private E5RT path also works. Our custom HWX dumps
+are assigned to guarded Asahi replay; standalone macOS loading is a retained
+historical rejection control. The [runtime scope](problem.md#current-hwx-problem-statement)
+records that boundary. Replay validation now rejects empty fixtures and
+changed gates before device access; benchmark observations bracket process
+start and exit. Earlier timing classifications retain their sampled scope.
+
+The [macOS CPU results](qwen35/README.md#macos-cpu-measurements) cover 18
+Qwen3.5 runs and the GPT-2 package, CPU parity and warmed decode checks.
+All 97 retained artifact hashes and the evidence archive hash were rechecked.
+The current GPT-2 inference/training and Qwen projection shapes already have
+validated templates; their existing replay paths do not need fresh HWX dumps.
+
+| Follow-up | Result | Remaining work |
+| --- | --- | --- |
+| Qwen BF16 Uzu layer captures for arithmetic prefixes 3–23 | Completed on macOS: native BF16 matches independent Uzu at all 23 tokens, 552 layer vectors and 5,711,360 logits. Both Mac implementations differ from the retained Asahi arithmetic logits. | Compare independent all-token captures on Asahi using the retained Cargo lock; keep the original exact fixtures. |
+| Quiet, repeated CPU measurements | Three phases completed: 54/54 numerical runs passed. Thirteen passed the sampled host-activity gates; 41 timings were affected. The unrestricted phase passed 18/18 with complete host queries, including five timings passing the sampled gates. | All attempts are retained; these same-boot phases do not establish an isolated OS comparison. |
+| Longer-context and free-generation numerical checks | Completed CPU checks: 1K/2K contexts and four shorter prompts, 384/384 decode choices; four independent greedy streams, 256/256 choices. All full-logit errors passed the unchanged 0.5% gate. | Floating traces and an accurate-ANE invocation are retained for native Asahi replay. |
+| Static HWX compile-options investigation | Seven variants exported identical one-task MUL structures. Historical custom-HWX macOS loading controls failed; the MUL computes exactly through private E5RT and daemon-compiled MIL. | Custom exported HWX execution belongs on Asahi. Standalone macOS loading is removed from pending work; option recognition and native Asahi replay remain separate questions. |
+| Whisper trained encoder and more audio | Actual ANE fixtures pass the cosine gate. All 15 transcriptions match CPU words across five routes and 5/11/23-second JFK variants. The dense wrapper reproduces all three original ANE outputs bit for bit. Core ML static plans prefer GPU for 101 operations or ANE for 99 plus two CPU operations. Original/dense exports have 1,779/1,783 tasks. | Native Asahi execution remains pending. Constructed variants do not establish diverse-corpus accuracy or WER. |
+| 64-token training | All 27 templates exported with actual ANE output fixtures. Independent loss/gradient gates and three updates passed, with 580 actual ANE dispatches per update; loss fell from 3.271003 to 0.428595. Replay guards pass. | Native Asahi fixture replay and model-level training validation. |
+| Fused Qwen recurrence | All 16 real-input cases pass on ANE after compensated scaling and explicit exponential SiLU. Maximum state/output NRMSE is 0.294%/0.317%, below the unchanged 0.5% gate. Four programs export with actual ANE fixtures and pass replay guards. | Native Asahi replay remains pending; this layer-0 probe does not enable a fused full-model decoder. |
+
+[The Qwen follow-up details](qwen35/README.md#follow-up-validation) describe
+the numerical gates and required reference captures. The separate
+`mlx-ane-sd/task.md` capture remains assigned to the other session and is
+excluded from this review. GPT-2 CoreML/Orion/MLX comparisons already have
+retained macOS reports; repeating them adds value when testing a changed
+implementation or making a more controlled performance comparison.
+The newly added [Whisper measurements](whisper/docs/benchmark-macos.md)
+already cover five macOS routes on one short clip. The new follow-up adds
+Core ML inference and three constructed durations. Its unrestricted ANE,
+Metal and Core ML results are recorded separately from the historical
+restricted attempts and the earlier warm-context measurements.
 
 Thanks for the prior work from [geohotz](https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/) [eiln](https://github.com/eiln/ane) [freedomtan](https://github.com/freedomtan/coreml_to_ane_hwx) [mdaiter](https://github.com/mdaiter/ane) , some scripts in experimental/* are from [freedomtan/coreml_to_ane_hwx](https://github.com/freedomtan/coreml_to_ane_hwx)
 
@@ -326,8 +378,11 @@ Working hwx example in hwx/*
 - sum.hwx is from https://github.com/tinygrad/tinygrad/tree/v0.10.3/extra/accel/ane/ops
 - mul.hwx if from MacOS Monterey VM (v12.4 21F79) running on M4 macbook air 
 
-Side note, you can run compatible HWX files on macOS through the private `_ANEClient` path.
-The HWX must match the machine/driver generation and normally needs its companion Espresso metadata files beside it. 
+The following historical control loads an Apple system H13 HWX on macOS
+through the private `_ANEClient` path. It does not establish loading of our
+custom exports. Use ANEForge's private MIL compile/dispatch path for macOS
+execution and the guarded Asahi loader for our exported HWX. See
+[the runtime scope and findings](problem.md#current-hwx-problem-statement).
 
 ```bash
 cd coreml_to_ane_hwx/ane
