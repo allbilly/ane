@@ -16,6 +16,9 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <time.h>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 #include <unistd.h>
 #include "linear_template.h"
 
@@ -41,6 +44,7 @@ struct AneDevice {
     size_t host_input_size, host_output_size;
     unsigned long long submissions;
     int profiling;
+    int read_threads;
     AneTimings timings;
 };
 
@@ -52,6 +56,15 @@ static uint64_t profile_ns(const AneDevice *d) {
 }
 
 void ane_device_profile(AneDevice *d, int enabled) { if (d) d->profiling = !!enabled; }
+void ane_device_read_threads(AneDevice *d, int threads) {
+    if (d && threads >= 1 && threads <= 4) {
+        d->read_threads = threads;
+#ifdef _OPENMP
+        // ggml calls custom operations inside its own OpenMP region.
+        if (threads > 1 && omp_get_max_active_levels() < 2) omp_set_max_active_levels(2);
+#endif
+    }
+}
 AneTimings ane_device_timings(const AneDevice *d) {
     return d ? d->timings : (AneTimings){0};
 }
@@ -125,6 +138,7 @@ AneDevice *ane_device_open(void) {
     AneDevice *d = calloc(1, sizeof(*d));
     if (!d) return NULL;
     d->fd = open_ane();
+    d->read_threads = 1;
     if (d->fd < 0) {
         fprintf(stderr, "ANE: no accessible ane driver device; see ~/ane/kmod/README.md.\n");
         free(d); return NULL;
@@ -186,7 +200,7 @@ static int ensure_input(AneDevice *d, size_t bytes) {
 }
 
 // Read whole cache lines from the driver's uncached output mappings.
-static void read_output(void *dst, const void *src, size_t bytes) {
+static void read_output_serial(void *dst, const void *src, size_t bytes) {
     uint8_t *out=dst;
     const uint8_t *in=src;
     for (size_t i=0;i<bytes;i+=64) {
@@ -195,6 +209,27 @@ static void read_output(void *dst, const void *src, size_t bytes) {
                      "st1 {v0.16b, v1.16b, v2.16b, v3.16b}, [%1]"
                      : : "r"(in+i), "r"(out+i) : "v0","v1","v2","v3","memory");
     }
+}
+
+static void read_output(AneDevice *d, void *dst, const void *src, size_t bytes) {
+#ifdef _OPENMP
+    if (d->read_threads > 1 && bytes >= 16384) {
+        const size_t lines = bytes/64;
+        #pragma omp parallel num_threads(d->read_threads)
+        {
+            if (!omp_get_thread_num() && d->timings.read_threads_max < (uint32_t)omp_get_num_threads())
+                d->timings.read_threads_max = omp_get_num_threads();
+            const size_t first = lines*omp_get_thread_num()/omp_get_num_threads();
+            const size_t last = lines*(omp_get_thread_num()+1)/omp_get_num_threads();
+            read_output_serial((char *)dst+first*64, (const char *)src+first*64, (last-first)*64);
+        }
+        return;
+    }
+#else
+    (void)d;
+#endif
+    read_output_serial(dst, src, bytes);
+    if (!d->timings.read_threads_max) d->timings.read_threads_max = 1;
 }
 
 AnePlan *ane_plan_create_f16(AneDevice *d, const uint16_t *w,
@@ -273,7 +308,7 @@ static int submit_rows(AnePlan *p, int rows) {
     d->submissions++;
     d->timings.ioctl_ns += profile_ns(d)-start;
     start=profile_ns(d);
-    read_output(result,d->output.map,(size_t)rows*p->n*2);
+    read_output(d,result,d->output.map,(size_t)rows*p->n*2);
     d->timings.read_ns += profile_ns(d)-start;
     return 1;
 }

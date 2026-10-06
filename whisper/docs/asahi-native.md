@@ -14,10 +14,13 @@ It does not use the older single-convolution Whisper HWX as a complete encoder.
 Each projection uses 32 audio positions per submission. A full 1,500-position
 encoder makes 1,128 hardware submissions. Submission failures are fatal and the
 runtime checks the complete projection and submission counts. The isolated
-build uses exact encoder GELU and widened FP32 accumulation for CPU F16 NEON dot
-products in both CPU and ANE modes. Encoder attention reads the 1,500 actual K/V
-positions, excluding the allocation's 36 unmasked padding slots. Its CPU mode is a reference for this hybrid
-implementation, rather than an unchanged upstream performance baseline.
+build uses exact GELU, FP32 activations and K/V caches with F16 weights, and
+widened FP32 accumulation for CPU NEON dot products and tiled matrix operations
+in both CPU and ANE modes. Encoder and decoder cross-attention read the 1,500
+actual audio positions, excluding the allocation's 36 unmasked padding slots.
+Host scaling is vectorized; four workers read the uncached ANE output mapping.
+Its CPU mode is a reference for this hybrid implementation, rather than an
+unchanged upstream performance baseline.
 
 Actual [Asahi measurements](benchmark-asahi.md) and numerical evidence are
 retained. The current hybrid is accurate on the three tested clips, but slower
@@ -57,16 +60,22 @@ git -C whisper/vendor/whisper.cpp worktree add --detach ../whisper-asahi \
 uv venv --python 3.11 whisper/.venv
 uv pip install --python whisper/.venv/bin/python -r whisper/requirements-asahi.txt
 whisper/.venv/bin/python whisper/scripts/prepare_asahi.py
-uv tool run --from cmake cmake -S whisper/vendor/whisper-asahi \
+whisper/.venv/bin/cmake -S whisper/vendor/whisper-asahi \
   -B whisper/build/asahi-ane -DCMAKE_BUILD_TYPE=Release \
-  -DWHISPER_BUILD_TESTS=OFF -DGGML_BLAS=OFF -DGGML_VULKAN=OFF -DANE_ROOT="$PWD"
-uv tool run --from cmake cmake --build whisper/build/asahi-ane \
+  -DWHISPER_BUILD_TESTS=OFF -DGGML_BLAS=OFF -DGGML_VULKAN=OFF \
+  -DGGML_LLAMAFILE=ON -DANE_ROOT="$PWD"
+whisper/.venv/bin/cmake --build whisper/build/asahi-ane \
   --target whisper-cli -j4
 ```
 
 Skip the clone, worktree and virtualenv creation commands when those paths
 already exist. The preparation script accepts only the pinned revision and
 refuses to overwrite other source edits.
+
+The transcription runtime is native C/C++ with OpenMP. Python, Torch and
+Transformers are tools for preparing weights and independently validating the
+results; they are not loaded by `whisper-cli`. CMake is pinned in the tools
+environment so configure and build use the same executable.
 
 The checkpoint is `openai/whisper-tiny.en` revision
 `87c7102498dcde7456f24cfd30239ca606ed9063`, converted with the pinned upstream
@@ -120,7 +129,15 @@ paths. The matrix check compares all three projection dimensions and batches
 1/8/28/32 against independent float64 multiplication. The benchmark compares
 5/11/23-second JFK variants, encoder features, complete decoder logit vectors
 and independently generated token histories. It also computes an independent
-HF encoder reference on the exact native mel input. Warm timings use two rounds
+HF encoder reference on the exact native mel input and an independent HF
+decoder reference for every captured prefix. Full CPU/HF and ANE/HF logit
+vectors must also pass the unchanged 0.5% NRMSE gate and match raw argmaxes.
+Warm timings use two rounds
 of five measurements per backend, reversing backend order in round two and
 excluding two warmups per context. It measures encoder time, decoder prompt
 setup, single-token evaluation, whole transcription and real-time factor.
+
+For opt-in stage profiling, set `WHISPER_ASAHI_PROFILE=1` when running the CLI.
+This reports convolution, transformer, cross-K/V, host scaling and native
+pack/write/ioctl/read/unpack times. The benchmark runner clears that variable
+to keep profiling out of the reported warm measurements.

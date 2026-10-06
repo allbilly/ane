@@ -1,0 +1,2425 @@
+{
+  "status": "PASS",
+  "utc": "2026-10-06T15:45:29.296435+00:00",
+  "kernel": "7.1.13+",
+  "model_sha256": "776f39cd70d01a7df3c6098f87f121b62d1fb634d1272b5f36bb6f369fc34372",
+  "hf_checkpoint_sha256": "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad",
+  "audio_sha256": "59dfb9a4acb36fe2a2affc14bacbee2920ff435cb13cc314a08c13f66ba7860e",
+  "whisper_cpp_revision": "60c0be6ac8fa71b1a2ae2dd938a31a34a508e774",
+  "cpu_affinity": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "scope": "ANE encoder dense projections, 32 audio positions per submission, one rounding grid; vectorized host scaling and four-worker uncached output reads; CPU convolution, attention, normalizations, exact GELU, cross-K/V and decoder; FP32 K/V caches and activations with F16 weights, widened FP32 NEON dot and tiled matrix accumulation including mixed-precision GEMV, GCC NEON attention kernel selection fix, and real-length encoder K/V views in both modes",
+  "feature_and_logit_gate_nrmse": 0.005,
+  "hf_encoder_gate_cosine": 0.999,
+  "warmups_per_context": 2,
+  "runs_per_context": 5,
+  "rounds": 2,
+  "method": "Persistent contexts, warmup excluded, reversed backend order in round two; four workers, greedy English, no timestamps/fallback, full 30-second encoder context. Decoder total includes prompt plus token evaluation; whole timer includes host work and sampling.",
+  "limitations": "Active desktop, clocks not fixed; native ggml CPU backend without BLAS. macOS uses different encoder implementation and Accelerate; this is not an isolated OS comparison.",
+  "correctness": [
+    {
+      "audio": "jfk",
+      "audio_seconds": 11.0,
+      "audio_sha256": "d7d4e74b8a333ed02186008bc109a1b1a19d16da668bd56e785d80d69a16a72f",
+      "cpu_transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+      "ane_transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+      "encoder_vs_cpu": {
+        "nrmse": 0.000742620727535977,
+        "cosine": 0.9999997242674566,
+        "max_abs": 0.00977182388305664
+      },
+      "encoder_vs_hf": {
+        "nrmse": 0.0009014356279019581,
+        "cosine": 0.9999995937068474,
+        "max_abs": 0.01266622543334961
+      },
+      "cpu_encoder_vs_hf": {
+        "nrmse": 0.0002750074876913043,
+        "cosine": 0.9999999621946672,
+        "max_abs": 0.0048046112060546875
+      },
+      "decoder_calls": 25,
+      "all_histories_match": true,
+      "raw_argmax_matches": 25,
+      "maximum_logit_nrmse": 0.0009950202714104246,
+      "logit_checks": [
+        {
+          "nrmse": 0.0009950202714104246,
+          "cosine": 0.999999928714387,
+          "max_abs": 0.007737636566162109,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002288546721475124,
+          "cosine": 0.9999999923293792,
+          "max_abs": 0.0050048828125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0001617332752179389,
+          "cosine": 0.9999999936499422,
+          "max_abs": 0.00469970703125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0004409341546846933,
+          "cosine": 0.9999999151804638,
+          "max_abs": 0.007103443145751953,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0003009593765526883,
+          "cosine": 0.9999999642050881,
+          "max_abs": 0.006852865219116211,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00038173023576636384,
+          "cosine": 0.9999999776908775,
+          "max_abs": 0.004203438758850098,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00025491921262561985,
+          "cosine": 0.999999984899379,
+          "max_abs": 0.005290031433105469,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00032489795556475687,
+          "cosine": 0.9999999975767533,
+          "max_abs": 0.0085906982421875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 6.994007992083564e-05,
+          "cosine": 0.9999999987725917,
+          "max_abs": 0.0042877197265625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00025590369284738014,
+          "cosine": 0.9999999672616223,
+          "max_abs": 0.0038228631019592285,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 4.78569082847272e-05,
+          "cosine": 0.9999999993953536,
+          "max_abs": 0.003688812255859375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00024426763923845606,
+          "cosine": 0.9999999980620545,
+          "max_abs": 0.00514984130859375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00011701773922377777,
+          "cosine": 0.9999999996612845,
+          "max_abs": 0.0044574737548828125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002482275219095587,
+          "cosine": 0.999999998881166,
+          "max_abs": 0.0051116943359375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00023307010347510572,
+          "cosine": 0.9999999971187229,
+          "max_abs": 0.0046329498291015625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00030963624592369185,
+          "cosine": 0.9999999944974791,
+          "max_abs": 0.0046176910400390625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00013276376277602162,
+          "cosine": 0.9999999993709583,
+          "max_abs": 0.0048198699951171875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00020825148960527108,
+          "cosine": 0.9999999993872112,
+          "max_abs": 0.00704193115234375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0001544818902638899,
+          "cosine": 0.9999999993508227,
+          "max_abs": 0.004730224609375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00013536162756062445,
+          "cosine": 0.9999999991564352,
+          "max_abs": 0.0033521652221679688,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00012926572532049506,
+          "cosine": 0.9999999996760358,
+          "max_abs": 0.0055027008056640625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 5.736359274632612e-05,
+          "cosine": 0.9999999993955097,
+          "max_abs": 0.00336456298828125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.000509875670423866,
+          "cosine": 0.9999999892773026,
+          "max_abs": 0.007168292999267578,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0003846609544290502,
+          "cosine": 0.9999999966405607,
+          "max_abs": 0.009675979614257812,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002727491140986563,
+          "cosine": 0.9999999913025707,
+          "max_abs": 0.008091926574707031,
+          "argmax_match": true
+        }
+      ],
+      "maximum_cpu_logit_nrmse_vs_hf": 0.000579908445093972,
+      "maximum_ane_logit_nrmse_vs_hf": 0.0013572419275561377,
+      "cpu_raw_argmax_matches_hf": 25,
+      "ane_raw_argmax_matches_hf": 25,
+      "hf_logit_checks": [
+        {
+          "cpu": {
+            "nrmse": 0.00036608068879730323,
+            "cosine": 0.999999989437224,
+            "max_abs": 0.003258228302001953
+          },
+          "ane": {
+            "nrmse": 0.0013572419275561377,
+            "cosine": 0.9999998679981718,
+            "max_abs": 0.010793447494506836
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00017067769704572455,
+            "cosine": 0.9999999980409428,
+            "max_abs": 0.0029211044311523438
+          },
+          "ane": {
+            "nrmse": 0.0003832307917837658,
+            "cosine": 0.9999999882352665,
+            "max_abs": 0.006030082702636719
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 5.613236011036316e-05,
+            "cosine": 0.9999999991129759,
+            "max_abs": 0.0015125274658203125
+          },
+          "ane": {
+            "nrmse": 0.00018610507230207822,
+            "cosine": 0.9999999944044918,
+            "max_abs": 0.004538059234619141
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.0001295541209345771,
+            "cosine": 0.9999999916285918,
+            "max_abs": 0.0024275779724121094
+          },
+          "ane": {
+            "nrmse": 0.0004597266190012688,
+            "cosine": 0.9999999057246929,
+            "max_abs": 0.007678985595703125
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00016551161372515476,
+            "cosine": 0.9999999956110235,
+            "max_abs": 0.0024595260620117188
+          },
+          "ane": {
+            "nrmse": 0.00028478983748526,
+            "cosine": 0.999999959448312,
+            "max_abs": 0.006920814514160156
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00019231296420657126,
+            "cosine": 0.9999999954846316,
+            "max_abs": 0.0016222000122070312
+          },
+          "ane": {
+            "nrmse": 0.00023799537331842792,
+            "cosine": 0.9999999830542052,
+            "max_abs": 0.003679990768432617
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 7.698181812749746e-05,
+            "cosine": 0.999999998163484,
+            "max_abs": 0.001773834228515625
+          },
+          "ane": {
+            "nrmse": 0.0003058383335793961,
+            "cosine": 0.9999999805994386,
+            "max_abs": 0.005951881408691406
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00011403594991479917,
+            "cosine": 0.9999999998256476,
+            "max_abs": 0.0024471282958984375
+          },
+          "ane": {
+            "nrmse": 0.00021376429563070646,
+            "cosine": 0.9999999981426936,
+            "max_abs": 0.006824493408203125
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 2.1798983547736253e-05,
+            "cosine": 0.9999999998823524,
+            "max_abs": 0.0013523101806640625
+          },
+          "ane": {
+            "nrmse": 8.176425596309e-05,
+            "cosine": 0.9999999987602954,
+            "max_abs": 0.004329681396484375
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.000579908445093972,
+            "cosine": 0.9999999260739375,
+            "max_abs": 0.0032345056533813477
+          },
+          "ane": {
+            "nrmse": 0.0006425069040047383,
+            "cosine": 0.999999886451092,
+            "max_abs": 0.0055946409702301025
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 3.503096777836269e-05,
+            "cosine": 0.9999999999337656,
+            "max_abs": 0.0015010833740234375
+          },
+          "ane": {
+            "nrmse": 3.857902275649938e-05,
+            "cosine": 0.9999999992558538,
+            "max_abs": 0.00360870361328125
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 7.14721087906878e-05,
+            "cosine": 0.9999999997009079,
+            "max_abs": 0.0018062591552734375
+          },
+          "ane": {
+            "nrmse": 0.0001775714930914362,
+            "cosine": 0.9999999985248537,
+            "max_abs": 0.00418853759765625
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 7.90244404559898e-06,
+            "cosine": 0.9999999999695774,
+            "max_abs": 0.0007839202880859375
+          },
+          "ane": {
+            "nrmse": 0.00011615389332221116,
+            "cosine": 0.9999999996184873,
+            "max_abs": 0.0047168731689453125
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 9.145127058730331e-05,
+            "cosine": 0.9999999998309027,
+            "max_abs": 0.0020198822021484375
+          },
+          "ane": {
+            "nrmse": 0.00016084229459752925,
+            "cosine": 0.999999998940959,
+            "max_abs": 0.0044002532958984375
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00011761155323507876,
+            "cosine": 0.9999999995005939,
+            "max_abs": 0.0020503997802734375
+          },
+          "ane": {
+            "nrmse": 0.0001301724679738805,
+            "cosine": 0.9999999972628929,
+            "max_abs": 0.0040187835693359375
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00012002286854526241,
+            "cosine": 0.9999999990276942,
+            "max_abs": 0.001789093017578125
+          },
+          "ane": {
+            "nrmse": 0.00020251091892573827,
+            "cosine": 0.9999999956461167,
+            "max_abs": 0.003818988800048828
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 2.0259099680905047e-05,
+            "cosine": 0.9999999999042618,
+            "max_abs": 0.00153350830078125
+          },
+          "ane": {
+            "nrmse": 0.00014707155490403115,
+            "cosine": 0.9999999993713671,
+            "max_abs": 0.0051860809326171875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 7.111376894618032e-05,
+            "cosine": 0.9999999999290389,
+            "max_abs": 0.0022735595703125
+          },
+          "ane": {
+            "nrmse": 0.00027867143053117113,
+            "cosine": 0.9999999990887425,
+            "max_abs": 0.009075164794921875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 4.132136925381991e-05,
+            "cosine": 0.9999999999383812,
+            "max_abs": 0.0014858245849609375
+          },
+          "ane": {
+            "nrmse": 0.0001947013803093555,
+            "cosine": 0.999999999098908,
+            "max_abs": 0.0059051513671875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 5.809093565312478e-05,
+            "cosine": 0.9999999998720913,
+            "max_abs": 0.0015077590942382812
+          },
+          "ane": {
+            "nrmse": 0.00019162985044213142,
+            "cosine": 0.9999999987177517,
+            "max_abs": 0.004498481750488281
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 1.184002912369615e-05,
+            "cosine": 0.999999999969541,
+            "max_abs": 0.0008907318115234375
+          },
+          "ane": {
+            "nrmse": 0.00013859795734597267,
+            "cosine": 0.9999999995939965,
+            "max_abs": 0.006122589111328125
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 2.651432316005587e-05,
+            "cosine": 0.9999999999026544,
+            "max_abs": 0.001312255859375
+          },
+          "ane": {
+            "nrmse": 7.933250134314185e-05,
+            "cosine": 0.9999999991768581,
+            "max_abs": 0.004222869873046875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 7.62906047848776e-05,
+            "cosine": 0.9999999993064552,
+            "max_abs": 0.0015993118286132812
+          },
+          "ane": {
+            "nrmse": 0.0005803421812332547,
+            "cosine": 0.9999999856198828,
+            "max_abs": 0.008010387420654297
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00014159352162030706,
+            "cosine": 0.9999999996946844,
+            "max_abs": 0.00336456298828125
+          },
+          "ane": {
+            "nrmse": 0.0005247925971921239,
+            "cosine": 0.9999999950082102,
+            "max_abs": 0.012337684631347656
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 7.307624587486762e-05,
+            "cosine": 0.9999999991131742,
+            "max_abs": 0.0025663375854492188
+          },
+          "ane": {
+            "nrmse": 0.0003365479588456821,
+            "cosine": 0.9999999879022095,
+            "max_abs": 0.009202957153320312
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        }
+      ]
+    },
+    {
+      "audio": "jfk-first-5s",
+      "audio_seconds": 5.0,
+      "audio_sha256": "6f7b022b4670ddcad48cf097e3cc60c8ba54bd15d6a73b3ea776cadbf0b8d610",
+      "cpu_transcript": "And so my fellow Americans ask not",
+      "ane_transcript": "And so my fellow Americans ask not",
+      "encoder_vs_cpu": {
+        "nrmse": 0.0005915001282959669,
+        "cosine": 0.9999998251354977,
+        "max_abs": 0.09234499931335449
+      },
+      "encoder_vs_hf": {
+        "nrmse": 0.0007184006893105631,
+        "cosine": 0.9999997420549002,
+        "max_abs": 0.2485291063785553
+      },
+      "cpu_encoder_vs_hf": {
+        "nrmse": 0.00030164444252816575,
+        "cosine": 0.9999999545083067,
+        "max_abs": 0.1561841070652008
+      },
+      "decoder_calls": 8,
+      "all_histories_match": true,
+      "raw_argmax_matches": 8,
+      "maximum_logit_nrmse": 0.0024975493132278806,
+      "logit_checks": [
+        {
+          "nrmse": 0.0024975493132278806,
+          "cosine": 0.9999991272495059,
+          "max_abs": 0.012451648712158203,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0005907480869755959,
+          "cosine": 0.9999998674583955,
+          "max_abs": 0.005536556243896484,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00022449027226552557,
+          "cosine": 0.9999999889270657,
+          "max_abs": 0.00531005859375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0012253944998866075,
+          "cosine": 0.999999758091212,
+          "max_abs": 0.008650779724121094,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00041638315940466296,
+          "cosine": 0.9999999766544276,
+          "max_abs": 0.005981922149658203,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0010383719806907298,
+          "cosine": 0.9999994764983763,
+          "max_abs": 0.004901885986328125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002959210505002006,
+          "cosine": 0.9999999565336148,
+          "max_abs": 0.0034177303314208984,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 8.960628755099533e-05,
+          "cosine": 0.9999999988250574,
+          "max_abs": 0.002384185791015625,
+          "argmax_match": true
+        }
+      ],
+      "maximum_cpu_logit_nrmse_vs_hf": 0.0011764653868009533,
+      "maximum_ane_logit_nrmse_vs_hf": 0.0033312942366399492,
+      "cpu_raw_argmax_matches_hf": 8,
+      "ane_raw_argmax_matches_hf": 8,
+      "hf_logit_checks": [
+        {
+          "cpu": {
+            "nrmse": 0.0008401735280034014,
+            "cosine": 0.99999990080946,
+            "max_abs": 0.004558086395263672
+          },
+          "ane": {
+            "nrmse": 0.0033312942366399492,
+            "cosine": 0.9999984551432812,
+            "max_abs": 0.016356945037841797
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.0011764653868009533,
+            "cosine": 0.9999995915620725,
+            "max_abs": 0.0047686100006103516
+          },
+          "ane": {
+            "nrmse": 0.0016773173725737295,
+            "cosine": 0.9999991364326223,
+            "max_abs": 0.008681774139404297
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 4.816777370763738e-05,
+            "cosine": 0.9999999988605452,
+            "max_abs": 0.0020236968994140625
+          },
+          "ane": {
+            "nrmse": 0.00021805502747477518,
+            "cosine": 0.999999989291899,
+            "max_abs": 0.004398345947265625
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00018877891123606202,
+            "cosine": 0.9999999892126467,
+            "max_abs": 0.0028357505798339844
+          },
+          "ane": {
+            "nrmse": 0.0010886272876289038,
+            "cosine": 0.9999998038848513,
+            "max_abs": 0.008887290954589844
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.000165046543393191,
+            "cosine": 0.9999999944288912,
+            "max_abs": 0.0032241344451904297
+          },
+          "ane": {
+            "nrmse": 0.00031415351717936787,
+            "cosine": 0.9999999768969963,
+            "max_abs": 0.005978584289550781
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.000429002262209519,
+            "cosine": 0.9999999118310015,
+            "max_abs": 0.0024445056915283203
+          },
+          "ane": {
+            "nrmse": 0.0014326904875496403,
+            "cosine": 0.9999990087701981,
+            "max_abs": 0.005876064300537109
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00014036648664255034,
+            "cosine": 0.9999999901533351,
+            "max_abs": 0.001631021499633789
+          },
+          "ane": {
+            "nrmse": 0.0003265533866315967,
+            "cosine": 0.9999999470818743,
+            "max_abs": 0.004004955291748047
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00012157537192418167,
+            "cosine": 0.9999999993941204,
+            "max_abs": 0.001750946044921875
+          },
+          "ane": {
+            "nrmse": 7.274599774994229e-05,
+            "cosine": 0.9999999981999368,
+            "max_abs": 0.0021262168884277344
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        }
+      ]
+    },
+    {
+      "audio": "jfk-repeat",
+      "audio_seconds": 23.0,
+      "audio_sha256": "ac545df0bd5e09a8c49b020bbc7a4c3f39e5836fa69a232f1017d1aa512315e4",
+      "cpu_transcript": "And so my fellow Americans ask not what your country can do for you ask what you can do for your country. And so my fellow Americans ask not what your country can do for you ask what you can do for your country.",
+      "ane_transcript": "And so my fellow Americans ask not what your country can do for you ask what you can do for your country. And so my fellow Americans ask not what your country can do for you ask what you can do for your country.",
+      "encoder_vs_cpu": {
+        "nrmse": 0.0007541675496705951,
+        "cosine": 0.9999997156211149,
+        "max_abs": 0.07774066925048828
+      },
+      "encoder_vs_hf": {
+        "nrmse": 0.0008238886987934383,
+        "cosine": 0.9999996606065754,
+        "max_abs": 0.1590747833251953
+      },
+      "cpu_encoder_vs_hf": {
+        "nrmse": 0.00030599128408433454,
+        "cosine": 0.9999999531850218,
+        "max_abs": 0.08133411407470703
+      },
+      "decoder_calls": 47,
+      "all_histories_match": true,
+      "raw_argmax_matches": 47,
+      "maximum_logit_nrmse": 0.0013563030920061925,
+      "logit_checks": [
+        {
+          "nrmse": 0.00010880876625798093,
+          "cosine": 0.9999999968973564,
+          "max_abs": 0.003658294677734375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00025956334946371186,
+          "cosine": 0.999999989393274,
+          "max_abs": 0.0036177635192871094,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00016689846486725172,
+          "cosine": 0.999999992586956,
+          "max_abs": 0.005299568176269531,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0003560086325197786,
+          "cosine": 0.9999999548776576,
+          "max_abs": 0.005690336227416992,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0004200827603311534,
+          "cosine": 0.9999999756855114,
+          "max_abs": 0.005472421646118164,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00028629316602254897,
+          "cosine": 0.999999981502831,
+          "max_abs": 0.0032962560653686523,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002076824338357536,
+          "cosine": 0.9999999856416045,
+          "max_abs": 0.003567218780517578,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0004167187484074135,
+          "cosine": 0.9999999979974391,
+          "max_abs": 0.009065628051757812,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002032778086750951,
+          "cosine": 0.9999999989230226,
+          "max_abs": 0.0060367584228515625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.001218455447830856,
+          "cosine": 0.9999994925774846,
+          "max_abs": 0.00653529167175293,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 7.669456177873427e-05,
+          "cosine": 0.9999999992821329,
+          "max_abs": 0.0043792724609375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00023924119338605184,
+          "cosine": 0.9999999959407027,
+          "max_abs": 0.005652427673339844,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 9.9547851323701e-05,
+          "cosine": 0.9999999996671831,
+          "max_abs": 0.004360198974609375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 9.125699844471812e-05,
+          "cosine": 0.9999999992409463,
+          "max_abs": 0.0032873153686523438,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0005922028677805512,
+          "cosine": 0.9999999896874996,
+          "max_abs": 0.00746917724609375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 3.9800199313206834e-05,
+          "cosine": 0.9999999992105207,
+          "max_abs": 0.003879547119140625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 7.011510948971714e-05,
+          "cosine": 0.9999999997751432,
+          "max_abs": 0.0033779144287109375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0001824540927366823,
+          "cosine": 0.9999999994100489,
+          "max_abs": 0.0055980682373046875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00019392733572012966,
+          "cosine": 0.9999999989131177,
+          "max_abs": 0.004669189453125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 3.692249212396147e-05,
+          "cosine": 0.9999999996797831,
+          "max_abs": 0.0032825469970703125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 4.630205202813589e-05,
+          "cosine": 0.9999999992955355,
+          "max_abs": 0.0033168792724609375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00012538092278209666,
+          "cosine": 0.9999999925544705,
+          "max_abs": 0.004851341247558594,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 9.87754940295163e-05,
+          "cosine": 0.9999999992764668,
+          "max_abs": 0.00481414794921875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 6.46459679102144e-05,
+          "cosine": 0.9999999987254325,
+          "max_abs": 0.003925323486328125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 3.9172298796836595e-05,
+          "cosine": 0.9999999993078462,
+          "max_abs": 0.002376556396484375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0001528320649865195,
+          "cosine": 0.9999999964329488,
+          "max_abs": 0.0050983428955078125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0007255029770634059,
+          "cosine": 0.9999997459111621,
+          "max_abs": 0.006102085113525391,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0013563030920061925,
+          "cosine": 0.9999992143822837,
+          "max_abs": 0.007222890853881836,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00041733034284464,
+          "cosine": 0.9999999929759718,
+          "max_abs": 0.006363391876220703,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00036790921142812526,
+          "cosine": 0.9999999910870908,
+          "max_abs": 0.005518913269042969,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.000202084215342209,
+          "cosine": 0.9999999989243982,
+          "max_abs": 0.0068511962890625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 8.130476533952653e-05,
+          "cosine": 0.999999999353709,
+          "max_abs": 0.0046138763427734375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00029433437750398856,
+          "cosine": 0.9999999965519837,
+          "max_abs": 0.005116462707519531,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 2.9821526657956085e-05,
+          "cosine": 0.9999999997762784,
+          "max_abs": 0.00223541259765625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 8.945550884033062e-05,
+          "cosine": 0.9999999990522279,
+          "max_abs": 0.003459930419921875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 3.3965530378715594e-05,
+          "cosine": 0.9999999997919885,
+          "max_abs": 0.0029144287109375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00012791314729633592,
+          "cosine": 0.999999999575772,
+          "max_abs": 0.004688262939453125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00043360253432727915,
+          "cosine": 0.9999999955449621,
+          "max_abs": 0.007411956787109375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0001611113286290972,
+          "cosine": 0.9999999987519813,
+          "max_abs": 0.0065937042236328125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 3.8480754879082336e-05,
+          "cosine": 0.9999999995997609,
+          "max_abs": 0.0037364959716796875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002552497446945818,
+          "cosine": 0.9999999978480834,
+          "max_abs": 0.01007843017578125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00015905882923166167,
+          "cosine": 0.9999999980618003,
+          "max_abs": 0.0054264068603515625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 7.307236466421184e-05,
+          "cosine": 0.9999999996856391,
+          "max_abs": 0.004688262939453125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 6.597654402037894e-05,
+          "cosine": 0.9999999990264373,
+          "max_abs": 0.004405975341796875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00017988376230347532,
+          "cosine": 0.9999999974105264,
+          "max_abs": 0.00531005859375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 8.112423466191626e-05,
+          "cosine": 0.9999999993558081,
+          "max_abs": 0.004253387451171875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00010447079547468437,
+          "cosine": 0.9999999985705736,
+          "max_abs": 0.003931999206542969,
+          "argmax_match": true
+        }
+      ],
+      "maximum_cpu_logit_nrmse_vs_hf": 0.0007318585306649823,
+      "maximum_ane_logit_nrmse_vs_hf": 0.0008386283893355382,
+      "cpu_raw_argmax_matches_hf": 47,
+      "ane_raw_argmax_matches_hf": 47,
+      "hf_logit_checks": [
+        {
+          "cpu": {
+            "nrmse": 0.00011527962039620668,
+            "cosine": 0.9999999990712902,
+            "max_abs": 0.0018320083618164062
+          },
+          "ane": {
+            "nrmse": 8.993075745638063e-05,
+            "cosine": 0.9999999964634821,
+            "max_abs": 0.0029821395874023438
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00011242364477171953,
+            "cosine": 0.9999999969993545,
+            "max_abs": 0.0022170543670654297
+          },
+          "ane": {
+            "nrmse": 0.00017937775722736275,
+            "cosine": 0.9999999928094955,
+            "max_abs": 0.0030150413513183594
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00013322367975501066,
+            "cosine": 0.999999998558367,
+            "max_abs": 0.0020780563354492188
+          },
+          "ane": {
+            "nrmse": 0.00011307322358774294,
+            "cosine": 0.9999999936373438,
+            "max_abs": 0.00395965576171875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00018239958627647452,
+            "cosine": 0.9999999910452367,
+            "max_abs": 0.003080606460571289
+          },
+          "ane": {
+            "nrmse": 0.0004662559877852719,
+            "cosine": 0.9999999408994883,
+            "max_abs": 0.006726264953613281
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00018143237354122755,
+            "cosine": 0.9999999952197055,
+            "max_abs": 0.0025844573974609375
+          },
+          "ane": {
+            "nrmse": 0.0005796328066283519,
+            "cosine": 0.9999999622882096,
+            "max_abs": 0.007161051034927368
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00033180519903398494,
+            "cosine": 0.9999999866374434,
+            "max_abs": 0.002312183380126953
+          },
+          "ane": {
+            "nrmse": 0.0002059617879230135,
+            "cosine": 0.9999999817238832,
+            "max_abs": 0.004422187805175781
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 8.451569177670217e-05,
+            "cosine": 0.9999999969494779,
+            "max_abs": 0.0015265941619873047
+          },
+          "ane": {
+            "nrmse": 0.00025576875496153873,
+            "cosine": 0.9999999788939459,
+            "max_abs": 0.004391670227050781
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00010063382020204786,
+            "cosine": 0.9999999998333006,
+            "max_abs": 0.0023403167724609375
+          },
+          "ane": {
+            "nrmse": 0.0003176340005579129,
+            "cosine": 0.9999999985272752,
+            "max_abs": 0.007556915283203125
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 1.7073419085969267e-05,
+            "cosine": 0.9999999998648642,
+            "max_abs": 0.0012607574462890625
+          },
+          "ane": {
+            "nrmse": 0.00020801762032000818,
+            "cosine": 0.9999999988707748,
+            "max_abs": 0.0058536529541015625
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.0005438356639389916,
+            "cosine": 0.9999998926862069,
+            "max_abs": 0.003061532974243164
+          },
+          "ane": {
+            "nrmse": 0.0007584313489668143,
+            "cosine": 0.9999997928643014,
+            "max_abs": 0.0064525604248046875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 4.5551469391440584e-05,
+            "cosine": 0.9999999999381044,
+            "max_abs": 0.00162506103515625
+          },
+          "ane": {
+            "nrmse": 4.683013723032849e-05,
+            "cosine": 0.9999999991568623,
+            "max_abs": 0.003688812255859375
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00011359103291861055,
+            "cosine": 0.9999999995045974,
+            "max_abs": 0.0022802352905273438
+          },
+          "ane": {
+            "nrmse": 0.00034878865896023875,
+            "cosine": 0.9999999938854507,
+            "max_abs": 0.007027626037597656
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 2.3010931507356403e-05,
+            "cosine": 0.9999999999661943,
+            "max_abs": 0.0011768341064453125
+          },
+          "ane": {
+            "nrmse": 7.867636936415348e-05,
+            "cosine": 0.999999999691833,
+            "max_abs": 0.003936767578125
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00010703191700200552,
+            "cosine": 0.999999999781508,
+            "max_abs": 0.0020599365234375
+          },
+          "ane": {
+            "nrmse": 4.5707351713307466e-05,
+            "cosine": 0.9999999992072065,
+            "max_abs": 0.0024328231811523438
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00018538986842144486,
+            "cosine": 0.9999999989821969,
+            "max_abs": 0.0024771690368652344
+          },
+          "ane": {
+            "nrmse": 0.0004125070137566439,
+            "cosine": 0.9999999928590932,
+            "max_abs": 0.006687164306640625
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 3.556400082724493e-05,
+            "cosine": 0.9999999999152104,
+            "max_abs": 0.002193450927734375
+          },
+          "ane": {
+            "nrmse": 5.5216874430841864e-05,
+            "cosine": 0.9999999991003544,
+            "max_abs": 0.0044116973876953125
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 4.1223629957089255e-05,
+            "cosine": 0.9999999999620638,
+            "max_abs": 0.00171661376953125
+          },
+          "ane": {
+            "nrmse": 0.0001094653339259038,
+            "cosine": 0.9999999997461753,
+            "max_abs": 0.0043621063232421875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 1.1573788334288398e-05,
+            "cosine": 0.9999999999580831,
+            "max_abs": 0.00086212158203125
+          },
+          "ane": {
+            "nrmse": 0.00018993624239546894,
+            "cosine": 0.9999999993102772,
+            "max_abs": 0.0059490203857421875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 2.552110787025077e-05,
+            "cosine": 0.9999999998939995,
+            "max_abs": 0.0011453628540039062
+          },
+          "ane": {
+            "nrmse": 0.00021524496025639235,
+            "cosine": 0.9999999987162126,
+            "max_abs": 0.0051784515380859375
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 7.842528097684639e-06,
+            "cosine": 0.9999999999762492,
+            "max_abs": 0.0008373260498046875
+          },
+          "ane": {
+            "nrmse": 3.4649502391722326e-05,
+            "cosine": 0.9999999996674851,
+            "max_abs": 0.0032749176025390625
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 1.80485971544869e-05,
+            "cosine": 0.9999999998891923,
+            "max_abs": 0.0015087127685546875
+          },
+          "ane": {
+            "nrmse": 4.2141105117310786e-05,
+            "cosine": 0.9999999992549481,
+            "max_abs": 0.0036754608154296875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.000125366691702803,
+            "cosine": 0.9999999982156172,
+            "max_abs": 0.002227306365966797
+          },
+          "ane": {
+            "nrmse": 0.00014955182135467632,
+            "cosine": 0.9999999921313751,
+            "max_abs": 0.004153251647949219
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 2.716862556181616e-05,
+            "cosine": 0.9999999999000266,
+            "max_abs": 0.0017681121826171875
+          },
+          "ane": {
+            "nrmse": 0.00011980020083116531,
+            "cosine": 0.9999999993623259,
+            "max_abs": 0.00487518310546875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 2.938420039352902e-05,
+            "cosine": 0.9999999997231483,
+            "max_abs": 0.0017499923706054688
+          },
+          "ane": {
+            "nrmse": 7.591949879506115e-05,
+            "cosine": 0.9999999987984906,
+            "max_abs": 0.0039958953857421875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00011053145608929886,
+            "cosine": 0.9999999997180831,
+            "max_abs": 0.0023021697998046875
+          },
+          "ane": {
+            "nrmse": 0.00012777403714559884,
+            "cosine": 0.9999999990617029,
+            "max_abs": 0.003926277160644531
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00011437982423569639,
+            "cosine": 0.9999999994338735,
+            "max_abs": 0.00240325927734375
+          },
+          "ane": {
+            "nrmse": 8.647154008526727e-05,
+            "cosine": 0.9999999964245561,
+            "max_abs": 0.00426483154296875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00025155155553560605,
+            "cosine": 0.9999999699395793,
+            "max_abs": 0.001819312572479248
+          },
+          "ane": {
+            "nrmse": 0.0008386283893355382,
+            "cosine": 0.9999996665831351,
+            "max_abs": 0.006094813346862793
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.0007318585306649823,
+            "cosine": 0.999999777525902,
+            "max_abs": 0.002739429473876953
+          },
+          "ane": {
+            "nrmse": 0.0007264587001448787,
+            "cosine": 0.9999997598496242,
+            "max_abs": 0.005677223205566406
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.00011248557656406296,
+            "cosine": 0.9999999994587082,
+            "max_abs": 0.0017905235290527344
+          },
+          "ane": {
+            "nrmse": 0.00031345295034946707,
+            "cosine": 0.9999999936880377,
+            "max_abs": 0.005774974822998047
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 6.0718826330609526e-05,
+            "cosine": 0.9999999993013341,
+            "max_abs": 0.001459360122680664
+          },
+          "ane": {
+            "nrmse": 0.00032208550193867547,
+            "cosine": 0.9999999916319283,
+            "max_abs": 0.005382537841796875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 5.375799462141998e-05,
+            "cosine": 0.9999999999286959,
+            "max_abs": 0.001827239990234375
+          },
+          "ane": {
+            "nrmse": 0.00025466680026948004,
+            "cosine": 0.9999999986015591,
+            "max_abs": 0.007863998413085938
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 2.2891682587684714e-05,
+            "cosine": 0.9999999999263065,
+            "max_abs": 0.0014438629150390625
+          },
+          "ane": {
+            "nrmse": 9.971551461275011e-05,
+            "cosine": 0.9999999992907785,
+            "max_abs": 0.00492095947265625
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 5.305294873116216e-05,
+            "cosine": 0.9999999994345564,
+            "max_abs": 0.0017786026000976562
+          },
+          "ane": {
+            "nrmse": 0.00025696658383532944,
+            "cosine": 0.9999999961102793,
+            "max_abs": 0.0052642822265625
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 1.1942972879709633e-05,
+            "cosine": 0.9999999999747877,
+            "max_abs": 0.0008716583251953125
+          },
+          "ane": {
+            "nrmse": 2.5384854212890004e-05,
+            "cosine": 0.9999999997429904,
+            "max_abs": 0.002262115478515625
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 2.416682765916016e-05,
+            "cosine": 0.9999999998934755,
+            "max_abs": 0.001354217529296875
+          },
+          "ane": {
+            "nrmse": 0.00010761031612704283,
+            "cosine": 0.9999999989542141,
+            "max_abs": 0.0037641525268554688
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 1.1576722108029566e-05,
+            "cosine": 0.9999999999749787,
+            "max_abs": 0.00078582763671875
+          },
+          "ane": {
+            "nrmse": 4.229153449628333e-05,
+            "cosine": 0.9999999997654156,
+            "max_abs": 0.00315093994140625
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 5.5194187747595764e-05,
+            "cosine": 0.9999999999335396,
+            "max_abs": 0.0019092559814453125
+          },
+          "ane": {
+            "nrmse": 7.659368523767227e-05,
+            "cosine": 0.9999999995576558,
+            "max_abs": 0.0035419464111328125
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 0.0001979812700630575,
+            "cosine": 0.9999999993089875,
+            "max_abs": 0.0029191970825195312
+          },
+          "ane": {
+            "nrmse": 0.0002401975424769698,
+            "cosine": 0.9999999973337991,
+            "max_abs": 0.0052814483642578125
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 2.021310079785166e-05,
+            "cosine": 0.9999999999443436,
+            "max_abs": 0.00130462646484375
+          },
+          "ane": {
+            "nrmse": 0.00014472158689593165,
+            "cosine": 0.9999999987656943,
+            "max_abs": 0.0070133209228515625
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 2.058959326536058e-05,
+            "cosine": 0.9999999999779091,
+            "max_abs": 0.001129150390625
+          },
+          "ane": {
+            "nrmse": 2.9278426571414737e-05,
+            "cosine": 0.9999999995931238,
+            "max_abs": 0.00342559814453125
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 1.0051390416326542e-05,
+            "cosine": 0.9999999999556843,
+            "max_abs": 0.00093841552734375
+          },
+          "ane": {
+            "nrmse": 0.0002588985706560618,
+            "cosine": 0.9999999977849551,
+            "max_abs": 0.010309219360351562
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 1.2360720992871675e-05,
+            "cosine": 0.9999999999251254,
+            "max_abs": 0.000919342041015625
+          },
+          "ane": {
+            "nrmse": 0.00015766373057068346,
+            "cosine": 0.9999999980285601,
+            "max_abs": 0.005389213562011719
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 7.468652779415008e-06,
+            "cosine": 0.9999999999801523,
+            "max_abs": 0.000652313232421875
+          },
+          "ane": {
+            "nrmse": 7.709104086413453e-05,
+            "cosine": 0.9999999996672966,
+            "max_abs": 0.004730224609375
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 1.4980694641164192e-05,
+            "cosine": 0.9999999999229513,
+            "max_abs": 0.0014400482177734375
+          },
+          "ane": {
+            "nrmse": 7.123631830967813e-05,
+            "cosine": 0.9999999991120296,
+            "max_abs": 0.0043621063232421875
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 2.2882948046769123e-05,
+            "cosine": 0.9999999997410043,
+            "max_abs": 0.001308441162109375
+          },
+          "ane": {
+            "nrmse": 0.00017676812167433546,
+            "cosine": 0.9999999975772776,
+            "max_abs": 0.0058040618896484375
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 4.254380165491145e-05,
+            "cosine": 0.9999999999190243,
+            "max_abs": 0.0016298294067382812
+          },
+          "ane": {
+            "nrmse": 0.00011986029302152372,
+            "cosine": 0.9999999992401979,
+            "max_abs": 0.0052490234375
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        },
+        {
+          "cpu": {
+            "nrmse": 7.992652151453878e-05,
+            "cosine": 0.9999999995268248,
+            "max_abs": 0.002353668212890625
+          },
+          "ane": {
+            "nrmse": 0.00017571953970462937,
+            "cosine": 0.9999999979297016,
+            "max_abs": 0.0049076080322265625
+          },
+          "cpu_argmax_match": true,
+          "ane_argmax_match": true
+        }
+      ]
+    }
+  ],
+  "backends": {
+    "cpu_cpu": {
+      "runs": [
+        {
+          "phase": "measure",
+          "index": 1,
+          "wall_ms": 402.165416,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 4.63,
+          "sample_ms": 10.86,
+          "sample_units": 1,
+          "encode_ms": 290.85,
+          "encode_units": 1,
+          "decode_ms": 90.43,
+          "decode_units": 24,
+          "batchd_ms": 4.82,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 95.25,
+          "decode_ms_per_token": 3.767916666666667,
+          "rtf": 0.036560492363636364,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 2,
+          "wall_ms": 401.697043,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 4.33,
+          "sample_ms": 10.85,
+          "sample_units": 1,
+          "encode_ms": 290.79,
+          "encode_units": 1,
+          "decode_ms": 90.57,
+          "decode_units": 24,
+          "batchd_ms": 4.52,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 95.08999999999999,
+          "decode_ms_per_token": 3.7737499999999997,
+          "rtf": 0.036517913,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 3,
+          "wall_ms": 406.118108,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 4.39,
+          "sample_ms": 10.79,
+          "sample_units": 1,
+          "encode_ms": 287.92,
+          "encode_units": 1,
+          "decode_ms": 97.57,
+          "decode_units": 24,
+          "batchd_ms": 4.87,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 102.44,
+          "decode_ms_per_token": 4.065416666666667,
+          "rtf": 0.036919828,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 4,
+          "wall_ms": 412.29629,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 4.27,
+          "sample_ms": 11.09,
+          "sample_units": 1,
+          "encode_ms": 298.89,
+          "encode_units": 1,
+          "decode_ms": 92.46,
+          "decode_units": 24,
+          "batchd_ms": 5.01,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 97.47,
+          "decode_ms_per_token": 3.8524999999999996,
+          "rtf": 0.03748148090909091,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 5,
+          "wall_ms": 412.928079,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 4.22,
+          "sample_ms": 10.8,
+          "sample_units": 1,
+          "encode_ms": 302.6,
+          "encode_units": 1,
+          "decode_ms": 90.36,
+          "decode_units": 24,
+          "batchd_ms": 4.39,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 94.75,
+          "decode_ms_per_token": 3.765,
+          "rtf": 0.03753891627272728,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 1,
+          "wall_ms": 441.194209,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.95,
+          "sample_ms": 10.82,
+          "sample_units": 1,
+          "encode_ms": 329.22,
+          "encode_units": 1,
+          "decode_ms": 90.15,
+          "decode_units": 24,
+          "batchd_ms": 4.5,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 94.65,
+          "decode_ms_per_token": 3.75625,
+          "rtf": 0.040108564454545456,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 2,
+          "wall_ms": 422.052874,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 6.3,
+          "sample_ms": 10.81,
+          "sample_units": 1,
+          "encode_ms": 308.48,
+          "encode_units": 1,
+          "decode_ms": 91.14,
+          "decode_units": 24,
+          "batchd_ms": 4.77,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 95.91,
+          "decode_ms_per_token": 3.7975,
+          "rtf": 0.03836844309090909,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 3,
+          "wall_ms": 436.957769,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 4.98,
+          "sample_ms": 10.81,
+          "sample_units": 1,
+          "encode_ms": 324.84,
+          "encode_units": 1,
+          "decode_ms": 91.15,
+          "decode_units": 24,
+          "batchd_ms": 4.58,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 95.73,
+          "decode_ms_per_token": 3.797916666666667,
+          "rtf": 0.039723433545454545,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 4,
+          "wall_ms": 446.775727,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.1,
+          "sample_ms": 10.83,
+          "sample_units": 1,
+          "encode_ms": 332.01,
+          "encode_units": 1,
+          "decode_ms": 93.32,
+          "decode_units": 24,
+          "batchd_ms": 4.9,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 98.22,
+          "decode_ms_per_token": 3.888333333333333,
+          "rtf": 0.040615975181818184,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 5,
+          "wall_ms": 469.091049,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 4.31,
+          "sample_ms": 10.82,
+          "sample_units": 1,
+          "encode_ms": 356.35,
+          "encode_units": 1,
+          "decode_ms": 91.22,
+          "decode_units": 24,
+          "batchd_ms": 5.82,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 97.03999999999999,
+          "decode_ms_per_token": 3.8008333333333333,
+          "rtf": 0.04264464081818182,
+          "round": 2
+        }
+      ],
+      "warmups": [
+        {
+          "phase": "warmup",
+          "index": 1,
+          "wall_ms": 400.203383,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 4.84,
+          "sample_ms": 10.93,
+          "sample_units": 1,
+          "encode_ms": 286.71,
+          "encode_units": 1,
+          "decode_ms": 92.48,
+          "decode_units": 24,
+          "batchd_ms": 4.62,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 97.10000000000001,
+          "decode_ms_per_token": 3.8533333333333335,
+          "rtf": 0.03638212572727272,
+          "round": 1
+        },
+        {
+          "phase": "warmup",
+          "index": 2,
+          "wall_ms": 394.377408,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 4.3,
+          "sample_ms": 10.82,
+          "sample_units": 1,
+          "encode_ms": 283.66,
+          "encode_units": 1,
+          "decode_ms": 90.35,
+          "decode_units": 24,
+          "batchd_ms": 4.69,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 95.03999999999999,
+          "decode_ms_per_token": 3.764583333333333,
+          "rtf": 0.035852491636363636,
+          "round": 1
+        },
+        {
+          "phase": "warmup",
+          "index": 1,
+          "wall_ms": 491.376704,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.61,
+          "sample_ms": 14.05,
+          "sample_units": 1,
+          "encode_ms": 365.61,
+          "encode_units": 1,
+          "decode_ms": 100.27,
+          "decode_units": 24,
+          "batchd_ms": 5.07,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 105.34,
+          "decode_ms_per_token": 4.1779166666666665,
+          "rtf": 0.04467060945454546,
+          "round": 2
+        },
+        {
+          "phase": "warmup",
+          "index": 2,
+          "wall_ms": 475.071148,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.33,
+          "sample_ms": 13.74,
+          "sample_units": 1,
+          "encode_ms": 350.57,
+          "encode_units": 1,
+          "decode_ms": 99.12,
+          "decode_units": 24,
+          "batchd_ms": 5.58,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 104.7,
+          "decode_ms_per_token": 4.13,
+          "rtf": 0.04318828618181818,
+          "round": 2
+        }
+      ],
+      "median": {
+        "encode_ms": 305.54,
+        "decoder_ms": 95.82,
+        "decode_ms": 91.14500000000001,
+        "batchd_ms": 4.795,
+        "prompt_ms": 0.0,
+        "decode_ms_per_token": 3.7977083333333335,
+        "wall_ms": 417.4904765,
+        "rtf": 0.03795367968181818
+      },
+      "wall_range_ms": [
+        401.697043,
+        469.091049
+      ]
+    },
+    "ane_projections_cpu": {
+      "runs": [
+        {
+          "phase": "measure",
+          "index": 1,
+          "wall_ms": 471.680371,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.34,
+          "sample_ms": 13.54,
+          "sample_units": 1,
+          "encode_ms": 346.44,
+          "encode_units": 1,
+          "decode_ms": 99.67,
+          "decode_units": 24,
+          "batchd_ms": 6.03,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 105.7,
+          "decode_ms_per_token": 4.152916666666667,
+          "rtf": 0.042880033727272726,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 2,
+          "wall_ms": 521.382535,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.35,
+          "sample_ms": 13.53,
+          "sample_units": 1,
+          "encode_ms": 403.0,
+          "encode_units": 1,
+          "decode_ms": 93.43,
+          "decode_units": 24,
+          "batchd_ms": 5.4,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 98.83000000000001,
+          "decode_ms_per_token": 3.892916666666667,
+          "rtf": 0.04739841227272727,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 3,
+          "wall_ms": 467.712554,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.33,
+          "sample_ms": 13.5,
+          "sample_units": 1,
+          "encode_ms": 347.96,
+          "encode_units": 1,
+          "decode_ms": 94.02,
+          "decode_units": 24,
+          "batchd_ms": 6.23,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 100.25,
+          "decode_ms_per_token": 3.9175,
+          "rtf": 0.04251932309090909,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 4,
+          "wall_ms": 456.875767,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.32,
+          "sample_ms": 13.51,
+          "sample_units": 1,
+          "encode_ms": 337.91,
+          "encode_units": 1,
+          "decode_ms": 94.56,
+          "decode_units": 24,
+          "batchd_ms": 4.9,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 99.46000000000001,
+          "decode_ms_per_token": 3.94,
+          "rtf": 0.041534160636363636,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 5,
+          "wall_ms": 468.63905,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 8.02,
+          "sample_ms": 13.54,
+          "sample_units": 1,
+          "encode_ms": 345.15,
+          "encode_units": 1,
+          "decode_ms": 96.4,
+          "decode_units": 24,
+          "batchd_ms": 4.85,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 101.25,
+          "decode_ms_per_token": 4.016666666666667,
+          "rtf": 0.04260355,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 1,
+          "wall_ms": 472.208661,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.34,
+          "sample_ms": 13.55,
+          "sample_units": 1,
+          "encode_ms": 348.86,
+          "encode_units": 1,
+          "decode_ms": 98.92,
+          "decode_units": 24,
+          "batchd_ms": 4.84,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 103.76,
+          "decode_ms_per_token": 4.121666666666667,
+          "rtf": 0.04292806009090909,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 2,
+          "wall_ms": 463.162366,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.32,
+          "sample_ms": 13.5,
+          "sample_units": 1,
+          "encode_ms": 342.15,
+          "encode_units": 1,
+          "decode_ms": 96.57,
+          "decode_units": 24,
+          "batchd_ms": 4.95,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 101.52,
+          "decode_ms_per_token": 4.02375,
+          "rtf": 0.04210566963636364,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 3,
+          "wall_ms": 467.657805,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.19,
+          "sample_ms": 13.51,
+          "sample_units": 1,
+          "encode_ms": 349.14,
+          "encode_units": 1,
+          "decode_ms": 94.1,
+          "decode_units": 24,
+          "batchd_ms": 5.02,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 99.11999999999999,
+          "decode_ms_per_token": 3.920833333333333,
+          "rtf": 0.04251434590909091,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 4,
+          "wall_ms": 470.193211,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.19,
+          "sample_ms": 13.57,
+          "sample_units": 1,
+          "encode_ms": 343.6,
+          "encode_units": 1,
+          "decode_ms": 100.92,
+          "decode_units": 24,
+          "batchd_ms": 6.15,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 107.07000000000001,
+          "decode_ms_per_token": 4.205,
+          "rtf": 0.042744837363636365,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 5,
+          "wall_ms": 460.592793,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.2,
+          "sample_ms": 13.54,
+          "sample_units": 1,
+          "encode_ms": 339.82,
+          "encode_units": 1,
+          "decode_ms": 95.79,
+          "decode_units": 24,
+          "batchd_ms": 5.56,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 101.35000000000001,
+          "decode_ms_per_token": 3.9912500000000004,
+          "rtf": 0.04187207209090909,
+          "round": 2
+        }
+      ],
+      "warmups": [
+        {
+          "phase": "warmup",
+          "index": 1,
+          "wall_ms": 483.686611,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.61,
+          "sample_ms": 13.54,
+          "sample_units": 1,
+          "encode_ms": 365.27,
+          "encode_units": 1,
+          "decode_ms": 93.82,
+          "decode_units": 24,
+          "batchd_ms": 4.73,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 98.55,
+          "decode_ms_per_token": 3.9091666666666662,
+          "rtf": 0.04397151009090909,
+          "round": 1
+        },
+        {
+          "phase": "warmup",
+          "index": 2,
+          "wall_ms": 462.9532,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.28,
+          "sample_ms": 13.49,
+          "sample_units": 1,
+          "encode_ms": 342.93,
+          "encode_units": 1,
+          "decode_ms": 94.3,
+          "decode_units": 24,
+          "batchd_ms": 6.28,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 100.58,
+          "decode_ms_per_token": 3.9291666666666667,
+          "rtf": 0.042086654545454544,
+          "round": 1
+        },
+        {
+          "phase": "warmup",
+          "index": 1,
+          "wall_ms": 483.941152,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.52,
+          "sample_ms": 13.58,
+          "sample_units": 1,
+          "encode_ms": 364.15,
+          "encode_units": 1,
+          "decode_ms": 95.13,
+          "decode_units": 24,
+          "batchd_ms": 4.83,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 99.96,
+          "decode_ms_per_token": 3.9637499999999997,
+          "rtf": 0.04399465018181818,
+          "round": 2
+        },
+        {
+          "phase": "warmup",
+          "index": 2,
+          "wall_ms": 478.331468,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 8.8,
+          "sample_ms": 13.61,
+          "sample_units": 1,
+          "encode_ms": 344.6,
+          "encode_units": 1,
+          "decode_ms": 105.59,
+          "decode_units": 24,
+          "batchd_ms": 5.07,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 110.66,
+          "decode_ms_per_token": 4.399583333333333,
+          "rtf": 0.043484678909090906,
+          "round": 2
+        }
+      ],
+      "median": {
+        "encode_ms": 345.79499999999996,
+        "decoder_ms": 101.30000000000001,
+        "decode_ms": 96.095,
+        "batchd_ms": 5.21,
+        "prompt_ms": 0.0,
+        "decode_ms_per_token": 4.003958333333333,
+        "wall_ms": 468.175802,
+        "rtf": 0.042561436545454544
+      },
+      "wall_range_ms": [
+        456.875767,
+        521.382535
+      ]
+    }
+  },
+  "binary_sha256": "57d1b3296c6c70ae657a0796fecd5bc8f40eaa20ba5a52cb930c7fa9b0bfaf0f",
+  "driver_sha256": "ea8b8f8430a0c945022aaa95455086f3e7579f5c8c10985e35842f09786a5487",
+  "library_sha256": {
+    "libwhisper.so": "4a415260b6b173105cd7ce9d5688e178b556f05d34609c0139410e98a8c193e6",
+    "libggml.so": "f115c4bb1cd6d3ba5bfc2e1540124a2182b44a4e4b3f78b846cd5b4b4eb737cf",
+    "libggml-cpu.so": "c03462fd1904248d30dd61678735eaa52899956e7d83b5fb9a107a5d173e2587",
+    "libggml-base.so": "9cd337348f73d79454d2818813b1c563b06b2f758827af99491b592dbb9bf928"
+  },
+  "source_sha256": {
+    "whisper/asahi_encoder.h": "6457df1dcc91d6298afb2f09fd2b4aeee4967d28f93c57312875c35645c15d36",
+    "whisper/asahi_encoder.cpp": "7372e24fb0afc1c209a4bc228eebc7073535343c6d136fc3d6977db93d915dd8",
+    "whisper/scripts/prepare_asahi.py": "195dcf99c6ee966a447adc0e1535f1fba526068ca517c6cc6b80ed942e61116a",
+    "whisper/scripts/benchmark_asahi.py": "a6ef826bbcf846198f6cce818c55470daa93d9a0e54d21b0d5b54e328505ed60",
+    "whisper/scripts/benchmark_whisper.cpp": "38dff66525e25391e0fa61dce384e3af91a045ef125e213537bec1e6d482f3dd",
+    "whisper/scripts/verify_asahi_matrices.py": "ddfa9e0a0ffa5f362b73a366820fdf84a50f5d98e9724d030945514fcf743897",
+    "qwen35/ane_matmul.c": "9e705d4dee4e73f51150c6b193c3dfd0b5554feebd32f8a2539b84e85cda196f",
+    "qwen35/ane_matmul.h": "4b4743921c7906797aff79942adadb749c4bf322bbadb6fad81ef96ebbf8973d",
+    "qwen35/linear_template.h": "b7806029cc215b8a70ff3e14d4dd188988a49b24831b4909de82aea6e0e4d680",
+    "whisper/vendor/whisper-asahi/src/whisper.cpp": "19065445a793b76236f83853e018928eedc1384c1ae8a158484e6b2715062c5d",
+    "whisper/vendor/whisper-asahi/ggml/src/ggml-cpu/simd-mappings.h": "f83b0de9f5dfff92092c2bab9ec718450884dde77d0f9809f03a62e053d4ff88",
+    "whisper/vendor/whisper-asahi/ggml/src/ggml-cpu/llamafile/sgemm.cpp": "6d35a9d1882cd9ed0e7f31e94f9a005f50816f659568d3984cf97e0db58a7981",
+    "whisper/vendor/whisper-asahi/ggml/src/ggml-cpu/simd-gemm.h": "41763b5f5c39bfc097d75a17b9d8192a705c39de11c55cb3ba0f40f20b2f0c97",
+    "whisper/vendor/whisper-asahi/src/CMakeLists.txt": "3715cc91a3ffb4ab76438ff0693592fcaaab14378b83ab60ce7c6feaf84d6b36"
+  },
+  "artifacts": {
+    "jfk.wav": "d7d4e74b8a333ed02186008bc109a1b1a19d16da668bd56e785d80d69a16a72f",
+    "jfk-hf-encoder.npy": "d1fb3b1170e7dacba2caa346df036719c3b898222e9be568c7b47a926f385b95",
+    "jfk-first-5s.wav": "6f7b022b4670ddcad48cf097e3cc60c8ba54bd15d6a73b3ea776cadbf0b8d610",
+    "jfk-first-5s-hf-encoder.npy": "9f2630cb15c2119270ce74ac5b02ece15f2acc5a311ce97d7c56b41559364cb4",
+    "jfk-repeat.wav": "ac545df0bd5e09a8c49b020bbc7a4c3f39e5836fa69a232f1017d1aa512315e4",
+    "jfk-repeat-hf-encoder.npy": "cd0cb9cbf0c0e7b788a517dbdd1c81d2a93fb1a8c05e7c3ab4d6b2fcf8c267cf",
+    "driver-build.log": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "audio.f32": "ebd52851100536db02d12c49fddd010372dcdc70243562e057553d476b706ae0",
+    "cpu_cpu-1.log": "c107c2d102c02639feb72c426170f9b0d123e55391550789a0a4ca2ed714ca2d",
+    "ane_projections_cpu-1.log": "47cc5d7b3a25f7054840cfb2142e97551e173d4a9681d1ada1f667d54a055cfa",
+    "ane_projections_cpu-2.log": "bb47681104aadc4bc30b45da2eb9f90e94bece3e7e3f1b81909dc855594f544d",
+    "cpu_cpu-2.log": "76177a0b047273e895c327969b9e077e0201d9ec56e26ff23466b2bfd231868b",
+    "jfk-cpu/mel.f32": "179e2757da689a12be496abdb62fe07f1d8455b0e60398905e18485d01d4593a",
+    "jfk-cpu/encoder.f32": "c9c9eadc4cb481f6542b2b832e30737ee0f2fe39aa929a7a2d25b11fde37aaf4",
+    "jfk-cpu/logits.bin": "415dc85c3770b97a4d20d29dbc23f6a6aee1ed43ab632bce25ecee387d398a18",
+    "jfk-cpu/transcript.txt": "26bdbc43c1f6d8bbccbc1570582316cb428a9a64ade77ab4650361f7b7b0519d",
+    "jfk-cpu/run.log": "a818dc6bb7fea84af34af8062c20003010136aad7557d2d267665929cdcaa218",
+    "jfk-ane/mel.f32": "179e2757da689a12be496abdb62fe07f1d8455b0e60398905e18485d01d4593a",
+    "jfk-ane/encoder.f32": "028c461842d62c5cd8a5fd24d939d1db840bc2c71db7fc961a688169ad70a547",
+    "jfk-ane/logits.bin": "2e742144dc4c6fb3c09ff2c083954acc828e8199658c253f0285190f37bfda12",
+    "jfk-ane/transcript.txt": "26bdbc43c1f6d8bbccbc1570582316cb428a9a64ade77ab4650361f7b7b0519d",
+    "jfk-ane/run.log": "7dd35e12bb4463777473dd1dcddffe49ca48f8bc7845d597ac26945e67aaa13d",
+    "jfk-first-5s-cpu/mel.f32": "7d4878cd9375e3848b62b4849e8c2ddda2257ba122bb2786eb14266ce2bebe8b",
+    "jfk-first-5s-cpu/encoder.f32": "1ebd9eaaa1278d5027b089f00ec1c3a57a02fd75914c31530b68dab0e643e569",
+    "jfk-first-5s-cpu/logits.bin": "2f71f3e1c28634b01ef1d5f5dd64a440b78824788ff05178d335f82a57a2ba81",
+    "jfk-first-5s-cpu/transcript.txt": "0716546790e08c1346d651a0e53b4619f6ba11ccbdc9896a68c8c25f15b9edc0",
+    "jfk-first-5s-cpu/run.log": "7741c6cb99b86a3b3210ca9f4c6543e8bdd15a87f56b8f1b6945570c126aead2",
+    "jfk-first-5s-ane/mel.f32": "7d4878cd9375e3848b62b4849e8c2ddda2257ba122bb2786eb14266ce2bebe8b",
+    "jfk-first-5s-ane/encoder.f32": "987c24c075b1230ffb0f7da8aa1352e9f580a7e4576623b01f71f83bb80b35bf",
+    "jfk-first-5s-ane/logits.bin": "d29e83167c0d73d01e0b5a99ac29bc832d03cd790435daf82aae0f804373c043",
+    "jfk-first-5s-ane/transcript.txt": "0716546790e08c1346d651a0e53b4619f6ba11ccbdc9896a68c8c25f15b9edc0",
+    "jfk-first-5s-ane/run.log": "4d744d03396945b294058fb5e3e17f3f4f1f7f3f6752c88ba85183b7846e8ed9",
+    "jfk-repeat-cpu/mel.f32": "f552eae2127ba9eb456e7e0399f6d08f435622195300a71c96c4a2b281dc8603",
+    "jfk-repeat-cpu/encoder.f32": "a82042792acd0d5a53226f11ae29e4f05f2a81db4cf3170c565030469897a28e",
+    "jfk-repeat-cpu/logits.bin": "515d058fe761675e7712b248b7765ad23e8a6691a827ab020e3f905409ccbc94",
+    "jfk-repeat-cpu/transcript.txt": "cb406265f1f90e8569a094f738a0c8dd91619355ed9a62b3b3a3d955a84d04f8",
+    "jfk-repeat-cpu/run.log": "b1bdd61b3df33a3daf82aa3d992ff1679fc6b92c15714ddb2d9e1dfe078bb23c",
+    "jfk-repeat-ane/mel.f32": "f552eae2127ba9eb456e7e0399f6d08f435622195300a71c96c4a2b281dc8603",
+    "jfk-repeat-ane/encoder.f32": "47b910c7447ec03c38176543820c0074b55ac3ac8be1afc1a3f2fea4d543a026",
+    "jfk-repeat-ane/logits.bin": "b8d3d7aa2f026374509ff54817d3649ec30fb14736975d6dc1c901bd2006c092",
+    "jfk-repeat-ane/transcript.txt": "cb406265f1f90e8569a094f738a0c8dd91619355ed9a62b3b3a3d955a84d04f8",
+    "jfk-repeat-ane/run.log": "4dd17b9ac03d73732a6474d2814335e41cf21b3f1666dc1f99e694b1bfb4b8da"
+  }
+}

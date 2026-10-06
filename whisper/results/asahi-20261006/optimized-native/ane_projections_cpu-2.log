@@ -1,0 +1,133 @@
+BENCH_RESULT	warmup	1	483.941152	 And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.
+BENCH_RESULT	warmup	2	478.331468	 And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.
+BENCH_RESULT	measure	1	472.208661	 And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.
+BENCH_RESULT	measure	2	463.162366	 And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.
+BENCH_RESULT	measure	3	467.657805	 And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.
+BENCH_RESULT	measure	4	470.193211	 And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.
+BENCH_RESULT	measure	5	460.592793	 And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.
+
+whisper_init_from_file_with_params_no_state: loading model from '/home/asahi/ane/whisper/models/hf-ggml/ggml-model.bin'
+whisper_init_with_params_no_state: use gpu    = 0
+whisper_init_with_params_no_state: flash attn = 1
+whisper_init_with_params_no_state: gpu_device = 0
+whisper_init_with_params_no_state: dtw        = 0
+whisper_init_with_params_no_state: devices    = 1
+whisper_init_with_params_no_state: backends   = 1
+whisper_model_load: loading model
+whisper_model_load: n_vocab       = 51864
+whisper_model_load: n_audio_ctx   = 1500
+whisper_model_load: n_audio_state = 384
+whisper_model_load: n_audio_head  = 6
+whisper_model_load: n_audio_layer = 4
+whisper_model_load: n_text_ctx    = 448
+whisper_model_load: n_text_state  = 384
+whisper_model_load: n_text_head   = 6
+whisper_model_load: n_text_layer  = 4
+whisper_model_load: n_mels        = 80
+whisper_model_load: ftype         = 1
+whisper_model_load: qntvr         = 0
+whisper_model_load: type          = 1 (tiny)
+whisper_model_load: adding 1607 extra tokens
+whisper_model_load: n_langs       = 99
+whisper_model_load:          CPU total size =    77.11 MB
+whisper_model_load: model size    =   77.11 MB
+whisper_backend_init_gpu: no GPU found
+whisper_init_state: kv self size  =    6.29 MB
+whisper_init_state: kv cross size =   18.87 MB
+whisper_init_state: kv pad  size  =    4.72 MB
+whisper_init_state: compute buffer (conv)   =   13.21 MB
+ASAHI_ANE ready: encoder dense projections; CPU conv/attention/decoder
+whisper_init_state: compute buffer (encode) =   17.72 MB
+whisper_init_state: compute buffer (cross)  =    3.89 MB
+whisper_init_state: compute buffer (decode) =   95.91 MB
+BENCH_BEGIN	warmup	1
+ASAHI_ANE encoder: projections=24 submissions=1128 plans=24 replicas=1
+
+whisper_print_timings:     load time =    37.65 ms
+whisper_print_timings:     fallbacks =   0 p /   0 h
+whisper_print_timings:      mel time =     5.52 ms
+whisper_print_timings:   sample time =    13.58 ms /     1 runs (    13.58 ms per run)
+whisper_print_timings:   encode time =   364.15 ms /     1 runs (   364.15 ms per run)
+whisper_print_timings:   decode time =    95.13 ms /    24 runs (     3.96 ms per run)
+whisper_print_timings:   batchd time =     4.83 ms /     2 runs (     2.42 ms per run)
+whisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)
+whisper_print_timings:    total time =   483.94 ms
+BENCH_END	warmup	1
+BENCH_BEGIN	warmup	2
+ASAHI_ANE encoder: projections=24 submissions=1128 plans=24 replicas=1
+
+whisper_print_timings:     load time =    37.65 ms
+whisper_print_timings:     fallbacks =   0 p /   0 h
+whisper_print_timings:      mel time =     8.80 ms
+whisper_print_timings:   sample time =    13.61 ms /     1 runs (    13.61 ms per run)
+whisper_print_timings:   encode time =   344.60 ms /     1 runs (   344.60 ms per run)
+whisper_print_timings:   decode time =   105.59 ms /    24 runs (     4.40 ms per run)
+whisper_print_timings:   batchd time =     5.07 ms /     2 runs (     2.53 ms per run)
+whisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)
+whisper_print_timings:    total time =   478.33 ms
+BENCH_END	warmup	2
+BENCH_BEGIN	measure	1
+ASAHI_ANE encoder: projections=24 submissions=1128 plans=24 replicas=1
+
+whisper_print_timings:     load time =    37.65 ms
+whisper_print_timings:     fallbacks =   0 p /   0 h
+whisper_print_timings:      mel time =     5.34 ms
+whisper_print_timings:   sample time =    13.55 ms /     1 runs (    13.55 ms per run)
+whisper_print_timings:   encode time =   348.86 ms /     1 runs (   348.86 ms per run)
+whisper_print_timings:   decode time =    98.92 ms /    24 runs (     4.12 ms per run)
+whisper_print_timings:   batchd time =     4.84 ms /     2 runs (     2.42 ms per run)
+whisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)
+whisper_print_timings:    total time =   472.21 ms
+BENCH_END	measure	1
+BENCH_BEGIN	measure	2
+ASAHI_ANE encoder: projections=24 submissions=1128 plans=24 replicas=1
+
+whisper_print_timings:     load time =    37.65 ms
+whisper_print_timings:     fallbacks =   0 p /   0 h
+whisper_print_timings:      mel time =     5.32 ms
+whisper_print_timings:   sample time =    13.50 ms /     1 runs (    13.50 ms per run)
+whisper_print_timings:   encode time =   342.15 ms /     1 runs (   342.15 ms per run)
+whisper_print_timings:   decode time =    96.57 ms /    24 runs (     4.02 ms per run)
+whisper_print_timings:   batchd time =     4.95 ms /     2 runs (     2.47 ms per run)
+whisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)
+whisper_print_timings:    total time =   463.16 ms
+BENCH_END	measure	2
+BENCH_BEGIN	measure	3
+ASAHI_ANE encoder: projections=24 submissions=1128 plans=24 replicas=1
+
+whisper_print_timings:     load time =    37.65 ms
+whisper_print_timings:     fallbacks =   0 p /   0 h
+whisper_print_timings:      mel time =     5.19 ms
+whisper_print_timings:   sample time =    13.51 ms /     1 runs (    13.51 ms per run)
+whisper_print_timings:   encode time =   349.14 ms /     1 runs (   349.14 ms per run)
+whisper_print_timings:   decode time =    94.10 ms /    24 runs (     3.92 ms per run)
+whisper_print_timings:   batchd time =     5.02 ms /     2 runs (     2.51 ms per run)
+whisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)
+whisper_print_timings:    total time =   467.66 ms
+BENCH_END	measure	3
+BENCH_BEGIN	measure	4
+ASAHI_ANE encoder: projections=24 submissions=1128 plans=24 replicas=1
+
+whisper_print_timings:     load time =    37.65 ms
+whisper_print_timings:     fallbacks =   0 p /   0 h
+whisper_print_timings:      mel time =     5.19 ms
+whisper_print_timings:   sample time =    13.57 ms /     1 runs (    13.57 ms per run)
+whisper_print_timings:   encode time =   343.60 ms /     1 runs (   343.60 ms per run)
+whisper_print_timings:   decode time =   100.92 ms /    24 runs (     4.20 ms per run)
+whisper_print_timings:   batchd time =     6.15 ms /     2 runs (     3.08 ms per run)
+whisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)
+whisper_print_timings:    total time =   470.19 ms
+BENCH_END	measure	4
+BENCH_BEGIN	measure	5
+ASAHI_ANE encoder: projections=24 submissions=1128 plans=24 replicas=1
+
+whisper_print_timings:     load time =    37.65 ms
+whisper_print_timings:     fallbacks =   0 p /   0 h
+whisper_print_timings:      mel time =     5.20 ms
+whisper_print_timings:   sample time =    13.54 ms /     1 runs (    13.54 ms per run)
+whisper_print_timings:   encode time =   339.82 ms /     1 runs (   339.82 ms per run)
+whisper_print_timings:   decode time =    95.79 ms /    24 runs (     3.99 ms per run)
+whisper_print_timings:   batchd time =     5.56 ms /     2 runs (     2.78 ms per run)
+whisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)
+whisper_print_timings:    total time =   460.59 ms
+BENCH_END	measure	5

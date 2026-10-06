@@ -39,9 +39,11 @@ flock "$HOME/ane.lock" flock "$HOME/gpu.lock" flock /tmp/m1-gpu.lock \
 Set `WHISPER_ASAHI_ANE=0` for the same build's CPU reference. This native path
 runs the 24 encoder dense projections on ANE and the remaining operations on
 CPU. Across 5/11/23-second JFK variants, all 80 raw logit argmaxes and token
-histories match CPU, with maximum logit NRMSE 0.310%. Warm median transcription
-time for the 11-second clip is **810.35 ms with ANE projections**, versus
-**567.62 ms on CPU**. The macOS full-encoder ANE route remains faster; its graph
+histories match CPU and all raw argmaxes match an independent HF model. Maximum
+full-logit NRMSE versus HF is 0.333%. Optimizations reduced encode time from
+721.41 to 345.80 ms. Warm median transcription time for the 11-second clip is
+**468.18 ms with ANE projections**, versus **417.49 ms on CPU**.
+The macOS full-encoder ANE route remains faster; its graph
 and CPU implementation differ. See [setup](docs/asahi-native.md) and the
 [complete table](docs/benchmark-asahi.md).
 

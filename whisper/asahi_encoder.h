@@ -19,6 +19,7 @@ private:
 };
 
 bool whisper_asahi_enabled();
+void whisper_asahi_profile_stage(const char * name, int64_t start_us);
 void whisper_asahi_trace_tensor(const char * name, const ggml_tensor * tensor);
 void whisper_asahi_trace_logits(const float * logits, int vocabulary,
                                const int32_t * tokens, int count);

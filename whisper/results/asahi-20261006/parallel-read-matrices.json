@@ -1,0 +1,205 @@
+{
+  "status": "PASS",
+  "submissions": 24,
+  "gate_nrmse": 0.005,
+  "serial_parallel_byte_exact": true,
+  "records": [
+    {
+      "k": 384,
+      "n": 384,
+      "rows": 1,
+      "read_threads": 1,
+      "nrmse": 0.00028865315678606887,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 384,
+      "rows": 1,
+      "read_threads": 4,
+      "nrmse": 0.00028865315678606887,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 384,
+      "rows": 8,
+      "read_threads": 1,
+      "nrmse": 0.00029271661492059057,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 384,
+      "rows": 8,
+      "read_threads": 4,
+      "nrmse": 0.00029271661492059057,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 384,
+      "rows": 28,
+      "read_threads": 1,
+      "nrmse": 0.0002913165540953579,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 384,
+      "rows": 28,
+      "read_threads": 4,
+      "nrmse": 0.0002913165540953579,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 384,
+      "rows": 32,
+      "read_threads": 1,
+      "nrmse": 0.0002976152986425284,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 384,
+      "rows": 32,
+      "read_threads": 4,
+      "nrmse": 0.0002976152986425284,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 1536,
+      "rows": 1,
+      "read_threads": 1,
+      "nrmse": 0.00027946611078389673,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 1536,
+      "rows": 1,
+      "read_threads": 4,
+      "nrmse": 0.00027946611078389673,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 1536,
+      "rows": 8,
+      "read_threads": 1,
+      "nrmse": 0.00029439676107578046,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 1536,
+      "rows": 8,
+      "read_threads": 4,
+      "nrmse": 0.00029439676107578046,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 1536,
+      "rows": 28,
+      "read_threads": 1,
+      "nrmse": 0.000294155588185885,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 1536,
+      "rows": 28,
+      "read_threads": 4,
+      "nrmse": 0.000294155588185885,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 1536,
+      "rows": 32,
+      "read_threads": 1,
+      "nrmse": 0.0002933036515231713,
+      "submissions": 1
+    },
+    {
+      "k": 384,
+      "n": 1536,
+      "rows": 32,
+      "read_threads": 4,
+      "nrmse": 0.0002933036515231713,
+      "submissions": 1
+    },
+    {
+      "k": 1536,
+      "n": 384,
+      "rows": 1,
+      "read_threads": 1,
+      "nrmse": 0.00028615388034795494,
+      "submissions": 1
+    },
+    {
+      "k": 1536,
+      "n": 384,
+      "rows": 1,
+      "read_threads": 4,
+      "nrmse": 0.00028615388034795494,
+      "submissions": 1
+    },
+    {
+      "k": 1536,
+      "n": 384,
+      "rows": 8,
+      "read_threads": 1,
+      "nrmse": 0.0002943828955923809,
+      "submissions": 1
+    },
+    {
+      "k": 1536,
+      "n": 384,
+      "rows": 8,
+      "read_threads": 4,
+      "nrmse": 0.0002943828955923809,
+      "submissions": 1
+    },
+    {
+      "k": 1536,
+      "n": 384,
+      "rows": 28,
+      "read_threads": 1,
+      "nrmse": 0.0002950525179795645,
+      "submissions": 1
+    },
+    {
+      "k": 1536,
+      "n": 384,
+      "rows": 28,
+      "read_threads": 4,
+      "nrmse": 0.0002950525179795645,
+      "submissions": 1
+    },
+    {
+      "k": 1536,
+      "n": 384,
+      "rows": 32,
+      "read_threads": 1,
+      "nrmse": 0.0002901455940603242,
+      "submissions": 1
+    },
+    {
+      "k": 1536,
+      "n": 384,
+      "rows": 32,
+      "read_threads": 4,
+      "nrmse": 0.0002901455940603242,
+      "submissions": 1
+    }
+  ],
+  "source_sha256": {
+    "qwen35/ane_matmul.c": "9e705d4dee4e73f51150c6b193c3dfd0b5554feebd32f8a2539b84e85cda196f",
+    "qwen35/ane_matmul.h": "4b4743921c7906797aff79942adadb749c4bf322bbadb6fad81ef96ebbf8973d",
+    "qwen35/linear_template.h": "b7806029cc215b8a70ff3e14d4dd188988a49b24831b4909de82aea6e0e4d680"
+  }
+}

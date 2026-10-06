@@ -33,9 +33,11 @@ remains the direct-register Asahi implementation described here.
 [Whisper](whisper/README.md) now runs trained `tiny.en` on this Asahi M1 using
 the existing matrix stream for 24 encoder projections, with other operations
 and decoding on CPU. No new macOS dump was used. All 80 captured raw logit
-argmaxes match CPU across three clips, with maximum logit NRMSE **0.310%**.
-The [Asahi warm table](whisper/docs/benchmark-asahi.md) measures **810.35 ms**
-to transcribe the 11-second JFK clip using ANE projections, versus **567.62 ms**
+argmaxes match CPU and the independent HF model across three clips, with
+maximum full-logit NRMSE **0.333% versus HF**. Host and CPU kernel optimizations
+reduced ANE encode time from **721.41 to 345.80 ms**.
+The [Asahi warm table](whisper/docs/benchmark-asahi.md) measures **468.18 ms**
+to transcribe the 11-second JFK clip using ANE projections, versus **417.49 ms**
 on CPU. The [macOS table](whisper/docs/benchmark-macos.md) measures five routes;
 its full-encoder ANE + CPU decoder took **68.37 ms**. The graph and CPU backends
 differ, and the Linux hybrid is currently slower.

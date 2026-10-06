@@ -4,6 +4,8 @@ extern "C" {
 #include "ane_matmul.h"
 }
 #include <algorithm>
+#include <arm_neon.h>
+#include <cfloat>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -23,6 +25,50 @@ struct WhisperAsahi::Impl {
     AneTimings previous_timings{};
 };
 
+static float finite_peak(const float * source, int count) {
+    float32x4_t peak = vdupq_n_f32(0);
+    uint32x4_t valid = vdupq_n_u32(~0u);
+    int k = 0;
+    for (; k + 4 <= count; k += 4) {
+        const auto value = vabsq_f32(vld1q_f32(source + k));
+        peak = vmaxq_f32(peak, value);
+        valid = vandq_u32(valid, vcleq_f32(value, vdupq_n_f32(FLT_MAX)));
+    }
+    if (!vminvq_u32(valid)) GGML_ABORT("nonfinite Asahi encoder input");
+    float maximum = vmaxvq_f32(peak);
+    for (; k < count; ++k) {
+        if (!std::isfinite(source[k])) GGML_ABORT("nonfinite Asahi encoder input");
+        maximum = std::max(maximum, std::fabs(source[k]));
+    }
+    return maximum;
+}
+
+static void scale_copy(float * target, const float * source, int count, int shift) {
+    // Multiplication by a normal power of two has ldexp's rounding, without
+    // calling libm for each element. Retain ldexp for extreme finite inputs.
+    if (shift < -126 || shift > 127) {
+        for (int k = 0; k < count; ++k) {
+            target[k] = std::ldexp(source[k], shift);
+            if (!std::isfinite(target[k])) GGML_ABORT("nonfinite Asahi encoder scaling");
+        }
+        return;
+    }
+    const float factor = std::ldexp(1.f, shift);
+    const auto scales = vdupq_n_f32(factor);
+    uint32x4_t valid = vdupq_n_u32(~0u);
+    int k = 0;
+    for (; k + 4 <= count; k += 4) {
+        const auto value = vmulq_f32(vld1q_f32(source + k), scales);
+        valid = vandq_u32(valid, vcleq_f32(vabsq_f32(value), vdupq_n_f32(FLT_MAX)));
+        vst1q_f32(target + k, value);
+    }
+    if (!vminvq_u32(valid)) GGML_ABORT("nonfinite Asahi encoder scaling");
+    for (; k < count; ++k) {
+        target[k] = source[k]*factor;
+        if (!std::isfinite(target[k])) GGML_ABORT("nonfinite Asahi encoder scaling");
+    }
+}
+
 bool whisper_asahi_enabled() {
     const char * flag = std::getenv("WHISPER_ASAHI_ANE");
     if (!flag || !std::strcmp(flag, "0")) return false;
@@ -30,11 +76,17 @@ bool whisper_asahi_enabled() {
     return true;
 }
 
+void whisper_asahi_profile_stage(const char * name, int64_t start_us) {
+    if (std::getenv("WHISPER_ASAHI_PROFILE"))
+        std::fprintf(stderr, "ASAHI_PROFILE stage: %s=%.3f ms\n", name, (ggml_time_us()-start_us)/1000.);
+}
+
 WhisperAsahi::WhisperAsahi() : impl(new Impl) {
     impl->device = ane_device_open();
     if (!impl->device) GGML_ABORT("Asahi ANE requested but device initialization failed");
     impl->profiling = std::getenv("WHISPER_ASAHI_PROFILE") != nullptr;
     ane_device_profile(impl->device, impl->profiling);
+    ane_device_read_threads(impl->device, 4);
     std::fprintf(stderr, "ASAHI_ANE ready: encoder dense projections; CPU conv/attention/decoder\n");
 }
 
@@ -95,15 +147,9 @@ void WhisperAsahi::compute(ggml_tensor * dst, int ith, int nth, void * userdata)
         for (int row = 0; row < rows; ++row) {
             const float * source = reinterpret_cast<const float *>(
                 static_cast<const char *>(activation->data) + (position + row)*activation->nb[1]);
-            float peak = 0.f;
-            for (int k = 0; k < plan.k; ++k) {
-                if (!std::isfinite(source[k])) GGML_ABORT("nonfinite Asahi encoder input");
-                peak = std::max(peak, std::fabs(source[k]));
-            }
+            const float peak = finite_peak(source, plan.k);
             shifts[row] = peak ? int(std::floor(std::log2(double(plan.limit)) - std::log2(double(peak)))) : 0;
-            for (int k = 0; k < plan.k; ++k) {
-                state.input[row*plan.k + k] = std::ldexp(source[k], shifts[row]);
-            }
+            scale_copy(state.input.data() + row*plan.k, source, plan.k, shifts[row]);
         }
         if (state.profiling) state.scale_us += ggml_time_us() - scale_start;
         const auto run_start = state.profiling ? ggml_time_us() : 0;
@@ -114,10 +160,7 @@ void WhisperAsahi::compute(ggml_tensor * dst, int ith, int nth, void * userdata)
         for (int row = 0; row < rows; ++row) {
             float * target = reinterpret_cast<float *>(
                 static_cast<char *>(dst->data) + (position + row)*dst->nb[1]);
-            for (int n = 0; n < plan.n; ++n) {
-                target[n] = std::ldexp(state.output[row*plan.n + n], -shifts[row]);
-                if (!std::isfinite(target[n])) GGML_ABORT("nonfinite Asahi encoder output");
-            }
+            scale_copy(target, state.output.data() + row*plan.n, plan.n, -shifts[row]);
         }
         if (state.profiling) state.restore_us += ggml_time_us() - restore_start;
     }
@@ -136,10 +179,10 @@ void WhisperAsahi::finish_encoder(int layers, int positions) {
         const auto t = ane_device_timings(impl->device), p = impl->previous_timings;
         std::fprintf(stderr, "ASAHI_PROFILE projections: plan=%.3f scale=%.3f run=%.3f restore=%.3f ms\n",
                      impl->plan_us/1000., impl->scale_us/1000., impl->run_us/1000., impl->restore_us/1000.);
-        std::fprintf(stderr, "ASAHI_PROFILE device: pack=%.3f write=%.3f ioctl=%.3f read=%.3f unpack=%.3f ms\n",
+        std::fprintf(stderr, "ASAHI_PROFILE device: pack=%.3f write=%.3f ioctl=%.3f read=%.3f unpack=%.3f ms read_workers=%u\n",
                      (t.pack_ns-p.pack_ns)/1e6, (t.write_ns-p.write_ns)/1e6,
                      (t.ioctl_ns-p.ioctl_ns)/1e6, (t.read_ns-p.read_ns)/1e6,
-                     (t.unpack_ns-p.unpack_ns)/1e6);
+                     (t.unpack_ns-p.unpack_ns)/1e6, t.read_threads_max);
         impl->previous_timings = t;
         impl->plan_us = impl->scale_us = impl->run_us = impl->restore_us = 0;
     }

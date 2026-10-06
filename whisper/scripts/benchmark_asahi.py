@@ -138,13 +138,14 @@ def main():
     env.pop("ANEFORGE_ENCODER", None)
     env.pop("ANEFORGE_DYLIB", None)
     env.pop("WHISPER_ASAHI_TRACE", None)
+    env.pop("WHISPER_ASAHI_PROFILE", None)
     env.update(OPENBLAS_NUM_THREADS="1", OMP_WAIT_POLICY="PASSIVE", HF_HUB_OFFLINE="1")
     report = dict(status="RUNNING", utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                   kernel=platform.release(), model_sha256=digest(args.model),
                   hf_checkpoint_sha256=digest(args.hf_model / "model.safetensors"),
                   audio_sha256=digest(args.audio), whisper_cpp_revision="60c0be6ac8fa71b1a2ae2dd938a31a34a508e774",
                   cpu_affinity=sorted(os.sched_getaffinity(0)),
-                  scope="ANE encoder dense projections, 32 audio positions per submission, one rounding grid; CPU convolution, attention, normalizations, exact encoder GELU, cross-K/V and decoder; widened FP32 NEON dot accumulation and real-length encoder K/V views in both modes",
+                  scope="ANE encoder dense projections, 32 audio positions per submission, one rounding grid; vectorized host scaling and four-worker uncached output reads; CPU convolution, attention, normalizations, exact GELU, cross-K/V and decoder; FP32 K/V caches and activations with F16 weights, widened FP32 NEON dot and tiled matrix accumulation including mixed-precision GEMV, GCC NEON attention kernel selection fix, and real-length encoder K/V views in both modes",
                   feature_and_logit_gate_nrmse=.005, hf_encoder_gate_cosine=.999,
                   warmups_per_context=args.warmups, runs_per_context=args.runs, rounds=args.rounds,
                   method="Persistent contexts, warmup excluded, reversed backend order in round two; four workers, greedy English, no timestamps/fallback, full 30-second encoder context. Decoder total includes prompt plus token evaluation; whole timer includes host work and sampling.",
@@ -195,22 +196,41 @@ def main():
             a, b = logits_records(cpu / "logits.bin"), logits_records(ane / "logits.bin")
             if len(a) != len(b):
                 raise ValueError("decoder call count changed")
-            checks = []
+            checks, hf_checks, history = [], [], []
             for (cpu_tokens, cpu_logits), (ane_tokens, ane_logits) in zip(a, b):
                 np.testing.assert_array_equal(cpu_tokens, ane_tokens)
                 error = compare(cpu_logits, ane_logits)
                 error["argmax_match"] = int(np.argmax(cpu_logits)) == int(np.argmax(ane_logits))
                 checks.append(error)
+                # Independently evaluate every captured native prefix in HF,
+                # using the HF encoder (not either native feature array).
+                history.extend(cpu_tokens.tolist())
+                with torch.no_grad():
+                    hidden = hf.model.decoder(input_ids=torch.tensor([history]),
+                        encoder_hidden_states=torch.from_numpy(reference), use_cache=False).last_hidden_state
+                    expected_logits = hf.proj_out(hidden[:, -1, :]).numpy().ravel()
+                hf_checks.append(dict(cpu=compare(expected_logits, cpu_logits),
+                    ane=compare(expected_logits, ane_logits),
+                    cpu_argmax_match=int(np.argmax(expected_logits)) == int(np.argmax(cpu_logits)),
+                    ane_argmax_match=int(np.argmax(expected_logits)) == int(np.argmax(ane_logits))))
             report["correctness"].append(dict(audio=name, audio_seconds=len(audio)/16000,
                 audio_sha256=digest(wav_path), cpu_transcript=transcripts[0], ane_transcript=transcripts[1],
                 encoder_vs_cpu=feature_error, encoder_vs_hf=hf_error, cpu_encoder_vs_hf=cpu_hf_error,
                 decoder_calls=len(checks), all_histories_match=True,
                 raw_argmax_matches=sum(x["argmax_match"] for x in checks),
-                maximum_logit_nrmse=max(x["nrmse"] for x in checks), logit_checks=checks))
+                maximum_logit_nrmse=max(x["nrmse"] for x in checks), logit_checks=checks,
+                maximum_cpu_logit_nrmse_vs_hf=max(x["cpu"]["nrmse"] for x in hf_checks),
+                maximum_ane_logit_nrmse_vs_hf=max(x["ane"]["nrmse"] for x in hf_checks),
+                cpu_raw_argmax_matches_hf=sum(x["cpu_argmax_match"] for x in hf_checks),
+                ane_raw_argmax_matches_hf=sum(x["ane_argmax_match"] for x in hf_checks),
+                hf_logit_checks=hf_checks))
             if feature_error["nrmse"] >= .005 or hf_error["cosine"] < .999 or cpu_hf_error["cosine"] < .999:
                 raise ValueError("encoder numerical gate failed: " + name)
             if any(x["nrmse"] >= .005 or not x["argmax_match"] for x in checks):
                 raise ValueError("full decoder logit gate failed: " + name)
+            if any(x["cpu"]["nrmse"] >= .005 or x["ane"]["nrmse"] >= .005 or
+                   not x["cpu_argmax_match"] or not x["ane_argmax_match"] for x in hf_checks):
+                raise ValueError("independent HF full decoder logit gate failed: " + name)
             print(f"{name}: PASS, 1128 ANE submissions, {len(checks)} decoder vectors; HF cosine {hf_error['cosine']:.8f}", flush=True)
         del hf
         driver = (args.build / "bin/benchmark-whisper").resolve()
@@ -256,6 +276,8 @@ def main():
              ROOT.parent / "qwen35/ane_matmul.h", ROOT.parent / "qwen35/linear_template.h",
              ROOT / "vendor/whisper-asahi/src/whisper.cpp",
              ROOT / "vendor/whisper-asahi/ggml/src/ggml-cpu/simd-mappings.h",
+             ROOT / "vendor/whisper-asahi/ggml/src/ggml-cpu/llamafile/sgemm.cpp",
+             ROOT / "vendor/whisper-asahi/ggml/src/ggml-cpu/simd-gemm.h",
              ROOT / "vendor/whisper-asahi/src/CMakeLists.txt")}
         report["artifacts"] = {str(p.relative_to(output)):digest(p) for p in output.rglob("*") if p.is_file()}
         report["status"] = "PASS"

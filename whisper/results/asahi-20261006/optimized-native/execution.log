@@ -1,0 +1,10 @@
+jfk: PASS, 1128 ANE submissions, 25 decoder vectors; HF cosine 0.99999959
+jfk-first-5s: PASS, 1128 ANE submissions, 8 decoder vectors; HF cosine 0.99999974
+jfk-repeat: PASS, 1128 ANE submissions, 47 decoder vectors; HF cosine 0.99999966
+round 1 cpu_cpu: PASS
+round 1 ane_projections_cpu: PASS
+round 2 ane_projections_cpu: PASS
+round 2 cpu_cpu: PASS
+cpu_cpu {"encode_ms": 305.54, "decoder_ms": 95.82, "decode_ms": 91.14500000000001, "batchd_ms": 4.795, "prompt_ms": 0.0, "decode_ms_per_token": 3.7977083333333335, "wall_ms": 417.4904765, "rtf": 0.03795367968181818}
+ane_projections_cpu {"encode_ms": 345.79499999999996, "decoder_ms": 101.30000000000001, "decode_ms": 96.095, "batchd_ms": 5.21, "prompt_ms": 0.0, "decode_ms_per_token": 4.003958333333333, "wall_ms": 468.175802, "rtf": 0.042561436545454544}
+Evidence: /home/asahi/ane/whisper/.cache/asahi-20261006/validated-cross-real-context/summary.json

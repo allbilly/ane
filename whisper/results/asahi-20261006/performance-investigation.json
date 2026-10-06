@@ -1,0 +1,59 @@
+{
+  "experiments": [
+    {
+      "experiment": "validated-neon-parallel",
+      "status": "FAIL",
+      "error": "full decoder logit gate failed: jfk-first-5s",
+      "correctness": [
+        {
+          "audio": "jfk",
+          "decoder_calls": 25,
+          "raw_argmax_matches": 25,
+          "maximum_logit_nrmse": 0.004115745152890014
+        },
+        {
+          "audio": "jfk-first-5s",
+          "decoder_calls": 8,
+          "raw_argmax_matches": 8,
+          "maximum_logit_nrmse": 0.006235792833185033
+        }
+      ]
+    },
+    {
+      "experiment": "validated-neon-nested",
+      "status": "FAIL",
+      "error": "full decoder logit gate failed: jfk-first-5s",
+      "correctness": [
+        {
+          "audio": "jfk",
+          "decoder_calls": 25,
+          "raw_argmax_matches": 25,
+          "maximum_logit_nrmse": 0.0036483383574554325
+        },
+        {
+          "audio": "jfk-first-5s",
+          "decoder_calls": 8,
+          "raw_argmax_matches": 8,
+          "maximum_logit_nrmse": 0.010839416450047861
+        }
+      ]
+    },
+    {
+      "experiment": "validated-f32-state",
+      "status": "FAIL",
+      "error": "independent HF full decoder logit gate failed: jfk",
+      "correctness": [
+        {
+          "audio": "jfk",
+          "decoder_calls": 25,
+          "raw_argmax_matches": 25,
+          "maximum_logit_nrmse": 0.0009577774847339096,
+          "maximum_cpu_logit_nrmse_vs_hf": 0.028637770389718212,
+          "maximum_ane_logit_nrmse_vs_hf": 0.028452986510891478
+        }
+      ]
+    }
+  ],
+  "accepted": "optimized-native/summary.json",
+  "notes": "Early tiled candidates failed the unchanged 0.5% CPU/ANE logit gate. FP32 activations/KV and exact decoder GELU improved parity, then independent HF decoder validation exposed unmasked decoder cross-attention padding. The accepted candidate uses real-length cross-attention views and passes all unchanged gates."
+}

@@ -23,9 +23,11 @@
   matching CPU/CPU and ANE/CPU encode, decoder prompt setup, token decode and
   whole-transcription latency; retain transcript checks and the same timing
   boundaries as the macOS warm benchmark. The separate Linux projection path
-  now runs without a fresh dump: all 80 raw logit argmaxes match CPU across
-  three clips, maximum logit NRMSE is 0.310%, and warm whole-transcription
-  latency is 810.35 ms versus CPU's 567.62 ms for the 11-second JFK sample.
+  now runs without a fresh dump: all 80 raw logit argmaxes match CPU and an
+  independent HF model across three clips; maximum full-logit NRMSE versus HF
+  is 0.333%. Host and CPU optimizations reduced warm encode time from 721.41
+  to 345.80 ms. Whole-transcription latency is 468.18 ms versus CPU's 417.49 ms
+  for the 11-second JFK sample.
   That path leaves convolutions, attention and decoding on CPU and is not a
   replay of this complete exported encoder.
 

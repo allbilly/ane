@@ -19,6 +19,7 @@ def source_patch(text):
                         '#include "whisper-arch.h"\n#include "asahi_encoder.h"')
     text = replace_once(text, "struct whisper_context {\n",
                         "struct whisper_context {\n    std::unique_ptr<WhisperAsahi> asahi;\n")
+    text = replace_once(text, "ggml_type itype = ggml_type::GGML_TYPE_F16;", "ggml_type itype = ggml_type::GGML_TYPE_F32;")
     start = text.index("static struct ggml_cgraph * whisper_build_graph_encoder(")
     end = text.index("// pre-compute cross-attention memory", start)
     graph = text[start:end]
@@ -48,6 +49,14 @@ def source_patch(text):
     if graph.count("ggml_gelu(ctx0, cur)") != 2:
         raise ValueError("pinned convolution GELU anchor mismatch")
     text = text[:start] + graph.replace("ggml_gelu(ctx0, cur)", "ggml_gelu_erf(ctx0, cur)") + text[end:]
+    # The remaining GELU is in the CPU decoder. Match the independent HF model.
+    text = replace_once(text, "ggml_gelu(ctx0, cur)", "ggml_gelu_erf(ctx0, cur)")
+    # Cross-attention has the same unmasked padding issue as the encoder.
+    # Keep the padded per-layer allocation stride, but expose only real keys.
+    anchor = "n_state_head, n_audio_ctx_pad, n_head"
+    if text.count(anchor) != 2:
+        raise ValueError("pinned decoder cross K/V view anchor mismatch")
+    text = text.replace(anchor, "n_state_head, n_audio_ctx, n_head")
     text = replace_once(text,
         "            ggml_backend_tensor_set(mel, wstate.inp_mel.data(), 0, ggml_nelements(mel)*sizeof(float));",
         "            ggml_backend_tensor_set(mel, wstate.inp_mel.data(), 0, ggml_nelements(mel)*sizeof(float));\n"
@@ -65,6 +74,22 @@ def source_patch(text):
 
     if (batch.n_tokens > 1) {
         //printf""")
+    start = text.index("static bool whisper_encode_internal(")
+    end = text.index("static struct ggml_cgraph * whisper_build_graph_decoder(", start)
+    encode = text[start:end]
+    encode = replace_once(encode, "    const int64_t t_start_us = ggml_time_us();", """    const int64_t t_start_us = ggml_time_us();
+    auto compute_stage = [&](ggml_backend_sched_t sched, ggml_cgraph * graph, const char * name) {
+        const auto start = ggml_time_us();
+        const bool result = ggml_graph_compute_helper(sched, graph, n_threads);
+        whisper_asahi_profile_stage(name, start);
+        return result;
+    };""")
+    before = "ggml_graph_compute_helper(sched, gf, n_threads)"
+    if encode.count(before) != 3:
+        raise ValueError("pinned encoder compute stage anchor mismatch")
+    for name in ("convolution", "transformer", "cross_kv"):
+        encode = encode.replace(before, f'compute_stage(sched, gf, "{name}")', 1)
+    text = text[:start] + encode + text[end:]
     return text
 
 
@@ -79,6 +104,28 @@ def dot_patch(text):
         before + " && !defined(WHISPER_ASAHI_F32_DOT)", 1)
 
 
+def tiled_patch(text):
+    # Keep the fast blocked matrix path while widening F16 operands before
+    # accumulation. The original ARM half accumulator violates our reference.
+    text = replace_once(text, "    if (n < 2)\n        return false;", "    if (n < 2 && !(Atype == GGML_TYPE_F16 && Btype == GGML_TYPE_F32))\n        return false;")
+    start = text.index("    case GGML_TYPE_F16: {")
+    tail = text[start:]
+    tail = replace_once(tail,
+        "#elif defined(__ARM_FEATURE_FP16_VECTOR_ARITHMETIC) && !defined(_MSC_VER)",
+        "#elif defined(__ARM_FEATURE_FP16_VECTOR_ARITHMETIC) && !defined(_MSC_VER) && !defined(WHISPER_ASAHI_F32_DOT)")
+    anchor = "#elif defined(__ARM_NEON) && !defined(_MSC_VER)\n        if (Btype == GGML_TYPE_F32) {"
+    tail = replace_once(tail, anchor, """#elif defined(__ARM_NEON) && !defined(_MSC_VER)
+        if (Btype == GGML_TYPE_F16) {
+            tinyBLAS<4, float32x4_t, float32x4_t, ggml_fp16_t, ggml_fp16_t, float> tb{ params,
+                k, (const ggml_fp16_t *)A, lda,
+                (const ggml_fp16_t *)B, ldb,
+                (float *)C, ldc};
+            return tb.matmul(m, n);
+        }
+        if (Btype == GGML_TYPE_F32) {""")
+    return text[:start] + tail
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, default=ROOT / "whisper/vendor/whisper-asahi")
@@ -87,10 +134,16 @@ def main():
     actual = subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"], text=True).strip()
     if actual != REVISION:
         parser.error("requires isolated whisper.cpp worktree at " + REVISION)
-    for name in ("src/whisper.cpp", "src/CMakeLists.txt", "ggml/src/ggml-cpu/simd-mappings.h"):
+    for name in ("src/whisper.cpp", "src/CMakeLists.txt", "ggml/src/ggml-cpu/simd-mappings.h",
+                 "ggml/src/ggml-cpu/llamafile/sgemm.cpp", "ggml/src/ggml-cpu/simd-gemm.h"):
         before = subprocess.check_output(["git", "-C", str(source), "show", "HEAD:" + name], text=True)
-        if name.endswith(".cpp"):
+        if name == "src/whisper.cpp":
             after = source_patch(before)
+        elif name.endswith("sgemm.cpp"):
+            after = tiled_patch(before)
+        elif name.endswith("simd-gemm.h"):
+            # GCC defines __ARM_NEON, unlike Clang's additional alias.
+            after = replace_once(before, "defined (__ARM_NEON__)", "defined(__ARM_NEON)")
         elif name.endswith("simd-mappings.h"):
             after = dot_patch(before)
         else:
