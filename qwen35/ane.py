@@ -29,7 +29,8 @@ class Ane:
         flags = ["-O3", "-std=gnu11", "-fPIC", "-shared", "-fopenmp", "-march=armv8.2-a+fp16"]
         identity = hashlib.sha256(source.read_bytes() + header.read_bytes() + template.read_bytes()
                                   + subprocess.check_output([compiler, "--version"]) + repr(flags).encode()).hexdigest()
-        cache = Path.home() / ".cache/ane-qwen35/native" / identity
+        cache_root = Path(os.environ.get("QWEN35_CACHE_DIR", str(Path.home() / ".cache/ane-qwen35")))
+        cache = cache_root / "native" / identity
         cache.mkdir(parents=True, exist_ok=True)
         library = cache / "ane.so"
         if not library.exists():

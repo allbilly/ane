@@ -70,6 +70,61 @@ the first two fixtures also matched all 24 residual layer outputs.
 
 ## Measured performance
 
+The 2026-10-06 Asahi follow-up checked macOS commits `b40306e` and
+`fd0831e`. All 70 capture, Qwen and GPT-2/GGUF unit tests passed. Floating
+CPU references prepared locally from the pinned Hugging Face checkpoint
+matched all six first predictions and 384 saved-input decode choices through
+SDOT, including 1,024- and 2,048-token prompts. Maximum full-logit NRMSE was
+0.0432%. Four independently evolving greedy histories also matched all
+256 choices, with maximum NRMSE 0.0122%.
+
+| CPU SDOT prompt | Prefill tok/s | Decode tok/s |
+| --- | ---: | ---: |
+| Chat, 23 tokens | 21.35 | 17.54 |
+| Chat, 19 tokens | 20.99 | 17.40 |
+| Chat, 21 tokens | 21.23 | 15.87 |
+| Chat, 18 tokens | 20.59 | 15.95 |
+| 1,024 tokens | 20.24 | 16.12 |
+| 2,048 tokens | 19.33 | 15.04 |
+
+These are one active-desktop run with 64 decode calls per prompt, without
+shared hardware locks. They do not establish an isolated speed comparison.
+The ANE modules were loaded and the user reported successful elementwise
+execution in the host terminal. The managed agent session hid `/dev/accel`,
+so its ANE verification failed before submission. No new Asahi hardware
+accuracy or throughput result is claimed.
+[Follow-up receipts and artifact hashes](provenance/m1-asahi-macos-update.json)
+retain both completed CPU work and pending hardware work.
+
+Recurrence inputs and constants can now be prepared on Linux without an
+Apple compiler or copied macOS weights. Choose fresh output directories:
+
+```sh
+env OPENBLAS_NUM_THREADS=1 OMP_WAIT_POLICY=PASSIVE \
+  qwen35/.venv/bin/python -m qwen35.tools.prepare_recurrence \
+  --output qwen35/local-results/recurrence-inputs
+env OPENBLAS_NUM_THREADS=1 OMP_WAIT_POLICY=PASSIVE \
+  qwen35/.venv/bin/python -m qwen35.tools.check_long_context \
+  --model ~/.cache/ane-qwen35/model --greedy-only \
+  --output qwen35/local-results/independent-greedy
+```
+
+The recurrence tool captures layer zero at positions 0, 1, 7 and 22 using
+floating packed W4 projections. It emits the reusable `native-inputs.npz`,
+dense FP16 semantic I/O for four groups of four heads, FP16 constants and
+independent native FP32 references. All 32 component checks passed after
+rounding the MIL CPU result to FP16: maximum state/output NRMSE was
+0.0478%/0.0846%. The compiled program's port names and coefficient layout
+must still be mapped before dispatch. The committed macOS receipt has
+hashes and port metadata; the new recurrence command bytes are not embedded
+in it. The tool's CPU preparation does not compile or execute an ANE program.
+The existing hybrid decoder already repacks all 96 body projections through
+`linear_template.h` and keeps recurrence on the CPU. Running that decoder
+needs no additional kernel capture. Mapping a fused recurrence program is a
+separate optimization and does not block the current inference path.
+`QWEN35_CACHE_DIR` now selects an alternate build cache for both CPU and ANE
+libraries.
+
 The matched benchmark now measures the complete prompt, including its last
 token and the vocabulary head, as prefill. Warm TTFT also includes greedy
 selection of the first output token. Decode starts by feeding that generated

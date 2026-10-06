@@ -1,0 +1,260 @@
+{
+  "captured_utc": "2026-10-06T12:38:35.249206+00:00",
+  "repository_base_commit": "fd0831e0ef76812c1c6b0138d4532da1dd33a8b9",
+  "branch": "main",
+  "source_sha256": {
+    "qwen35/ane.py": "9191c5baaba92db8b11c14029be07cbc6f5ac211a1f5f5ded0b7549145c2245a",
+    "qwen35/tests.py": "c26ae7e1351acf6008d0132265937025d9296ab2f7353e6154b8194318834879",
+    "qwen35/tools/check_long_context.py": "5586c8d54a2395824acf6a0f5fc148713c7e6c7b1d2f04a7ff70e8618293b2be",
+    "qwen35/tools/prepare_recurrence.py": "2f52014fd30d29d810e09d9ce22051be35a76f88f722baba723eac080e041e88",
+    "qwen35/linear_template.h": "b7806029cc215b8a70ff3e14d4dd188988a49b24831b4909de82aea6e0e4d680",
+    "qwen35/ane_matmul.c": "200ad6e8847de6aea5c001401fb01f7c40781e61d1cf3063809c5cca66aa4510",
+    "qwen35/cpu.c": "ee2568b17593a014eb17ad83d33fbf4c429fb51482a4716d6a8a3dc5cac805d1",
+    "qwen35/model.py": "f6b98cb33de409bc82524bfc4f0c0b30084b2e142f4165dc3c7741fe650b3675",
+    "qwen35/native.py": "90f7209efc8a48de8bc0b51e6ad75b388a60abe9fbe7aeb565e8d5402d6a5fce",
+    "qwen35/weights.py": "b6e32fb17ea8131c3ec084b129258b0a6daec6e13201f4491961b63890b70185"
+  },
+  "host": {
+    "system": "Linux",
+    "release": "7.1.13+",
+    "machine": "aarch64",
+    "python": "3.14.7"
+  },
+  "model_id": "trymirai/Qwen3.5-0.8B-M",
+  "model_revision": "c12202e4c764e559960827761566aaa1fd15a87a",
+  "checkpoint_files": {
+    "model.safetensors": {
+      "bytes": 439161360,
+      "sha256": "fa595349afb112763731f5d548a7af4baff7b6088c99f1f2cada29c89442870c",
+      "pinned_hash_matches": true
+    },
+    "config.json": {
+      "bytes": 58300,
+      "sha256": "95fe76fdca82d8f257ac2970ed787b760e33bb8b7a0a1bad0f42dd3132704afa",
+      "pinned_hash_matches": true
+    },
+    "tokenizer.json": {
+      "bytes": 19989343,
+      "sha256": "87a7830d63fcf43bf241c3c5242e96e62dd3fdc29224ca26fed8ea333db72de4",
+      "pinned_hash_matches": true
+    }
+  },
+  "tests": {
+    "capture_and_qwen": 21,
+    "gpt2_gguf": 49,
+    "status": "pass",
+    "commands": [
+      "env QWEN35_CACHE_DIR=/tmp/ane-qwen35-cache OPENBLAS_NUM_THREADS=1 OMP_WAIT_POLICY=PASSIVE qwen35/.venv/bin/python -m unittest experimental.test_capture_validation experimental.test_quiet_observations experimental.test_qwen_capture_inputs qwen35.tests -v",
+      "env OPENBLAS_NUM_THREADS=1 OMP_WAIT_POLICY=PASSIVE gpt2/.venv/bin/python -m unittest discover -s gpt2/tests -v"
+    ]
+  },
+  "cpu_long_context": {
+    "status": "pass",
+    "prompt_tokens": 3153,
+    "first_predictions": 6,
+    "decode_predictions": 384,
+    "max_logit_nrmse": 0.00043212769650830934,
+    "aggregate_prefill_tokens_per_second": 19.65508700157074,
+    "aggregate_decode_steps_per_second": 16.275721740884755,
+    "results": [
+      {
+        "id": "chat-0",
+        "prompt_tokens": 23,
+        "prefill_tokens_per_second": 21.349279376191816,
+        "decode_steps_per_second": 17.54346552709206,
+        "prefill_accuracy": {
+          "max_normalized_rmse": 0.00016713109985975889,
+          "argmax_matches": 1,
+          "predictions": 1
+        },
+        "decode_accuracy": {
+          "max_normalized_rmse": 0.00043212769650830934,
+          "argmax_matches": 64,
+          "predictions": 64
+        }
+      },
+      {
+        "id": "chat-1",
+        "prompt_tokens": 19,
+        "prefill_tokens_per_second": 20.993180659166743,
+        "decode_steps_per_second": 17.40385091164023,
+        "prefill_accuracy": {
+          "max_normalized_rmse": 6.201836324843212e-05,
+          "argmax_matches": 1,
+          "predictions": 1
+        },
+        "decode_accuracy": {
+          "max_normalized_rmse": 0.0002865452807961164,
+          "argmax_matches": 64,
+          "predictions": 64
+        }
+      },
+      {
+        "id": "chat-2",
+        "prompt_tokens": 21,
+        "prefill_tokens_per_second": 21.230480752863865,
+        "decode_steps_per_second": 15.871633001879871,
+        "prefill_accuracy": {
+          "max_normalized_rmse": 7.83868655492899e-05,
+          "argmax_matches": 1,
+          "predictions": 1
+        },
+        "decode_accuracy": {
+          "max_normalized_rmse": 9.140997964776275e-05,
+          "argmax_matches": 64,
+          "predictions": 64
+        }
+      },
+      {
+        "id": "chat-3",
+        "prompt_tokens": 18,
+        "prefill_tokens_per_second": 20.59241372366735,
+        "decode_steps_per_second": 15.951793770947154,
+        "prefill_accuracy": {
+          "max_normalized_rmse": 6.864737224328758e-05,
+          "argmax_matches": 1,
+          "predictions": 1
+        },
+        "decode_accuracy": {
+          "max_normalized_rmse": 0.00029733435142473015,
+          "argmax_matches": 64,
+          "predictions": 64
+        }
+      },
+      {
+        "id": "context-1024",
+        "prompt_tokens": 1024,
+        "prefill_tokens_per_second": 20.2366894934105,
+        "decode_steps_per_second": 16.124430882698704,
+        "prefill_accuracy": {
+          "max_normalized_rmse": 0.00010855173407006013,
+          "argmax_matches": 1,
+          "predictions": 1
+        },
+        "decode_accuracy": {
+          "max_normalized_rmse": 0.00027422818734161006,
+          "argmax_matches": 64,
+          "predictions": 64
+        }
+      },
+      {
+        "id": "context-2048",
+        "prompt_tokens": 2048,
+        "prefill_tokens_per_second": 19.32627966075444,
+        "decode_steps_per_second": 15.043167559836721,
+        "prefill_accuracy": {
+          "max_normalized_rmse": 0.00019275381350935205,
+          "argmax_matches": 1,
+          "predictions": 1
+        },
+        "decode_accuracy": {
+          "max_normalized_rmse": 0.0002244136241131174,
+          "argmax_matches": 64,
+          "predictions": 64
+        }
+      }
+    ],
+    "timing_scope": "Single active-desktop CPU run; shared hardware locks were not held. Not an isolated throughput or CPU/ANE comparison.",
+    "trace_directory": "/home/asahi/.cache/ane-qwen35/asahi-long-context-20261006/traces",
+    "trace_sha256": "2ab9195b24394ef64b17bb53a647da0af2cbb5a5bf07d559f312f0073f4b9b3b",
+    "receipt_note": "Parent session was lost after switching to managed sandbox. Complete dot.json retained; all numerical gates independently checked."
+  },
+  "independent_greedy": {
+    "status": "pass",
+    "prompts": 4,
+    "steps": 64,
+    "matched_choices": 256,
+    "max_logit_nrmse": 0.00012244593656176206,
+    "reference": "Floating packed W4 vs SDOT; each consumes its own preceding argmax token"
+  },
+  "recurrence_inputs": {
+    "status": "cpu_boundary_pass",
+    "cases": 16,
+    "component_checks": 32,
+    "max_state_nrmse": 0.00047815719153119037,
+    "max_output_nrmse": 0.0008457313396561935,
+    "reference_kind": "Independent native FP32 DeltaNet; CPU FP32 MIL expression on exact FP16 inputs/constants",
+    "hardware_execution": "not attempted",
+    "port_mapping": "Semantic names; map through extracted MIL/status port names before dispatch",
+    "coefficient_layout": "FP16 semantic constants; compiled coefficient-bank packing requires its template layout"
+  },
+  "hardware": {
+    "status": "blocked_by_session_device_isolation",
+    "kernel_modules": [
+      "ane",
+      "ane_dt"
+    ],
+    "sysfs_device": "/sys/class/accel/accel0",
+    "device_number": "261:0",
+    "sandbox_device_visible": false,
+    "submissions": 0,
+    "error": "M1 ANE device is unavailable; managed sandbox exposes a private /dev without /dev/accel",
+    "user_report": "Host terminal: examples/elementwise.py using uv run returned the expected 64-element array of 5.",
+    "user_report_scope": "Reported by user; not independently executed by this session"
+  },
+  "new_macos_programs": {
+    "status": "optional_fused_recurrence_not_integrated",
+    "committed_receipt": "qwen35/provenance/m1-macos-unrestricted.json",
+    "receipt_sha256": "3f70b3f8ad7dda20ca1abf19ea7918ac7cab4b0f9ca38d88810f24ab0c9cef69",
+    "note": "The current hybrid model requires no additional macOS capture. Integrating the optional fused recurrence program requires a verified instruction and I/O layout, supplied by local code generation or an extracted program. Its hashes and ports alone are insufficient for dispatch."
+  },
+  "local_results": "qwen35/local-results/asahi-macos-update-20261006",
+  "artifacts": {
+    "dot.json": {
+      "bytes": 20285,
+      "sha256": "47e395814362a4b07364680e4450ada1472b3b5edac3ec15fcbc02d126d8e2c6"
+    },
+    "greedy/greedy.json": {
+      "bytes": 13786,
+      "sha256": "0a22417645836df0f5f807456baaf4660bb5f6636ee32077532d85911e2c76cd"
+    },
+    "recurrence/report.json": {
+      "bytes": 11529,
+      "sha256": "fc53de76cb01c1b5ae1a234d8486f1e207322d807c3dd0c4ae7aa493f19dcf64"
+    },
+    "recurrence/native-inputs.npz": {
+      "bytes": 7082134,
+      "sha256": "d7dc17ea1da255e006624b083d073751fddb87135b47c2c0bf901f62fbeb4e7b"
+    },
+    "greedy.log": {
+      "bytes": 691,
+      "sha256": "6f98b2818dd36ff5f2e69c44bf436f813224f6a3b8ea5cb4ef4feb43abf516fa"
+    },
+    "recurrence.log": {
+      "bytes": 202,
+      "sha256": "7bd6d439c62860117b2e4890b600db0e05f23230b9370b036859aac4be435063"
+    },
+    "ane-sandbox.log": {
+      "bytes": 567,
+      "sha256": "ffa577a7528e58efac636fd8487db4762d70541758671252734a8e05ffc97f62"
+    },
+    "run-ane.sh": {
+      "bytes": 1168,
+      "sha256": "38871536d8f342fb744ab65a2dc8a96a581da5202ed1d9cb6ee59ea331e914f9"
+    }
+  },
+  "pending": [
+    "Host ANE dimension/dynamic-range regression and 1K/2K full-logit prefill/decode run",
+    "Optional fused recurrence optimization: provide verified local code generation or program layout; current hybrid inference is already supported"
+  ],
+  "current_model_execution": {
+    "status": "existing_backend_requires_no_additional_capture",
+    "projections": 96,
+    "projection_template": "qwen35/linear_template.h",
+    "packing": "ane_plan_create_f16 in qwen35/ane_matmul.c repacks decoded checkpoint weights and patches K/N geometry",
+    "recurrence": "qwen35/cpu.c:qwen35_gdn runs FP32 recurrence on CPU",
+    "requirement": "Existing checkpoint, existing compiled projection stream, accessible Asahi ANE device",
+    "hardware_execution_this_session": "blocked by private /dev in managed sandbox"
+  },
+  "local_compiler_probe": {
+    "executable": "/home/asahi/mil-hwx-compiler/build/mil-hwxc",
+    "command": [
+      "/home/asahi/mil-hwx-compiler/build/mil-hwxc",
+      "--help"
+    ],
+    "returncode": 127,
+    "error": "error while loading shared libraries: libicui18n.so.76: cannot open shared object file: No such file or directory",
+    "documented_h13g_coverage": "Captured GPT-2 graph contracts; FP16 LayerNorm/linear/FFN/attention with fixed 768-wide and sequence-32 shapes",
+    "inference": "This compiler checkout does not yet supply a general four-head Qwen recurrence lowering."
+  }
+}

@@ -9,6 +9,7 @@ import numpy as np
 
 from .native import Native
 from .weights import Matrix, SafeTensors, bf16_round, hadamard, unpack4
+from .tools.prepare_recurrence import error, pack_case, rounded_reference
 
 
 def write_tensors(path, values, metadata=None):
@@ -143,6 +144,35 @@ class QuantTests(unittest.TestCase):
         actual = self.native.gdn(state, projected, a_log, dt, norm)
         np.testing.assert_allclose(state, expected_state, rtol=1e-4, atol=2e-7)
         np.testing.assert_allclose(actual, expected.reshape(-1), rtol=2e-4, atol=1e-6)
+
+    def test_recurrence_port_layout_against_native_delta_rule(self):
+        rng = np.random.default_rng(1081)
+        state = rng.normal(0, .05, (16, 128, 128)).astype(np.float32)
+        projected = rng.normal(0, .2, 8224).astype(np.float32)
+        layer = dict(a_log=rng.normal(0, .1, 16).astype(np.float32),
+                     dt=rng.normal(0, .1, 16).astype(np.float32),
+                     norm=rng.normal(1, .1, 128).astype(np.float32))
+        next_state = state.copy()
+        native_output = self.native.gdn(next_state, projected, layer["a_log"], layer["dt"], layer["norm"])
+        for start in (0, 4, 8, 12):
+            inputs, constants = pack_case(dict(state=state, projected=projected), layer, start)
+            np.testing.assert_array_equal(inputs["state"][0], state[start:start + 4].transpose(0, 2, 1).astype(np.float16))
+            for name, offset in (("beta", 8192), ("g", 8208)):
+                self.assertEqual(inputs[name].shape, (1, 4, 1, 128))
+                expected = np.repeat(projected[offset + start:offset + start + 4, None], 128, axis=1).astype(np.float16)
+                np.testing.assert_array_equal(inputs[name][0, :, 0], expected)
+            result = rounded_reference(inputs, constants)
+            expected = dict(state=next_state[start:start + 4].transpose(0, 2, 1)[None],
+                            output=native_output.reshape(16, 128)[start:start + 4, None, :][None])
+            for name in expected:
+                self.assertLess(error(result[name].astype(np.float16), expected[name])["normalized_rmse"], .005)
+
+    def test_recurrence_rejects_unrepresentable_fp16_input(self):
+        capture = dict(state=np.full((16, 128, 128), 1e10, dtype=np.float32),
+                       projected=np.zeros(8224, dtype=np.float32))
+        layer = dict(a_log=np.zeros(16, np.float32), dt=np.zeros(16, np.float32), norm=np.ones(128, np.float32))
+        with self.assertRaisesRegex(ValueError, "finite FP16"):
+            pack_case(capture, layer, 0)
 
 
 if __name__ == "__main__":
