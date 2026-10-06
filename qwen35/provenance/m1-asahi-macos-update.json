@@ -179,18 +179,168 @@
     "coefficient_layout": "FP16 semantic constants; compiled coefficient-bank packing requires its template layout"
   },
   "hardware": {
-    "status": "blocked_by_session_device_isolation",
-    "kernel_modules": [
-      "ane",
-      "ane_dt"
+    "status": "pass",
+    "executed_utc": "2026-10-06T13:10:17.974560+00:00",
+    "source_commit": "503da2a7e492c97db986a8d666adcc20fdb1da45",
+    "device": "/dev/accel/accel0",
+    "kernel": "7.1.13+",
+    "soc": "apple,t8103",
+    "shape_and_dynamic_range": {
+      "submissions": 35,
+      "records": 26,
+      "max_matrix_nrmse": 0.00021451407519634813,
+      "max_compensated_projection_nrmse": 0.0001992045193115935,
+      "extreme_values_exact": true
+    },
+    "full_model": {
+      "protocol": "qwen35-prefill-decode/v2",
+      "mode": "accurate",
+      "context": 2112,
+      "threads": 4,
+      "prefill_tokens": 3153,
+      "first_predictions": 6,
+      "decode_predictions": 384,
+      "timed_submissions": 339552,
+      "projections_per_token": 96,
+      "max_logit_nrmse": 0.0038132633715818433,
+      "full_logit_nrmse_limit": 0.005,
+      "aggregate_prefill_tokens_per_second": 12.389474248684536,
+      "aggregate_decode_steps_per_second": 12.165457145790583,
+      "coefficient_bytes": 995229696,
+      "precision_rows": 8,
+      "trace_sha256": "2ab9195b24394ef64b17bb53a647da0af2cbb5a5bf07d559f312f0073f4b9b3b",
+      "results": [
+        {
+          "id": "chat-0",
+          "prompt_tokens": 23,
+          "prefill_tokens_per_second": 13.493768063679601,
+          "decode_steps_per_second": 12.958437284610092,
+          "prefill_accuracy": {
+            "max_normalized_rmse": 0.0010243587115386652,
+            "argmax_matches": 1,
+            "predictions": 1
+          },
+          "decode_accuracy": {
+            "max_normalized_rmse": 0.0038132633715818433,
+            "argmax_matches": 64,
+            "predictions": 64
+          },
+          "prefill_ane_submissions": 2208,
+          "decode_ane_submissions": 6144
+        },
+        {
+          "id": "chat-1",
+          "prompt_tokens": 19,
+          "prefill_tokens_per_second": 13.279188072979768,
+          "decode_steps_per_second": 12.954148205239033,
+          "prefill_accuracy": {
+            "max_normalized_rmse": 0.0006219076408330834,
+            "argmax_matches": 1,
+            "predictions": 1
+          },
+          "decode_accuracy": {
+            "max_normalized_rmse": 0.002190575009687106,
+            "argmax_matches": 64,
+            "predictions": 64
+          },
+          "prefill_ane_submissions": 1824,
+          "decode_ane_submissions": 6144
+        },
+        {
+          "id": "chat-2",
+          "prompt_tokens": 21,
+          "prefill_tokens_per_second": 13.454948279621957,
+          "decode_steps_per_second": 12.79964708557183,
+          "prefill_accuracy": {
+            "max_normalized_rmse": 0.0008393761081218907,
+            "argmax_matches": 1,
+            "predictions": 1
+          },
+          "decode_accuracy": {
+            "max_normalized_rmse": 0.001207677241947415,
+            "argmax_matches": 64,
+            "predictions": 64
+          },
+          "prefill_ane_submissions": 2016,
+          "decode_ane_submissions": 6144
+        },
+        {
+          "id": "chat-3",
+          "prompt_tokens": 18,
+          "prefill_tokens_per_second": 13.059759493949418,
+          "decode_steps_per_second": 12.256941181678705,
+          "prefill_accuracy": {
+            "max_normalized_rmse": 0.0006723793273536014,
+            "argmax_matches": 1,
+            "predictions": 1
+          },
+          "decode_accuracy": {
+            "max_normalized_rmse": 0.0029623406551727433,
+            "argmax_matches": 64,
+            "predictions": 64
+          },
+          "prefill_ane_submissions": 1728,
+          "decode_ane_submissions": 6144
+        },
+        {
+          "id": "context-1024",
+          "prompt_tokens": 1024,
+          "prefill_tokens_per_second": 12.939190142953246,
+          "decode_steps_per_second": 11.432217399512957,
+          "prefill_accuracy": {
+            "max_normalized_rmse": 0.001153796446201401,
+            "argmax_matches": 1,
+            "predictions": 1
+          },
+          "decode_accuracy": {
+            "max_normalized_rmse": 0.0025755600120587244,
+            "argmax_matches": 64,
+            "predictions": 64
+          },
+          "prefill_ane_submissions": 98304,
+          "decode_ane_submissions": 6144
+        },
+        {
+          "id": "context-2048",
+          "prompt_tokens": 2048,
+          "prefill_tokens_per_second": 12.0985521499926,
+          "decode_steps_per_second": 10.911206396721969,
+          "prefill_accuracy": {
+            "max_normalized_rmse": 0.0021399188660117304,
+            "argmax_matches": 1,
+            "predictions": 1
+          },
+          "decode_accuracy": {
+            "max_normalized_rmse": 0.002394957808241395,
+            "argmax_matches": 64,
+            "predictions": 64
+          },
+          "prefill_ane_submissions": 196608,
+          "decode_ane_submissions": 6144
+        }
+      ]
+    },
+    "command": [
+      "bash",
+      "qwen35/local-results/asahi-macos-update-20261006/run-ane.sh"
     ],
-    "sysfs_device": "/sys/class/accel/accel0",
-    "device_number": "261:0",
-    "sandbox_device_visible": false,
-    "submissions": 0,
-    "error": "M1 ANE device is unavailable; managed sandbox exposes a private /dev without /dev/accel",
-    "user_report": "Host terminal: examples/elementwise.py using uv run returned the expected 64-element array of 5.",
-    "user_report_scope": "Reported by user; not independently executed by this session"
+    "returncode": 0,
+    "shared_locks": [
+      "/home/asahi/ane.lock",
+      "/home/asahi/gpu.lock",
+      "/tmp/m1-gpu.lock"
+    ],
+    "limitations": [
+      "One fresh ANE process, active desktop, clocks not fixed.",
+      "CPU and ANE runs occurred at different times; shared locks were held only for the ANE run. These timings do not establish an isolated speed comparison.",
+      "No continuous host-load or workload-specific swapout capture was retained."
+    ],
+    "earlier_attempt": {
+      "directory": "ane-host-20261006T125822Z",
+      "status": "lock_timeout",
+      "returncode": 1,
+      "hardware_submissions": 0
+    }
   },
   "new_macos_programs": {
     "status": "optional_fused_recurrence_not_integrated",
@@ -231,11 +381,30 @@
     "run-ane.sh": {
       "bytes": 1168,
       "sha256": "38871536d8f342fb744ab65a2dc8a96a581da5202ed1d9cb6ee59ea331e914f9"
+    },
+    "ane-host-20261006T130032Z/shapes.json": {
+      "bytes": 4586,
+      "sha256": "db2c35d70b9eb7a3ec7a82009d30498aa1fa0e5fc45e5800abe7663bce79d62d"
+    },
+    "ane-host-20261006T130032Z/shapes.log": {
+      "bytes": 3141,
+      "sha256": "f0fa09cb540260b45bc72193807b50422141a6f15f0fccc39cc1c559063ee9ea"
+    },
+    "ane-host-20261006T130032Z/long-context.json": {
+      "bytes": 20400,
+      "sha256": "e7a65b519e7cca34a6c446ce590050458c61b0e9f65b57b0ff7d6e962ce58ffe"
+    },
+    "ane-host-20261006T130032Z/long-context.log": {
+      "bytes": 14864,
+      "sha256": "ea4bf3a713ae231af625d97e51b29f3b31d3595067f3443c1d15550c4929daac"
+    },
+    "ane-host-20261006T125822Z/attempt.json": {
+      "bytes": 489,
+      "sha256": "1768fc65b2942846c59a0eb88375fc45c3da9ae4f9c3227941efc014a1a4eebe"
     }
   },
   "pending": [
-    "Host ANE dimension/dynamic-range regression and 1K/2K full-logit prefill/decode run",
-    "Optional fused recurrence optimization: provide verified local code generation or program layout; current hybrid inference is already supported"
+    "Independent Uzu all-prefix oracle capture on Asahi"
   ],
   "current_model_execution": {
     "status": "existing_backend_requires_no_additional_capture",
@@ -244,7 +413,7 @@
     "packing": "ane_plan_create_f16 in qwen35/ane_matmul.c repacks decoded checkpoint weights and patches K/N geometry",
     "recurrence": "qwen35/cpu.c:qwen35_gdn runs FP32 recurrence on CPU",
     "requirement": "Existing checkpoint, existing compiled projection stream, accessible Asahi ANE device",
-    "hardware_execution_this_session": "blocked by private /dev in managed sandbox"
+    "hardware_execution_this_session": "Passed on native Asahi; 35 regression submissions and 339552 timed full-model submissions"
   },
   "local_compiler_probe": {
     "executable": "/home/asahi/mil-hwx-compiler/build/mil-hwxc",
@@ -256,5 +425,29 @@
     "error": "error while loading shared libraries: libicui18n.so.76: cannot open shared object file: No such file or directory",
     "documented_h13g_coverage": "Captured GPT-2 graph contracts; FP16 LayerNorm/linear/FFN/attention with fixed 768-wide and sequence-32 shapes",
     "inference": "This compiler checkout does not yet supply a general four-head Qwen recurrence lowering."
+  },
+  "initial_hardware_attempt": {
+    "status": "blocked_by_session_device_isolation",
+    "kernel_modules": [
+      "ane",
+      "ane_dt"
+    ],
+    "sysfs_device": "/sys/class/accel/accel0",
+    "device_number": "261:0",
+    "sandbox_device_visible": false,
+    "submissions": 0,
+    "error": "M1 ANE device is unavailable; managed sandbox exposes a private /dev without /dev/accel",
+    "user_report": "Host terminal: examples/elementwise.py using uv run returned the expected 64-element array of 5.",
+    "user_report_scope": "Reported by user; not independently executed by this session"
+  },
+  "optional_followups": [
+    "Fused ANE recurrence integration requires verified local code generation or program layout; current hybrid model is fully exercised.",
+    "Cross-host BF16 comparison requires the independent macOS all-prefix arrays, which are not in this checkout.",
+    "New macOS training64 and Whisper dense exports are not present locally; their receipt hashes do not contain executable instructions."
+  ],
+  "task_md_check": {
+    "path": "/home/asahi/task.md",
+    "content": "when applegpu is ready, add those number to qwen3.c \n",
+    "result": "AppleGPU numbers are already imported into /home/asahi/qwen3.c/README.md with ane/benchmarks/applegpu-gpt2-m1.json; that checkout is clean."
   }
 }

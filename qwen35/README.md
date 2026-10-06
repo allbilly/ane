@@ -78,23 +78,33 @@ SDOT, including 1,024- and 2,048-token prompts. Maximum full-logit NRMSE was
 0.0432%. Four independently evolving greedy histories also matched all
 256 choices, with maximum NRMSE 0.0122%.
 
-| CPU SDOT prompt | Prefill tok/s | Decode tok/s |
-| --- | ---: | ---: |
-| Chat, 23 tokens | 21.35 | 17.54 |
-| Chat, 19 tokens | 20.99 | 17.40 |
-| Chat, 21 tokens | 21.23 | 15.87 |
-| Chat, 18 tokens | 20.59 | 15.95 |
-| 1,024 tokens | 20.24 | 16.12 |
-| 2,048 tokens | 19.33 | 15.04 |
+The accurate ANE backend also passed all six first predictions and 384 decode
+choices, with maximum full-logit NRMSE 0.3813%, below the unchanged 0.5% gate.
+It made 339,552 timed submissions for 3,153 prompt tokens and 384 decode calls:
+all 96 body projections ran on ANE for every input. The separate dimension,
+Mirai projection and extreme-value regression passed all 35 submissions.
 
-These are one active-desktop run with 64 decode calls per prompt, without
-shared hardware locks. They do not establish an isolated speed comparison.
-The ANE modules were loaded and the user reported successful elementwise
-execution in the host terminal. The managed agent session hid `/dev/accel`,
-so its ANE verification failed before submission. No new Asahi hardware
-accuracy or throughput result is claimed.
+| Prompt | CPU SDOT prefill tok/s | ANE prefill tok/s | CPU SDOT decode tok/s | ANE decode tok/s |
+| --- | ---: | ---: | ---: | ---: |
+| Chat, 23 tokens | 21.35 | 13.49 | 17.54 | 12.96 |
+| Chat, 19 tokens | 20.99 | 13.28 | 17.40 | 12.95 |
+| Chat, 21 tokens | 21.23 | 13.45 | 15.87 | 12.80 |
+| Chat, 18 tokens | 20.59 | 13.06 | 15.95 | 12.26 |
+| 1,024 tokens | 20.24 | 12.94 | 16.12 | 11.43 |
+| 2,048 tokens | 19.33 | 12.10 | 15.04 | 10.91 |
+| Aggregate | 19.66 | 12.39 | 16.28 | 12.17 |
+
+Both paths use the pinned Mirai M asymmetric W4 checkpoint. CPU SDOT reads
+packed W4 matrices; ANE expands body weights to resident FP16 and uses the
+accurate compensation policy, with its head and recurrence on the CPU.
+These are single active-desktop runs at different times, with 64 decode calls
+per prompt. The ANE run held all three shared ANE/GPU locks; the earlier CPU
+run did not. Clocks were not fixed, and continuous host-load and swapout
+accounting were not retained. These timings do not establish an isolated
+speed comparison. The initial sandbox rejection and a subsequent lock timeout
+remain in the receipts; both occurred before hardware submission.
 [Follow-up receipts and artifact hashes](provenance/m1-asahi-macos-update.json)
-retain both completed CPU work and pending hardware work.
+retain completed CPU and ANE checks, inputs and result hashes.
 
 Recurrence inputs and constants can now be prepared on Linux without an
 Apple compiler or copied macOS weights. Choose fresh output directories:
