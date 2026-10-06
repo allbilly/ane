@@ -1,11 +1,14 @@
 # Whisper on the Apple Neural Engine
 
-Start with [macOS](macos.md) for an executable setup, [Asahi Linux](asahi-linux.md)
-for the separate experimental driver path, and [decoder options](decoder.md) for
+Start with [native Asahi](asahi-native.md) or [macOS](macos.md) for an executable
+setup, [historical Asahi](asahi-linux.md) for the separate libane/anecc recipe,
+and [decoder options](decoder.md) for
 what can move beyond the encoder. [Local test results](macos-test-results.md)
 record the actual machine, versions, commands and evidence.
 The [CPU/GPU/ANE benchmark](benchmark-macos.md) measures five available routes
 with warm encode/decode timings, transcription latency and RTF.
+The [native Asahi benchmark](benchmark-asahi.md) records the new Linux hardware
+runs, independent numerical comparisons and measured CPU/ANE projection timings.
 
 The ANE is separate from the Metal GPU. Whisper first converts audio to log-mel
 features, then encodes the audio and repeatedly decodes text tokens. Moving only
@@ -18,6 +21,7 @@ the encoder to ANE still leaves decoding on CPU or GPU.
 | ANEForge Python Whisper | macOS on Apple Silicon | Encoder and decoder graphs | Separate [Python implementation](https://github.com/sbryngelson/ANEForge/blob/main/aneforge/models.py); does not enable whisper.cpp's decoder |
 | Core ML decoder experiment | macOS | Sharded decoder graphs, with host work | [Discussion #3849](https://github.com/ggml-org/whisper.cpp/discussions/3849) links draft [PR #3848](https://github.com/ggml-org/whisper.cpp/pull/3848) |
 | Asahi + libane | Native Asahi Linux | Encoder in the historical Whisper proof of concept | [PR #1021](https://github.com/ggml-org/whisper.cpp/pull/1021) open, unmerged; separate out-of-tree kernel driver |
+| Native register stream + whisper.cpp | Native Asahi Linux, M1 / T8103 | 24 encoder dense projections; other operations and decoder on CPU | Executed and validated on three audio variants; 1,128 ANE submissions per encoder; [measurements](benchmark-asahi.md) |
 
 ## Sources and versions
 

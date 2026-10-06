@@ -30,12 +30,15 @@ For a separate macOS Core ML comparison, see the
 placement lessons from an upstream ANEMLL port; this repository's runtime
 remains the direct-register Asahi implementation described here.
 
-[Whisper](whisper/README.md) contains macOS ANEForge setup, Asahi driver notes,
-and reproducible CPU/GPU/ANE transcription checks. Its
-[warm benchmark table](whisper/docs/benchmark-macos.md) measures five
-encoder/decoder routes on M1; ANE encoder + CPU decoder was fastest for the
-tested tiny.en model and clip. The macOS measurements use ANEForge's private
-Apple runtime; the Asahi route is documented but has not been run here.
+[Whisper](whisper/README.md) now runs trained `tiny.en` on this Asahi M1 using
+the existing matrix stream for 24 encoder projections, with other operations
+and decoding on CPU. No new macOS dump was used. All 80 captured raw logit
+argmaxes match CPU across three clips, with maximum logit NRMSE **0.310%**.
+The [Asahi warm table](whisper/docs/benchmark-asahi.md) measures **810.35 ms**
+to transcribe the 11-second JFK clip using ANE projections, versus **567.62 ms**
+on CPU. The [macOS table](whisper/docs/benchmark-macos.md) measures five routes;
+its full-encoder ANE + CPU decoder took **68.37 ms**. The graph and CPU backends
+differ, and the Linux hybrid is currently slower.
 
 [GPT-2 training on Asahi](gpt2/training/README-asahi.md) replays the captured
 forward and backward kernels through the same driver. A full 124M parameter
@@ -72,7 +75,7 @@ validated templates; their existing replay paths do not need fresh HWX dumps.
 | Quiet, repeated CPU measurements | Three phases completed: 54/54 numerical runs passed. Thirteen passed the sampled host-activity gates; 41 timings were affected. The unrestricted phase passed 18/18 with complete host queries, including five timings passing the sampled gates. | All attempts are retained; these same-boot phases do not establish an isolated OS comparison. |
 | Longer-context and free-generation numerical checks | Completed CPU checks: 1K/2K contexts and four shorter prompts, 384/384 decode choices; four independent greedy streams, 256/256 choices. All full-logit errors passed the unchanged 0.5% gate. | Floating traces and an accurate-ANE invocation are retained for native Asahi replay. |
 | Static HWX compile-options investigation | Seven variants exported identical one-task MUL structures. Historical custom-HWX macOS loading controls failed; the MUL computes exactly through private E5RT and daemon-compiled MIL. | Custom exported HWX execution belongs on Asahi. Standalone macOS loading is removed from pending work; option recognition and native Asahi replay remain separate questions. |
-| Whisper trained encoder and more audio | Actual ANE fixtures pass the cosine gate. All 15 transcriptions match CPU words across five routes and 5/11/23-second JFK variants. The dense wrapper reproduces all three original ANE outputs bit for bit. Core ML static plans prefer GPU for 101 operations or ANE for 99 plus two CPU operations. Original/dense exports have 1,779/1,783 tasks. | Native Asahi execution remains pending. Constructed variants do not establish diverse-corpus accuracy or WER. |
+| Whisper trained encoder and more audio | macOS fixtures and all 15 transcripts pass; original/dense exports have 1,779/1,783 tasks. The new Asahi projection route passes encoder and complete raw-logit checks across 5/11/23-second variants, with 1,128 hardware submissions per encoder. | Replay of the full macOS graph remains pending; recover the existing kit for performance work. Constructed variants do not establish diverse-corpus accuracy or WER. |
 | 64-token training | All 27 templates exported with actual ANE output fixtures. Independent loss/gradient gates and three updates passed, with 580 actual ANE dispatches per update; loss fell from 3.271003 to 0.428595. Replay guards pass. | Native Asahi fixture replay and model-level training validation. |
 | Fused Qwen recurrence | All 16 real-input cases pass on ANE after compensated scaling and explicit exponential SiLU. Maximum state/output NRMSE is 0.294%/0.317%, below the unchanged 0.5% gate. Four programs export with actual ANE fixtures and pass replay guards. | Native Asahi replay remains pending; this layer-0 probe does not enable a fused full-model decoder. |
 

@@ -9,7 +9,9 @@ This directory lives at `~/ane/whisper` as part of the parent `ane` repository.
 | Guide | Contents |
 | --- | --- |
 | [macOS setup](docs/macos.md) | Download models, export the ANE encoder, build whisper.cpp, transcribe, verify, and use Python encoder + decoder |
-| [Asahi Linux](docs/asahi-linux.md) | Separate kernel driver, libane, `.anec` conversion, historical PR setup and missing prerequisites |
+| [Native Asahi setup](docs/asahi-native.md) | Tested Linux CPU and ANE encoder projections using the existing matrix stream, without a new macOS dump |
+| [Asahi measurements](docs/benchmark-asahi.md) | Real hardware validation, warm encoder/prompt/decode timings and macOS comparison |
+| [Historical Asahi PR](docs/asahi-linux.md) | Separate libane/anecc stack, `.anec` conversion and old PR prerequisites |
 | [Decoder options](docs/decoder.md) | ANEForge Python versus the draft stateful Core ML decoder branch |
 | [Local test results](docs/macos-test-results.md) | Hardware, versions, transcript parity, timings and raw evidence |
 | [CPU / GPU / ANE benchmark](docs/benchmark-macos.md) | Five encoder/decoder routes, warm encode/decode timings, transcription latency and RTF |
@@ -21,7 +23,29 @@ The Asahi [PR #1021](https://github.com/ggml-org/whisper.cpp/pull/1021) remains 
 research proof of concept with separate dependencies. ANEForge's macOS runtime
 does not run on Linux.
 
-## Run in this prepared workspace
+## Run on this Asahi machine
+
+From the parent `~/ane` checkout:
+
+```sh
+flock "$HOME/ane.lock" flock "$HOME/gpu.lock" flock /tmp/m1-gpu.lock \
+  taskset -c 4-7 env WHISPER_ASAHI_ANE=1 OMP_WAIT_POLICY=PASSIVE \
+  whisper/build/asahi-ane/bin/whisper-cli \
+  -m whisper/models/hf-ggml/ggml-model.bin \
+  -f whisper/vendor/whisper.cpp/samples/jfk.wav \
+  -l en -t 4 -bs 1 -bo 1 -tp 0 -nf -nt -ng
+```
+
+Set `WHISPER_ASAHI_ANE=0` for the same build's CPU reference. This native path
+runs the 24 encoder dense projections on ANE and the remaining operations on
+CPU. Across 5/11/23-second JFK variants, all 80 raw logit argmaxes and token
+histories match CPU, with maximum logit NRMSE 0.310%. Warm median transcription
+time for the 11-second clip is **810.35 ms with ANE projections**, versus
+**567.62 ms on CPU**. The macOS full-encoder ANE route remains faster; its graph
+and CPU implementation differ. See [setup](docs/asahi-native.md) and the
+[complete table](docs/benchmark-asahi.md).
+
+## Run in the prepared macOS workspace
 
 ```sh
 cd ~/ane/whisper

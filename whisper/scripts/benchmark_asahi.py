@@ -68,11 +68,11 @@ def check_runtime(log, mode, expected_encodes):
     fallbacks = re.findall(r"fallbacks\s*=\s*(\d+) p /\s*(\d+) h", log)
     if len(fallbacks) != expected_encodes or any(p != "0" or h != "0" for p, h in fallbacks):
         raise ValueError("unexpected decoding fallback")
-    dispatches = re.findall(r"ASAHI_ANE encoder: projections=(\d+) submissions=(\d+) plans=(\d+)", log)
+    dispatches = re.findall(r"ASAHI_ANE encoder: projections=(\d+) submissions=(\d+) plans=(\d+) replicas=(\d+)", log)
     if mode:
         if "ASAHI_ANE ready:" not in log or len(dispatches) != expected_encodes:
             raise ValueError("missing actual ANE encoder evidence")
-        if any(tuple(map(int, row)) != (24, 2256, 24) for row in dispatches):
+        if any(tuple(map(int, row)) != (24, 1128, 24, 1) for row in dispatches):
             raise ValueError("incomplete tiny.en ANE encoder execution")
     elif dispatches or "ASAHI_ANE ready:" in log:
         raise ValueError("CPU baseline unexpectedly used ANE")
@@ -143,7 +143,8 @@ def main():
                   kernel=platform.release(), model_sha256=digest(args.model),
                   hf_checkpoint_sha256=digest(args.hf_model / "model.safetensors"),
                   audio_sha256=digest(args.audio), whisper_cpp_revision="60c0be6ac8fa71b1a2ae2dd938a31a34a508e774",
-                  scope="ANE encoder dense projections with two rounding grids; CPU convolution, attention, normalizations, exact encoder GELU, cross-K/V and decoder; widened FP32 NEON dot accumulation and real-length encoder K/V views in both modes",
+                  cpu_affinity=sorted(os.sched_getaffinity(0)),
+                  scope="ANE encoder dense projections, 32 audio positions per submission, one rounding grid; CPU convolution, attention, normalizations, exact encoder GELU, cross-K/V and decoder; widened FP32 NEON dot accumulation and real-length encoder K/V views in both modes",
                   feature_and_logit_gate_nrmse=.005, hf_encoder_gate_cosine=.999,
                   warmups_per_context=args.warmups, runs_per_context=args.runs, rounds=args.rounds,
                   method="Persistent contexts, warmup excluded, reversed backend order in round two; four workers, greedy English, no timestamps/fallback, full 30-second encoder context. Decoder total includes prompt plus token evaluation; whole timer includes host work and sampling.",
@@ -210,7 +211,7 @@ def main():
                 raise ValueError("encoder numerical gate failed: " + name)
             if any(x["nrmse"] >= .005 or not x["argmax_match"] for x in checks):
                 raise ValueError("full decoder logit gate failed: " + name)
-            print(f"{name}: PASS, 2256 ANE submissions, {len(checks)} decoder vectors; HF cosine {hf_error['cosine']:.8f}", flush=True)
+            print(f"{name}: PASS, 1128 ANE submissions, {len(checks)} decoder vectors; HF cosine {hf_error['cosine']:.8f}", flush=True)
         del hf
         driver = (args.build / "bin/benchmark-whisper").resolve()
         libdir = (args.build / "bin").resolve()

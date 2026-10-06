@@ -22,7 +22,12 @@
   convolution task, not the complete encoder. After Linux validation, benchmark
   matching CPU/CPU and ANE/CPU encode, decoder prompt setup, token decode and
   whole-transcription latency; retain transcript checks and the same timing
-  boundaries as the macOS warm benchmark.
+  boundaries as the macOS warm benchmark. The separate Linux projection path
+  now runs without a fresh dump: all 80 raw logit argmaxes match CPU across
+  three clips, maximum logit NRMSE is 0.310%, and warm whole-transcription
+  latency is 810.35 ms versus CPU's 567.62 ms for the 11-second JFK sample.
+  That path leaves convolutions, attention and decoding on CPU and is not a
+  replay of this complete exported encoder.
 
 - [ ] Transfer the existing macOS all-prefix Qwen BF16 oracle captures
   (`uzu-macos-all.npz` and `native-macos-all.npz`) with their report and hashes.

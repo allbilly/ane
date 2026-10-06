@@ -1,5 +1,10 @@
 # Whisper on ANE under Asahi Linux
 
+For the path actually executed on this Fedora Asahi M1, use the
+[native projection setup](asahi-native.md) and [measured results](benchmark-asahi.md).
+It reuses this repository's matrix stream and repacks trained weights on Linux.
+The recipe below describes the separate historical libane/anecc proof of concept.
+
 Asahi uses a Linux kernel driver and `libane`, independently of macOS ANEForge.
 The requested [PR #1021](https://github.com/ggml-org/whisper.cpp/pull/1021)
 is a 2023 proof of concept and remains unmerged as of 2026-10-06. There is no
@@ -10,7 +15,8 @@ The [Asahi M1 support page](https://asahilinux.org/docs/platform/feature-support
 lists the Neural Engine driver as out of tree. The experiment's documented
 machine was an M1 MacBook Pro running `6.3.0-asahi-8-1-ARCH`. Its results do not
 establish compatibility with today's Fedora Asahi kernel or every M-series chip.
-**This Linux path was inspected, not executed here: this host runs macOS.**
+**The historical PR recipe below was inspected on macOS and has not been
+executed here. The new native projection path has been executed on Asahi.**
 
 ## Required stack
 
@@ -154,8 +160,8 @@ checkout to file loading with libane's public API:
 3. Remove only the hard-coded `.anec.o` path from `WHISPER_OBJ` in the Makefile,
    retaining `whisper.o whisper-encoder.o`.
 
-This adaptation is inferred from the inspected libane interface and has not
-been validated on Linux here. Run from the checkout root because the model path
+This adaptation is inferred from the inspected libane interface; this historical
+wrapper has not been validated on Linux here. Run from the checkout root because the model path
 is relative. The built-in wrapper ignores the normal model-path argument, so
 you must manually keep the ANE tiny encoder paired with `ggml-tiny.bin`.
 
