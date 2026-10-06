@@ -1,0 +1,277 @@
+{
+  "status": "PASS",
+  "features": {
+    "nrmse": 0.0012144537074210771,
+    "cosine": 0.9999992625513656,
+    "max_abs": 0.027430057525634766
+  },
+  "decoder_calls": 25,
+  "max_logit_nrmse": 0.003312007776728333,
+  "raw_argmax_matches": 25,
+  "all_token_histories_match": true,
+  "logit_records": [
+    {
+      "nrmse": 0.0011893161097448987,
+      "cosine": 0.999999418617192,
+      "max_abs": 0.0244140625,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0017652555670384493,
+      "cosine": 0.999999554994948,
+      "max_abs": 0.031982421875,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0015844456161802128,
+      "cosine": 0.9999996467770331,
+      "max_abs": 0.03857421875,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0026904992270131538,
+      "cosine": 0.9999978345955465,
+      "max_abs": 0.0311279296875,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.001814333727972541,
+      "cosine": 0.999999028870792,
+      "max_abs": 0.03173828125,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0025527600753683156,
+      "cosine": 0.9999987025592334,
+      "max_abs": 0.03173828125,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.000852818264918379,
+      "cosine": 0.999999663473228,
+      "max_abs": 0.02099609375,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.000598388487833804,
+      "cosine": 0.9999999201280151,
+      "max_abs": 0.0341796875,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0007433646059300916,
+      "cosine": 0.9999999133722599,
+      "max_abs": 0.037841796875,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.003312007776728333,
+      "cosine": 0.9999966812116226,
+      "max_abs": 0.031494140625,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.000747270955656685,
+      "cosine": 0.999999936677205,
+      "max_abs": 0.0390625,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0022370388644224423,
+      "cosine": 0.9999997952921158,
+      "max_abs": 0.0439453125,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0008940163511204013,
+      "cosine": 0.9999999299614873,
+      "max_abs": 0.044921875,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0014437814703395942,
+      "cosine": 0.9999998878443812,
+      "max_abs": 0.041015625,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0008470247509218423,
+      "cosine": 0.9999997890538239,
+      "max_abs": 0.0283203125,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0012738456814203817,
+      "cosine": 0.9999995960060857,
+      "max_abs": 0.0322265625,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.000319160764282572,
+      "cosine": 0.9999999490735372,
+      "max_abs": 0.029296875,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0003138186044114149,
+      "cosine": 0.9999999516287927,
+      "max_abs": 0.02587890625,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0005531494045848378,
+      "cosine": 0.999999937056658,
+      "max_abs": 0.02978515625,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0004440258497582467,
+      "cosine": 0.9999999021496637,
+      "max_abs": 0.02392578125,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.00043906773967393014,
+      "cosine": 0.9999999429563794,
+      "max_abs": 0.033203125,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.00034593319892946164,
+      "cosine": 0.9999999401669345,
+      "max_abs": 0.025634765625,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.000696372458763602,
+      "cosine": 0.9999998072808831,
+      "max_abs": 0.021484375,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0022901662232678263,
+      "cosine": 0.9999998625238888,
+      "max_abs": 0.064453125,
+      "argmax_match": true
+    },
+    {
+      "nrmse": 0.0012603922484837767,
+      "cosine": 0.9999998176076718,
+      "max_abs": 0.033203125,
+      "argmax_match": true
+    }
+  ],
+  "scope": "ANE encoder dense projections; CPU convolution, attention, normalizations, GELU, cross-K/V and decoder",
+  "projections": 24,
+  "hardware_submissions": 1128,
+  "encoder_positions": 1500,
+  "gate_nrmse": 0.005,
+  "macos_compiler_or_new_dump_used": false,
+  "matrix_shape_checks": {
+    "status": "PASS",
+    "gate_nrmse": 0.005,
+    "submissions": 12,
+    "records": [
+      {
+        "k": 384,
+        "n": 384,
+        "rows": 1,
+        "nrmse": 0.00028865315678606887,
+        "submissions": 1
+      },
+      {
+        "k": 384,
+        "n": 384,
+        "rows": 8,
+        "nrmse": 0.00029271661492059057,
+        "submissions": 1
+      },
+      {
+        "k": 384,
+        "n": 384,
+        "rows": 28,
+        "nrmse": 0.0002913165540953579,
+        "submissions": 1
+      },
+      {
+        "k": 384,
+        "n": 384,
+        "rows": 32,
+        "nrmse": 0.0002976152986425284,
+        "submissions": 1
+      },
+      {
+        "k": 384,
+        "n": 1536,
+        "rows": 1,
+        "nrmse": 0.00027946611078389673,
+        "submissions": 1
+      },
+      {
+        "k": 384,
+        "n": 1536,
+        "rows": 8,
+        "nrmse": 0.00029439676107578046,
+        "submissions": 1
+      },
+      {
+        "k": 384,
+        "n": 1536,
+        "rows": 28,
+        "nrmse": 0.000294155588185885,
+        "submissions": 1
+      },
+      {
+        "k": 384,
+        "n": 1536,
+        "rows": 32,
+        "nrmse": 0.0002933036515231713,
+        "submissions": 1
+      },
+      {
+        "k": 1536,
+        "n": 384,
+        "rows": 1,
+        "nrmse": 0.00028615388034795494,
+        "submissions": 1
+      },
+      {
+        "k": 1536,
+        "n": 384,
+        "rows": 8,
+        "nrmse": 0.0002943828955923809,
+        "submissions": 1
+      },
+      {
+        "k": 1536,
+        "n": 384,
+        "rows": 28,
+        "nrmse": 0.0002950525179795645,
+        "submissions": 1
+      },
+      {
+        "k": 1536,
+        "n": 384,
+        "rows": 32,
+        "nrmse": 0.0002901455940603242,
+        "submissions": 1
+      }
+    ]
+  },
+  "local_trace_directory": "/home/asahi/ane/whisper/.cache/asahi-20261006",
+  "source_sha256": {
+    "whisper/asahi_encoder.h": "3e18f1fdea875cf498bd5b0a928f1f76e83ed3b166101c18e8cc48fdf0a29ea5",
+    "whisper/asahi_encoder.cpp": "0288dacfb509591b2f9454cf67a6175ed09c6a2c665e4ac196d49b296cf09556",
+    "whisper/scripts/prepare_asahi.py": "0f71fb11d2317ac5a6679a6d43cffb6e02f44b320278f78aa44d884330446bbb",
+    "qwen35/ane_matmul.c": "200ad6e8847de6aea5c001401fb01f7c40781e61d1cf3063809c5cca66aa4510",
+    "qwen35/linear_template.h": "b7806029cc215b8a70ff3e14d4dd188988a49b24831b4909de82aea6e0e4d680"
+  },
+  "trace_sha256": {
+    "cpu-trace-jfk/mel.f32": "179e2757da689a12be496abdb62fe07f1d8455b0e60398905e18485d01d4593a",
+    "cpu-trace-jfk/encoder.f32": "99a844b565aa773f99a73867a06c1fc00e2846a97d5ab5d550d2f4807b4c4632",
+    "cpu-trace-jfk/logits.bin": "fc12ec3a2f9ba62f82fe3237b1afbcb69e6333425eb256f68ca9d696c98e24d7",
+    "ane-trace-jfk/mel.f32": "179e2757da689a12be496abdb62fe07f1d8455b0e60398905e18485d01d4593a",
+    "ane-trace-jfk/encoder.f32": "9a044d2691df2401d49d5fc8c373ecc65f55e71d968fcef3d69a80a54a4b59f7",
+    "ane-trace-jfk/logits.bin": "cab126a3f71587a700e6df3b7a7375d8ec50052b6ade2181bed42600bbc5501d"
+  }
+}
