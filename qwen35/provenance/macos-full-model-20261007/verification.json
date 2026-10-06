@@ -1,0 +1,98 @@
+{
+  "status": "pass",
+  "unit_tests": 26,
+  "unit_command": "CC=gcc-16 OPENBLAS_NUM_THREADS=1 python -m unittest qwen35.tests qwen35.test_macos_ane experimental.test_compact_whisper experimental.test_capture_validation experimental.test_quiet_observations",
+  "unit_output": "..........................\n----------------------------------------------------------------------\nRan 26 tests in 0.194s\n\nOK\n",
+  "offline_checks": {
+    "status": "pass",
+    "task_count": 1783,
+    "macos_replay_guard": true,
+    "benchmark_files_verified": 17,
+    "measured_sources_unchanged": true,
+    "first_difference_locator": true
+  },
+  "reconstruction": {
+    "status": "pass",
+    "task_count": 1783,
+    "payloads": {
+      "commands": {
+        "bytes": 1277952,
+        "sha256": "4d617ef0a7e9013c3a66a25e77403ba08fbac3453c7d14266ab415fcadd92734"
+      },
+      "constants": {
+        "bytes": 26112,
+        "sha256": "70d12f5f1d79ccf50e4c73d3ed1ecd0df36ed0241223026622e5d26f66094ed1"
+      },
+      "coefficients": {
+        "bytes": 15450112,
+        "sha256": "9c7c3a210bb565db38be08c463be16e3ab22a11fe5e0d933e9666f1d2c351bfb"
+      },
+      "source-weights": {
+        "bytes": 15269056,
+        "sha256": "a0962b2d434a6e45e369d79ed1021326a5c22a7dc6866f541c9dee976ef9ff45"
+      },
+      "positions": {
+        "bytes": 1152000,
+        "sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+      },
+      "source-mil": {
+        "bytes": 308910,
+        "sha256": "1aa1835e8f4d004e30709e04cc37e7de0c195a6c2f959a23bc4cd496778437b4"
+      }
+    }
+  },
+  "kernel_package_bytes": 150350,
+  "kernel_files": {
+    "coefficients.template.zlib": {
+      "bytes": 23531,
+      "sha256": "f98508279fe009f0132e6b5ef1f56e566f0979a7aa26a21d10d514a435f29cfa"
+    },
+    "commands.template.zlib": {
+      "bytes": 50024,
+      "sha256": "899af3fdcc69676f7d732773f54687763698b4c7318a2d0b5a81d4add628fba0"
+    },
+    "constants.template.zlib": {
+      "bytes": 48,
+      "sha256": "13b85a9fe3eda13f8658e2d494828f0fd62a5e4ee3ee0db34c87f5c7c1a845be"
+    },
+    "conv2-offsets.i32.zlib": {
+      "bytes": 3148,
+      "sha256": "ebe41d1a0c43862831f519c87da5527e571b8dfdbeaf28f1dfcb7cc50848fcb2"
+    },
+    "meta.json": {
+      "bytes": 4863,
+      "sha256": "36e15c62615426adc1a718963bf6fbbb1ec1a6e0c6c7583a207c22895a2548c6"
+    },
+    "model.mil.zlib": {
+      "bytes": 32103,
+      "sha256": "fadbd48374103d59bca75235af0357a12a8cf9aac7a6af90fde0bb632fa127f7"
+    },
+    "packing.json.zlib": {
+      "bytes": 15905,
+      "sha256": "2d407f96ecff91633818a5ffb1336c77a9f8a34ff5e6f3c21065d9b398b85e5f"
+    },
+    "proof.json": {
+      "bytes": 5099,
+      "sha256": "ca40957c7904f809b2e1f9822d3254647ffdc726bcbe3e430384846729df7515"
+    },
+    "source-weights.template.zlib": {
+      "bytes": 15629,
+      "sha256": "81d6a1d84de2c8a36604c64d0b4ef904ece923757dba8899742a4621bc4cfbf8"
+    }
+  },
+  "tool_sha256": {
+    "experimental/derive_whisper_kernels.py": "96d020db8db9546e4d3a9b4b721e9bcfa96e917d10e717f4551d2455efa8de39",
+    "experimental/package_whisper_encoder.py": "49a48f1ceb4e59f8a6240a2b539dea394adf902b184b171a041d4061f318fc0b",
+    "experimental/test_compact_whisper.py": "5714a0cc0a18580de2ef73e792de5b1db4b58734af4e4ce1fcc2bd862f66dbab",
+    "whisper/encoder_kernel.py": "7334404d1df1cd8fdd6d2c4612488272fc32a20f7c681758159bb8194a22fe2d",
+    "whisper/replay_encoder.py": "49d4f1ef652763736ba6d125c18a6a329555cafdad8b10d91eefb2d3be20948c",
+    "qwen35/test_macos_ane.py": "725c8d4c6e086c47a1d284f0a6e4659c06ae1be3ad53b0ffc4a284eeb67b44f4",
+    "qwen35/tools/compare_prefix_captures.py": "ac4da035e6a0d4ac01449454e054db7c97525edb372eb79632d20046471abf44",
+    "qwen35/tools/package_prefix_captures.py": "674862dfae65264b6f3a95dc19200ab2f679f09279f2131c38a35bee8c2b8f02"
+  },
+  "pending": [
+    "Native Asahi complete-encoder execution, whisper.cpp decoder integration and transcription timings",
+    "Asahi all-prefix oracle transfer/comparison; captures and destination unavailable"
+  ],
+  "excluded_task": "/Users/yeren/Desktop/mlx-ane-sd/task.md"
+}

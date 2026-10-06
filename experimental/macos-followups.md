@@ -9,6 +9,13 @@ is `qwen35/provenance/m1-macos-followup.json`. The unrestricted rerun is
 `qwen35/provenance/m1-macos-unrestricted.json`. Large artifacts stay in these
 ignored capture directories. `mlx-ane-sd/task.md` remains excluded.
 
+The 2026-10-07 [full-model macOS Qwen repeats](../qwen35/macos-full-model.md)
+pass all three CPU and three private-E5RT ANE runs. The
+[complete Whisper encoder kernels](../whisper/docs/compact-encoder.md) are
+committed as approximately 147 KiB of templates and external-checkpoint
+packing recipes. Their reconstruction is byte-exact; native Linux execution,
+decoder integration and cross-host BF16 oracle comparison remain pending.
+
 ## Subsequent review
 
 The [review receipt](../qwen35/provenance/m1-macos-review.json) retains the

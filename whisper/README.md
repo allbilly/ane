@@ -10,6 +10,7 @@ This directory lives at `~/ane/whisper` as part of the parent `ane` repository.
 | --- | --- |
 | [macOS setup](docs/macos.md) | Download models, export the ANE encoder, build whisper.cpp, transcribe, verify, and use Python encoder + decoder |
 | [Native Asahi setup](docs/asahi-native.md) | Tested Linux CPU and ANE encoder projections using the existing matrix stream, without a new macOS dump |
+| [Complete encoder kernels](docs/compact-encoder.md) | Compact 1,783-task M1 kernels, external checkpoint repacking and pending Linux replay |
 | [Asahi measurements](docs/benchmark-asahi.md) | Real hardware validation, warm encoder/prompt/decode timings and macOS comparison |
 | [Historical Asahi PR](docs/asahi-linux.md) | Separate libane/anecc stack, `.anec` conversion and old PR prerequisites |
 | [Decoder options](docs/decoder.md) | ANEForge Python versus the draft stateful Core ML decoder branch |

@@ -1,0 +1,86 @@
+{
+  "session.json.gz": {
+    "bytes": 70276,
+    "sha256": "19e315d8d668b3842bf6294e6e4055be9ba0e5cf3bd73d133c89289e3e3d9a86",
+    "uncompressed_bytes": 933607,
+    "uncompressed_sha256": "fd8ce0ab36418d4f737f2abc421f16ea570d6ffb9c6373bdc9cc9cff191b4031"
+  },
+  "summary.json.gz": {
+    "bytes": 95772,
+    "sha256": "bd341b7131d9e686060758a91bbf0e5c761ef1128ff8b630ac33195125df38d2",
+    "uncompressed_bytes": 541372,
+    "uncompressed_sha256": "dcf8d352ba0539dc8e6342a80c91dd907e1681f3d985fe5b5cd538915ba50f5e"
+  },
+  "cpu-r1.json.gz": {
+    "bytes": 9898,
+    "sha256": "25b4217da14ccd6bc2c1e84df5adf60cbfbd32f2c6c8e49cf2c0058c2bf9e673",
+    "uncompressed_bytes": 40720,
+    "uncompressed_sha256": "25df4082b744ae6e0c98b1dcc536a06e1b5cf6cdcf281469f478f311aed9fb8b"
+  },
+  "cpu-r3.json.gz": {
+    "bytes": 9946,
+    "sha256": "21df226b27436a0f2f633f54283873e840369a98e6b2576a6873211bb65f5d6c",
+    "uncompressed_bytes": 40703,
+    "uncompressed_sha256": "7907727c0ee89dc0736de6d842428a691d0a0585521286df78570b683137b056"
+  },
+  "cpu-r2.json.gz": {
+    "bytes": 9903,
+    "sha256": "bac0b918733729b6c204a55aff14b13fee496ef3386514daa815d5913a27f328",
+    "uncompressed_bytes": 40706,
+    "uncompressed_sha256": "9279a21c1f1dcfd7bea82b63f0eaf26949ec0ab8c0a3c1e433f8f2fbb094816a"
+  },
+  "ane-r1.json.gz": {
+    "bytes": 19771,
+    "sha256": "948ae1b793d66670ae22a2dfb564f9ed5d26f935eb211b5b63f6161b25a9a824",
+    "uncompressed_bytes": 91031,
+    "uncompressed_sha256": "e257fd355e71910e47a6a4b070a2df78e246cfc4e1a552d8f3a7762f9134d482"
+  },
+  "ane-r3.json.gz": {
+    "bytes": 19862,
+    "sha256": "1151c0374f8af529b593916585fb58812fb063a1b04788ac53d8d5c25c5b00c8",
+    "uncompressed_bytes": 90995,
+    "uncompressed_sha256": "1de8e38ee855c00ded1ac030e676f83454fb1493ae3c156a77b561190e3e0bb6"
+  },
+  "ane-r2.json.gz": {
+    "bytes": 19750,
+    "sha256": "2037bed4bb15bc11b88d3927f1793ee1a0468bffe831def5279bd8b7573f1043",
+    "uncompressed_bytes": 91030,
+    "uncompressed_sha256": "90f0e19b575cbf373dd781805eb381fe00459ef866fe63274f6893de3c72581c"
+  },
+  "measured-sources/qwen35/cpu.c": {
+    "bytes": 10323,
+    "sha256": "ee2568b17593a014eb17ad83d33fbf4c429fb51482a4716d6a8a3dc5cac805d1"
+  },
+  "measured-sources/qwen35/native.py": {
+    "bytes": 5870,
+    "sha256": "90f7209efc8a48de8bc0b51e6ad75b388a60abe9fbe7aeb565e8d5402d6a5fce"
+  },
+  "measured-sources/qwen35/model.py": {
+    "bytes": 10205,
+    "sha256": "f6b98cb33de409bc82524bfc4f0c0b30084b2e142f4165dc3c7741fe650b3675"
+  },
+  "measured-sources/qwen35/ane.py": {
+    "bytes": 7952,
+    "sha256": "9191c5baaba92db8b11c14029be07cbc6f5ac211a1f5f5ded0b7549145c2245a"
+  },
+  "measured-sources/qwen35/weights.py": {
+    "bytes": 9054,
+    "sha256": "b6e32fb17ea8131c3ec084b129258b0a6daec6e13201f4491961b63890b70185"
+  },
+  "measured-sources/qwen35/macos_ane.py": {
+    "bytes": 6855,
+    "sha256": "a1b6600e47792c72f393b72ae07975c1360fd0f4fa71ef3291f677627f62be2d"
+  },
+  "measured-sources/qwen35/tools/quiet_benchmark.py": {
+    "bytes": 9449,
+    "sha256": "e9bf431086f54bfc6b34deae32b415dd8d5ff01f03ef9becbdd615faed28ff3f"
+  },
+  "measured-sources/qwen35/tools/benchmark.py": {
+    "bytes": 12591,
+    "sha256": "493df857bd8fcaa422c81079156027003363065369a85cf1199ee485ecc70df7"
+  },
+  "measured-sources/qwen35/tools/benchmark_macos.py": {
+    "bytes": 8285,
+    "sha256": "6631c6d045c8f57041fb3e3780a36687f165cc87e96a4f87d49914cf4e851c4e"
+  }
+}

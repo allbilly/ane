@@ -1,0 +1,32 @@
+{
+  "status": "prepared",
+  "model_revision": "c12202e4c764e559960827761566aaa1fd15a87a",
+  "model_sha256": "fa595349afb112763731f5d548a7af4baff7b6088c99f1f2cada29c89442870c",
+  "uzu_revision": "4d880766f5a4137b63d56c3924e7a2e403b0ccc6",
+  "oracle_sha256": "5202e9c40e3909f0b3fc500a67ad1a188346140f0d0e1143e597dc37c43a9275",
+  "prefixes": 23,
+  "layers": 24,
+  "vocabulary": 248320,
+  "same_host_bitwise_equal": true,
+  "files": {
+    "uzu-macos-all.npz": {
+      "bytes": 11456730,
+      "sha256": "9995b79c770f2ad1f8ecb5f65091d5e314de75a54fd83465b8f949a4e56d265e"
+    },
+    "native-macos-all.npz": {
+      "bytes": 11456730,
+      "sha256": "9995b79c770f2ad1f8ecb5f65091d5e314de75a54fd83465b8f949a4e56d265e"
+    },
+    "report.json": {
+      "bytes": 164049,
+      "sha256": "9876fd49095974808b854b36402d1243d54d284001fd9df5ddde6f0c4fe58082"
+    }
+  },
+  "archive": {
+    "path": "qwen35/local-results/macos-todo-20261007/qwen-bf16-oracles.tar.gz",
+    "bytes": 22829949,
+    "sha256": "a10e2a61115ed44f29929286e169574b6c5def74782148a19a0ebfbcc9288ae1"
+  },
+  "cross_host_comparison": "pending new Asahi all-prefix NPZ arrays; no transfer destination provided",
+  "command": "python -m qwen35.tools.compare_prefix_captures uzu-macos-all.npz uzu-asahi-all.npz --output cross-host.json"
+}

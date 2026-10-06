@@ -1,0 +1,156 @@
+{
+  "status": "pass",
+  "checkpoint_sha256": "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad",
+  "task_count": 1783,
+  "source_capture": "/Users/yeren/ane/qwen35/local-results/macos-unrestricted-20261006T024951Z/whisper-dense",
+  "recovery_report_sha256": "77b6fd92fa68b9356b20f4b654da30669b6ce89e0caf386e81e79ab7bd7f6ccf",
+  "byte_exact_payloads": {
+    "commands": "4d617ef0a7e9013c3a66a25e77403ba08fbac3453c7d14266ab415fcadd92734",
+    "constants": "70d12f5f1d79ccf50e4c73d3ed1ecd0df36ed0241223026622e5d26f66094ed1",
+    "coefficients": "9c7c3a210bb565db38be08c463be16e3ab22a11fe5e0d933e9666f1d2c351bfb",
+    "source-weights": "a0962b2d434a6e45e369d79ed1021326a5c22a7dc6866f541c9dee976ef9ff45"
+  },
+  "stripped_coefficient_bytes": 15250942,
+  "stripped_source_weight_bytes": 15264768,
+  "runtime_validation": {
+    "status": "pass",
+    "kit": "/Users/yeren/ane/qwen35/local-results/macos-unrestricted-20261006T024951Z/whisper-dense",
+    "device_mask": 4,
+    "runtime": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+    "runtime_sha256": "017fbc08675e8773e73f5c0c44f6e6b040c14257342fdf4c0f19914044008587",
+    "reference_kind": "macOS ANE FP16 outputs",
+    "gate": {
+      "relative_l2": 0.005,
+      "allclose_rtol": 0.01,
+      "allclose_atol": 0.03
+    },
+    "programs": [
+      {
+        "hwx": "hwx/model.hwx",
+        "status": "executed",
+        "captured_fixtures": [
+          {
+            "path": "program-0-fixture-0.npz",
+            "sha256": "ea98fdb2e56b4dddf084f7f8895e3406ec93f51dffbf4e3bbfaa5e84ee69d800",
+            "source": "jfk.npz",
+            "reference_kind": "macOS ANE FP16 outputs"
+          },
+          {
+            "path": "program-0-fixture-1.npz",
+            "sha256": "4929620f28ec5b82f931cfd35c73294eec7b41c070efede743fa8e319d4788e8",
+            "source": "jfk-first-5s.npz",
+            "reference_kind": "macOS ANE FP16 outputs"
+          },
+          {
+            "path": "program-0-fixture-2.npz",
+            "sha256": "7ff73fd10b1af230967e77176fb0a8b3a86525e5811c7c0cc7585ff59098c7d5",
+            "source": "jfk-repeat.npz",
+            "reference_kind": "macOS ANE FP16 outputs"
+          }
+        ]
+      }
+    ],
+    "comparisons": [
+      {
+        "name": "whisper-encoder/t1383",
+        "fixture": "jfk.npz",
+        "finite": true,
+        "relative_l2": 0.0,
+        "allclose": true,
+        "pass_gate": true,
+        "execute_seconds": 0.022177999999257736,
+        "hf_cosine": 0.9999558853116128,
+        "passes_encoder_cosine": true,
+        "bitwise_equal": true
+      },
+      {
+        "name": "whisper-encoder/t1383",
+        "fixture": "jfk-first-5s.npz",
+        "finite": true,
+        "relative_l2": 0.0,
+        "allclose": true,
+        "pass_gate": true,
+        "execute_seconds": 0.01716695799404988,
+        "hf_cosine": 0.9999153487973237,
+        "passes_encoder_cosine": true,
+        "bitwise_equal": true
+      },
+      {
+        "name": "whisper-encoder/t1383",
+        "fixture": "jfk-repeat.npz",
+        "finite": true,
+        "relative_l2": 0.0,
+        "allclose": true,
+        "pass_gate": true,
+        "execute_seconds": 0.01473545900080353,
+        "hf_cosine": 0.9997104093561877,
+        "passes_encoder_cosine": true,
+        "bitwise_equal": true
+      }
+    ],
+    "dispatches": 3,
+    "scope": "ANE-only execution of the captured MIL; Linux HWX replay remains separate"
+  },
+  "fixtures": {
+    "kind": "whisper",
+    "records": [
+      {
+        "name": "whisper-encoder/t1383",
+        "hwx": "hwx/model.hwx",
+        "reference_kind": "macOS ANE FP16 outputs",
+        "hwx_sha256": "03860fc8d1345741913525d1dfcd2f711d730c9c76c89ef39a018296a69038c5",
+        "task_count": 1783,
+        "input_port_names": [
+          "capture_dense_t1",
+          "capture_dense_t0"
+        ],
+        "inputs": [
+          [
+            1,
+            1,
+            1875,
+            128
+          ],
+          [
+            1,
+            1,
+            4500,
+            128
+          ]
+        ],
+        "output_port_name": "t1383",
+        "output": [
+          1,
+          1,
+          1500,
+          384
+        ],
+        "output_key": "output",
+        "fixtures": [
+          {
+            "path": "jfk.npz",
+            "sha256": "c42e80f1e9784ed804e9aab344a174c49c2f1d339e64148b63128a2f20f25b49"
+          },
+          {
+            "path": "jfk-first-5s.npz",
+            "sha256": "dd066344c305cf7ba8e6ed376e546fa738cea0bbd9d4c33e1fa054eb89e1f414"
+          },
+          {
+            "path": "jfk-repeat.npz",
+            "sha256": "2c7d74cedccbf8828b9b0646b5e319f511e2857c29d1e534d9b54251c8ffc71e"
+          }
+        ]
+      }
+    ],
+    "unsupported": [],
+    "hardware_execution": "pending native Asahi",
+    "gate": {
+      "relative_l2": 0.005,
+      "allclose_rtol": 0.01,
+      "allclose_atol": 0.03
+    },
+    "reference_kind": "macOS ANE FP16 outputs",
+    "scope": "Replay against the explicitly identified captured reference; model-level Linux validation remains separate."
+  },
+  "package_bytes_excluding_proof": 145251
+}

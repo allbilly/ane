@@ -26,6 +26,12 @@ Actual [Asahi measurements](benchmark-asahi.md) and numerical evidence are
 retained. The current hybrid is accurate on the three tested clips, but slower
 than CPU and the macOS whole-encoder ANE route.
 
+The [complete encoder package](compact-encoder.md) now provides all 1,783
+captured tasks in approximately 147 KiB, with learned weights repacked from
+the external HF checkpoint. Its command/constant/coefficient reconstruction
+is byte-exact. Linux hardware validation and decoder integration remain
+pending; the projection measurements below retain their existing scope.
+
 ## Run in the prepared workspace
 
 From the parent `ane` checkout:

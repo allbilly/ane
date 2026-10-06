@@ -30,6 +30,13 @@ Use `--model` for an existing copy of the pinned checkpoint. Select worker
 counts explicitly for macOS comparisons; Linux CPU affinity selection is
 unavailable there.
 
+[Full-model macOS ANE execution](macos-full-model.md) now uses private E5RT
+MIL compilation with all 96 body projections and CPU recurrence, attention
+and head. Three CPU and three ANE repeats passed all six prompts and 64 decode
+calls each. Maximum ANE full-logit NRMSE was 0.48789%, below the unchanged 0.5%
+gate. All six timings were affected by paging or desktop activity; compressed
+raw receipts, observations and measured sources are retained.
+
 Mirai M uses asymmetric 4-bit weights, groups of 32, BF16 scales, packed
 4-bit zero points and signed 32-element Hadamard transforms. This differs
 from GGUF Q4_0 and Mirai S's trellis codec. Body matrices store scales and
