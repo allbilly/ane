@@ -81,8 +81,12 @@ void WhisperAsahi::compute(ggml_tensor * dst, int ith, int nth, void * userdata)
     const auto & plan = found->second;
     state.input.resize(32*plan.k); state.output.resize(32*plan.n);
     int shifts[32];
-    for (int position = 0; position < activation->ne[1]; position += 32) {
-        const int rows = int(std::min<int64_t>(32, activation->ne[1] - position));
+    // Two rounding grids reduce F16 output error without changing the model.
+    // Every input position still computes its complete product on ANE.
+    constexpr int positions_per_batch = 16;
+    constexpr float second_gain = 1.375f;
+    for (int position = 0; position < activation->ne[1]; position += positions_per_batch) {
+        const int rows = int(std::min<int64_t>(positions_per_batch, activation->ne[1] - position));
         for (int row = 0; row < rows; ++row) {
             const float * source = reinterpret_cast<const float *>(
                 static_cast<const char *>(activation->data) + (position + row)*activation->nb[1]);
@@ -91,17 +95,22 @@ void WhisperAsahi::compute(ggml_tensor * dst, int ith, int nth, void * userdata)
                 if (!std::isfinite(source[k])) GGML_ABORT("nonfinite Asahi encoder input");
                 peak = std::max(peak, std::fabs(source[k]));
             }
-            shifts[row] = peak ? int(std::floor(std::log2(double(plan.limit)) - std::log2(double(peak)))) : 0;
-            for (int k = 0; k < plan.k; ++k)
-                state.input[row*plan.k + k] = std::ldexp(source[k], shifts[row]);
+            shifts[row] = peak ? int(std::floor(std::log2(double(plan.limit)) - std::log2(double(peak)*second_gain))) : 0;
+            for (int k = 0; k < plan.k; ++k) {
+                const float value = std::ldexp(source[k], shifts[row]);
+                state.input[(2*row)*plan.k + k] = value;
+                state.input[(2*row + 1)*plan.k + k] = value*second_gain;
+            }
         }
-        if (!ane_plan_run_batch(plan.handle, state.input.data(), state.output.data(), rows))
+        if (!ane_plan_run_batch(plan.handle, state.input.data(), state.output.data(), 2*rows))
             GGML_ABORT("Asahi encoder submission failed; no CPU fallback");
         for (int row = 0; row < rows; ++row) {
             float * target = reinterpret_cast<float *>(
                 static_cast<char *>(dst->data) + (position + row)*dst->nb[1]);
             for (int n = 0; n < plan.n; ++n) {
-                target[n] = std::ldexp(state.output[row*plan.n + n], -shifts[row]);
+                const float value = .5f*(state.output[(2*row)*plan.n + n] +
+                                        state.output[(2*row + 1)*plan.n + n]/second_gain);
+                target[n] = std::ldexp(value, -shifts[row]);
                 if (!std::isfinite(target[n])) GGML_ABORT("nonfinite Asahi encoder output");
             }
         }
@@ -113,9 +122,9 @@ void WhisperAsahi::finish_encoder(int layers, int positions) {
     const auto total = ane_device_submissions(impl->device);
     const auto submissions = total - impl->previous_submissions;
     const auto expected = static_cast<unsigned long long>(6*layers);
-    if (impl->projections != expected || submissions != expected*((positions + 31)/32))
+    if (impl->projections != expected || submissions != expected*((positions + 15)/16))
         GGML_ABORT("Asahi encoder projection/submission count mismatch");
-    std::fprintf(stderr, "ASAHI_ANE encoder: projections=%llu submissions=%llu plans=%zu\n",
+    std::fprintf(stderr, "ASAHI_ANE encoder: projections=%llu submissions=%llu plans=%zu replicas=2\n",
                  impl->projections, submissions, impl->plans.size());
     impl->projections = 0;
     impl->previous_submissions = total;

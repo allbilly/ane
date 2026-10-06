@@ -22,6 +22,13 @@ def source_patch(text):
     start = text.index("static struct ggml_cgraph * whisper_build_graph_encoder(")
     end = text.index("// pre-compute cross-attention memory", start)
     graph = text[start:end]
+    graph = replace_once(graph, "ggml_gelu(ctx0, cur)", "ggml_gelu_erf(ctx0, cur)")
+    # CPU flash attention supports the actual sequence length. Exposing the
+    # allocation's 36 zero-filled padding slots changes softmax probabilities.
+    graph = replace_once(graph, "    const int n_ctx_pad = GGML_PAD(n_ctx, 256);\n\n", "")
+    if graph.count("n_state_head, n_ctx_pad, n_head") != 2:
+        raise ValueError("pinned encoder K/V view anchor mismatch")
+    graph = graph.replace("n_state_head, n_ctx_pad, n_head", "n_state_head, n_ctx, n_head")
     anchor = "    const auto & model   = wctx.model;"
     graph = replace_once(graph, anchor, """    if (whisper_asahi_enabled() && !wctx.asahi) {
         if (wctx.params.use_gpu) GGML_ABORT("Asahi encoder requires use_gpu=false");
@@ -35,6 +42,12 @@ def source_patch(text):
         before = "ggml_mul_mat(ctx0,\n                    layer." + matrix
         graph = replace_once(graph, before, "project(ctx0,\n                    layer." + matrix)
     text = text[:start] + graph + text[end:]
+    start = text.index("static struct ggml_cgraph * whisper_build_graph_conv(")
+    end = text.index("static struct ggml_cgraph * whisper_build_graph_encoder(", start)
+    graph = text[start:end]
+    if graph.count("ggml_gelu(ctx0, cur)") != 2:
+        raise ValueError("pinned convolution GELU anchor mismatch")
+    text = text[:start] + graph.replace("ggml_gelu(ctx0, cur)", "ggml_gelu_erf(ctx0, cur)") + text[end:]
     text = replace_once(text,
         "            ggml_backend_tensor_set(mel, wstate.inp_mel.data(), 0, ggml_nelements(mel)*sizeof(float));",
         "            ggml_backend_tensor_set(mel, wstate.inp_mel.data(), 0, ggml_nelements(mel)*sizeof(float));\n"
@@ -55,6 +68,17 @@ def source_patch(text):
     return text
 
 
+def dot_patch(text):
+    # Native ggml's NEON F16 dot path accumulates in F16. Keep F16 storage
+    # and use its existing widened FP32 path for the Whisper CPU reference,
+    # convolution, attention and decoder in both execution modes.
+    start = text.index("#elif defined(__ARM_NEON) && defined(__ARM_FEATURE_FMA) && defined(__ARM_FP16_FORMAT_IEEE)")
+    before = "#if defined(__ARM_FEATURE_FP16_VECTOR_ARITHMETIC)"
+    position = text.index(before, start)
+    return text[:position] + text[position:].replace(before,
+        before + " && !defined(WHISPER_ASAHI_F32_DOT)", 1)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, default=ROOT / "whisper/vendor/whisper-asahi")
@@ -63,10 +87,12 @@ def main():
     actual = subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"], text=True).strip()
     if actual != REVISION:
         parser.error("requires isolated whisper.cpp worktree at " + REVISION)
-    for name in ("src/whisper.cpp", "src/CMakeLists.txt"):
+    for name in ("src/whisper.cpp", "src/CMakeLists.txt", "ggml/src/ggml-cpu/simd-mappings.h"):
         before = subprocess.check_output(["git", "-C", str(source), "show", "HEAD:" + name], text=True)
         if name.endswith(".cpp"):
             after = source_patch(before)
+        elif name.endswith("simd-mappings.h"):
+            after = dot_patch(before)
         else:
             after = before + """
 # Parent ane repository supplies the Linux matrix stream; no Apple compiler.
@@ -78,6 +104,7 @@ target_sources(whisper PRIVATE "${ANE_ROOT}/whisper/asahi_encoder.cpp"
 target_include_directories(whisper PRIVATE "${ANE_ROOT}/whisper" "${ANE_ROOT}/qwen35")
 find_package(OpenMP REQUIRED COMPONENTS C CXX)
 target_link_libraries(whisper PRIVATE OpenMP::OpenMP_C OpenMP::OpenMP_CXX)
+target_compile_definitions(ggml-cpu PRIVATE WHISPER_ASAHI_F32_DOT=1)
 set_source_files_properties("${ANE_ROOT}/qwen35/ane_matmul.c"
                             PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+fp16")
 """
@@ -85,7 +112,8 @@ set_source_files_properties("${ANE_ROOT}/qwen35/ane_matmul.c"
         current = path.read_text()
         if current not in (before, after):
             raise ValueError("refusing to overwrite other edits in " + str(path))
-        path.write_text(after)
+        if current != after:
+            path.write_text(after)
     print("Prepared isolated Asahi encoder worktree:", source)
 
 

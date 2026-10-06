@@ -1,0 +1,55 @@
+
+ And so my fellow Americans ask not what your country can do for you ask what you can do for your country. And so my fellow Americans ask not what your country can do for you ask what you can do for your country.
+whisper_init_from_file_with_params_no_state: loading model from '/home/asahi/ane/whisper/models/hf-ggml/ggml-model.bin'
+whisper_init_with_params_no_state: use gpu    = 0
+whisper_init_with_params_no_state: flash attn = 1
+whisper_init_with_params_no_state: gpu_device = 0
+whisper_init_with_params_no_state: dtw        = 0
+whisper_init_with_params_no_state: devices    = 1
+whisper_init_with_params_no_state: backends   = 1
+whisper_model_load: loading model
+whisper_model_load: n_vocab       = 51864
+whisper_model_load: n_audio_ctx   = 1500
+whisper_model_load: n_audio_state = 384
+whisper_model_load: n_audio_head  = 6
+whisper_model_load: n_audio_layer = 4
+whisper_model_load: n_text_ctx    = 448
+whisper_model_load: n_text_state  = 384
+whisper_model_load: n_text_head   = 6
+whisper_model_load: n_text_layer  = 4
+whisper_model_load: n_mels        = 80
+whisper_model_load: ftype         = 1
+whisper_model_load: qntvr         = 0
+whisper_model_load: type          = 1 (tiny)
+whisper_model_load: adding 1607 extra tokens
+whisper_model_load: n_langs       = 99
+whisper_model_load:          CPU total size =    77.11 MB
+whisper_model_load: model size    =   77.11 MB
+whisper_backend_init_gpu: no GPU found
+whisper_init_state: kv self size  =    3.15 MB
+whisper_init_state: kv cross size =    9.44 MB
+whisper_init_state: kv pad  size  =    2.36 MB
+whisper_init_state: compute buffer (conv)   =   13.21 MB
+ASAHI_ANE ready: encoder dense projections; CPU conv/attention/decoder
+whisper_init_state: compute buffer (encode) =   17.72 MB
+whisper_init_state: compute buffer (cross)  =    3.89 MB
+whisper_init_state: compute buffer (decode) =   95.91 MB
+read_audio_data: reading audio data from '/home/asahi/ane/whisper/.cache/asahi-20261006/validated-real-context/jfk-repeat.wav' ...
+read_audio_data: trying to decode with miniaudio
+
+system_info: n_threads = 4 / 8 | WHISPER : VITISAI = 0 | COREML = 0 | OPENVINO = 0 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | DOTPROD = 1 | OPENMP = 1 | REPACK = 1 |
+
+main: processing '/home/asahi/ane/whisper/.cache/asahi-20261006/validated-real-context/jfk-repeat.wav' (368000 samples, 23.0 sec), 4 threads, 1 processors, 1 beams + best of 1, lang = en, task = transcribe, timestamps = 0 ...
+
+ASAHI_ANE encoder: projections=24 submissions=2256 plans=24 replicas=2
+output_txt: saving output to '/home/asahi/ane/whisper/.cache/asahi-20261006/validated-real-context/jfk-repeat-ane/transcript.txt'
+
+whisper_print_timings:     load time =    49.92 ms
+whisper_print_timings:     fallbacks =   0 p /   0 h
+whisper_print_timings:      mel time =    24.03 ms
+whisper_print_timings:   sample time =    43.69 ms /     1 runs (    43.69 ms per run)
+whisper_print_timings:   encode time =  1131.81 ms /     1 runs (  1131.81 ms per run)
+whisper_print_timings:   decode time =   338.27 ms /    46 runs (     7.35 ms per run)
+whisper_print_timings:   batchd time =     6.00 ms /     2 runs (     3.00 ms per run)
+whisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)
+whisper_print_timings:    total time =  1597.16 ms

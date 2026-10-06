@@ -1,0 +1,636 @@
+[
+  {
+    "experiment": "validated-warm",
+    "status": "FAIL",
+    "error": "encoder numerical gate failed: jfk-first-5s",
+    "scope": "ANE encoder dense projections only; CPU convolution, attention, normalizations, GELU, cross-K/V and decoder",
+    "correctness": [
+      {
+        "audio": "jfk",
+        "audio_seconds": 11.0,
+        "audio_sha256": "d7d4e74b8a333ed02186008bc109a1b1a19d16da668bd56e785d80d69a16a72f",
+        "cpu_transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+        "ane_transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+        "encoder_vs_cpu": {
+          "nrmse": 0.0012144537074210771,
+          "cosine": 0.9999992625513656,
+          "max_abs": 0.027430057525634766
+        },
+        "encoder_vs_hf": {
+          "nrmse": 0.019481379908247942,
+          "cosine": 0.9998130707307471,
+          "max_abs": 0.2748687267303467
+        },
+        "cpu_encoder_vs_hf": {
+          "nrmse": 0.019458360208514998,
+          "cosine": 0.9998135208749894,
+          "max_abs": 0.2754485607147217
+        },
+        "decoder_calls": 25,
+        "all_histories_match": true,
+        "raw_argmax_matches": 25,
+        "maximum_logit_nrmse": 0.003312007776728333,
+        "logit_checks": [
+          {
+            "nrmse": 0.0011893161097448987,
+            "cosine": 0.999999418617192,
+            "max_abs": 0.0244140625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0017652555670384493,
+            "cosine": 0.999999554994948,
+            "max_abs": 0.031982421875,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0015844456161802128,
+            "cosine": 0.9999996467770331,
+            "max_abs": 0.03857421875,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0026904992270131538,
+            "cosine": 0.9999978345955465,
+            "max_abs": 0.0311279296875,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.001814333727972541,
+            "cosine": 0.999999028870792,
+            "max_abs": 0.03173828125,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0025527600753683156,
+            "cosine": 0.9999987025592334,
+            "max_abs": 0.03173828125,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.000852818264918379,
+            "cosine": 0.999999663473228,
+            "max_abs": 0.02099609375,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.000598388487833804,
+            "cosine": 0.9999999201280151,
+            "max_abs": 0.0341796875,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0007433646059300916,
+            "cosine": 0.9999999133722599,
+            "max_abs": 0.037841796875,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.003312007776728333,
+            "cosine": 0.9999966812116226,
+            "max_abs": 0.031494140625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.000747270955656685,
+            "cosine": 0.999999936677205,
+            "max_abs": 0.0390625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0022370388644224423,
+            "cosine": 0.9999997952921158,
+            "max_abs": 0.0439453125,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0008940163511204013,
+            "cosine": 0.9999999299614873,
+            "max_abs": 0.044921875,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0014437814703395942,
+            "cosine": 0.9999998878443812,
+            "max_abs": 0.041015625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0008470247509218423,
+            "cosine": 0.9999997890538239,
+            "max_abs": 0.0283203125,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0012738456814203817,
+            "cosine": 0.9999995960060857,
+            "max_abs": 0.0322265625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.000319160764282572,
+            "cosine": 0.9999999490735372,
+            "max_abs": 0.029296875,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0003138186044114149,
+            "cosine": 0.9999999516287927,
+            "max_abs": 0.02587890625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0005531494045848378,
+            "cosine": 0.999999937056658,
+            "max_abs": 0.02978515625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0004440258497582467,
+            "cosine": 0.9999999021496637,
+            "max_abs": 0.02392578125,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00043906773967393014,
+            "cosine": 0.9999999429563794,
+            "max_abs": 0.033203125,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00034593319892946164,
+            "cosine": 0.9999999401669345,
+            "max_abs": 0.025634765625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.000696372458763602,
+            "cosine": 0.9999998072808831,
+            "max_abs": 0.021484375,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0022901662232678263,
+            "cosine": 0.9999998625238888,
+            "max_abs": 0.064453125,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0012603922484837767,
+            "cosine": 0.9999998176076718,
+            "max_abs": 0.033203125,
+            "argmax_match": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "experiment": "validated-f32-dot",
+    "status": "FAIL",
+    "error": "encoder numerical gate failed: jfk-first-5s",
+    "scope": "ANE encoder dense projections with two rounding grids; CPU convolution, attention, normalizations, GELU, cross-K/V and decoder; widened FP32 NEON dot accumulation in both modes",
+    "correctness": [
+      {
+        "audio": "jfk",
+        "audio_seconds": 11.0,
+        "audio_sha256": "d7d4e74b8a333ed02186008bc109a1b1a19d16da668bd56e785d80d69a16a72f",
+        "cpu_transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+        "ane_transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+        "encoder_vs_cpu": {
+          "nrmse": 0.0005638815161479702,
+          "cosine": 0.9999998410207531,
+          "max_abs": 0.014080524444580078
+        },
+        "encoder_vs_hf": {
+          "nrmse": 0.019502837522715404,
+          "cosine": 0.9998128388521288,
+          "max_abs": 0.27676939964294434
+        },
+        "cpu_encoder_vs_hf": {
+          "nrmse": 0.019488671282076087,
+          "cosine": 0.9998131104724971,
+          "max_abs": 0.2772786617279053
+        },
+        "decoder_calls": 25,
+        "all_histories_match": true,
+        "raw_argmax_matches": 25,
+        "maximum_logit_nrmse": 0.0021569855177663902,
+        "logit_checks": [
+          {
+            "nrmse": 0.0010937082118264818,
+            "cosine": 0.9999999107582561,
+            "max_abs": 0.012443065643310547,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0002346337604168265,
+            "cosine": 0.9999999779523332,
+            "max_abs": 0.008301734924316406,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0009504627604782435,
+            "cosine": 0.9999999470729483,
+            "max_abs": 0.014054298400878906,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0006723844930362511,
+            "cosine": 0.9999998208098743,
+            "max_abs": 0.01135265827178955,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0008054649526332499,
+            "cosine": 0.9999998926622874,
+            "max_abs": 0.012190818786621094,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0011830286067614324,
+            "cosine": 0.999999807001642,
+            "max_abs": 0.009878158569335938,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0004689349817897845,
+            "cosine": 0.9999999528901896,
+            "max_abs": 0.0095062255859375,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00040025201031029903,
+            "cosine": 0.9999999937655615,
+            "max_abs": 0.011217117309570312,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0002343661491798077,
+            "cosine": 0.9999999951096504,
+            "max_abs": 0.010595321655273438,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0021569855177663902,
+            "cosine": 0.9999989846475014,
+            "max_abs": 0.014710426330566406,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00011241094631864552,
+            "cosine": 0.9999999972366579,
+            "max_abs": 0.0070133209228515625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00039953491557405066,
+            "cosine": 0.9999999852981732,
+            "max_abs": 0.012172698974609375,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00013483541887259935,
+            "cosine": 0.9999999972686264,
+            "max_abs": 0.0097503662109375,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00047443880446831503,
+            "cosine": 0.99999999229326,
+            "max_abs": 0.010692596435546875,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0003179119962510166,
+            "cosine": 0.9999999878552966,
+            "max_abs": 0.007925033569335938,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.000661506744045151,
+            "cosine": 0.9999999544951749,
+            "max_abs": 0.010793685913085938,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00010103568922389818,
+            "cosine": 0.9999999958131538,
+            "max_abs": 0.0075531005859375,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0003153036375982716,
+            "cosine": 0.9999999965239063,
+            "max_abs": 0.013092041015625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00042578017075965366,
+            "cosine": 0.9999999927319229,
+            "max_abs": 0.013482093811035156,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00058568759066693,
+            "cosine": 0.9999999873840135,
+            "max_abs": 0.012293815612792969,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.000550410340305457,
+            "cosine": 0.999999996363461,
+            "max_abs": 0.0205078125,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0004754171804621364,
+            "cosine": 0.9999999953977368,
+            "max_abs": 0.015260696411132812,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0015235183480235455,
+            "cosine": 0.9999999127756113,
+            "max_abs": 0.01999950408935547,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0007569093641682519,
+            "cosine": 0.9999999932155232,
+            "max_abs": 0.017744064331054688,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00035459501074530425,
+            "cosine": 0.999999989205862,
+            "max_abs": 0.010499000549316406,
+            "argmax_match": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "experiment": "validated-exact-gelu",
+    "status": "FAIL",
+    "error": "encoder numerical gate failed: jfk-first-5s",
+    "scope": "ANE encoder dense projections with two rounding grids; CPU convolution, attention, normalizations, exact encoder GELU, cross-K/V and decoder; widened FP32 NEON dot accumulation in both modes",
+    "correctness": [
+      {
+        "audio": "jfk",
+        "audio_seconds": 11.0,
+        "audio_sha256": "d7d4e74b8a333ed02186008bc109a1b1a19d16da668bd56e785d80d69a16a72f",
+        "cpu_transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+        "ane_transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+        "encoder_vs_cpu": {
+          "nrmse": 0.000551809063317815,
+          "cosine": 0.9999998477533862,
+          "max_abs": 0.013942718505859375
+        },
+        "encoder_vs_hf": {
+          "nrmse": 0.019341298608175864,
+          "cosine": 0.9998149839164603,
+          "max_abs": 0.27665114402770996
+        },
+        "cpu_encoder_vs_hf": {
+          "nrmse": 0.019368203395776502,
+          "cosine": 0.9998144623606469,
+          "max_abs": 0.27677083015441895
+        },
+        "decoder_calls": 25,
+        "all_histories_match": true,
+        "raw_argmax_matches": 25,
+        "maximum_logit_nrmse": 0.0031126075870195136,
+        "logit_checks": [
+          {
+            "nrmse": 0.0003001853575558693,
+            "cosine": 0.9999999587163094,
+            "max_abs": 0.00787353515625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0004769897268987376,
+            "cosine": 0.999999965757627,
+            "max_abs": 0.00990152359008789,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0005546363679114725,
+            "cosine": 0.99999995200208,
+            "max_abs": 0.011167049407958984,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0031126075870195136,
+            "cosine": 0.9999983446962187,
+            "max_abs": 0.020757198333740234,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00134449042576365,
+            "cosine": 0.9999998319649512,
+            "max_abs": 0.014323234558105469,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0006250885906598378,
+            "cosine": 0.999999921840197,
+            "max_abs": 0.007715702056884766,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0009180157720288108,
+            "cosine": 0.9999999050136716,
+            "max_abs": 0.012799263000488281,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00017247760369639892,
+            "cosine": 0.9999999946266291,
+            "max_abs": 0.008022308349609375,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0001412811879247157,
+            "cosine": 0.9999999967221874,
+            "max_abs": 0.008028984069824219,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0016076717128593932,
+            "cosine": 0.9999993492518098,
+            "max_abs": 0.010955572128295898,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00026204474134409886,
+            "cosine": 0.9999999971151161,
+            "max_abs": 0.0133056640625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0006896840866214792,
+            "cosine": 0.9999999827163769,
+            "max_abs": 0.013483047485351562,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 7.352041581962195e-05,
+            "cosine": 0.9999999975875948,
+            "max_abs": 0.008150100708007812,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0006891318580390514,
+            "cosine": 0.9999999888744525,
+            "max_abs": 0.014241218566894531,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0008040841068774606,
+            "cosine": 0.9999999780290456,
+            "max_abs": 0.01326751708984375,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0009130361122575,
+            "cosine": 0.9999999489044147,
+            "max_abs": 0.01232290267944336,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 9.223202953257243e-05,
+            "cosine": 0.9999999967509833,
+            "max_abs": 0.0074062347412109375,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.000715758269717106,
+            "cosine": 0.9999999952729621,
+            "max_abs": 0.021490097045898438,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00029809405475079103,
+            "cosine": 0.9999999940693048,
+            "max_abs": 0.013582229614257812,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00021015966284719414,
+            "cosine": 0.9999999927925911,
+            "max_abs": 0.009477615356445312,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 7.134407429068091e-05,
+            "cosine": 0.9999999976629561,
+            "max_abs": 0.0062198638916015625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00025049080429140856,
+            "cosine": 0.9999999968686034,
+            "max_abs": 0.010469436645507812,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0013875980580056273,
+            "cosine": 0.9999999357721887,
+            "max_abs": 0.018254756927490234,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00024087172343989483,
+            "cosine": 0.9999999951991483,
+            "max_abs": 0.009539604187011719,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0006712487911193918,
+            "cosine": 0.9999999826989481,
+            "max_abs": 0.013757705688476562,
+            "argmax_match": true
+          }
+        ]
+      },
+      {
+        "audio": "jfk-first-5s",
+        "audio_seconds": 5.0,
+        "audio_sha256": "6f7b022b4670ddcad48cf097e3cc60c8ba54bd15d6a73b3ea776cadbf0b8d610",
+        "cpu_transcript": "And so my fellow Americans ask not",
+        "ane_transcript": "And so my fellow Americans ask not",
+        "encoder_vs_cpu": {
+          "nrmse": 0.0005954181524265797,
+          "cosine": 0.9999998227820281,
+          "max_abs": 0.08733081817626953
+        },
+        "encoder_vs_hf": {
+          "nrmse": 0.0568244548291963,
+          "cosine": 0.9984036028018048,
+          "max_abs": 13.223158836364746
+        },
+        "cpu_encoder_vs_hf": {
+          "nrmse": 0.05691649490891278,
+          "cosine": 0.9983983841136284,
+          "max_abs": 13.240143775939941
+        },
+        "decoder_calls": 8,
+        "all_histories_match": true,
+        "raw_argmax_matches": 8,
+        "maximum_logit_nrmse": 0.00860510054143959,
+        "logit_checks": [
+          {
+            "nrmse": 0.007294209201142574,
+            "cosine": 0.9999939341683306,
+            "max_abs": 0.04027390480041504,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.00860510054143959,
+            "cosine": 0.9999835437312272,
+            "max_abs": 0.03120136260986328,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0011778818261981151,
+            "cosine": 0.9999999096090418,
+            "max_abs": 0.013794898986816406,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0021920850313481718,
+            "cosine": 0.9999993004183692,
+            "max_abs": 0.014829635620117188,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0005779960724815673,
+            "cosine": 0.9999998936841912,
+            "max_abs": 0.01279449462890625,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0008512883197122882,
+            "cosine": 0.9999996426577396,
+            "max_abs": 0.007313728332519531,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0036203581444701747,
+            "cosine": 0.9999966086951371,
+            "max_abs": 0.017264366149902344,
+            "argmax_match": true
+          },
+          {
+            "nrmse": 0.0008111283209114609,
+            "cosine": 0.9999999545861329,
+            "max_abs": 0.013100624084472656,
+            "argmax_match": true
+          }
+        ]
+      }
+    ]
+  }
+]

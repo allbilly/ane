@@ -1,0 +1,1279 @@
+{
+  "status": "PASS",
+  "utc": "2026-10-06T14:31:58.964256+00:00",
+  "kernel": "7.1.13+",
+  "model_sha256": "776f39cd70d01a7df3c6098f87f121b62d1fb634d1272b5f36bb6f369fc34372",
+  "hf_checkpoint_sha256": "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad",
+  "audio_sha256": "59dfb9a4acb36fe2a2affc14bacbee2920ff435cb13cc314a08c13f66ba7860e",
+  "whisper_cpp_revision": "60c0be6ac8fa71b1a2ae2dd938a31a34a508e774",
+  "scope": "ANE encoder dense projections with two rounding grids; CPU convolution, attention, normalizations, exact encoder GELU, cross-K/V and decoder; widened FP32 NEON dot accumulation and real-length encoder K/V views in both modes",
+  "feature_and_logit_gate_nrmse": 0.005,
+  "hf_encoder_gate_cosine": 0.999,
+  "warmups_per_context": 2,
+  "runs_per_context": 5,
+  "rounds": 2,
+  "method": "Persistent contexts, warmup excluded, reversed backend order in round two; four workers, greedy English, no timestamps/fallback, full 30-second encoder context. Decoder total includes prompt plus token evaluation; whole timer includes host work and sampling.",
+  "limitations": "Active desktop, clocks not fixed; native ggml CPU backend without BLAS. macOS uses different encoder implementation and Accelerate; this is not an isolated OS comparison.",
+  "correctness": [
+    {
+      "audio": "jfk",
+      "audio_seconds": 11.0,
+      "audio_sha256": "d7d4e74b8a333ed02186008bc109a1b1a19d16da668bd56e785d80d69a16a72f",
+      "cpu_transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+      "ane_transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+      "encoder_vs_cpu": {
+        "nrmse": 0.0006294662253467145,
+        "cosine": 0.9999998018966603,
+        "max_abs": 0.014379262924194336
+      },
+      "encoder_vs_hf": {
+        "nrmse": 0.0004954235774275208,
+        "cosine": 0.9999998772802852,
+        "max_abs": 0.012436866760253906
+      },
+      "cpu_encoder_vs_hf": {
+        "nrmse": 0.0005573988674821378,
+        "cosine": 0.9999998446564797,
+        "max_abs": 0.00978231430053711
+      },
+      "decoder_calls": 25,
+      "all_histories_match": true,
+      "raw_argmax_matches": 25,
+      "maximum_logit_nrmse": 0.0018469930616731515,
+      "logit_checks": [
+        {
+          "nrmse": 0.0009155523397589497,
+          "cosine": 0.9999999082254117,
+          "max_abs": 0.011380195617675781,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0009689352125807159,
+          "cosine": 0.9999999404024503,
+          "max_abs": 0.013751029968261719,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00030843262783068683,
+          "cosine": 0.999999972913599,
+          "max_abs": 0.009157180786132812,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0018469930616731515,
+          "cosine": 0.9999992917172701,
+          "max_abs": 0.014546871185302734,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.001068863597197132,
+          "cosine": 0.999999861990793,
+          "max_abs": 0.014574527740478516,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0006415218502229074,
+          "cosine": 0.9999999371540356,
+          "max_abs": 0.007845878601074219,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00041725193685936655,
+          "cosine": 0.9999999468440647,
+          "max_abs": 0.010247230529785156,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00011508240687041607,
+          "cosine": 0.9999999936534752,
+          "max_abs": 0.00933074951171875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002217891241912634,
+          "cosine": 0.9999999926049542,
+          "max_abs": 0.011112213134765625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0008500397401241037,
+          "cosine": 0.9999997461368876,
+          "max_abs": 0.00947117805480957,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0003776158842574281,
+          "cosine": 0.9999999961962426,
+          "max_abs": 0.014271736145019531,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0005557382048388569,
+          "cosine": 0.9999999862051148,
+          "max_abs": 0.01190185546875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 6.0191775610131175e-05,
+          "cosine": 0.9999999982865099,
+          "max_abs": 0.0060901641845703125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.000285893866091174,
+          "cosine": 0.9999999943787171,
+          "max_abs": 0.011127471923828125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00029682221880808566,
+          "cosine": 0.9999999857132749,
+          "max_abs": 0.008296966552734375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00027245542884120246,
+          "cosine": 0.999999976798562,
+          "max_abs": 0.007416725158691406,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002776562348748053,
+          "cosine": 0.9999999956333336,
+          "max_abs": 0.016237258911132812,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00023223595678107764,
+          "cosine": 0.9999999961045153,
+          "max_abs": 0.010324478149414062,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0006064541198363837,
+          "cosine": 0.9999999905318999,
+          "max_abs": 0.018141746520996094,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0011143167168210226,
+          "cosine": 0.9999999810490497,
+          "max_abs": 0.018671035766601562,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 6.83760949634894e-05,
+          "cosine": 0.9999999977245995,
+          "max_abs": 0.008274078369140625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 8.66956448696814e-05,
+          "cosine": 0.9999999968901135,
+          "max_abs": 0.006504058837890625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002182963963966457,
+          "cosine": 0.9999999838041661,
+          "max_abs": 0.007143497467041016,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00018660993097432957,
+          "cosine": 0.9999999943630629,
+          "max_abs": 0.009214401245117188,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00020744278139123816,
+          "cosine": 0.9999999874835823,
+          "max_abs": 0.007509708404541016,
+          "argmax_match": true
+        }
+      ]
+    },
+    {
+      "audio": "jfk-first-5s",
+      "audio_seconds": 5.0,
+      "audio_sha256": "6f7b022b4670ddcad48cf097e3cc60c8ba54bd15d6a73b3ea776cadbf0b8d610",
+      "cpu_transcript": "And so my fellow Americans ask not",
+      "ane_transcript": "And so my fellow Americans ask not",
+      "encoder_vs_cpu": {
+        "nrmse": 0.0005184952910267964,
+        "cosine": 0.9999998657145962,
+        "max_abs": 0.09578132629394531
+      },
+      "encoder_vs_hf": {
+        "nrmse": 0.00046036853172454456,
+        "cosine": 0.9999998942281622,
+        "max_abs": 0.07391777634620667
+      },
+      "cpu_encoder_vs_hf": {
+        "nrmse": 0.0004939766713586516,
+        "cosine": 0.9999998780003776,
+        "max_abs": 0.16969910264015198
+      },
+      "decoder_calls": 8,
+      "all_histories_match": true,
+      "raw_argmax_matches": 8,
+      "maximum_logit_nrmse": 0.0019631614810057285,
+      "logit_checks": [
+        {
+          "nrmse": 0.0005349805561198018,
+          "cosine": 0.9999999011413161,
+          "max_abs": 0.007882475852966309,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0007152083853398467,
+          "cosine": 0.9999997451639753,
+          "max_abs": 0.008420944213867188,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00028067816647473615,
+          "cosine": 0.9999999723276899,
+          "max_abs": 0.007681846618652344,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0019631614810057285,
+          "cosine": 0.9999994595732473,
+          "max_abs": 0.015186786651611328,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0010512774449698546,
+          "cosine": 0.9999998881678139,
+          "max_abs": 0.012684822082519531,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.001613521959455516,
+          "cosine": 0.9999988376288705,
+          "max_abs": 0.009093761444091797,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0007864446989262286,
+          "cosine": 0.9999997339756869,
+          "max_abs": 0.00981450080871582,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00016021889727945476,
+          "cosine": 0.99999998954324,
+          "max_abs": 0.007138252258300781,
+          "argmax_match": true
+        }
+      ]
+    },
+    {
+      "audio": "jfk-repeat",
+      "audio_seconds": 23.0,
+      "audio_sha256": "ac545df0bd5e09a8c49b020bbc7a4c3f39e5836fa69a232f1017d1aa512315e4",
+      "cpu_transcript": "And so my fellow Americans ask not what your country can do for you ask what you can do for your country. And so my fellow Americans ask not what your country can do for you ask what you can do for your country.",
+      "ane_transcript": "And so my fellow Americans ask not what your country can do for you ask what you can do for your country. And so my fellow Americans ask not what your country can do for you ask what you can do for your country.",
+      "encoder_vs_cpu": {
+        "nrmse": 0.0008605758494586502,
+        "cosine": 0.9999996297058676,
+        "max_abs": 0.25046253204345703
+      },
+      "encoder_vs_hf": {
+        "nrmse": 0.0008432287150313989,
+        "cosine": 0.9999996444874123,
+        "max_abs": 0.25246524810791016
+      },
+      "cpu_encoder_vs_hf": {
+        "nrmse": 0.0011934430213514835,
+        "cosine": 0.9999992878616841,
+        "max_abs": 0.5029277801513672
+      },
+      "decoder_calls": 47,
+      "all_histories_match": true,
+      "raw_argmax_matches": 47,
+      "maximum_logit_nrmse": 0.003232042259516228,
+      "logit_checks": [
+        {
+          "nrmse": 0.0015974815418684826,
+          "cosine": 0.999999903994954,
+          "max_abs": 0.01722431182861328,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0010732837524573137,
+          "cosine": 0.9999998791629544,
+          "max_abs": 0.014328956604003906,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0006054530251813517,
+          "cosine": 0.9999999490667822,
+          "max_abs": 0.01151275634765625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0008113559329739285,
+          "cosine": 0.9999998415132157,
+          "max_abs": 0.01007080078125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0007506220670326562,
+          "cosine": 0.9999999071376303,
+          "max_abs": 0.011611223220825195,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0008083425328720147,
+          "cosine": 0.9999998611273688,
+          "max_abs": 0.010276556015014648,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0022558486820876238,
+          "cosine": 0.9999993145401292,
+          "max_abs": 0.016315460205078125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0001456219187781429,
+          "cosine": 0.9999999952123582,
+          "max_abs": 0.012548446655273438,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002222912327807192,
+          "cosine": 0.9999999947620931,
+          "max_abs": 0.010774612426757812,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.001034208967503683,
+          "cosine": 0.9999995608385699,
+          "max_abs": 0.008646011352539062,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00023971368805143745,
+          "cosine": 0.9999999970580007,
+          "max_abs": 0.009983062744140625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00020372595889951272,
+          "cosine": 0.999999990774041,
+          "max_abs": 0.007372379302978516,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 6.105688854072206e-05,
+          "cosine": 0.9999999981361706,
+          "max_abs": 0.00586700439453125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00018220547513199926,
+          "cosine": 0.9999999924854263,
+          "max_abs": 0.009020805358886719,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0005332521558885719,
+          "cosine": 0.9999999742568408,
+          "max_abs": 0.012073516845703125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00025784946173482094,
+          "cosine": 0.9999999966102041,
+          "max_abs": 0.011499404907226562,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00022270990085153966,
+          "cosine": 0.9999999979026386,
+          "max_abs": 0.010852813720703125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00030802961844075263,
+          "cosine": 0.9999999957233604,
+          "max_abs": 0.012487411499023438,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.000676768087477713,
+          "cosine": 0.999999989954677,
+          "max_abs": 0.014919281005859375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0001863914327009236,
+          "cosine": 0.9999999982009291,
+          "max_abs": 0.01049041748046875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00021744205371908756,
+          "cosine": 0.9999999961198036,
+          "max_abs": 0.01110076904296875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0009398498540585744,
+          "cosine": 0.9999999449296582,
+          "max_abs": 0.012106895446777344,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 8.43264238972074e-05,
+          "cosine": 0.9999999966556822,
+          "max_abs": 0.00676727294921875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0008551592473081431,
+          "cosine": 0.9999999878345432,
+          "max_abs": 0.018350601196289062,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0007917378439461739,
+          "cosine": 0.9999999839395103,
+          "max_abs": 0.01797771453857422,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0006064311066647316,
+          "cosine": 0.9999999817156919,
+          "max_abs": 0.012318611145019531,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.003232042259516228,
+          "cosine": 0.9999955718544387,
+          "max_abs": 0.013849496841430664,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0008129804254321895,
+          "cosine": 0.9999996698593135,
+          "max_abs": 0.007808566093444824,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0006828942886293583,
+          "cosine": 0.999999971491202,
+          "max_abs": 0.010936260223388672,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0004333296087607936,
+          "cosine": 0.9999999600675221,
+          "max_abs": 0.00977182388305664,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00029625419498332915,
+          "cosine": 0.9999999959363444,
+          "max_abs": 0.012531280517578125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0001944705405624804,
+          "cosine": 0.9999999959746598,
+          "max_abs": 0.00933837890625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0007965398948791102,
+          "cosine": 0.9999999781139833,
+          "max_abs": 0.013894081115722656,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 6.87499580209474e-05,
+          "cosine": 0.9999999979181666,
+          "max_abs": 0.0070438385009765625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0007994700771103471,
+          "cosine": 0.9999999869286289,
+          "max_abs": 0.017347335815429688,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0003136373378067893,
+          "cosine": 0.9999999975277267,
+          "max_abs": 0.01364898681640625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00026352251600815366,
+          "cosine": 0.9999999966221561,
+          "max_abs": 0.01039886474609375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0003172612118403054,
+          "cosine": 0.9999999847362533,
+          "max_abs": 0.010000228881835938,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0004950044865911447,
+          "cosine": 0.99999999427406,
+          "max_abs": 0.0170135498046875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 6.749619982858268e-05,
+          "cosine": 0.999999997864528,
+          "max_abs": 0.0081024169921875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0004352073398985857,
+          "cosine": 0.9999999908936458,
+          "max_abs": 0.018220901489257812,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00027775979605514144,
+          "cosine": 0.9999999917262153,
+          "max_abs": 0.009705543518066406,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002200705001509151,
+          "cosine": 0.9999999981735289,
+          "max_abs": 0.009204864501953125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0003315364214142278,
+          "cosine": 0.9999999959029165,
+          "max_abs": 0.013277053833007812,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0005050333903144677,
+          "cosine": 0.9999999884637775,
+          "max_abs": 0.012115478515625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00019131149963929386,
+          "cosine": 0.9999999973986935,
+          "max_abs": 0.008731842041015625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00018431692836244515,
+          "cosine": 0.9999999913239997,
+          "max_abs": 0.009127616882324219,
+          "argmax_match": true
+        }
+      ]
+    }
+  ],
+  "backends": {
+    "cpu_cpu": {
+      "runs": [
+        {
+          "phase": "measure",
+          "index": 1,
+          "wall_ms": 524.89179,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 12.3,
+          "sample_ms": 10.81,
+          "sample_units": 1,
+          "encode_ms": 433.57,
+          "encode_units": 1,
+          "decode_ms": 64.1,
+          "decode_units": 24,
+          "batchd_ms": 3.59,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 67.69,
+          "decode_ms_per_token": 2.670833333333333,
+          "rtf": 0.04771743545454546,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 2,
+          "wall_ms": 531.246549,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.9,
+          "sample_ms": 10.82,
+          "sample_units": 1,
+          "encode_ms": 441.74,
+          "encode_units": 1,
+          "decode_ms": 62.8,
+          "decode_units": 24,
+          "batchd_ms": 3.46,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 66.25999999999999,
+          "decode_ms_per_token": 2.6166666666666667,
+          "rtf": 0.048295140818181814,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 3,
+          "wall_ms": 547.452072,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 12.2,
+          "sample_ms": 10.85,
+          "sample_units": 1,
+          "encode_ms": 459.56,
+          "encode_units": 1,
+          "decode_ms": 60.94,
+          "decode_units": 24,
+          "batchd_ms": 3.39,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 64.33,
+          "decode_ms_per_token": 2.5391666666666666,
+          "rtf": 0.049768370181818185,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 4,
+          "wall_ms": 552.551871,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 12.67,
+          "sample_ms": 11.19,
+          "sample_units": 1,
+          "encode_ms": 462.88,
+          "encode_units": 1,
+          "decode_ms": 61.88,
+          "decode_units": 24,
+          "batchd_ms": 3.4,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 65.28,
+          "decode_ms_per_token": 2.5783333333333336,
+          "rtf": 0.050231988272727277,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 5,
+          "wall_ms": 569.719646,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 12.78,
+          "sample_ms": 11.03,
+          "sample_units": 1,
+          "encode_ms": 479.63,
+          "encode_units": 1,
+          "decode_ms": 62.38,
+          "decode_units": 24,
+          "batchd_ms": 3.39,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 65.77,
+          "decode_ms_per_token": 2.5991666666666666,
+          "rtf": 0.05179269509090909,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 1,
+          "wall_ms": 568.327018,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 12.38,
+          "sample_ms": 11.5,
+          "sample_units": 1,
+          "encode_ms": 475.74,
+          "encode_units": 1,
+          "decode_ms": 64.31,
+          "decode_units": 24,
+          "batchd_ms": 3.89,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 68.2,
+          "decode_ms_per_token": 2.6795833333333334,
+          "rtf": 0.05166609254545454,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 2,
+          "wall_ms": 606.159551,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.69,
+          "sample_ms": 10.77,
+          "sample_units": 1,
+          "encode_ms": 515.51,
+          "encode_units": 1,
+          "decode_ms": 64.02,
+          "decode_units": 24,
+          "batchd_ms": 3.65,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 67.67,
+          "decode_ms_per_token": 2.6675,
+          "rtf": 0.05510541372727273,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 3,
+          "wall_ms": 643.709285,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 31.4,
+          "sample_ms": 10.79,
+          "sample_units": 1,
+          "encode_ms": 532.19,
+          "encode_units": 1,
+          "decode_ms": 65.3,
+          "decode_units": 24,
+          "batchd_ms": 3.5,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 68.8,
+          "decode_ms_per_token": 2.720833333333333,
+          "rtf": 0.05851902590909091,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 4,
+          "wall_ms": 647.661556,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.51,
+          "sample_ms": 10.8,
+          "sample_units": 1,
+          "encode_ms": 556.26,
+          "encode_units": 1,
+          "decode_ms": 64.52,
+          "decode_units": 24,
+          "batchd_ms": 4.07,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 68.59,
+          "decode_ms_per_token": 2.688333333333333,
+          "rtf": 0.058878323272727275,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 5,
+          "wall_ms": 657.278266,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 12.31,
+          "sample_ms": 11.0,
+          "sample_units": 1,
+          "encode_ms": 566.92,
+          "encode_units": 1,
+          "decode_ms": 63.07,
+          "decode_units": 24,
+          "batchd_ms": 3.47,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 66.54,
+          "decode_ms_per_token": 2.6279166666666667,
+          "rtf": 0.05975256963636364,
+          "round": 2
+        }
+      ],
+      "warmups": [
+        {
+          "phase": "warmup",
+          "index": 1,
+          "wall_ms": 660.556651,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 12.8,
+          "sample_ms": 11.07,
+          "sample_units": 1,
+          "encode_ms": 568.96,
+          "encode_units": 1,
+          "decode_ms": 62.25,
+          "decode_units": 24,
+          "batchd_ms": 4.91,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 67.16,
+          "decode_ms_per_token": 2.59375,
+          "rtf": 0.060050604636363636,
+          "round": 1
+        },
+        {
+          "phase": "warmup",
+          "index": 2,
+          "wall_ms": 527.118085,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 12.89,
+          "sample_ms": 10.79,
+          "sample_units": 1,
+          "encode_ms": 434.4,
+          "encode_units": 1,
+          "decode_ms": 64.28,
+          "decode_units": 24,
+          "batchd_ms": 3.78,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 68.06,
+          "decode_ms_per_token": 2.6783333333333332,
+          "rtf": 0.047919825909090906,
+          "round": 1
+        },
+        {
+          "phase": "warmup",
+          "index": 1,
+          "wall_ms": 655.150169,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 12.44,
+          "sample_ms": 13.57,
+          "sample_units": 1,
+          "encode_ms": 555.43,
+          "encode_units": 1,
+          "decode_ms": 68.52,
+          "decode_units": 24,
+          "batchd_ms": 4.51,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 73.03,
+          "decode_ms_per_token": 2.855,
+          "rtf": 0.05955910627272727,
+          "round": 2
+        },
+        {
+          "phase": "warmup",
+          "index": 2,
+          "wall_ms": 634.193036,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 13.22,
+          "sample_ms": 10.76,
+          "sample_units": 1,
+          "encode_ms": 539.01,
+          "encode_units": 1,
+          "decode_ms": 67.19,
+          "decode_units": 24,
+          "batchd_ms": 3.48,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 70.67,
+          "decode_ms_per_token": 2.799583333333333,
+          "rtf": 0.057653912363636366,
+          "round": 2
+        }
+      ],
+      "median": {
+        "encode_ms": 477.685,
+        "decoder_ms": 67.105,
+        "decode_ms": 63.545,
+        "batchd_ms": 3.4850000000000003,
+        "prompt_ms": 0.0,
+        "decode_ms_per_token": 2.647708333333333,
+        "wall_ms": 569.023332,
+        "rtf": 0.05172939381818181
+      },
+      "wall_range_ms": [
+        524.89179,
+        657.278266
+      ]
+    },
+    "ane_projections_cpu": {
+      "runs": [
+        {
+          "phase": "measure",
+          "index": 1,
+          "wall_ms": 1322.024594,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.18,
+          "sample_ms": 18.6,
+          "sample_units": 1,
+          "encode_ms": 1125.34,
+          "encode_units": 1,
+          "decode_ms": 160.74,
+          "decode_units": 24,
+          "batchd_ms": 5.49,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 166.23000000000002,
+          "decode_ms_per_token": 6.697500000000001,
+          "rtf": 0.120184054,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 2,
+          "wall_ms": 1378.244049,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.81,
+          "sample_ms": 17.65,
+          "sample_units": 1,
+          "encode_ms": 1183.49,
+          "encode_units": 1,
+          "decode_ms": 158.79,
+          "decode_units": 24,
+          "batchd_ms": 5.83,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 164.62,
+          "decode_ms_per_token": 6.61625,
+          "rtf": 0.12529491354545455,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 3,
+          "wall_ms": 1220.592157,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.68,
+          "sample_ms": 13.42,
+          "sample_units": 1,
+          "encode_ms": 1097.11,
+          "encode_units": 1,
+          "decode_ms": 92.79,
+          "decode_units": 24,
+          "batchd_ms": 4.96,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 97.75,
+          "decode_ms_per_token": 3.8662500000000004,
+          "rtf": 0.11096292336363636,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 4,
+          "wall_ms": 1277.63053,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.81,
+          "sample_ms": 16.68,
+          "sample_units": 1,
+          "encode_ms": 1094.3,
+          "encode_units": 1,
+          "decode_ms": 148.93,
+          "decode_units": 24,
+          "batchd_ms": 5.27,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 154.20000000000002,
+          "decode_ms_per_token": 6.205416666666667,
+          "rtf": 0.11614822999999999,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 5,
+          "wall_ms": 1317.60492,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.56,
+          "sample_ms": 16.57,
+          "sample_units": 1,
+          "encode_ms": 1136.62,
+          "encode_units": 1,
+          "decode_ms": 146.18,
+          "decode_units": 24,
+          "batchd_ms": 6.02,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 152.20000000000002,
+          "decode_ms_per_token": 6.090833333333333,
+          "rtf": 0.11978226545454546,
+          "round": 1
+        },
+        {
+          "phase": "measure",
+          "index": 1,
+          "wall_ms": 1275.804058,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.89,
+          "sample_ms": 18.66,
+          "sample_units": 1,
+          "encode_ms": 1077.66,
+          "encode_units": 1,
+          "decode_ms": 160.75,
+          "decode_units": 24,
+          "batchd_ms": 6.19,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 166.94,
+          "decode_ms_per_token": 6.697916666666667,
+          "rtf": 0.11598218709090909,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 2,
+          "wall_ms": 1147.623033,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.33,
+          "sample_ms": 13.57,
+          "sample_units": 1,
+          "encode_ms": 1054.08,
+          "encode_units": 1,
+          "decode_ms": 64.3,
+          "decode_units": 24,
+          "batchd_ms": 3.73,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 68.03,
+          "decode_ms_per_token": 2.6791666666666667,
+          "rtf": 0.10432936663636365,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 3,
+          "wall_ms": 1212.717405,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.07,
+          "sample_ms": 18.88,
+          "sample_units": 1,
+          "encode_ms": 1006.87,
+          "encode_units": 1,
+          "decode_ms": 170.07,
+          "decode_units": 24,
+          "batchd_ms": 5.25,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 175.32,
+          "decode_ms_per_token": 7.08625,
+          "rtf": 0.11024703681818182,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 4,
+          "wall_ms": 1355.299392,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.25,
+          "sample_ms": 19.06,
+          "sample_units": 1,
+          "encode_ms": 1143.94,
+          "encode_units": 1,
+          "decode_ms": 173.85,
+          "decode_units": 24,
+          "batchd_ms": 6.55,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 180.4,
+          "decode_ms_per_token": 7.2437499999999995,
+          "rtf": 0.12320903563636362,
+          "round": 2
+        },
+        {
+          "phase": "measure",
+          "index": 5,
+          "wall_ms": 1332.342374,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 11.3,
+          "sample_ms": 16.37,
+          "sample_units": 1,
+          "encode_ms": 1151.26,
+          "encode_units": 1,
+          "decode_ms": 146.99,
+          "decode_units": 24,
+          "batchd_ms": 5.79,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 152.78,
+          "decode_ms_per_token": 6.124583333333334,
+          "rtf": 0.121122034,
+          "round": 2
+        }
+      ],
+      "warmups": [
+        {
+          "phase": "warmup",
+          "index": 1,
+          "wall_ms": 1291.300508,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 14.58,
+          "sample_ms": 20.94,
+          "sample_units": 1,
+          "encode_ms": 1082.32,
+          "encode_units": 1,
+          "decode_ms": 166.04,
+          "decode_units": 24,
+          "batchd_ms": 6.72,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 172.76,
+          "decode_ms_per_token": 6.918333333333333,
+          "rtf": 0.11739095527272728,
+          "round": 1
+        },
+        {
+          "phase": "warmup",
+          "index": 2,
+          "wall_ms": 1322.450636,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 13.01,
+          "sample_ms": 17.91,
+          "sample_units": 1,
+          "encode_ms": 1133.98,
+          "encode_units": 1,
+          "decode_ms": 151.52,
+          "decode_units": 24,
+          "batchd_ms": 5.39,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 156.91,
+          "decode_ms_per_token": 6.3133333333333335,
+          "rtf": 0.1202227850909091,
+          "round": 1
+        },
+        {
+          "phase": "warmup",
+          "index": 1,
+          "wall_ms": 1187.237384,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 13.39,
+          "sample_ms": 13.32,
+          "sample_units": 1,
+          "encode_ms": 1073.64,
+          "encode_units": 1,
+          "decode_ms": 80.91,
+          "decode_units": 24,
+          "batchd_ms": 5.29,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 86.2,
+          "decode_ms_per_token": 3.37125,
+          "rtf": 0.10793067127272728,
+          "round": 2
+        },
+        {
+          "phase": "warmup",
+          "index": 2,
+          "wall_ms": 1217.706619,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 13.68,
+          "sample_ms": 16.63,
+          "sample_units": 1,
+          "encode_ms": 1042.68,
+          "encode_units": 1,
+          "decode_ms": 138.89,
+          "decode_units": 24,
+          "batchd_ms": 5.18,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 144.07,
+          "decode_ms_per_token": 5.7870833333333325,
+          "rtf": 0.11070060172727274,
+          "round": 2
+        }
+      ],
+      "median": {
+        "encode_ms": 1111.225,
+        "decoder_ms": 159.41000000000003,
+        "decode_ms": 153.86,
+        "batchd_ms": 5.640000000000001,
+        "prompt_ms": 0.0,
+        "decode_ms_per_token": 6.410833333333334,
+        "wall_ms": 1297.617725,
+        "rtf": 0.11796524772727272
+      },
+      "wall_range_ms": [
+        1147.623033,
+        1378.244049
+      ]
+    }
+  },
+  "binary_sha256": "57d1b3296c6c70ae657a0796fecd5bc8f40eaa20ba5a52cb930c7fa9b0bfaf0f",
+  "driver_sha256": "ea8b8f8430a0c945022aaa95455086f3e7579f5c8c10985e35842f09786a5487",
+  "library_sha256": {
+    "libwhisper.so": "17b83a7129acbf6d067326d42334215641e35ab6cc11e267e97b90771b2e3cf4",
+    "libggml.so": "f115c4bb1cd6d3ba5bfc2e1540124a2182b44a4e4b3f78b846cd5b4b4eb737cf",
+    "libggml-cpu.so": "02327f3f13125e59c73293b23b442b7a7e65df5e67518b6f058dbc4a59808035",
+    "libggml-base.so": "9cd337348f73d79454d2818813b1c563b06b2f758827af99491b592dbb9bf928"
+  },
+  "source_sha256": {
+    "whisper/asahi_encoder.h": "3e18f1fdea875cf498bd5b0a928f1f76e83ed3b166101c18e8cc48fdf0a29ea5",
+    "whisper/asahi_encoder.cpp": "dbfe06ec311b6bb0ab214a0e52f60baa665110317217878ad911112f1459043e",
+    "whisper/scripts/prepare_asahi.py": "2d6808cf6266ac97b2c61f15c54a40fc63003d1ac723a6adf18ba965905941a1",
+    "whisper/scripts/benchmark_asahi.py": "3936cd3f56d5e0eeb7f550a40aee9fd63576932b35a0514da74f8516c17cc713",
+    "whisper/scripts/benchmark_whisper.cpp": "38dff66525e25391e0fa61dce384e3af91a045ef125e213537bec1e6d482f3dd",
+    "whisper/scripts/verify_asahi_matrices.py": "ddfa9e0a0ffa5f362b73a366820fdf84a50f5d98e9724d030945514fcf743897",
+    "qwen35/ane_matmul.c": "200ad6e8847de6aea5c001401fb01f7c40781e61d1cf3063809c5cca66aa4510",
+    "qwen35/ane_matmul.h": "71dd4a1b905c5cdcb7e89f703465f976e6abb8f630c5c3063d63659e7b628780",
+    "qwen35/linear_template.h": "b7806029cc215b8a70ff3e14d4dd188988a49b24831b4909de82aea6e0e4d680",
+    "whisper/vendor/whisper-asahi/src/whisper.cpp": "28b2662b50d7aeb1d2f3a44c8ad16d31e8d00c970f2d949e028f7c77e126ba60",
+    "whisper/vendor/whisper-asahi/ggml/src/ggml-cpu/simd-mappings.h": "f83b0de9f5dfff92092c2bab9ec718450884dde77d0f9809f03a62e053d4ff88",
+    "whisper/vendor/whisper-asahi/src/CMakeLists.txt": "3715cc91a3ffb4ab76438ff0693592fcaaab14378b83ab60ce7c6feaf84d6b36"
+  },
+  "artifacts": {
+    "jfk.wav": "d7d4e74b8a333ed02186008bc109a1b1a19d16da668bd56e785d80d69a16a72f",
+    "jfk-hf-encoder.npy": "d1fb3b1170e7dacba2caa346df036719c3b898222e9be568c7b47a926f385b95",
+    "jfk-first-5s.wav": "6f7b022b4670ddcad48cf097e3cc60c8ba54bd15d6a73b3ea776cadbf0b8d610",
+    "jfk-first-5s-hf-encoder.npy": "9f2630cb15c2119270ce74ac5b02ece15f2acc5a311ce97d7c56b41559364cb4",
+    "jfk-repeat.wav": "ac545df0bd5e09a8c49b020bbc7a4c3f39e5836fa69a232f1017d1aa512315e4",
+    "jfk-repeat-hf-encoder.npy": "cd0cb9cbf0c0e7b788a517dbdd1c81d2a93fb1a8c05e7c3ab4d6b2fcf8c267cf",
+    "driver-build.log": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "audio.f32": "ebd52851100536db02d12c49fddd010372dcdc70243562e057553d476b706ae0",
+    "cpu_cpu-1.log": "983db7af2837e78733fbeb8927ca29d6198917a18e5863f0c8ad02f6b39c77cd",
+    "ane_projections_cpu-1.log": "6b441b436d8c41276e72afbd179ed3e544cfaf59b1e3bc9f564890080c1be428",
+    "ane_projections_cpu-2.log": "bb9c16cfdd3aeb2090b65302287daa05206146db5d3c89577dc3316823c87d3d",
+    "cpu_cpu-2.log": "06911d4ac249c45e9ba14ad692bac35ef2e9be7c1829fb094aa032a180b366e8",
+    "jfk-cpu/mel.f32": "179e2757da689a12be496abdb62fe07f1d8455b0e60398905e18485d01d4593a",
+    "jfk-cpu/encoder.f32": "b08905f5eab36650d72d74c26a35758f7ffe8d0b3be0d734b8eced89abc3f054",
+    "jfk-cpu/logits.bin": "de4f2630b231c1b9f45e15533b54ee20c8cfc8596db20fc0dd177e0035f57b5f",
+    "jfk-cpu/transcript.txt": "26bdbc43c1f6d8bbccbc1570582316cb428a9a64ade77ab4650361f7b7b0519d",
+    "jfk-cpu/run.log": "347fbfd351e667a2a378b7004fc8f6c1062f63783c6575dd8c551569114f4327",
+    "jfk-ane/mel.f32": "179e2757da689a12be496abdb62fe07f1d8455b0e60398905e18485d01d4593a",
+    "jfk-ane/encoder.f32": "04e300228ac3cfb4cf7e1b8566eaf27b13ddaf9602c6252e6dd3472fe06f86cc",
+    "jfk-ane/logits.bin": "7f7815cb5901a822a2eecf1be66139394b45defa3af91705a098f8a419721648",
+    "jfk-ane/transcript.txt": "26bdbc43c1f6d8bbccbc1570582316cb428a9a64ade77ab4650361f7b7b0519d",
+    "jfk-ane/run.log": "660c1b35c6868476b10b39b880dbca95597d964b970551e71fb9ab0726fdb6e7",
+    "jfk-first-5s-cpu/mel.f32": "7d4878cd9375e3848b62b4849e8c2ddda2257ba122bb2786eb14266ce2bebe8b",
+    "jfk-first-5s-cpu/encoder.f32": "aa97793667bec3498647e57c20fef2aa544a7391d318d4feed4de6f4079e574f",
+    "jfk-first-5s-cpu/logits.bin": "7a93916ac7528d4569a4d0ceae22d3f180c247e66e54aabcbc80176371407c46",
+    "jfk-first-5s-cpu/transcript.txt": "0716546790e08c1346d651a0e53b4619f6ba11ccbdc9896a68c8c25f15b9edc0",
+    "jfk-first-5s-cpu/run.log": "495fa45de69f7462261b370a2307e4e0c58eee400166a5749bff1c1beefab60b",
+    "jfk-first-5s-ane/mel.f32": "7d4878cd9375e3848b62b4849e8c2ddda2257ba122bb2786eb14266ce2bebe8b",
+    "jfk-first-5s-ane/encoder.f32": "890eee6bbdaabc0d439e5b82230928dc0d9833ff6b65b71291d4c8b68ac56286",
+    "jfk-first-5s-ane/logits.bin": "94ee6e0744bf26c52606a9b953830dac1e1e69da30e912bab34cb639b37daddc",
+    "jfk-first-5s-ane/transcript.txt": "0716546790e08c1346d651a0e53b4619f6ba11ccbdc9896a68c8c25f15b9edc0",
+    "jfk-first-5s-ane/run.log": "780d34eed02664be04aae11ba8b0da1bc2d314eb042e88fa19185965bfccd22d",
+    "jfk-repeat-cpu/mel.f32": "f552eae2127ba9eb456e7e0399f6d08f435622195300a71c96c4a2b281dc8603",
+    "jfk-repeat-cpu/encoder.f32": "f9231aa24d5e62f01c773b37ea199c2ac891fd1800a0e08c2245b279f498d166",
+    "jfk-repeat-cpu/logits.bin": "daed1efcb513257d326eaadf1167d10647e2ca265276650a4f474ee728de8437",
+    "jfk-repeat-cpu/transcript.txt": "cb406265f1f90e8569a094f738a0c8dd91619355ed9a62b3b3a3d955a84d04f8",
+    "jfk-repeat-cpu/run.log": "dcf27dba5b382efca38623e53a653880342e1cae7f1899bccaa809b441d598b0",
+    "jfk-repeat-ane/mel.f32": "f552eae2127ba9eb456e7e0399f6d08f435622195300a71c96c4a2b281dc8603",
+    "jfk-repeat-ane/encoder.f32": "aea07a8d04a4e3c380f537b8ddc027de8c2e17fc7f438540d3689bf4c70fe170",
+    "jfk-repeat-ane/logits.bin": "0a8d3e64ac207e9fc44c0253ae05e3f0f9f8c9f0a1ddc18a25fdd8c200ec4551",
+    "jfk-repeat-ane/transcript.txt": "cb406265f1f90e8569a094f738a0c8dd91619355ed9a62b3b3a3d955a84d04f8",
+    "jfk-repeat-ane/run.log": "0de4b1f09159e2f6acb65dd187479630d3444ccb31b15dc0600e57dead63e92c"
+  }
+}
