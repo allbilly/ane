@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "utc": "2026-10-06T14:01:29.059806+00:00",
+  "kernel": "7.1.13+",
+  "machine": "aarch64",
+  "backend": "CPU only, native ggml ARM backend; OpenBLAS not installed",
+  "whisper_cpp_revision": "60c0be6ac8fa71b1a2ae2dd938a31a34a508e774",
+  "hf_revision": "87c7102498dcde7456f24cfd30239ca606ed9063",
+  "sha256": {
+    "whisper/models/hf-tiny.en/model.safetensors": "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad",
+    "whisper/models/hf-ggml/ggml-model.bin": "776f39cd70d01a7df3c6098f87f121b62d1fb634d1272b5f36bb6f369fc34372",
+    "whisper/vendor/whisper.cpp/samples/jfk.wav": "59dfb9a4acb36fe2a2affc14bacbee2920ff435cb13cc314a08c13f66ba7860e",
+    "whisper/build/asahi-cpu/bin/whisper-cli": "0ddcf2b85085e6c895e1d3e3de0ed102ae630d446a70defb07fdfe4340ffa7d7"
+  },
+  "model_bitwise_identical_to_macos": true,
+  "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+  "workers": 4,
+  "timings_ms": {
+    "encode": 333.89,
+    "decode": 62.81,
+    "batchd": 3.34,
+    "total": 492.89
+  },
+  "timing_note": "One separate-process smoke test; setup included in total, no warm benchmark claim.",
+  "shared_locks": [
+    "/home/asahi/ane.lock",
+    "/home/asahi/gpu.lock",
+    "/tmp/m1-gpu.lock"
+  ],
+  "audio_seconds": 11.0,
+  "audio_encoder_context_seconds": 30.0
+}
