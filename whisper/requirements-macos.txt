@@ -2,5 +2,5 @@
 aneforge==0.4.0
 numpy==2.2.6
 torch==2.7.0
-transformers==4.53.0
+transformers==5.10.1
 cmake==4.0.3
