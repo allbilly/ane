@@ -12,12 +12,17 @@
   gate. Save raw per-prompt results, source/model hashes and runtime details so
   the Asahi comparison can be repeated with identical settings.
 
-- [ ] Make the already validated macOS Whisper `tiny.en` dense encoder kit
-  available for native Asahi replay. Recover the existing 1,783-task export first;
-  regenerate on macOS only if it cannot be recovered. Include the actual
-  `model.hwx` and coefficient payloads, task/port metadata, source MIL, checkpoint
-  revision/hashes, and the three real-audio FP16 input/output fixtures with their
+- [ ] Dump the complete Whisper `tiny.en` ANE encoder kernels on macOS for
+  native Asahi replay. Recover the already validated 1,783-task dense encoder
+  export first; regenerate and dump on macOS if it cannot be recovered.
+  Include the actual `model.hwx`, extracted register/command streams in task
+  order, coefficient payloads and packing layouts, buffer sizes and relocations,
+  input/output ports and tensor layouts, scratch/intermediate buffers, source
+  MIL, checkpoint revision/hashes, and target ANE generation plus compiler/runtime
+  versions. Include the three real-audio FP16 input/output fixtures with their
   independent HF references. Export hashes alone do not supply executable tasks.
+  Use the complete dump to build a compact encoder replay path, replacing the
+  CPU convolution/attention work and 1,128 separate projection submissions.
   The older `~/old_whisper.cpp/asahi/whisper-tiny-encoder.hwx` contains one
   convolution task, not the complete encoder. After Linux validation, benchmark
   matching CPU/CPU and ANE/CPU encode, decoder prompt setup, token decode and
