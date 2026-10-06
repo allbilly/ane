@@ -78,6 +78,13 @@ SDOT, including 1,024- and 2,048-token prompts. Maximum full-logit NRMSE was
 0.0432%. Four independently evolving greedy histories also matched all
 256 choices, with maximum NRMSE 0.0122%.
 
+The rebuilt pinned Uzu CPU oracle also matched the native BF16 implementation
+bit for bit at all 23 arithmetic prefixes: 5,711,360 vocabulary logits and
+552 residual layer vectors (565,248 values). The original one-token,
+two-token and arithmetic fixtures still matched, and all-prefix
+instrumentation preserved the final logits. This establishes same-host
+Asahi parity; it does not compare against missing macOS all-prefix arrays.
+
 The accurate ANE backend also passed all six first predictions and 384 decode
 choices, with maximum full-logit NRMSE 0.3813%, below the unchanged 0.5% gate.
 It made 339,552 timed submissions for 3,153 prompt tokens and 384 decode calls:

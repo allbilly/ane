@@ -401,11 +401,49 @@
     "ane-host-20261006T125822Z/attempt.json": {
       "bytes": 489,
       "sha256": "1768fc65b2942846c59a0eb88375fc45c3da9ae4f9c3227941efc014a1a4eebe"
+    },
+    "vendor-all-prefix/first.log": {
+      "bytes": 14,
+      "sha256": "8f3e39a76e62d35b990fd1dbbf9da1678d5595267872c218ae598a000936e892"
+    },
+    "vendor-all-prefix/two.log": {
+      "bytes": 28,
+      "sha256": "866022bdf51bae773ef3f6b46c6c60bd0f154dc8a15ffd1836ab3cb6c36a3aee"
+    },
+    "vendor-all-prefix/arithmetic.log": {
+      "bytes": 359,
+      "sha256": "56d60031515bc15ac0016ff8fa33ef6517accfbf792cca3b54b2f1a6e6ef29ae"
+    },
+    "vendor-all-prefix/arithmetic-all.log": {
+      "bytes": 359,
+      "sha256": "56d60031515bc15ac0016ff8fa33ef6517accfbf792cca3b54b2f1a6e6ef29ae"
+    },
+    "vendor-all-prefix/uzu-asahi-all.npz": {
+      "bytes": 10719586,
+      "sha256": "a2726e44c920c6c55ffe4ed0d83947e2b45eab79956cc54ffc48fb0397210c7a"
+    },
+    "vendor-all-prefix/native-asahi-all.npz": {
+      "bytes": 10719586,
+      "sha256": "a2726e44c920c6c55ffe4ed0d83947e2b45eab79956cc54ffc48fb0397210c7a"
+    },
+    "vendor-all-prefix/report.json": {
+      "bytes": 80476,
+      "sha256": "f08c59678312e878521383d274245a0f60b67a0450c668cea14504b280e96383"
+    },
+    "vendor-all-prefix.log": {
+      "bytes": 2097,
+      "sha256": "be487b7dca45c864c39ad7e9249cafc6f304bc36e3ac2d0252f530eefe3832a9"
+    },
+    "oracle-build.log": {
+      "bytes": 236,
+      "sha256": "e3cbece9ca87510b6de005b548c18b14c87a2e17d3221188a55c8ca24923865c"
+    },
+    "oracle-build-missing-cargo.log": {
+      "bytes": 251,
+      "sha256": "8eccfd0c1ce313d530759638542c50111bd0a81809c79797c724d12431f51c51"
     }
   },
-  "pending": [
-    "Independent Uzu all-prefix oracle capture on Asahi"
-  ],
+  "pending": [],
   "current_model_execution": {
     "status": "existing_backend_requires_no_additional_capture",
     "projections": 96,
@@ -449,5 +487,60 @@
     "path": "/home/asahi/task.md",
     "content": "when applegpu is ready, add those number to qwen3.c \n",
     "result": "AppleGPU numbers are already imported into /home/asahi/qwen3.c/README.md with ane/benchmarks/applegpu-gpt2-m1.json; that checkout is clean."
-  }
+  },
+  "independent_oracle_all_prefix": {
+    "status": "same_host_pass",
+    "returncode": 0,
+    "captured_utc": "2026-10-06T13:15:53.550222+00:00",
+    "uzu_revision": "4d880766f5a4137b63d56c3924e7a2e403b0ccc6",
+    "model_sha256": "fa595349afb112763731f5d548a7af4baff7b6088c99f1f2cada29c89442870c",
+    "oracle_sha256": "605a78d9d6d0ac125c5f98edfd193548ba1a0e775d425b8a1bddb55382b53c83",
+    "instrumentation_sha256": "4bb46678c92c019e26821c822405d8adab3a108a79155b426a516adbe69b8500",
+    "cargo_lock_sha256": "fb741152beea029385878ace5e31563f848682f82899e5833248df403e75970c",
+    "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Fedora 1.98.1-1.fc44)",
+    "rustc_version": "rustc 1.98.1 (48a229cea 2026-09-01) (Fedora 1.98.1-1.fc44)",
+    "arithmetic_prefixes": 23,
+    "residual_layer_vectors": 552,
+    "logit_values": 5711360,
+    "residual_values": 565248,
+    "bitwise_equal": true,
+    "instrumentation_preserves_final_logits": true,
+    "original_saved_fixtures_match": true,
+    "scope": "Independent pinned Uzu CPU oracle versus native BF16 path at every arithmetic prefix; no cross-host Mac-array comparison.",
+    "build_command": [
+      "qwen35/.venv/bin/python",
+      "-m",
+      "qwen35.tools.build_reference",
+      "--uzu",
+      "/home/asahi/.cache/ane-qwen35/uzu",
+      "--cargo",
+      "/home/asahi/.cache/ane-qwen35/toolchain/usr/bin/cargo",
+      "--lockfile",
+      "/home/asahi/.cache/ane-qwen35/uzu-reference-cli/Cargo.lock"
+    ],
+    "capture_command": [
+      "qwen35/.venv/bin/python",
+      "-m",
+      "qwen35.tools.capture_vendor_macos",
+      "--model",
+      "/home/asahi/.cache/ane-qwen35/model",
+      "--oracle",
+      "/home/asahi/.cache/ane-qwen35/uzu-reference-cli/target/release/uzu-reference-cli",
+      "--tag",
+      "asahi",
+      "--output",
+      "qwen35/local-results/asahi-macos-update-20261006/vendor-all-prefix"
+    ],
+    "initial_build_attempt": {
+      "returncode": 2,
+      "status": "cargo_not_in_PATH",
+      "log": "oracle-build-missing-cargo.log"
+    },
+    "shared_locks": [
+      "/home/asahi/ane.lock",
+      "/home/asahi/gpu.lock",
+      "/tmp/m1-gpu.lock"
+    ]
+  },
+  "completion_scope": "Pinned Mirai model weights verified; available new Asahi guard/CPU/oracle checks and accurate full-model ANE dimension, long-context prefill/decode tests completed. This does not claim Linux execution of absent new macOS fused recurrence/training64/Whisper program exports."
 }
