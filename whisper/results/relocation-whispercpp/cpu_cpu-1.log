@@ -1,0 +1,96 @@
+BENCH_RESULT	warmup	1	303.531042	 And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.
+BENCH_RESULT	measure	1	228.920750	 And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.
+
+whisper_init_from_file_with_params_no_state: loading model from '/Users/yeren/ane/whisper/models/ggml-tiny.en.bin'
+whisper_init_with_params_no_state: use gpu    = 0
+whisper_init_with_params_no_state: flash attn = 1
+whisper_init_with_params_no_state: gpu_device = 0
+whisper_init_with_params_no_state: dtw        = 0
+ggml_metal_device_init: tensor API disabled for pre-M5 and pre-A19 devices
+ggml_metal_library_init: using embedded metal library
+ggml_metal_library_compile_all: compiled 'fa' library in 22.804 sec
+ggml_metal_library_compile_all: compiled 'mul_mv' library in 2.034 sec
+ggml_metal_library_compile_all: compiled 'mul_mm' library in 2.034 sec
+ggml_metal_library_compile_all: compiled 'quantize' library in 0.770 sec
+ggml_metal_library_compile_all: compiled 'softmax' library in 0.286 sec
+ggml_metal_library_compile_all: compiled 'norm' library in 0.395 sec
+ggml_metal_library_compile_all: compiled 'unary' library in 0.338 sec
+ggml_metal_library_compile_all: compiled 'binbcast' library in 0.312 sec
+ggml_metal_library_compile_all: compiled 'reduce' library in 0.361 sec
+ggml_metal_library_compile_all: compiled 'tri' library in 0.285 sec
+ggml_metal_library_compile_all: compiled 'ssm' library in 0.308 sec
+ggml_metal_library_compile_all: compiled 'wkv' library in 0.408 sec
+ggml_metal_library_compile_all: compiled 'gated_delta_net' library in 0.436 sec
+ggml_metal_library_compile_all: compiled 'solve_tri' library in 0.412 sec
+ggml_metal_library_compile_all: compiled 'rope' library in 0.301 sec
+ggml_metal_library_compile_all: compiled 'conv' library in 0.359 sec
+ggml_metal_library_compile_all: compiled 'upscale' library in 0.283 sec
+ggml_metal_library_compile_all: compiled 'argsort' library in 0.390 sec
+ggml_metal_library_compile_all: compiled 'pool' library in 0.310 sec
+ggml_metal_library_compile_all: compiled 'misc' library in 0.383 sec
+ggml_metal_library_compile_all: loaded 20 libraries from embedded data in 22.804 sec (max single = 22.804 sec)
+ggml_metal_rsets_init: creating a residency set collection (keep_alive = 180 s)
+ggml_metal_device_init: GPU name:   MTL0 (Apple M1)
+ggml_metal_device_init: GPU family: MTLGPUFamilyApple7  (1007)
+ggml_metal_device_init: GPU family: MTLGPUFamilyMetal4  (5002)
+ggml_metal_device_init: simdgroup reduction   = true
+ggml_metal_device_init: simdgroup matrix mul. = true
+ggml_metal_device_init: has unified memory    = true
+ggml_metal_device_init: has bfloat            = true
+ggml_metal_device_init: has tensor            = false
+ggml_metal_device_init: use residency sets    = true
+ggml_metal_device_init: use shared buffers    = true
+ggml_metal_device_init: recommendedMaxWorkingSetSize  =  5726.63 MB
+whisper_init_with_params_no_state: devices    = 3
+whisper_init_with_params_no_state: backends   = 3
+whisper_model_load: loading model
+whisper_model_load: n_vocab       = 51864
+whisper_model_load: n_audio_ctx   = 1500
+whisper_model_load: n_audio_state = 384
+whisper_model_load: n_audio_head  = 6
+whisper_model_load: n_audio_layer = 4
+whisper_model_load: n_text_ctx    = 448
+whisper_model_load: n_text_state  = 384
+whisper_model_load: n_text_head   = 6
+whisper_model_load: n_text_layer  = 4
+whisper_model_load: n_mels        = 80
+whisper_model_load: ftype         = 1
+whisper_model_load: qntvr         = 0
+whisper_model_load: type          = 1 (tiny)
+whisper_model_load: adding 1607 extra tokens
+whisper_model_load: n_langs       = 99
+whisper_model_load:          CPU total size =    77.11 MB
+whisper_model_load: model size    =   77.11 MB
+whisper_backend_init_gpu: no GPU found
+whisper_backend_init: using BLAS backend
+whisper_init_state: kv self size  =    3.15 MB
+whisper_init_state: kv cross size =    9.44 MB
+whisper_init_state: kv pad  size  =    2.36 MB
+whisper_init_state: compute buffer (conv)   =   13.21 MB
+whisper_init_state: compute buffer (encode) =   17.72 MB
+whisper_init_state: compute buffer (cross)  =    3.89 MB
+whisper_init_state: compute buffer (decode) =   95.91 MB
+BENCH_BEGIN	warmup	1
+
+whisper_print_timings:     load time =    78.35 ms
+whisper_print_timings:     fallbacks =   0 p /   0 h
+whisper_print_timings:      mel time =    14.08 ms
+whisper_print_timings:   sample time =    10.27 ms /     1 runs (    10.27 ms per run)
+whisper_print_timings:   encode time =   213.94 ms /     1 runs (   213.94 ms per run)
+whisper_print_timings:   decode time =    59.49 ms /    24 runs (     2.48 ms per run)
+whisper_print_timings:   batchd time =     4.60 ms /     2 runs (     2.30 ms per run)
+whisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)
+whisper_print_timings:    total time =   303.53 ms
+BENCH_END	warmup	1
+BENCH_BEGIN	measure	1
+
+whisper_print_timings:     load time =    78.35 ms
+whisper_print_timings:     fallbacks =   0 p /   0 h
+whisper_print_timings:      mel time =     5.95 ms
+whisper_print_timings:   sample time =    10.18 ms /     1 runs (    10.18 ms per run)
+whisper_print_timings:   encode time =   157.10 ms /     1 runs (   157.10 ms per run)
+whisper_print_timings:   decode time =    52.46 ms /    24 runs (     2.19 ms per run)
+whisper_print_timings:   batchd time =     2.74 ms /     2 runs (     1.37 ms per run)
+whisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)
+whisper_print_timings:    total time =   228.92 ms
+BENCH_END	measure	1

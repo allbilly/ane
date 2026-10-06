@@ -1,0 +1,9 @@
+Round 1: cpu_cpu, warming up then measuring
+cpu_cpu: PASS, warm transcription median 228.92 ms
+Round 1: metal_metal, warming up then measuring
+metal_metal: PASS, warm transcription median 127.80 ms
+Round 1: ane_cpu, warming up then measuring
+ane_cpu: PASS, warm transcription median 88.41 ms
+Round 1: ane_metal, warming up then measuring
+ane_metal: PASS, warm transcription median 158.67 ms
+Evidence: /Users/yeren/ane/whisper/results/relocation-whispercpp/summary.json

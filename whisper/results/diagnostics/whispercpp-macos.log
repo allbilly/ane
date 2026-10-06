@@ -1,0 +1,7 @@
+Evidence: /Users/yeren/Desktop/whisper/results/whispercpp-macos/summary.json
+Traceback (most recent call last):
+  File "/Users/yeren/Desktop/whisper/scripts/test_macos.py", line 127, in <module>
+    main()
+  File "/Users/yeren/Desktop/whisper/scripts/test_macos.py", line 93, in main
+    raise RuntimeError(f"CPU decoder configuration evidence missing for {backend}")
+RuntimeError: CPU decoder configuration evidence missing for cpu

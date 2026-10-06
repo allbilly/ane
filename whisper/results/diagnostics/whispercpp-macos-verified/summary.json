@@ -1,0 +1,124 @@
+{
+  "status": "FAIL",
+  "utc": "20261005T163247Z",
+  "macos": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434",
+  "chip": "Apple M1",
+  "binary": "/Users/yeren/Desktop/whisper/build/metal/bin/whisper-cli",
+  "model": "/Users/yeren/Desktop/whisper/models/ggml-tiny.en.bin",
+  "model_sha256": "776f39cd70d01a7df3c6098f87f121b62d1fb634d1272b5f36bb6f369fc34372",
+  "audio_sha256": "59dfb9a4acb36fe2a2affc14bacbee2920ff435cb13cc314a08c13f66ba7860e",
+  "binary_sha256": "cce954118034a1d17f1a87c0bb60453ab6b16814330d8fc4198ab3166acf0e23",
+  "dylib": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+  "dylib_sha256": "017fbc08675e8773e73f5c0c44f6e6b040c14257342fdf4c0f19914044008587",
+  "bundle": "/Users/yeren/Desktop/whisper/models/whisper-tiny.en-ane",
+  "mil_sha256": "e7320a59f2988a48add91afe6eda18beec615006cae1e613ff68041f6b2c91ed",
+  "backends": {
+    "cpu": {
+      "runs": [
+        {
+          "command": [
+            "/Users/yeren/Desktop/whisper/build/metal/bin/whisper-cli",
+            "-m",
+            "/Users/yeren/Desktop/whisper/models/ggml-tiny.en.bin",
+            "-f",
+            "/Users/yeren/Desktop/whisper/vendor/whisper.cpp/samples/jfk.wav",
+            "-l",
+            "en",
+            "-t",
+            "4",
+            "-bs",
+            "1",
+            "-bo",
+            "1",
+            "-tp",
+            "0",
+            "-nf",
+            "-nt",
+            "-otxt",
+            "-of",
+            "/Users/yeren/Desktop/whisper/results/whispercpp-macos-verified/cpu-1",
+            "-ng"
+          ],
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "wall_ms": 687.8685000001497,
+          "load_ms": 71.79,
+          "encode_ms": 296.71,
+          "decode_ms": 86.85,
+          "total_ms": 510.96
+        },
+        {
+          "command": [
+            "/Users/yeren/Desktop/whisper/build/metal/bin/whisper-cli",
+            "-m",
+            "/Users/yeren/Desktop/whisper/models/ggml-tiny.en.bin",
+            "-f",
+            "/Users/yeren/Desktop/whisper/vendor/whisper.cpp/samples/jfk.wav",
+            "-l",
+            "en",
+            "-t",
+            "4",
+            "-bs",
+            "1",
+            "-bo",
+            "1",
+            "-tp",
+            "0",
+            "-nf",
+            "-nt",
+            "-otxt",
+            "-of",
+            "/Users/yeren/Desktop/whisper/results/whispercpp-macos-verified/cpu-2",
+            "-ng"
+          ],
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "wall_ms": 1311.7578750002394,
+          "load_ms": 145.41,
+          "encode_ms": 621.2,
+          "decode_ms": 225.12,
+          "total_ms": 1054.64
+        },
+        {
+          "command": [
+            "/Users/yeren/Desktop/whisper/build/metal/bin/whisper-cli",
+            "-m",
+            "/Users/yeren/Desktop/whisper/models/ggml-tiny.en.bin",
+            "-f",
+            "/Users/yeren/Desktop/whisper/vendor/whisper.cpp/samples/jfk.wav",
+            "-l",
+            "en",
+            "-t",
+            "4",
+            "-bs",
+            "1",
+            "-bo",
+            "1",
+            "-tp",
+            "0",
+            "-nf",
+            "-nt",
+            "-otxt",
+            "-of",
+            "/Users/yeren/Desktop/whisper/results/whispercpp-macos-verified/cpu-3",
+            "-ng"
+          ],
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "wall_ms": 1409.719958000096,
+          "load_ms": 127.68,
+          "encode_ms": 685.37,
+          "decode_ms": 287.81,
+          "total_ms": 1172.51
+        }
+      ],
+      "median_ms": {
+        "encode_ms": 621.2,
+        "total_ms": 1054.64,
+        "wall_ms": 1311.7578750002394
+      }
+    },
+    "metal": {
+      "runs": []
+    }
+  },
+  "method": "Separate CLI processes, greedy English, four threads, full audio context; ANE decoder on CPU.",
+  "error": "Metal backend readiness evidence missing"
+}

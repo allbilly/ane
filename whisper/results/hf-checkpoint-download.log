@@ -1,0 +1,12 @@
+Hint: The `hf-cli` skill is not installed. Run `hf skills add -g` to teach your AI agents how to use the `hf` CLI.
+/Users/yeren/.local/share/uv/tools/hf/lib/python3.14/site-packages/huggingface_hub/cli/download.py:158: UserWarning: Ignoring `--include` since filenames have been explicitly set.
+  warnings.warn("Ignoring `--include` since filenames have been explicitly set.")
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Still waiting to acquire lock on /Users/yeren/Desktop/whisper/.cache/huggingface/hub/.locks/models--openai--whisper-tiny.en/db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad.lock (elapsed: 10.0 seconds)
+Still waiting to acquire lock on /Users/yeren/Desktop/whisper/.cache/huggingface/hub/.locks/models--openai--whisper-tiny.en/db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad.lock (elapsed: 20.0 seconds)
+Still waiting to acquire lock on /Users/yeren/Desktop/whisper/.cache/huggingface/hub/.locks/models--openai--whisper-tiny.en/db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad.lock (elapsed: 30.1 seconds)
+Still waiting to acquire lock on /Users/yeren/Desktop/whisper/.cache/huggingface/hub/.locks/models--openai--whisper-tiny.en/db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad.lock (elapsed: 40.1 seconds)
+Still waiting to acquire lock on /Users/yeren/Desktop/whisper/.cache/huggingface/hub/.locks/models--openai--whisper-tiny.en/db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad.lock (elapsed: 50.1 seconds)
+Still waiting to acquire lock on /Users/yeren/Desktop/whisper/.cache/huggingface/hub/.locks/models--openai--whisper-tiny.en/db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad.lock (elapsed: 60.2 seconds)
+Still waiting to acquire lock on /Users/yeren/Desktop/whisper/.cache/huggingface/hub/.locks/models--openai--whisper-tiny.en/db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad.lock (elapsed: 70.2 seconds)
+path=/Users/yeren/Desktop/whisper/.cache/huggingface/hub/models--openai--whisper-tiny.en/snapshots/87c7102498dcde7456f24cfd30239ca606ed9063

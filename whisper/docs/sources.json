@@ -1,0 +1,72 @@
+{
+  "checked_on": "2026-10-06",
+  "sources": [
+    {
+      "name": "whisper.cpp",
+      "url": "https://github.com/ggml-org/whisper.cpp",
+      "revision": "60c0be6ac8fa71b1a2ae2dd938a31a34a508e774"
+    },
+    {
+      "name": "ANEForge-local",
+      "url": "https://github.com/sbryngelson/ANEForge",
+      "revision": "d0c666192ebd8d0428e0647fc4d87f57c11759fa"
+    },
+    {
+      "name": "ANEForge-remote",
+      "url": "https://github.com/sbryngelson/ANEForge",
+      "revision": "d0c666192ebd8d0428e0647fc4d87f57c11759fa"
+    },
+    {
+      "name": "whisper-aneforge",
+      "url": "https://github.com/sbryngelson/whisper-aneforge",
+      "revision": "89ca54783ab87dca87a4adfa3e350c9c5bad18cd"
+    },
+    {
+      "name": "asahi-ane",
+      "url": "https://github.com/eiln/ane",
+      "revision": "0dcea9976fae0b500a236a62fca69cd4d39f0809"
+    },
+    {
+      "name": "anecc",
+      "url": "https://github.com/eiln/anecc",
+      "revision": "aa7b14f455e43db53b949c2151c430cc0c3e1d1b"
+    },
+    {
+      "name": "PR #3905",
+      "url": "https://github.com/ggml-org/whisper.cpp/pull/3905",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "head": "ee9b612b33589e231ecc4b8cf3d322cb0a38ad47",
+      "merge_commit": "4afa009405863a41b4e86e0bca141ac62f9ea194"
+    },
+    {
+      "name": "PR #1021",
+      "url": "https://github.com/ggml-org/whisper.cpp/pull/1021",
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "head": "e5346aeb5803d47f4b717a4fe82621d21cbc7b01",
+      "merge_commit": null
+    },
+    {
+      "name": "PR #3848",
+      "url": "https://github.com/ggml-org/whisper.cpp/pull/3848",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "head": "95af5ca3ec4e95f0b890d26087e4cc8a2c3f2c9a",
+      "merge_commit": null
+    },
+    {
+      "name": "openai/whisper-tiny.en",
+      "url": "https://huggingface.co/openai/whisper-tiny.en",
+      "revision": "87c7102498dcde7456f24cfd30239ca606ed9063"
+    },
+    {
+      "name": "ggerganov/whisper.cpp models",
+      "url": "https://huggingface.co/ggerganov/whisper.cpp",
+      "revision": "5359861c739e955e79d9a303bcbc70fb988958b1"
+    }
+  ]
+}

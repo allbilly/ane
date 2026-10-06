@@ -1,0 +1,283 @@
+{
+  "status": "PASS",
+  "utc": "2026-10-05T17:31:39.907452+00:00",
+  "chip": "Apple M1",
+  "macos": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434",
+  "audio_seconds": 11.0,
+  "model": "/Users/yeren/ane/whisper/models/ggml-tiny.en.bin",
+  "model_sha256": "776f39cd70d01a7df3c6098f87f121b62d1fb634d1272b5f36bb6f369fc34372",
+  "audio_sha256": "59dfb9a4acb36fe2a2affc14bacbee2920ff435cb13cc314a08c13f66ba7860e",
+  "binary_sha256": "884f373f80cc0e2a2384060fcbdae6d0d4a4b18636fea3e0ae57bd2f8a03b150",
+  "library_sha256": "a7685dbaee53f21ecb68dba475a31f2116ba03f16be82feb446dc41b1a234f62",
+  "dylib_sha256": "017fbc08675e8773e73f5c0c44f6e6b040c14257342fdf4c0f19914044008587",
+  "mil_sha256": "e7320a59f2988a48add91afe6eda18beec615006cae1e613ff68041f6b2c91ed",
+  "warmups_per_context": 1,
+  "runs_per_context": 1,
+  "rounds": 1,
+  "method": "One persistent context per backend/round, warmup excluded, reverse backend order in alternate rounds, serial execution, English greedy, four threads, no timestamps/fallback, full 30-second audio context, reset text history between calls.",
+  "metric_notes": {
+    "encode_ms": "whisper.cpp encode timer, including cross-attention K/V preparation",
+    "decoder_ms": "sum of decode + batchd + prompt evaluation timers; excludes sampling",
+    "decode_ms_per_token": "single-token evaluation timer divided by its call count; excludes sampling",
+    "wall_ms": "wall time of whisper_full only; includes mel, model execution, sampling and orchestration; excludes loading, compilation and file I/O",
+    "rtf": "wall seconds / actual audio seconds; lower is better"
+  },
+  "backends": {
+    "cpu_cpu": {
+      "runs": [
+        {
+          "phase": "measure",
+          "index": 1,
+          "wall_ms": 228.92075,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.95,
+          "sample_ms": 10.18,
+          "sample_units": 1,
+          "encode_ms": 157.1,
+          "encode_units": 1,
+          "decode_ms": 52.46,
+          "decode_units": 24,
+          "batchd_ms": 2.74,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 55.2,
+          "decode_ms_per_token": 2.1858333333333335,
+          "rtf": 0.020810977272727273,
+          "round": 1
+        }
+      ],
+      "warmups": [
+        {
+          "phase": "warmup",
+          "index": 1,
+          "wall_ms": 303.531042,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 14.08,
+          "sample_ms": 10.27,
+          "sample_units": 1,
+          "encode_ms": 213.94,
+          "encode_units": 1,
+          "decode_ms": 59.49,
+          "decode_units": 24,
+          "batchd_ms": 4.6,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 64.09,
+          "decode_ms_per_token": 2.4787500000000002,
+          "rtf": 0.027593731090909093,
+          "round": 1
+        }
+      ],
+      "median": {
+        "encode_ms": 157.1,
+        "decoder_ms": 55.2,
+        "decode_ms": 52.46,
+        "batchd_ms": 2.74,
+        "prompt_ms": 0.0,
+        "decode_ms_per_token": 2.1858333333333335,
+        "mel_ms": 5.95,
+        "sample_ms": 10.18,
+        "wall_ms": 228.92075,
+        "rtf": 0.020810977272727273
+      },
+      "wall_range_ms": [
+        228.92075,
+        228.92075
+      ]
+    },
+    "metal_metal": {
+      "runs": [
+        {
+          "phase": "measure",
+          "index": 1,
+          "wall_ms": 127.801458,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 7.52,
+          "sample_ms": 11.6,
+          "sample_units": 1,
+          "encode_ms": 52.44,
+          "encode_units": 1,
+          "decode_ms": 53.37,
+          "decode_units": 24,
+          "batchd_ms": 2.41,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 55.78,
+          "decode_ms_per_token": 2.22375,
+          "rtf": 0.011618314363636363,
+          "round": 1
+        }
+      ],
+      "warmups": [
+        {
+          "phase": "warmup",
+          "index": 1,
+          "wall_ms": 151.539417,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 5.34,
+          "sample_ms": 12.06,
+          "sample_units": 1,
+          "encode_ms": 69.64,
+          "encode_units": 1,
+          "decode_ms": 56.49,
+          "decode_units": 24,
+          "batchd_ms": 7.4,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 63.89,
+          "decode_ms_per_token": 2.3537500000000002,
+          "rtf": 0.013776310636363635,
+          "round": 1
+        }
+      ],
+      "median": {
+        "encode_ms": 52.44,
+        "decoder_ms": 55.78,
+        "decode_ms": 53.37,
+        "batchd_ms": 2.41,
+        "prompt_ms": 0.0,
+        "decode_ms_per_token": 2.22375,
+        "mel_ms": 7.52,
+        "sample_ms": 11.6,
+        "wall_ms": 127.801458,
+        "rtf": 0.011618314363636363
+      },
+      "wall_range_ms": [
+        127.801458,
+        127.801458
+      ]
+    },
+    "ane_cpu": {
+      "runs": [
+        {
+          "phase": "measure",
+          "index": 1,
+          "wall_ms": 88.414458,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 7.41,
+          "sample_ms": 8.99,
+          "sample_units": 1,
+          "encode_ms": 17.82,
+          "encode_units": 1,
+          "decode_ms": 50.44,
+          "decode_units": 24,
+          "batchd_ms": 3.31,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 53.75,
+          "decode_ms_per_token": 2.1016666666666666,
+          "rtf": 0.008037678,
+          "round": 1
+        }
+      ],
+      "warmups": [
+        {
+          "phase": "warmup",
+          "index": 1,
+          "wall_ms": 108.521209,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 7.28,
+          "sample_ms": 9.2,
+          "sample_units": 1,
+          "encode_ms": 22.95,
+          "encode_units": 1,
+          "decode_ms": 65.98,
+          "decode_units": 24,
+          "batchd_ms": 2.61,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 68.59,
+          "decode_ms_per_token": 2.749166666666667,
+          "rtf": 0.009865564454545454,
+          "round": 1
+        }
+      ],
+      "median": {
+        "encode_ms": 17.82,
+        "decoder_ms": 53.75,
+        "decode_ms": 50.44,
+        "batchd_ms": 3.31,
+        "prompt_ms": 0.0,
+        "decode_ms_per_token": 2.1016666666666666,
+        "mel_ms": 7.41,
+        "sample_ms": 8.99,
+        "wall_ms": 88.414458,
+        "rtf": 0.008037678
+      },
+      "wall_range_ms": [
+        88.414458,
+        88.414458
+      ]
+    },
+    "ane_metal": {
+      "runs": [
+        {
+          "phase": "measure",
+          "index": 1,
+          "wall_ms": 158.6655,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 7.33,
+          "sample_ms": 15.42,
+          "sample_units": 1,
+          "encode_ms": 30.68,
+          "encode_units": 1,
+          "decode_ms": 101.83,
+          "decode_units": 24,
+          "batchd_ms": 2.68,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 104.51,
+          "decode_ms_per_token": 4.242916666666667,
+          "rtf": 0.014424136363636365,
+          "round": 1
+        }
+      ],
+      "warmups": [
+        {
+          "phase": "warmup",
+          "index": 1,
+          "wall_ms": 129.287125,
+          "transcript": "And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+          "mel_ms": 4.75,
+          "sample_ms": 12.5,
+          "sample_units": 1,
+          "encode_ms": 27.43,
+          "encode_units": 1,
+          "decode_ms": 79.47,
+          "decode_units": 24,
+          "batchd_ms": 4.58,
+          "batchd_units": 2,
+          "prompt_ms": 0.0,
+          "prompt_units": 1,
+          "decoder_ms": 84.05,
+          "decode_ms_per_token": 3.31125,
+          "rtf": 0.011753375,
+          "round": 1
+        }
+      ],
+      "median": {
+        "encode_ms": 30.68,
+        "decoder_ms": 104.51,
+        "decode_ms": 101.83,
+        "batchd_ms": 2.68,
+        "prompt_ms": 0.0,
+        "decode_ms_per_token": 4.242916666666667,
+        "mel_ms": 7.33,
+        "sample_ms": 15.42,
+        "wall_ms": 158.6655,
+        "rtf": 0.014424136363636365
+      },
+      "wall_range_ms": [
+        158.6655,
+        158.6655
+      ]
+    }
+  }
+}

@@ -1,0 +1,26 @@
+ANEForge source: /Users/yeren/Desktop/ANEForge/aneforge/__init__.py
+/Users/yeren/ane/whisper/scripts/test_python_whisper.py:36: DispatchFloorWarning: aneforge.compile: dispatch-floor-bound program (predicted ~63us, ~all of it the fixed per-call cost). Every ANE call pays a fixed dispatch + firmware round-trip (~0.2 ms on M1) regardless of how small the work is, and dispatch is single-in-flight (threads/concurrency do NOT amortize it). To amortize, do more work per call: increase batch N (per-sample cost falls ~linearly toward the compute rate) or chain more ops into one program (share_buffer keeps state resident). Silence: filter aneforge.DispatchFloorWarning.
+  net = af.compile(x * 2 + 1)
+ANE hardware dispatch: PASS
+Using custom `forced_decoder_ids` from the (generation) config. This is deprecated in favor of the `task` and `language` flags/config options.
+The attention mask is not set and cannot be inferred from input because pad token is same as eos token. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+{
+  "status": "PASS",
+  "utc": "2026-10-05T17:33:18.139790+00:00",
+  "model": "/Users/yeren/ane/whisper/.cache/huggingface/hub/models--openai--whisper-tiny.en/snapshots/87c7102498dcde7456f24cfd30239ca606ed9063",
+  "audio": "/Users/yeren/ane/whisper/vendor/whisper.cpp/samples/jfk.wav",
+  "audio_seconds": 11.0,
+  "aneforge_source": "/Users/yeren/Desktop/ANEForge/aneforge/__init__.py",
+  "numpy": "2.2.6",
+  "torch": "2.7.0",
+  "transformers": "4.53.0",
+  "transcript": " And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+  "reference_transcript": " And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+  "transcript_words_match": true,
+  "repeat_transcript_identical": true,
+  "encoder_cosine": 0.9999536275863647,
+  "load_ms": 6748.864084000161,
+  "first_transcription_ms": 2061.089541000001,
+  "warm_transcription_ms": 163.64549999980227,
+  "scope": "ANE encoder and decoder graphs; feature extraction, embeddings, cross-K/V preparation and sampling on host"
+}

@@ -1,0 +1,44 @@
+model /Users/yeren/Desktop/whisper/.cache/huggingface/hub/models--openai--whisper-tiny.en/snapshots/87c7102498dcde7456f24cfd30239ca606ed9063: d=384 layers=4 heads=6 ffn=1536
+cosine (python ANE vs torch): 0.999968
+wrote /Users/yeren/Desktop/whisper/models/whisper-tiny.en-ane/model.mil, weights.bin, cache/, and io/ (vectors + manifest)
+{
+  "build_dir": "/Users/yeren/Desktop/whisper/models/whisper-tiny.en-ane",
+  "bundle": "/Users/yeren/Desktop/whisper/models/whisper-tiny.en-ane/cache/com.apple.e5rt.e5bundlecache/26A434/036B0A29099EE8753A05411CEE4FE1D863927A751E0DA543174DCA94BBC162B1/FB2773C9C006B287C92C923E0774B3F4B82912F9F49A7FB0E2C759C8C8BE8C14.bundle",
+  "inputs": [
+    [
+      "t1",
+      240000
+    ],
+    [
+      "t0",
+      576000
+    ]
+  ],
+  "output": [
+    "t1383",
+    576000
+  ],
+  "out_shape": [
+    1500,
+    384
+  ],
+  "whispercpp": {
+    "ports_txt": "ports.txt",
+    "pos": "pos.f16",
+    "env": {
+      "ANEFORGE_ENCODER": "/Users/yeren/Desktop/whisper/models/whisper-tiny.en-ane"
+    }
+  },
+  "model": "/Users/yeren/Desktop/whisper/.cache/huggingface/hub/models--openai--whisper-tiny.en/snapshots/87c7102498dcde7456f24cfd30239ca606ed9063",
+  "layout": "cf",
+  "compress": null,
+  "dims": {
+    "D": 384,
+    "LAYERS": 4,
+    "HEADS": 6,
+    "FFN": 1536,
+    "MELS": 80,
+    "CTX": 1500,
+    "FRAMES": 3000
+  }
+}

@@ -1,0 +1,13 @@
+warmup 1: PASS encode=24.10 ms, decoder=75.85 ms, whole=136.32 ms
+warmup 2: PASS encode=24.01 ms, decoder=81.85 ms, whole=142.14 ms
+measure 3: PASS encode=23.94 ms, decoder=75.78 ms, whole=134.45 ms
+measure 4: PASS encode=23.40 ms, decoder=75.09 ms, whole=132.73 ms
+measure 5: PASS encode=24.63 ms, decoder=76.71 ms, whole=138.77 ms
+measure 6: PASS encode=23.92 ms, decoder=81.10 ms, whole=139.80 ms
+measure 7: PASS encode=23.97 ms, decoder=85.63 ms, whole=145.37 ms
+measure 8: PASS encode=24.61 ms, decoder=78.00 ms, whole=137.38 ms
+measure 9: PASS encode=24.03 ms, decoder=81.18 ms, whole=139.54 ms
+measure 10: PASS encode=23.94 ms, decoder=84.12 ms, whole=143.81 ms
+measure 11: PASS encode=24.62 ms, decoder=84.20 ms, whole=145.05 ms
+measure 12: PASS encode=23.55 ms, decoder=81.93 ms, whole=140.37 ms
+Evidence: results/benchmark-python-whisper.json

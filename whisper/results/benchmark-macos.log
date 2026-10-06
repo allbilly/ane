@@ -1,0 +1,17 @@
+Round 1: cpu_cpu, warming up then measuring
+cpu_cpu: PASS, warm transcription median 158.34 ms
+Round 1: metal_metal, warming up then measuring
+metal_metal: PASS, warm transcription median 150.73 ms
+Round 1: ane_cpu, warming up then measuring
+ane_cpu: PASS, warm transcription median 69.70 ms
+Round 1: ane_metal, warming up then measuring
+ane_metal: PASS, warm transcription median 174.42 ms
+Round 2: ane_metal, warming up then measuring
+ane_metal: PASS, warm transcription median 175.62 ms
+Round 2: ane_cpu, warming up then measuring
+ane_cpu: PASS, warm transcription median 68.37 ms
+Round 2: metal_metal, warming up then measuring
+metal_metal: PASS, warm transcription median 157.25 ms
+Round 2: cpu_cpu, warming up then measuring
+cpu_cpu: PASS, warm transcription median 161.01 ms
+Evidence: /Users/yeren/Desktop/whisper/results/benchmark-macos/summary.json

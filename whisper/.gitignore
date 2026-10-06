@@ -1,0 +1,7 @@
+.cache/
+.venv/
+__pycache__/
+vendor/
+build/
+models/
+.DS_Store

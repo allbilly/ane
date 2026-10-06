@@ -1,0 +1,439 @@
+model.encoder.conv1.weight  ->  encoder.conv1.weight
+encoder.conv1.weight 3 (384, 80, 3)
+model.encoder.conv1.bias  ->  encoder.conv1.bias
+  Reshaped variable:  encoder.conv1.bias  to shape:  (384, 1)
+encoder.conv1.bias 2 (384, 1)
+  Converting to float32
+model.encoder.conv2.weight  ->  encoder.conv2.weight
+encoder.conv2.weight 3 (384, 384, 3)
+model.encoder.conv2.bias  ->  encoder.conv2.bias
+  Reshaped variable:  encoder.conv2.bias  to shape:  (384, 1)
+encoder.conv2.bias 2 (384, 1)
+  Converting to float32
+model.encoder.embed_positions.weight  ->  encoder.positional_embedding
+encoder.positional_embedding 2 (1500, 384)
+  Converting to float32
+model.encoder.layers.0.self_attn.k_proj.weight  ->  encoder.blocks.0.attn.key.weight
+encoder.blocks.0.attn.key.weight 2 (384, 384)
+model.encoder.layers.0.self_attn.v_proj.weight  ->  encoder.blocks.0.attn.value.weight
+encoder.blocks.0.attn.value.weight 2 (384, 384)
+model.encoder.layers.0.self_attn.v_proj.bias  ->  encoder.blocks.0.attn.value.bias
+encoder.blocks.0.attn.value.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.0.self_attn.q_proj.weight  ->  encoder.blocks.0.attn.query.weight
+encoder.blocks.0.attn.query.weight 2 (384, 384)
+model.encoder.layers.0.self_attn.q_proj.bias  ->  encoder.blocks.0.attn.query.bias
+encoder.blocks.0.attn.query.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.0.self_attn.out_proj.weight  ->  encoder.blocks.0.attn.out.weight
+encoder.blocks.0.attn.out.weight 2 (384, 384)
+model.encoder.layers.0.self_attn.out_proj.bias  ->  encoder.blocks.0.attn.out.bias
+encoder.blocks.0.attn.out.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.0.self_attn_layer_norm.weight  ->  encoder.blocks.0.attn_ln.weight
+encoder.blocks.0.attn_ln.weight 1 (384,)
+  Converting to float32
+model.encoder.layers.0.self_attn_layer_norm.bias  ->  encoder.blocks.0.attn_ln.bias
+encoder.blocks.0.attn_ln.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.0.fc1.weight  ->  encoder.blocks.0.mlp.0.weight
+encoder.blocks.0.mlp.0.weight 2 (1536, 384)
+model.encoder.layers.0.fc1.bias  ->  encoder.blocks.0.mlp.0.bias
+encoder.blocks.0.mlp.0.bias 1 (1536,)
+  Converting to float32
+model.encoder.layers.0.fc2.weight  ->  encoder.blocks.0.mlp.2.weight
+encoder.blocks.0.mlp.2.weight 2 (384, 1536)
+model.encoder.layers.0.fc2.bias  ->  encoder.blocks.0.mlp.2.bias
+encoder.blocks.0.mlp.2.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.0.final_layer_norm.weight  ->  encoder.blocks.0.mlp_ln.weight
+encoder.blocks.0.mlp_ln.weight 1 (384,)
+  Converting to float32
+model.encoder.layers.0.final_layer_norm.bias  ->  encoder.blocks.0.mlp_ln.bias
+encoder.blocks.0.mlp_ln.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.1.self_attn.k_proj.weight  ->  encoder.blocks.1.attn.key.weight
+encoder.blocks.1.attn.key.weight 2 (384, 384)
+model.encoder.layers.1.self_attn.v_proj.weight  ->  encoder.blocks.1.attn.value.weight
+encoder.blocks.1.attn.value.weight 2 (384, 384)
+model.encoder.layers.1.self_attn.v_proj.bias  ->  encoder.blocks.1.attn.value.bias
+encoder.blocks.1.attn.value.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.1.self_attn.q_proj.weight  ->  encoder.blocks.1.attn.query.weight
+encoder.blocks.1.attn.query.weight 2 (384, 384)
+model.encoder.layers.1.self_attn.q_proj.bias  ->  encoder.blocks.1.attn.query.bias
+encoder.blocks.1.attn.query.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.1.self_attn.out_proj.weight  ->  encoder.blocks.1.attn.out.weight
+encoder.blocks.1.attn.out.weight 2 (384, 384)
+model.encoder.layers.1.self_attn.out_proj.bias  ->  encoder.blocks.1.attn.out.bias
+encoder.blocks.1.attn.out.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.1.self_attn_layer_norm.weight  ->  encoder.blocks.1.attn_ln.weight
+encoder.blocks.1.attn_ln.weight 1 (384,)
+  Converting to float32
+model.encoder.layers.1.self_attn_layer_norm.bias  ->  encoder.blocks.1.attn_ln.bias
+encoder.blocks.1.attn_ln.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.1.fc1.weight  ->  encoder.blocks.1.mlp.0.weight
+encoder.blocks.1.mlp.0.weight 2 (1536, 384)
+model.encoder.layers.1.fc1.bias  ->  encoder.blocks.1.mlp.0.bias
+encoder.blocks.1.mlp.0.bias 1 (1536,)
+  Converting to float32
+model.encoder.layers.1.fc2.weight  ->  encoder.blocks.1.mlp.2.weight
+encoder.blocks.1.mlp.2.weight 2 (384, 1536)
+model.encoder.layers.1.fc2.bias  ->  encoder.blocks.1.mlp.2.bias
+encoder.blocks.1.mlp.2.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.1.final_layer_norm.weight  ->  encoder.blocks.1.mlp_ln.weight
+encoder.blocks.1.mlp_ln.weight 1 (384,)
+  Converting to float32
+model.encoder.layers.1.final_layer_norm.bias  ->  encoder.blocks.1.mlp_ln.bias
+encoder.blocks.1.mlp_ln.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.2.self_attn.k_proj.weight  ->  encoder.blocks.2.attn.key.weight
+encoder.blocks.2.attn.key.weight 2 (384, 384)
+model.encoder.layers.2.self_attn.v_proj.weight  ->  encoder.blocks.2.attn.value.weight
+encoder.blocks.2.attn.value.weight 2 (384, 384)
+model.encoder.layers.2.self_attn.v_proj.bias  ->  encoder.blocks.2.attn.value.bias
+encoder.blocks.2.attn.value.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.2.self_attn.q_proj.weight  ->  encoder.blocks.2.attn.query.weight
+encoder.blocks.2.attn.query.weight 2 (384, 384)
+model.encoder.layers.2.self_attn.q_proj.bias  ->  encoder.blocks.2.attn.query.bias
+encoder.blocks.2.attn.query.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.2.self_attn.out_proj.weight  ->  encoder.blocks.2.attn.out.weight
+encoder.blocks.2.attn.out.weight 2 (384, 384)
+model.encoder.layers.2.self_attn.out_proj.bias  ->  encoder.blocks.2.attn.out.bias
+encoder.blocks.2.attn.out.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.2.self_attn_layer_norm.weight  ->  encoder.blocks.2.attn_ln.weight
+encoder.blocks.2.attn_ln.weight 1 (384,)
+  Converting to float32
+model.encoder.layers.2.self_attn_layer_norm.bias  ->  encoder.blocks.2.attn_ln.bias
+encoder.blocks.2.attn_ln.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.2.fc1.weight  ->  encoder.blocks.2.mlp.0.weight
+encoder.blocks.2.mlp.0.weight 2 (1536, 384)
+model.encoder.layers.2.fc1.bias  ->  encoder.blocks.2.mlp.0.bias
+encoder.blocks.2.mlp.0.bias 1 (1536,)
+  Converting to float32
+model.encoder.layers.2.fc2.weight  ->  encoder.blocks.2.mlp.2.weight
+encoder.blocks.2.mlp.2.weight 2 (384, 1536)
+model.encoder.layers.2.fc2.bias  ->  encoder.blocks.2.mlp.2.bias
+encoder.blocks.2.mlp.2.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.2.final_layer_norm.weight  ->  encoder.blocks.2.mlp_ln.weight
+encoder.blocks.2.mlp_ln.weight 1 (384,)
+  Converting to float32
+model.encoder.layers.2.final_layer_norm.bias  ->  encoder.blocks.2.mlp_ln.bias
+encoder.blocks.2.mlp_ln.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.3.self_attn.k_proj.weight  ->  encoder.blocks.3.attn.key.weight
+encoder.blocks.3.attn.key.weight 2 (384, 384)
+model.encoder.layers.3.self_attn.v_proj.weight  ->  encoder.blocks.3.attn.value.weight
+encoder.blocks.3.attn.value.weight 2 (384, 384)
+model.encoder.layers.3.self_attn.v_proj.bias  ->  encoder.blocks.3.attn.value.bias
+encoder.blocks.3.attn.value.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.3.self_attn.q_proj.weight  ->  encoder.blocks.3.attn.query.weight
+encoder.blocks.3.attn.query.weight 2 (384, 384)
+model.encoder.layers.3.self_attn.q_proj.bias  ->  encoder.blocks.3.attn.query.bias
+encoder.blocks.3.attn.query.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.3.self_attn.out_proj.weight  ->  encoder.blocks.3.attn.out.weight
+encoder.blocks.3.attn.out.weight 2 (384, 384)
+model.encoder.layers.3.self_attn.out_proj.bias  ->  encoder.blocks.3.attn.out.bias
+encoder.blocks.3.attn.out.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.3.self_attn_layer_norm.weight  ->  encoder.blocks.3.attn_ln.weight
+encoder.blocks.3.attn_ln.weight 1 (384,)
+  Converting to float32
+model.encoder.layers.3.self_attn_layer_norm.bias  ->  encoder.blocks.3.attn_ln.bias
+encoder.blocks.3.attn_ln.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.3.fc1.weight  ->  encoder.blocks.3.mlp.0.weight
+encoder.blocks.3.mlp.0.weight 2 (1536, 384)
+model.encoder.layers.3.fc1.bias  ->  encoder.blocks.3.mlp.0.bias
+encoder.blocks.3.mlp.0.bias 1 (1536,)
+  Converting to float32
+model.encoder.layers.3.fc2.weight  ->  encoder.blocks.3.mlp.2.weight
+encoder.blocks.3.mlp.2.weight 2 (384, 1536)
+model.encoder.layers.3.fc2.bias  ->  encoder.blocks.3.mlp.2.bias
+encoder.blocks.3.mlp.2.bias 1 (384,)
+  Converting to float32
+model.encoder.layers.3.final_layer_norm.weight  ->  encoder.blocks.3.mlp_ln.weight
+encoder.blocks.3.mlp_ln.weight 1 (384,)
+  Converting to float32
+model.encoder.layers.3.final_layer_norm.bias  ->  encoder.blocks.3.mlp_ln.bias
+encoder.blocks.3.mlp_ln.bias 1 (384,)
+  Converting to float32
+model.encoder.layer_norm.weight  ->  encoder.ln_post.weight
+encoder.ln_post.weight 1 (384,)
+  Converting to float32
+model.encoder.layer_norm.bias  ->  encoder.ln_post.bias
+encoder.ln_post.bias 1 (384,)
+  Converting to float32
+model.decoder.embed_tokens.weight  ->  decoder.token_embedding.weight
+decoder.token_embedding.weight 2 (51864, 384)
+model.decoder.embed_positions.weight  ->  decoder.positional_embedding
+decoder.positional_embedding 2 (448, 384)
+  Converting to float32
+model.decoder.layers.0.self_attn.k_proj.weight  ->  decoder.blocks.0.attn.key.weight
+decoder.blocks.0.attn.key.weight 2 (384, 384)
+model.decoder.layers.0.self_attn.v_proj.weight  ->  decoder.blocks.0.attn.value.weight
+decoder.blocks.0.attn.value.weight 2 (384, 384)
+model.decoder.layers.0.self_attn.v_proj.bias  ->  decoder.blocks.0.attn.value.bias
+decoder.blocks.0.attn.value.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.0.self_attn.q_proj.weight  ->  decoder.blocks.0.attn.query.weight
+decoder.blocks.0.attn.query.weight 2 (384, 384)
+model.decoder.layers.0.self_attn.q_proj.bias  ->  decoder.blocks.0.attn.query.bias
+decoder.blocks.0.attn.query.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.0.self_attn.out_proj.weight  ->  decoder.blocks.0.attn.out.weight
+decoder.blocks.0.attn.out.weight 2 (384, 384)
+model.decoder.layers.0.self_attn.out_proj.bias  ->  decoder.blocks.0.attn.out.bias
+decoder.blocks.0.attn.out.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.0.self_attn_layer_norm.weight  ->  decoder.blocks.0.attn_ln.weight
+decoder.blocks.0.attn_ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layers.0.self_attn_layer_norm.bias  ->  decoder.blocks.0.attn_ln.bias
+decoder.blocks.0.attn_ln.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.0.encoder_attn.k_proj.weight  ->  decoder.blocks.0.cross_attn.key.weight
+decoder.blocks.0.cross_attn.key.weight 2 (384, 384)
+model.decoder.layers.0.encoder_attn.v_proj.weight  ->  decoder.blocks.0.cross_attn.value.weight
+decoder.blocks.0.cross_attn.value.weight 2 (384, 384)
+model.decoder.layers.0.encoder_attn.v_proj.bias  ->  decoder.blocks.0.cross_attn.value.bias
+decoder.blocks.0.cross_attn.value.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.0.encoder_attn.q_proj.weight  ->  decoder.blocks.0.cross_attn.query.weight
+decoder.blocks.0.cross_attn.query.weight 2 (384, 384)
+model.decoder.layers.0.encoder_attn.q_proj.bias  ->  decoder.blocks.0.cross_attn.query.bias
+decoder.blocks.0.cross_attn.query.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.0.encoder_attn.out_proj.weight  ->  decoder.blocks.0.cross_attn.out.weight
+decoder.blocks.0.cross_attn.out.weight 2 (384, 384)
+model.decoder.layers.0.encoder_attn.out_proj.bias  ->  decoder.blocks.0.cross_attn.out.bias
+decoder.blocks.0.cross_attn.out.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.0.encoder_attn_layer_norm.weight  ->  decoder.blocks.0.cross_attn_ln.weight
+decoder.blocks.0.cross_attn_ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layers.0.encoder_attn_layer_norm.bias  ->  decoder.blocks.0.cross_attn_ln.bias
+decoder.blocks.0.cross_attn_ln.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.0.fc1.weight  ->  decoder.blocks.0.mlp.0.weight
+decoder.blocks.0.mlp.0.weight 2 (1536, 384)
+model.decoder.layers.0.fc1.bias  ->  decoder.blocks.0.mlp.0.bias
+decoder.blocks.0.mlp.0.bias 1 (1536,)
+  Converting to float32
+model.decoder.layers.0.fc2.weight  ->  decoder.blocks.0.mlp.2.weight
+decoder.blocks.0.mlp.2.weight 2 (384, 1536)
+model.decoder.layers.0.fc2.bias  ->  decoder.blocks.0.mlp.2.bias
+decoder.blocks.0.mlp.2.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.0.final_layer_norm.weight  ->  decoder.blocks.0.mlp_ln.weight
+decoder.blocks.0.mlp_ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layers.0.final_layer_norm.bias  ->  decoder.blocks.0.mlp_ln.bias
+decoder.blocks.0.mlp_ln.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.1.self_attn.k_proj.weight  ->  decoder.blocks.1.attn.key.weight
+decoder.blocks.1.attn.key.weight 2 (384, 384)
+model.decoder.layers.1.self_attn.v_proj.weight  ->  decoder.blocks.1.attn.value.weight
+decoder.blocks.1.attn.value.weight 2 (384, 384)
+model.decoder.layers.1.self_attn.v_proj.bias  ->  decoder.blocks.1.attn.value.bias
+decoder.blocks.1.attn.value.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.1.self_attn.q_proj.weight  ->  decoder.blocks.1.attn.query.weight
+decoder.blocks.1.attn.query.weight 2 (384, 384)
+model.decoder.layers.1.self_attn.q_proj.bias  ->  decoder.blocks.1.attn.query.bias
+decoder.blocks.1.attn.query.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.1.self_attn.out_proj.weight  ->  decoder.blocks.1.attn.out.weight
+decoder.blocks.1.attn.out.weight 2 (384, 384)
+model.decoder.layers.1.self_attn.out_proj.bias  ->  decoder.blocks.1.attn.out.bias
+decoder.blocks.1.attn.out.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.1.self_attn_layer_norm.weight  ->  decoder.blocks.1.attn_ln.weight
+decoder.blocks.1.attn_ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layers.1.self_attn_layer_norm.bias  ->  decoder.blocks.1.attn_ln.bias
+decoder.blocks.1.attn_ln.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.1.encoder_attn.k_proj.weight  ->  decoder.blocks.1.cross_attn.key.weight
+decoder.blocks.1.cross_attn.key.weight 2 (384, 384)
+model.decoder.layers.1.encoder_attn.v_proj.weight  ->  decoder.blocks.1.cross_attn.value.weight
+decoder.blocks.1.cross_attn.value.weight 2 (384, 384)
+model.decoder.layers.1.encoder_attn.v_proj.bias  ->  decoder.blocks.1.cross_attn.value.bias
+decoder.blocks.1.cross_attn.value.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.1.encoder_attn.q_proj.weight  ->  decoder.blocks.1.cross_attn.query.weight
+decoder.blocks.1.cross_attn.query.weight 2 (384, 384)
+model.decoder.layers.1.encoder_attn.q_proj.bias  ->  decoder.blocks.1.cross_attn.query.bias
+decoder.blocks.1.cross_attn.query.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.1.encoder_attn.out_proj.weight  ->  decoder.blocks.1.cross_attn.out.weight
+decoder.blocks.1.cross_attn.out.weight 2 (384, 384)
+model.decoder.layers.1.encoder_attn.out_proj.bias  ->  decoder.blocks.1.cross_attn.out.bias
+decoder.blocks.1.cross_attn.out.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.1.encoder_attn_layer_norm.weight  ->  decoder.blocks.1.cross_attn_ln.weight
+decoder.blocks.1.cross_attn_ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layers.1.encoder_attn_layer_norm.bias  ->  decoder.blocks.1.cross_attn_ln.bias
+decoder.blocks.1.cross_attn_ln.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.1.fc1.weight  ->  decoder.blocks.1.mlp.0.weight
+decoder.blocks.1.mlp.0.weight 2 (1536, 384)
+model.decoder.layers.1.fc1.bias  ->  decoder.blocks.1.mlp.0.bias
+decoder.blocks.1.mlp.0.bias 1 (1536,)
+  Converting to float32
+model.decoder.layers.1.fc2.weight  ->  decoder.blocks.1.mlp.2.weight
+decoder.blocks.1.mlp.2.weight 2 (384, 1536)
+model.decoder.layers.1.fc2.bias  ->  decoder.blocks.1.mlp.2.bias
+decoder.blocks.1.mlp.2.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.1.final_layer_norm.weight  ->  decoder.blocks.1.mlp_ln.weight
+decoder.blocks.1.mlp_ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layers.1.final_layer_norm.bias  ->  decoder.blocks.1.mlp_ln.bias
+decoder.blocks.1.mlp_ln.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.2.self_attn.k_proj.weight  ->  decoder.blocks.2.attn.key.weight
+decoder.blocks.2.attn.key.weight 2 (384, 384)
+model.decoder.layers.2.self_attn.v_proj.weight  ->  decoder.blocks.2.attn.value.weight
+decoder.blocks.2.attn.value.weight 2 (384, 384)
+model.decoder.layers.2.self_attn.v_proj.bias  ->  decoder.blocks.2.attn.value.bias
+decoder.blocks.2.attn.value.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.2.self_attn.q_proj.weight  ->  decoder.blocks.2.attn.query.weight
+decoder.blocks.2.attn.query.weight 2 (384, 384)
+model.decoder.layers.2.self_attn.q_proj.bias  ->  decoder.blocks.2.attn.query.bias
+decoder.blocks.2.attn.query.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.2.self_attn.out_proj.weight  ->  decoder.blocks.2.attn.out.weight
+decoder.blocks.2.attn.out.weight 2 (384, 384)
+model.decoder.layers.2.self_attn.out_proj.bias  ->  decoder.blocks.2.attn.out.bias
+decoder.blocks.2.attn.out.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.2.self_attn_layer_norm.weight  ->  decoder.blocks.2.attn_ln.weight
+decoder.blocks.2.attn_ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layers.2.self_attn_layer_norm.bias  ->  decoder.blocks.2.attn_ln.bias
+decoder.blocks.2.attn_ln.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.2.encoder_attn.k_proj.weight  ->  decoder.blocks.2.cross_attn.key.weight
+decoder.blocks.2.cross_attn.key.weight 2 (384, 384)
+model.decoder.layers.2.encoder_attn.v_proj.weight  ->  decoder.blocks.2.cross_attn.value.weight
+decoder.blocks.2.cross_attn.value.weight 2 (384, 384)
+model.decoder.layers.2.encoder_attn.v_proj.bias  ->  decoder.blocks.2.cross_attn.value.bias
+decoder.blocks.2.cross_attn.value.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.2.encoder_attn.q_proj.weight  ->  decoder.blocks.2.cross_attn.query.weight
+decoder.blocks.2.cross_attn.query.weight 2 (384, 384)
+model.decoder.layers.2.encoder_attn.q_proj.bias  ->  decoder.blocks.2.cross_attn.query.bias
+decoder.blocks.2.cross_attn.query.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.2.encoder_attn.out_proj.weight  ->  decoder.blocks.2.cross_attn.out.weight
+decoder.blocks.2.cross_attn.out.weight 2 (384, 384)
+model.decoder.layers.2.encoder_attn.out_proj.bias  ->  decoder.blocks.2.cross_attn.out.bias
+decoder.blocks.2.cross_attn.out.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.2.encoder_attn_layer_norm.weight  ->  decoder.blocks.2.cross_attn_ln.weight
+decoder.blocks.2.cross_attn_ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layers.2.encoder_attn_layer_norm.bias  ->  decoder.blocks.2.cross_attn_ln.bias
+decoder.blocks.2.cross_attn_ln.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.2.fc1.weight  ->  decoder.blocks.2.mlp.0.weight
+decoder.blocks.2.mlp.0.weight 2 (1536, 384)
+model.decoder.layers.2.fc1.bias  ->  decoder.blocks.2.mlp.0.bias
+decoder.blocks.2.mlp.0.bias 1 (1536,)
+  Converting to float32
+model.decoder.layers.2.fc2.weight  ->  decoder.blocks.2.mlp.2.weight
+decoder.blocks.2.mlp.2.weight 2 (384, 1536)
+model.decoder.layers.2.fc2.bias  ->  decoder.blocks.2.mlp.2.bias
+decoder.blocks.2.mlp.2.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.2.final_layer_norm.weight  ->  decoder.blocks.2.mlp_ln.weight
+decoder.blocks.2.mlp_ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layers.2.final_layer_norm.bias  ->  decoder.blocks.2.mlp_ln.bias
+decoder.blocks.2.mlp_ln.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.3.self_attn.k_proj.weight  ->  decoder.blocks.3.attn.key.weight
+decoder.blocks.3.attn.key.weight 2 (384, 384)
+model.decoder.layers.3.self_attn.v_proj.weight  ->  decoder.blocks.3.attn.value.weight
+decoder.blocks.3.attn.value.weight 2 (384, 384)
+model.decoder.layers.3.self_attn.v_proj.bias  ->  decoder.blocks.3.attn.value.bias
+decoder.blocks.3.attn.value.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.3.self_attn.q_proj.weight  ->  decoder.blocks.3.attn.query.weight
+decoder.blocks.3.attn.query.weight 2 (384, 384)
+model.decoder.layers.3.self_attn.q_proj.bias  ->  decoder.blocks.3.attn.query.bias
+decoder.blocks.3.attn.query.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.3.self_attn.out_proj.weight  ->  decoder.blocks.3.attn.out.weight
+decoder.blocks.3.attn.out.weight 2 (384, 384)
+model.decoder.layers.3.self_attn.out_proj.bias  ->  decoder.blocks.3.attn.out.bias
+decoder.blocks.3.attn.out.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.3.self_attn_layer_norm.weight  ->  decoder.blocks.3.attn_ln.weight
+decoder.blocks.3.attn_ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layers.3.self_attn_layer_norm.bias  ->  decoder.blocks.3.attn_ln.bias
+decoder.blocks.3.attn_ln.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.3.encoder_attn.k_proj.weight  ->  decoder.blocks.3.cross_attn.key.weight
+decoder.blocks.3.cross_attn.key.weight 2 (384, 384)
+model.decoder.layers.3.encoder_attn.v_proj.weight  ->  decoder.blocks.3.cross_attn.value.weight
+decoder.blocks.3.cross_attn.value.weight 2 (384, 384)
+model.decoder.layers.3.encoder_attn.v_proj.bias  ->  decoder.blocks.3.cross_attn.value.bias
+decoder.blocks.3.cross_attn.value.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.3.encoder_attn.q_proj.weight  ->  decoder.blocks.3.cross_attn.query.weight
+decoder.blocks.3.cross_attn.query.weight 2 (384, 384)
+model.decoder.layers.3.encoder_attn.q_proj.bias  ->  decoder.blocks.3.cross_attn.query.bias
+decoder.blocks.3.cross_attn.query.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.3.encoder_attn.out_proj.weight  ->  decoder.blocks.3.cross_attn.out.weight
+decoder.blocks.3.cross_attn.out.weight 2 (384, 384)
+model.decoder.layers.3.encoder_attn.out_proj.bias  ->  decoder.blocks.3.cross_attn.out.bias
+decoder.blocks.3.cross_attn.out.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.3.encoder_attn_layer_norm.weight  ->  decoder.blocks.3.cross_attn_ln.weight
+decoder.blocks.3.cross_attn_ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layers.3.encoder_attn_layer_norm.bias  ->  decoder.blocks.3.cross_attn_ln.bias
+decoder.blocks.3.cross_attn_ln.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.3.fc1.weight  ->  decoder.blocks.3.mlp.0.weight
+decoder.blocks.3.mlp.0.weight 2 (1536, 384)
+model.decoder.layers.3.fc1.bias  ->  decoder.blocks.3.mlp.0.bias
+decoder.blocks.3.mlp.0.bias 1 (1536,)
+  Converting to float32
+model.decoder.layers.3.fc2.weight  ->  decoder.blocks.3.mlp.2.weight
+decoder.blocks.3.mlp.2.weight 2 (384, 1536)
+model.decoder.layers.3.fc2.bias  ->  decoder.blocks.3.mlp.2.bias
+decoder.blocks.3.mlp.2.bias 1 (384,)
+  Converting to float32
+model.decoder.layers.3.final_layer_norm.weight  ->  decoder.blocks.3.mlp_ln.weight
+decoder.blocks.3.mlp_ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layers.3.final_layer_norm.bias  ->  decoder.blocks.3.mlp_ln.bias
+decoder.blocks.3.mlp_ln.bias 1 (384,)
+  Converting to float32
+model.decoder.layer_norm.weight  ->  decoder.ln.weight
+decoder.ln.weight 1 (384,)
+  Converting to float32
+model.decoder.layer_norm.bias  ->  decoder.ln.bias
+decoder.ln.bias 1 (384,)
+  Converting to float32
+Skipping proj_out.weight
+Done. Output file:  /Users/yeren/Desktop/whisper/models/ggml-model.bin
+

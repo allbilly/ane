@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "utc": "2026-10-05T17:34:16.992138+00:00",
+  "from": "/Users/yeren/Desktop/whisper",
+  "to": "/Users/yeren/ane/whisper",
+  "git_root": "/Users/yeren/ane",
+  "separate_whisper_repo": false,
+  "aneforge_source": "/Users/yeren/Desktop/ANEForge",
+  "changes": [
+    "Moved complete directory including ignored models/caches",
+    "Updated docs and parent README links",
+    "Repaired virtualenv activation and launchers",
+    "Regenerated both CMake build trees and rebuilt binaries"
+  ],
+  "checks": {
+    "model_hashes_preserved": true,
+    "document_links": "PASS",
+    "ignored_runtime_assets": "PASS",
+    "virtualenv_activation": "PASS",
+    "whispercpp_routes": [
+      "cpu_cpu",
+      "metal_metal",
+      "ane_cpu",
+      "ane_metal"
+    ],
+    "python_encoder_cosine": 0.9999536275863647,
+    "python_transcript_parity": true,
+    "coreml_cli_help": "PASS; Core ML inference remains untested"
+  },
+  "previous_builds_preserved_at": ".cache/relocation-builds",
+  "whispercpp_evidence": "results/relocation-whispercpp/summary.json",
+  "python_evidence": "results/relocation-python-whisper.json",
+  "note": "Historical benchmark reports are unchanged and retain original run paths. Relocation runs are functional checks, not replacements for the ten-run timing table."
+}

@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/yeren/Library/Python/3.9/bin//sample", line 5, in <module>
+    from sample import main
+ModuleNotFoundError: No module named 'sample'

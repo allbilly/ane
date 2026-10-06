@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "utc": "2026-10-05T16:24:43.518982+00:00",
+  "model": "/Users/yeren/Desktop/whisper/.cache/huggingface/hub/models--openai--whisper-tiny.en/snapshots/87c7102498dcde7456f24cfd30239ca606ed9063",
+  "audio": "/Users/yeren/Desktop/whisper/vendor/whisper.cpp/samples/jfk.wav",
+  "audio_seconds": 11.0,
+  "aneforge_source": "/Users/yeren/Desktop/ANEForge/aneforge/__init__.py",
+  "numpy": "2.2.6",
+  "torch": "2.7.0",
+  "transformers": "4.53.0",
+  "transcript": " And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+  "reference_transcript": " And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.",
+  "transcript_words_match": true,
+  "repeat_transcript_identical": true,
+  "encoder_cosine": 0.9999536275863647,
+  "load_ms": 23988.261125000008,
+  "first_transcription_ms": 26823.97520900031,
+  "warm_transcription_ms": 298.082166000313,
+  "scope": "ANE encoder and decoder graphs; feature extraction, embeddings, cross-K/V preparation and sampling on host"
+}

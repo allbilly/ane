@@ -1,0 +1,10 @@
+cpu 1: PASS, encode=546.89 ms
+cpu 2: PASS, encode=463.42 ms
+cpu 3: PASS, encode=376.28 ms
+metal 1: PASS, encode=65.19 ms
+metal 2: PASS, encode=68.33 ms
+metal 3: PASS, encode=65.48 ms
+aneforge 1: PASS, encode=34.20 ms
+aneforge 2: PASS, encode=38.80 ms
+aneforge 3: PASS, encode=38.69 ms
+Evidence: /Users/yeren/Desktop/whisper/results/whispercpp-macos-final/summary.json
