@@ -1,0 +1,21 @@
+{
+  "status": "pass",
+  "runtime_lowered_mil_sha256": "dc0afd2e250b29d551227ee4d890b2a4c96f1bb419152e81c30b4d787d423b28",
+  "source_mil_sha256": "e7320a59f2988a48add91afe6eda18beec615006cae1e613ff68041f6b2c91ed",
+  "td_count": 1779,
+  "bank_map": {
+    "0": 0,
+    "1": 1,
+    "3": 3,
+    "4": 4,
+    "5": 6,
+    "6": 5,
+    "7": 7
+  },
+  "normalized_full_text_bitwise_equal": true,
+  "original_text_sha256": "673990c963db29bdeb885e75738d747e992a6ade8f9ad0d3dea80e4cfc228fc2",
+  "runtime_lowered_text_sha256": "4776a4c4af2343ef536c38b81a3428ea222bd4c34cfecb3fae9392d9e602005c",
+  "scope": "Offline-export the actual ANE MIL staged by E5RT; its entire TEXT payload matches the original after swapping mel/output BAR selectors. This is still not a readback of the executing hardware register buffer.",
+  "compiled_coefficients_bitwise_equal": true,
+  "coefficient_sha256": "9c7c3a210bb565db38be08c463be16e3ab22a11fe5e0d933e9666f1d2c351bfb"
+}

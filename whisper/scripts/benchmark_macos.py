@@ -23,7 +23,7 @@ BACKENDS = {
 EXPECTED = words("And so my fellow Americans ask not what your country can do for you ask what you can do for your country")
 
 
-def parse_runs(result, backend, audio_seconds):
+def parse_runs(result, backend, audio_seconds, expected_words=None):
     log = result.stderr
     use_gpu, use_ane = BACKENDS[backend]
     if use_gpu and not re.search(r"whisper_backend_init_gpu: using (?:MTL\d+|Metal) backend", log):
@@ -38,7 +38,7 @@ def parse_runs(result, backend, audio_seconds):
     for line in result.stdout.splitlines():
         if line.startswith("BENCH_RESULT\t"):
             _, phase, index, wall_ms, transcript = line.split("\t", 4)
-            if words(transcript) != EXPECTED:
+            if words(transcript) != (EXPECTED if expected_words is None else expected_words):
                 raise RuntimeError(f"{backend}: transcript mismatch: {transcript!r}")
             records[(phase, int(index))] = {
                 "phase": phase, "index": int(index), "wall_ms": float(wall_ms),

@@ -1,0 +1,14 @@
+{
+  "observed_utc": "2026-10-07T08:13:58.031793+00:00",
+  "host": "macOS-27.0.1-arm64-arm-64bit",
+  "macos": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434",
+  "chip": "Apple M1",
+  "versions": {
+    "numpy": "2.2.6",
+    "torch": "2.7.0",
+    "transformers": "4.53.0"
+  },
+  "ggml_model_sha256": "776f39cd70d01a7df3c6098f87f121b62d1fb634d1272b5f36bb6f369fc34372",
+  "whisper_library_sha256": "a7685dbaee53f21ecb68dba475a31f2116ba03f16be82feb446dc41b1a234f62",
+  "limitations": "Active desktop, clocks not pinned. Private-runtime compilation/setup is excluded from warm timings; CPU BLAS and Linux NEON implementations differ. No new Linux measurement was performed on this Mac."
+}

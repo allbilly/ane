@@ -1,0 +1,245 @@
+{
+  "status": "pass",
+  "checkpoint_sha256": "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad",
+  "task_count": 1779,
+  "source_capture": "/Users/yeren/ane/qwen35/local-results/whisper-fast-recapture-20261007-complete",
+  "recovery_report_sha256": "cb90f888b5aba045c9bcd704d5aea169d287bb5fd123bcda88f18bf963eb457e",
+  "byte_exact_payloads": {
+    "commands": "2d1c742cb363289d08f3902a3a78dc1c0130db717e6bbd4bd0e97b19ee48332f",
+    "constants": "70d12f5f1d79ccf50e4c73d3ed1ecd0df36ed0241223026622e5d26f66094ed1",
+    "coefficients": "9c7c3a210bb565db38be08c463be16e3ab22a11fe5e0d933e9666f1d2c351bfb",
+    "source-weights": "a0962b2d434a6e45e369d79ed1021326a5c22a7dc6866f541c9dee976ef9ff45"
+  },
+  "stripped_coefficient_bytes": 15250942,
+  "stripped_source_weight_bytes": 15264768,
+  "package_bytes_excluding_proof": 145210,
+  "runtime_validation": {
+    "status": "pass",
+    "kit": "/Users/yeren/ane/qwen35/local-results/whisper-fast-recapture-20261007-complete",
+    "device_mask": 4,
+    "runtime": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+    "runtime_sha256": "017fbc08675e8773e73f5c0c44f6e6b040c14257342fdf4c0f19914044008587",
+    "reference_kind": "macOS ANE FP16 outputs",
+    "gate": {
+      "relative_l2": 0.005,
+      "allclose_rtol": 0.01,
+      "allclose_atol": 0.03
+    },
+    "programs": [
+      {
+        "hwx": "hwx/model.hwx",
+        "status": "executed",
+        "captured_fixtures": [
+          {
+            "path": "program-0-fixture-0.npz",
+            "sha256": "abf0048ac9a1bf2deb27b9f9cad1ab6ad1c496cb4b8fffd302490020a0654246",
+            "source": "jfk.npz",
+            "reference_kind": "macOS ANE FP16 outputs"
+          },
+          {
+            "path": "program-0-fixture-1.npz",
+            "sha256": "3007ecd39a762c9a734f63035ae679932296d90d9f774e6bf572d820f66e5853",
+            "source": "jfk-first-5s.npz",
+            "reference_kind": "macOS ANE FP16 outputs"
+          },
+          {
+            "path": "program-0-fixture-2.npz",
+            "sha256": "5fa7453143e30e7719e777fc549fc117b28d6f63338353168b34fe329d3abf9b",
+            "source": "jfk-repeat.npz",
+            "reference_kind": "macOS ANE FP16 outputs"
+          }
+        ]
+      }
+    ],
+    "comparisons": [
+      {
+        "name": "whisper-encoder",
+        "fixture": "jfk.npz",
+        "finite": true,
+        "relative_l2": 0.0,
+        "allclose": true,
+        "pass_gate": true,
+        "execute_seconds": 0.015504082999996172,
+        "bitwise_equal": true,
+        "hf_cosine": 0.9999558853116128,
+        "passes_encoder_cosine": true
+      },
+      {
+        "name": "whisper-encoder",
+        "fixture": "jfk-first-5s.npz",
+        "finite": true,
+        "relative_l2": 0.0,
+        "allclose": true,
+        "pass_gate": true,
+        "execute_seconds": 0.01230533399984779,
+        "bitwise_equal": true,
+        "hf_cosine": 0.9999153487973237,
+        "passes_encoder_cosine": true
+      },
+      {
+        "name": "whisper-encoder",
+        "fixture": "jfk-repeat.npz",
+        "finite": true,
+        "relative_l2": 0.0,
+        "allclose": true,
+        "pass_gate": true,
+        "execute_seconds": 0.011648790999970515,
+        "bitwise_equal": true,
+        "hf_cosine": 0.9997104093561877,
+        "passes_encoder_cosine": true
+      }
+    ],
+    "dispatches": 3,
+    "scope": "ANE-only execution of the captured MIL; Linux HWX replay remains separate"
+  },
+  "fixtures": {
+    "kind": "whisper",
+    "gate": {
+      "relative_l2": 0.005,
+      "allclose_rtol": 0.01,
+      "allclose_atol": 0.03
+    },
+    "unsupported": [],
+    "reference_kind": "macOS ANE FP16 outputs",
+    "native_strided_ports": true,
+    "replay_entrypoint": "whisper.replay_encoder",
+    "records": [
+      {
+        "name": "whisper-encoder",
+        "hwx": "hwx/model.hwx",
+        "hwx_sha256": "f660288e83e7c207672781d74d89de296afb53a5bf70a0bae164294801ad153b",
+        "input_port_names": [
+          "t1",
+          "t0"
+        ],
+        "inputs": [
+          [
+            1,
+            80,
+            1,
+            3000
+          ],
+          [
+            1,
+            384,
+            1,
+            1500
+          ]
+        ],
+        "output_port_name": "t1383",
+        "output": [
+          1,
+          1,
+          1500,
+          384
+        ],
+        "output_key": "output",
+        "fixtures": [
+          {
+            "path": "jfk.npz",
+            "sha256": "1de19c443cc969e78895258c60596d70e8fb89a03e8e70ba2d612ff0e0c82be0"
+          },
+          {
+            "path": "jfk-first-5s.npz",
+            "sha256": "feed31b461469329034396ea27d39453706a2c18b9514d2c1603708d599a410c"
+          },
+          {
+            "path": "jfk-repeat.npz",
+            "sha256": "6e2544073e185f6ef5f0c6a136dd632dba221063486d0591b1a6ff435ba51aa8"
+          }
+        ]
+      }
+    ]
+  },
+  "accuracy_status": "failed_logit_gate",
+  "validation_report_sha256": "c6967fc6cc79832a04bea313f854fa00b5213a008e21f2d8274117587217946d",
+  "decoder_gate_summaries": [
+    {
+      "audio": "jfk",
+      "summaries": {
+        "hf_decoder_ane_encoder": {
+          "max_nrmse": 0.03076263898919843,
+          "argmax_matches": 25,
+          "vectors": 25,
+          "pass_gate": false
+        },
+        "native_cpu": {
+          "max_nrmse": 0.05299272366066379,
+          "argmax_matches": 25,
+          "vectors": 25,
+          "pass_gate": false
+        },
+        "native_ane": {
+          "max_nrmse": 0.05627958697909524,
+          "argmax_matches": 25,
+          "vectors": 25,
+          "pass_gate": false
+        },
+        "native_ane_vs_cpu": {
+          "max_nrmse": 0.019079364806048438,
+          "argmax_matches": 25,
+          "vectors": 25,
+          "pass_gate": false
+        }
+      }
+    },
+    {
+      "audio": "jfk-first-5s",
+      "summaries": {
+        "hf_decoder_ane_encoder": {
+          "max_nrmse": 0.06639569909904383,
+          "argmax_matches": 8,
+          "vectors": 8,
+          "pass_gate": false
+        },
+        "native_cpu": {
+          "max_nrmse": 0.23634392415791186,
+          "argmax_matches": 8,
+          "vectors": 8,
+          "pass_gate": false
+        },
+        "native_ane": {
+          "max_nrmse": 0.12861587395707524,
+          "argmax_matches": 8,
+          "vectors": 8,
+          "pass_gate": false
+        },
+        "native_ane_vs_cpu": {
+          "max_nrmse": 0.09342739885593729,
+          "argmax_matches": 8,
+          "vectors": 8,
+          "pass_gate": false
+        }
+      }
+    },
+    {
+      "audio": "jfk-repeat",
+      "summaries": {
+        "hf_decoder_ane_encoder": {
+          "max_nrmse": 0.02780212518472262,
+          "argmax_matches": 47,
+          "vectors": 47,
+          "pass_gate": false
+        },
+        "native_cpu": {
+          "max_nrmse": 0.04285340404955329,
+          "argmax_matches": 47,
+          "vectors": 47,
+          "pass_gate": false
+        },
+        "native_ane": {
+          "max_nrmse": 0.04076765387677296,
+          "argmax_matches": 47,
+          "vectors": 47,
+          "pass_gate": false
+        },
+        "native_ane_vs_cpu": {
+          "max_nrmse": 0.04652157192283282,
+          "argmax_matches": 47,
+          "vectors": 47,
+          "pass_gate": false
+        }
+      }
+    }
+  ]
+}

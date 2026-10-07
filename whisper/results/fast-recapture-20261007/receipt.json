@@ -1,0 +1,106 @@
+{
+  "status": "recaptured_and_byte_exact",
+  "accuracy_status": "failed_logit_gate",
+  "linux_hardware_validation": "pending",
+  "task_count": 1779,
+  "mil_sha256": "e7320a59f2988a48add91afe6eda18beec615006cae1e613ff68041f6b2c91ed",
+  "hwx_sha256": "f660288e83e7c207672781d74d89de296afb53a5bf70a0bae164294801ad153b",
+  "command_text_sha256": "673990c963db29bdeb885e75738d747e992a6ade8f9ad0d3dea80e4cfc228fc2",
+  "compiler_binary_sha256": "ba88a576fd7a0a8ba12f6496e4a68e288dbc4f6fedb32f2236cd2b79d87e9886",
+  "original_command_and_coefficient_payloads_match": true,
+  "runtime_lowered_command_payload_matches_after_bar_remap": true,
+  "package_bytes": 152479,
+  "reports": {
+    "report.json.zlib": {
+      "bytes": 131169,
+      "sha256": "c6967fc6cc79832a04bea313f854fa00b5213a008e21f2d8274117587217946d"
+    },
+    "wrapper-comparison.json.zlib": {
+      "bytes": 18031,
+      "sha256": "ae9e37ca991106c983738d916e6314a1a466c0ff44e3fae734e9446927944a56"
+    }
+  },
+  "encoder_cosine_min": 0.9997104093561877,
+  "hf_decoder_ane_encoder_max_nrmse": 0.06639569909904383,
+  "raw_argmax_matches": 80,
+  "raw_vectors": 80,
+  "warm_medians": [
+    {
+      "audio": "jfk",
+      "backend": "cpu_cpu",
+      "encode_ms": 106.31,
+      "prompt_ms": 0.0,
+      "batchd_ms": 2.15,
+      "decode_ms": 34.394999999999996,
+      "decode_ms_per_token": 1.433125,
+      "decoder_ms": 36.55,
+      "wall_ms": 156.41064599999999
+    },
+    {
+      "audio": "jfk-first-5s",
+      "backend": "cpu_cpu",
+      "encode_ms": 106.025,
+      "prompt_ms": 0.0,
+      "batchd_ms": 2.15,
+      "decode_ms": 10.03,
+      "decode_ms_per_token": 1.4328571428571428,
+      "decoder_ms": 12.19,
+      "wall_ms": 123.716604
+    },
+    {
+      "audio": "jfk-repeat",
+      "backend": "cpu_cpu",
+      "encode_ms": 106.545,
+      "prompt_ms": 0.0,
+      "batchd_ms": 2.16,
+      "decode_ms": 66.08000000000001,
+      "decode_ms_per_token": 1.436521739130435,
+      "decoder_ms": 68.24000000000001,
+      "wall_ms": 200.05739599999998
+    },
+    {
+      "audio": "jfk",
+      "backend": "ane_cpu",
+      "encode_ms": 15.83,
+      "prompt_ms": 0.0,
+      "batchd_ms": 2.16,
+      "decode_ms": 35.135,
+      "decode_ms_per_token": 1.4639583333333333,
+      "decoder_ms": 37.28999999999999,
+      "wall_ms": 66.8081665
+    },
+    {
+      "audio": "jfk-first-5s",
+      "backend": "ane_cpu",
+      "encode_ms": 15.74,
+      "prompt_ms": 0.0,
+      "batchd_ms": 2.15,
+      "decode_ms": 10.03,
+      "decode_ms_per_token": 1.4328571428571428,
+      "decoder_ms": 12.18,
+      "wall_ms": 33.406479000000004
+    },
+    {
+      "audio": "jfk-repeat",
+      "backend": "ane_cpu",
+      "encode_ms": 15.765,
+      "prompt_ms": 0.0,
+      "batchd_ms": 2.15,
+      "decode_ms": 65.85499999999999,
+      "decode_ms_per_token": 1.4316304347826088,
+      "decoder_ms": 68.015,
+      "wall_ms": 108.8916665
+    }
+  ],
+  "scope": "Receipts contain raw full-vector error metrics and timing repetitions; learned weights, audio, full logits, fixture arrays and HWX stay local.",
+  "auxiliary_assets": {
+    "runtime-lowered-comparison.json": {
+      "bytes": 940,
+      "sha256": "a223cb290b57da79c10cae969acf58281737366225dfbc9e0652fe09b5e316ac"
+    },
+    "environment.json": {
+      "bytes": 710,
+      "sha256": "d76d9b8a310e6dfc8e431f59e4487b44e7a60cb83a1a883ca291ab929f034af6"
+    }
+  }
+}

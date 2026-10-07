@@ -32,8 +32,9 @@ def recover(capture, output):
     checks = validate_manifest(manifest, capture)
     report = json.loads((capture / "report.json").read_text())
     receipt = json.loads((capture / "hwx/receipt.json").read_text())
-    if checks != 3 or len(manifest["records"]) != 1 or receipt["task_count"] != 1783:
-        raise ValueError("expected the complete 1783-task encoder and three fixtures")
+    count = receipt["task_count"]
+    if checks != 3 or len(manifest["records"]) != 1 or count not in (1779, 1783):
+        raise ValueError("expected a complete original/wrapped encoder and three fixtures")
     runtime_path = (capture / report["runtime_validation"]["report"]).resolve()
     runtime = json.loads(runtime_path.read_text())
     if (digest(runtime_path) != report["runtime_validation"]["sha256"]
@@ -56,7 +57,7 @@ def recover(capture, output):
     thread = container["thread"]
     commands = data[text["fileoff"]:text["fileoff"] + text["filesize"]]
     tasks = parse_tasks(commands, thread["td_size"], thread["td_count"])
-    if len(tasks) != 1783:
+    if len(tasks) != count:
         raise ValueError("incomplete encoder task chain")
     coefficients, = [s for s in container["segments"] if s["name"].startswith("__KERN")]
     bars = thread["bars"]
@@ -143,7 +144,7 @@ def recover(capture, output):
                     checkpoint=dict(revision=Path(report["hf_model"]).name, sha256=report["checkpoint_sha256"]),
                     fixture_comparisons=checks, macos_ane_bitwise_equal=True, hf_cosine_gate=.999,
                     linux_hardware_replay="pending native Asahi",
-                    replay_command="python -m experimental.replay_capture verify --kit <extracted-kit> --output <new-result.json>",
+                    replay_command="python -m whisper.replay_encoder --checkpoint <pinned-checkpoint> --fixtures <extracted-kit> --output <new-result.json>",
                     scope="Complete encoder command chain, not the single-convolution old HWX or projection-only path. Historical capture paths in copied evidence identify provenance.")
     write_json(output / "recovery.json", recovery)
     files = {str(p.relative_to(output)):dict(bytes=p.stat().st_size, sha256=digest(p))

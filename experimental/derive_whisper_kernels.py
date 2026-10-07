@@ -68,7 +68,8 @@ def derive(capture, checkpoint, scatter_path, output):
     hwx = (capture / "hwx/model.hwx").read_bytes()
     container = parse_container(hwx)
     receipt = json.loads((capture / "hwx/receipt.json").read_text())
-    require(container["thread"]["td_count"] == 1783 and hashlib.sha256(hwx).hexdigest() == receipt["hwx_sha256"],
+    task_count = container["thread"]["td_count"]
+    require(task_count in (1779, 1783) and hashlib.sha256(hwx).hexdigest() == receipt["hwx_sha256"],
             "expected the intact complete encoder capture")
     recovery = json.loads((capture / "recovery.json").read_text())
     require(recovery["status"] == "recovered_and_verified" and recovery["macos_ane_bitwise_equal"], "unvalidated encoder capture")
@@ -190,7 +191,8 @@ def derive(capture, checkpoint, scatter_path, output):
     packing_metadata = asset(packing_file, json.dumps(packing, separators=(",", ":")).encode())
     mil = (capture / "bundle/model.mil").read_bytes()
     layout = json.loads((replay / "buffers.json").read_text())
-    meta = dict(format="whisper-tiny-en-h13g/v1", target="apple,t8103", generation="H13G", td_count=1783,
+    source_report = json.loads((capture / "report.json").read_text())
+    meta = dict(format="whisper-tiny-en-h13g/v1", target="apple,t8103", generation="H13G", td_count=task_count,
                 td_size=container["thread"]["td_size"], checkpoint=dict(model="openai/whisper-tiny.en",
                  revision="87c7102498dcde7456f24cfd30239ca606ed9063", sha256=sha256(checkpoint)),
                 capture_hwx_sha256=hashlib.sha256(hwx).hexdigest(), payloads=payloads, layout=layout,
@@ -198,12 +200,18 @@ def derive(capture, checkpoint, scatter_path, output):
                 compiler_strings=recovery["compiler_strings"], runtime=recovery["runtime"],
                 mil=dict(file="model.mil.zlib", **asset("model.mil.zlib", mil)),
                 position_sha256=sha256(capture / "bundle/pos.f16"),
-                scope="All 1783 tasks. Templates retain instructions, compiler tables, sparse masks and padding; checkpoint tensors are external.",
+                scope=f"All {task_count} tasks. Templates retain instructions, compiler tables, sparse masks and padding; checkpoint tensors are external.",
                 linux_hardware_validation="pending", original_thread=container["thread"], coefficient_segment=kern)
+    if "original_fast_mil_sha256" in source_report:
+        meta.update(original_fast_mil_sha256=source_report["original_fast_mil_sha256"],
+                    compiler_binary_sha256=source_report["compiler_binary_sha256"],
+                    recapture_matches_original_hwx=source_report["recapture_matches_original_hwx"],
+                    recapture_matches_original_payloads=source_report["recapture_matches_original_payloads"],
+                    executable_identity_limit=source_report["executable_identity_limit"])
     (output / "meta.json").write_text(json.dumps(meta, separators=(",", ":")) + "\n")
     _, rebuilt = reconstruct(checkpoint, output)
     require(all(rebuilt[k] == v for k, v in original.items()), "byte-exact reconstruction failed")
-    proof = dict(status="pass", checkpoint_sha256=sha256(checkpoint), task_count=1783,
+    proof = dict(status="pass", checkpoint_sha256=sha256(checkpoint), task_count=task_count,
                  source_capture=recovery["source_capture"], recovery_report_sha256=sha256(capture / "recovery.json"),
                  byte_exact_payloads={k:payloads[k]["sha256"] for k in original},
                  stripped_coefficient_bytes=int(used["coefficients"].sum()),
@@ -211,8 +219,13 @@ def derive(capture, checkpoint, scatter_path, output):
                  package_bytes_excluding_proof=sum(p.stat().st_size for p in output.iterdir()),
                  runtime_validation=json.loads((capture / "macos-runtime-validation.json").read_text()),
                  fixtures=json.loads((capture / "asahi-fixtures.json").read_text()))
+    if "accuracy_status" in source_report:
+        proof.update(accuracy_status=source_report["accuracy_status"],
+                     validation_report_sha256=sha256(capture / "report.json"),
+                     decoder_gate_summaries=[dict(audio=r["audio"], summaries=r["summaries"])
+                                            for r in source_report["decoder_validation"]])
     (output / "proof.json").write_text(json.dumps(proof, indent=2) + "\n")
-    return dict(status="pass", package_bytes=sum(p.stat().st_size for p in output.iterdir()), task_count=1783)
+    return dict(status="pass", package_bytes=sum(p.stat().st_size for p in output.iterdir()), task_count=task_count)
 
 
 def main():

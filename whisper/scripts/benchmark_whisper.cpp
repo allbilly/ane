@@ -9,8 +9,8 @@
 #include <vector>
 
 int main(int argc, char ** argv) {
-    if (argc != 6) {
-        std::fprintf(stderr, "usage: %s MODEL PCM_F32 USE_GPU WARMUPS RUNS\n", argv[0]);
+    if (argc < 6) {
+        std::fprintf(stderr, "usage: %s MODEL PCM_F32 USE_GPU WARMUPS RUNS [MORE_PCM_F32 ...]\n", argv[0]);
         return 1;
     }
     try {
@@ -43,28 +43,48 @@ int main(int argc, char ** argv) {
         params.temperature = 0.0f;
         params.temperature_inc = 0.0f;
         params.suppress_nst = false;
-        for (int i = 0; i < warmups + runs; ++i) {
-            const char * phase = i < warmups ? "warmup" : "measure";
-            const int index = i < warmups ? i + 1 : i - warmups + 1;
-            std::fprintf(stderr, "BENCH_BEGIN\t%s\t%d\n", phase, index);
-            whisper_reset_timings(ctx);
-            const auto start = std::chrono::steady_clock::now();
-            const int ret = whisper_full(ctx, params, audio.data(), static_cast<int>(audio.size()));
-            const double wall_ms = std::chrono::duration<double, std::milli>(
-                std::chrono::steady_clock::now() - start).count();
-            if (ret) {
-                whisper_free(ctx);
-                throw std::runtime_error("whisper_full failed: " + std::to_string(ret));
+        std::vector<const char *> paths = {argv[2]};
+        for (int i = 6; i < argc; ++i) paths.push_back(argv[i]);
+        for (size_t clip = 0; clip < paths.size(); ++clip) {
+            if (clip) {
+                std::ifstream next(paths[clip], std::ios::binary | std::ios::ate);
+                if (!next) { whisper_free(ctx); throw std::runtime_error("could not open next PCM input"); }
+                const auto bytes = next.tellg();
+                if (bytes <= 0 || bytes % sizeof(float)) { whisper_free(ctx); throw std::runtime_error("invalid PCM length"); }
+                audio.resize(static_cast<size_t>(bytes) / sizeof(float));
+                next.seekg(0);
+                if (!next.read(reinterpret_cast<char *>(audio.data()), bytes)) {
+                    whisper_free(ctx);
+                    throw std::runtime_error("could not read next PCM input");
+                }
             }
-            whisper_print_timings(ctx);
-            std::fprintf(stderr, "BENCH_END\t%s\t%d\n", phase, index);
-            std::string text;
-            for (int s = 0; s < whisper_full_n_segments(ctx); ++s) {
-                text += whisper_full_get_segment_text(ctx, s);
+            if (paths.size() > 1) {
+                std::fprintf(stderr, "BENCH_AUDIO\t%zu\n", clip);
+                std::printf("BENCH_AUDIO\t%zu\n", clip);
             }
-            for (auto & ch : text) if (ch == '\n' || ch == '\r' || ch == '\t') ch = ' ';
-            std::printf("BENCH_RESULT\t%s\t%d\t%.6f\t%s\n", phase, index, wall_ms, text.c_str());
-            std::fflush(stdout);
+            for (int i = 0; i < warmups + runs; ++i) {
+                const char * phase = i < warmups ? "warmup" : "measure";
+                const int index = i < warmups ? i + 1 : i - warmups + 1;
+                std::fprintf(stderr, "BENCH_BEGIN\t%s\t%d\n", phase, index);
+                whisper_reset_timings(ctx);
+                const auto start = std::chrono::steady_clock::now();
+                const int ret = whisper_full(ctx, params, audio.data(), static_cast<int>(audio.size()));
+                const double wall_ms = std::chrono::duration<double, std::milli>(
+                    std::chrono::steady_clock::now() - start).count();
+                if (ret) {
+                    whisper_free(ctx);
+                    throw std::runtime_error("whisper_full failed: " + std::to_string(ret));
+                }
+                whisper_print_timings(ctx);
+                std::fprintf(stderr, "BENCH_END\t%s\t%d\n", phase, index);
+                std::string text;
+                for (int s = 0; s < whisper_full_n_segments(ctx); ++s) {
+                    text += whisper_full_get_segment_text(ctx, s);
+                }
+                for (auto & ch : text) if (ch == '\n' || ch == '\r' || ch == '\t') ch = ' ';
+                std::printf("BENCH_RESULT\t%s\t%d\t%.6f\t%s\n", phase, index, wall_ms, text.c_str());
+                std::fflush(stdout);
+            }
         }
         whisper_free(ctx);
     } catch (const std::exception & error) {

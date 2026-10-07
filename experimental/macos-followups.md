@@ -11,10 +11,14 @@ ignored capture directories. `mlx-ane-sd/task.md` remains excluded.
 
 The 2026-10-07 [full-model macOS Qwen repeats](../qwen35/macos-full-model.md)
 pass all three CPU and three private-E5RT ANE runs. The
-[complete Whisper encoder kernels](../whisper/docs/compact-encoder.md) are
-committed as approximately 147 KiB of templates and external-checkpoint
-packing recipes. Their reconstruction is byte-exact; native Linux execution,
-decoder integration and cross-host BF16 oracle comparison remain pending.
+[complete Whisper encoder kernels](../whisper/docs/compact-encoder.md) now default
+to the original fast 1,779-task graph, in 149 KiB of templates and checkpoint
+packing recipes. Native input strides replace the slower dense wrapper, which
+remains a baseline. Reconstruction is byte-exact and the fast Mac timing repeats,
+but the strict full-logit gate fails on the original Mac graph too. See the
+[dump review](../whisper/docs/fast-dump-review.md). New original-package Linux
+execution, accuracy corrections and cross-host BF16 oracle comparison remain
+pending. Historical capture results below retain their original scope.
 
 ## Subsequent review
 

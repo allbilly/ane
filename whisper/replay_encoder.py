@@ -11,20 +11,27 @@ import time
 
 import numpy as np
 
-from whisper.encoder_kernel import reconstruct, require, ROOT
+from whisper.encoder_kernel import reconstruct, require, ROOT, pack_port, port_view, port_shape
 
 
 class Encoder:
     """One driver submission runs all convolutions, attention and encoder layers."""
-    def __init__(self, checkpoint, device=None):
+    def __init__(self, checkpoint, device=None, kernels=ROOT):
         # Resolve the existing guarded DRM ABI only on its supported host.
         require(platform.system() == "Linux", "encoder replay requires native M1 Asahi Linux")
         sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "gpt2"))
         from replay import Buffer, Submit, SUBMIT, device_path, ioctl
         from hwx import parse_tasks
         path = device_path(device)
-        self.meta, payloads = reconstruct(checkpoint)
-        require(self.meta["target"] == "apple,t8103" and self.meta["td_count"] == 1783, "unsupported encoder target")
+        self.meta, payloads = reconstruct(checkpoint, kernels)
+        require(self.meta["target"] == "apple,t8103" and self.meta["td_count"] in (1779, 1783), "unsupported encoder target")
+        ports = self.meta["layout"]["ports"]
+        self.ports = {}
+        for role, kind, count in (("mel", "input", 80 * 3000), ("positions", "input", 384 * 1500),
+                                  ("output", "output", 1500 * 384)):
+            matches = [p for p in ports if p["role"] == kind and int(np.prod(port_shape(p))) == count]
+            require(len(matches) == 1, "ambiguous encoder port: " + role)
+            self.ports[role] = matches[0]
         commands = payloads["commands"]
         parse_tasks(commands, self.meta["td_size"], self.meta["td_count"])
         self.fd, self.buffers, self.bootstrap = os.open(path, os.O_RDWR | os.O_CLOEXEC), {}, None
@@ -39,13 +46,15 @@ class Encoder:
                 bank = item["replay_bank"]
                 require(3 <= bank < 32 and bank not in self.buffers, "invalid encoder buffer bank")
                 self.buffers[bank] = Buffer(self.fd, item["size"])
-            self.buffers[4].write(payloads["positions"])
+            port = self.ports["positions"]
+            buffer = self.buffers[port["replay_bank"]]
+            buffer.write(pack_port(np.frombuffer(payloads["positions"], "<f2"), port, buffer.size))
             self.bootstrap = Buffer(self.fd, self.meta["td_size"])
             bootstrap = bytearray(commands[:self.meta["td_size"]])
             header, = struct.unpack_from("<I", bootstrap)
             struct.pack_into("<I", bootstrap, 0, (header & ~(0xFF << 16)) | (0x40 << 16))
             self.bootstrap.write(bootstrap)
-            self.request = Submit(tsk_size=len(commands), td_count=1783, td_size=self.meta["td_size"],
+            self.request = Submit(tsk_size=len(commands), td_count=self.meta["td_count"], td_size=self.meta["td_size"],
                                   btsp_handle=self.bootstrap.handle)
             for bank, buffer in self.buffers.items():
                 self.request.handles[bank] = buffer.handle
@@ -56,14 +65,21 @@ class Encoder:
     def __call__(self, mel):
         mel = np.asarray(mel, dtype="<f2")
         require(mel.shape == (80, 3000) and bool(np.isfinite(mel).all()), "expected finite FP16 mel [80,3000]")
-        self.buffers[5].write(mel.tobytes())
-        self.buffers[3].write(bytes(self.buffers[3].size))
-        self.buffers[6].write(np.full((1500, 384), np.nan, dtype="<f2").tobytes())
+        port = self.ports["mel"]
+        buffer = self.buffers[port["replay_bank"]]
+        buffer.write(pack_port(mel, port, buffer.size))
+        for item in self.meta["layout"]["buffers"]:
+            if item["role"] == "scratch/intermediate":
+                buffer = self.buffers[item["replay_bank"]]
+                buffer.write(bytes(buffer.size))
+        output_port = self.ports["output"]
+        output_buffer = self.buffers[output_port["replay_bank"]]
+        port_view(output_buffer.map, output_port)[...] = np.nan
         start = time.perf_counter()
         self.ioctl(self.fd, self.submit_opcode, self.request)
         self.dispatch_seconds += time.perf_counter() - start
         self.submissions += 1
-        output = np.frombuffer(self.buffers[6].map, dtype="<f2", count=1500 * 384).reshape(1500, 384).copy()
+        output = port_view(output_buffer.map, output_port).reshape(1500, 384).copy()
         require(bool(np.isfinite(output).all()), "encoder produced nonfinite/unwritten output")
         return output
 
@@ -81,16 +97,17 @@ class Encoder:
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--checkpoint", type=Path, required=True)
+    p.add_argument("--kernels", type=Path, default=ROOT)
     p.add_argument("--fixtures", type=Path, required=True, help="Local recovered kit containing the three hashed fixtures")
     p.add_argument("--device")
     p.add_argument("--output", type=Path, required=True)
     a = p.parse_args()
     require(platform.system() == "Linux", "requires native Asahi Linux; no hardware submission attempted")
-    proof = json.loads((ROOT / "proof.json").read_text())
+    proof = json.loads((a.kernels / "proof.json").read_text())
     record, = proof["fixtures"]["records"]
     require(len(record["fixtures"]) == 3, "requires all three captured real-audio fixtures")
     report = dict(status="running", kernel=platform.release(), records=[])
-    encoder = Encoder(a.checkpoint, a.device)
+    encoder = Encoder(a.checkpoint, a.device, a.kernels)
     try:
         for fixture in record["fixtures"]:
             path = a.fixtures / fixture["path"]
@@ -98,7 +115,8 @@ def main():
             with np.load(path, allow_pickle=False) as data:
                 expected = data["output"].reshape(1500, 384).astype(np.float32)
                 hf = data["hf_output"].reshape(1500, 384).astype(np.float32)
-                require(np.array_equal(data["input01"].ravel(), np.frombuffer(encoder.buffers[4].map, "<f2", count=1500 * 384)),
+                position_port = encoder.ports["positions"]
+                require(np.array_equal(data["input01"].ravel(), port_view(encoder.buffers[position_port["replay_bank"]].map, position_port).ravel()),
                         "checkpoint position input differs from fixture")
                 actual = encoder(data["input00"].reshape(80, 3000)).astype(np.float32)
             relative = float(np.linalg.norm(actual - expected) / max(np.linalg.norm(expected), 1e-40))

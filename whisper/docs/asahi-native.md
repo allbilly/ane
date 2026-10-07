@@ -26,11 +26,14 @@ Actual [Asahi measurements](benchmark-asahi.md) and numerical evidence are
 retained. The current hybrid is accurate on the three tested clips, but slower
 than CPU and the macOS whole-encoder ANE route.
 
-The [complete encoder package](compact-encoder.md) now provides all 1,783
-captured tasks in approximately 147 KiB, with learned weights repacked from
-the external HF checkpoint. Its command/constant/coefficient reconstruction
-is byte-exact. Linux hardware validation and decoder integration remain
-pending; the projection measurements below retain their existing scope.
+The [complete encoder package](compact-encoder.md) now defaults to the original
+1,779-task fast graph with native padded input packing. The 1,783-task dense
+wrapper remains a baseline. Learned weights come from the external HF
+checkpoint; command/constant/coefficient reconstruction is byte-exact. Native
+Linux validation of the new package remains pending. The original fast graph
+also fails the strict full-logit gate on macOS; see the
+[review](fast-dump-review.md). The projection measurements below retain their
+existing scope.
 
 ## Run in the prepared workspace
 
