@@ -10,8 +10,10 @@ import re
 import statistics
 import subprocess
 import wave
+import sys
 
-from test_macos import digest, words
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from whisper.validation import digest, words, parse_runs as parse_benchmark_runs
 
 ROOT = Path(__file__).resolve().parents[1]
 BACKENDS = {
@@ -23,45 +25,29 @@ BACKENDS = {
 EXPECTED = words("And so my fellow Americans ask not what your country can do for you ask what you can do for your country")
 
 
-def parse_runs(result, backend, audio_seconds, expected_words=None):
-    log = result.stderr
+def check_runtime(log, backend, expected_encodes, require_dispatch=False):
     use_gpu, use_ane = BACKENDS[backend]
     if use_gpu and not re.search(r"whisper_backend_init_gpu: using (?:MTL\d+|Metal) backend", log):
-        raise RuntimeError(f"{backend}: Metal readiness evidence missing")
+        raise ValueError(f"{backend}: Metal readiness evidence missing")
     if not use_gpu and not re.search(r"whisper_init_with_params_no_state: use gpu\s*=\s*0", log):
-        raise RuntimeError(f"{backend}: CPU configuration evidence missing")
+        raise ValueError(f"{backend}: CPU configuration evidence missing")
     if use_ane and ("aneforge: encoder ready" not in log or re.search(
         r"aneforge: (?:compile failed|mel size|dlopen|missing|pos.f16 read failed)", log
     )):
-        raise RuntimeError(f"{backend}: ANE initialization failed")
-    records = {}
-    for line in result.stdout.splitlines():
-        if line.startswith("BENCH_RESULT\t"):
-            _, phase, index, wall_ms, transcript = line.split("\t", 4)
-            if words(transcript) != (EXPECTED if expected_words is None else expected_words):
-                raise RuntimeError(f"{backend}: transcript mismatch: {transcript!r}")
-            records[(phase, int(index))] = {
-                "phase": phase, "index": int(index), "wall_ms": float(wall_ms),
-                "transcript": transcript.strip(),
-            }
-    for match in re.finditer(r"BENCH_BEGIN\t(\w+)\t(\d+)\n(.*?)BENCH_END\t\1\t\2", log, re.S):
-        run = records[(match[1], int(match[2]))]
-        for name in ("mel", "sample", "encode", "decode", "batchd", "prompt"):
-            timing = re.search(rf"\b{name} time\s*=\s*([\d.]+) ms(?: /\s*(\d+) runs)?", match[3])
-            if not timing:
-                raise RuntimeError(f"{backend}: missing {name} timing")
-            run[name + "_ms"] = float(timing[1])
-            if timing[2]:
-                run[name + "_units"] = int(timing[2])
-        fallback = re.search(r"fallbacks\s*=\s*(\d+) p /\s*(\d+) h", match[3])
-        if not fallback or int(fallback[1]) or int(fallback[2]):
-            raise RuntimeError(f"{backend}: decoding fallback detected")
-        run["decoder_ms"] = run["decode_ms"] + run["batchd_ms"] + run["prompt_ms"]
-        run["decode_ms_per_token"] = run["decode_ms"] / run["decode_units"]
-        run["rtf"] = run["wall_ms"] / (audio_seconds * 1000)
-    if any("rtf" not in run for run in records.values()):
-        raise RuntimeError(f"{backend}: incomplete timing blocks")
-    return list(records.values())
+        raise ValueError(f"{backend}: ANE initialization failed")
+    if not use_ane and "aneforge: encoder ready" in log:
+        raise ValueError(f"{backend}: baseline unexpectedly initialized ANE")
+    if require_dispatch:
+        dispatches = re.findall(r"MACOS_ANE encoder: submissions=(\d+)", log)
+        if dispatches != (["1"]*expected_encodes if use_ane else []):
+            raise ValueError(f"{backend}: missing actual E5RT execution evidence")
+
+
+def parse_runs(result, backend, audio_seconds, expected_words=None, require_dispatch=False):
+    return parse_benchmark_runs(result, audio_seconds,
+        EXPECTED if expected_words is None else expected_words,
+        check_runtime=lambda log, count: check_runtime(log, backend, count, require_dispatch),
+        encoder_marker="MACOS_ANE encoder:" if require_dispatch and BACKENDS[backend][1] else None)
 
 
 def main():

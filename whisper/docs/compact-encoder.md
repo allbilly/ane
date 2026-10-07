@@ -16,8 +16,11 @@ captured ANE output and passed the independent HF encoder cosine gate of
 0.999. The new repacker reproduces the relocated command stream, constants,
 compiled coefficients, source MIL weight blob and position input **byte for
 byte**. [Proof and fixture hashes](../kernels/tiny-en-encoder-fast/proof.json)
-retain that evidence. Native Linux execution of the new original package remains
-pending. The existing dense wrapper has been run on Linux according to `todo.md`.
+retain that evidence. Native Linux execution now matches the earlier Linux dense
+wrapper bit for bit on all three clips, with one submission and four-worker
+readback. Exact cross-host output verification remains open because the Linux
+frontend regenerates different FP16 mel hashes. See the
+[Asahi receipt](../results/asahi-fast-20261007.json).
 
 **The fast graph fails the full-logit NRMSE < 0.005 gate on macOS too.**
 All 80 raw argmaxes match HF, but the same HF CPU decoder fed the original ANE
@@ -36,7 +39,7 @@ qwen35/.venv/bin/python -m whisper.encoder_kernel \
 # Optional: materialize the runtime payloads into a new ignored directory.
 qwen35/.venv/bin/python -m whisper.encoder_kernel \
   --checkpoint whisper/models/hf-tiny.en/model.safetensors \
-  --output whisper/.cache/complete-encoder
+  --output whisper/build/complete-encoder
 
 # Select the retained dense-wrapper baseline explicitly.
 qwen35/.venv/bin/python -m whisper.encoder_kernel \
@@ -85,7 +88,7 @@ flock "$HOME/ane.lock" flock "$HOME/gpu.lock" flock /tmp/m1-gpu.lock \
   qwen35/.venv/bin/python -m whisper.replay_encoder \
   --checkpoint whisper/models/hf-tiny.en/model.safetensors \
   --fixtures LOCAL_RECOVERED_KIT \
-  --output whisper/.cache/complete-encoder-linux.json
+  --output whisper/build/complete-encoder-linux.json
 ```
 
 The fixture command retains the original relative-L2 < 0.005,
@@ -95,36 +98,159 @@ optional validation data; ordinary encoder execution only needs kernels,
 checkpoint and frontend mel input.
 
 To profile either compact package without transferring any captured arrays,
-run from the repository root on Asahi:
+run from the repository root on either host:
 
 ```sh
 env OPENBLAS_NUM_THREADS=1 \
   whisper/.venv/bin/python -m whisper.scripts.benchmark_encoder \
   --hf-model whisper/models/hf-tiny.en \
-  --compare-baseline \
-  --output whisper/.cache/encoder-replay-profile.json
+  --backend auto --compare-baseline \
+  --output whisper/build/encoder-replay-profile.json
 ```
 
 This command acquires ANE, GPU and `/tmp/m1-gpu.lock` itself. It recreates the
 three clips from the vendored JFK WAV and checks exact Mac FP16 input/output
 hashes in `results/fast-recapture-20261007/encoder-reference.json`. WAV header
 metadata can differ; the PCM samples must match. `--prepare-only` checks the
-inputs on either host without allocating or submitting hardware.
+inputs on either host without allocating or submitting hardware. Add
+`--fixtures EXISTING_CAPTURE_DIRECTORY` to use the original three `jfk*.npz`
+arrays, avoiding frontend drift; mel, position and output hashes are all checked.
+On this Asahi host the strict input check fails. `--diagnostic-inputs` explicitly
+allows local profiling and fast/wrapper comparisons, records that the Mac
+comparison is invalid, and exits nonzero. It does not turn the strict check into
+a pass. Exact cross-host verification needs the existing three raw Mac inputs.
 
-Each warm call reports preparation/upload/scratch reset, synchronous driver
-dispatch, FP16 readback and their total. Dispatch includes driver scheduling
+Both hosts use `encoder_runtime.py` for input validation, finite-output checks
+and timing boundaries. The adapters supply DRM replay or E5RT execution.
+Each warm call reports preparation/upload, blocking backend execute, FP16
+readback and their total; Asahi preparation also resets scratch. Dispatch includes driver scheduling
 and waiting. It excludes CPU cross-K/V and decoder work, so compare dispatch
 with Mac's roughly 10.9 ms execute boundary rather than its 15.83 ms complete
 encode timer. Python readback is a reference implementation; retain the faster
 native four-worker readback in native transcription benchmarks. A successful
 encoder replay does not satisfy the separate full-decoder-logit gate.
 
-The Python entry point verifies packing and execution; it does not claim the
-optimized native readback performance reported from Linux. Integrating the new
-native-stride package into that Linux decoder and repeating its complete gates
-and matching stage benchmarks remain pending. The current
+The Python entry point verifies packing and execution; its readback timing differs
+from the optimized native implementation. The current
 [projection path](asahi-native.md) still performs 1,128 separate submissions
 and is independently validated; its performance claims remain separate.
+
+## Native transcription and CPU cross-K/V
+
+`asahi_full_encoder.cpp` supplies whisper.cpp's existing external-encoder API.
+Repacking also writes `layout.txt` with task count, buffer sizes and native input
+strides; the runner needs no JSON parser or runtime Python. It supports both
+captured packages and retains the four-worker readback.
+
+Prepare/build the isolated worktree as described in [asahi-native.md](asahi-native.md).
+For the faster CPU cross-K/V path, use Fedora's **OpenMP** OpenBLAS variant:
+
+```sh
+# One-time package setup; ordinary inference runs without sudo.
+sudo dnf install openblas-openmp openblas-devel
+whisper/.venv/bin/cmake -S whisper/vendor/whisper-asahi \
+  -B whisper/build/asahi-ane-blas -DCMAKE_BUILD_TYPE=Release \
+  -DWHISPER_BUILD_TESTS=OFF -DGGML_VULKAN=OFF -DGGML_LLAMAFILE=ON \
+  -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS \
+  -DBLAS_openblas_LIBRARY=/usr/lib64/libopenblaso.so \
+  -DBLAS_INCLUDE_DIRS=/usr/include/openblas -DANE_ROOT="$PWD"
+whisper/.venv/bin/cmake --build whisper/build/asahi-ane-blas \
+  --target whisper-cli -j4
+
+flock "$HOME/ane.lock" flock "$HOME/gpu.lock" flock /tmp/m1-gpu.lock \
+  taskset -c 4-7 env OPENBLAS_NUM_THREADS=4 OMP_NUM_THREADS=4 \
+  whisper/.venv/bin/python whisper/scripts/benchmark_asahi.py \
+  --build whisper/build/asahi-ane-blas --encoder complete \
+  --payloads whisper/build/complete-encoder --diagnostic-timings \
+  --output whisper/build/native-fast-benchmark
+```
+
+The local test used these Fedora RPM libraries extracted into ignored cache,
+without installing system packages. Avoid the default single-thread OpenBLAS
+variant. If using a Python wheel's OpenMP OpenBLAS instead, link ggml to that
+same OpenMP runtime: loading both wheel and system OpenMP runtimes regressed
+cross-K/V to about 50 ms. The tested Fedora build uses one system runtime and
+needs no wheel library or `LD_PRELOAD`.
+
+The benchmark checks all 80 full decoder vectors and token histories, then
+measures encoder, prompt batch, token decode and whole transcription on all
+three clips, with two backend-order rounds. `--diagnostic-timings` retains
+failed accuracy gates and exits nonzero after collecting timing evidence.
+The new graph still fails NRMSE < 0.005; all 80 raw argmaxes match.
+Latest 11-second encode is 31.18 ms and whole transcription 142.90 ms, versus
+Mac's 15.83 / 66.81 ms. Cross-K/V is 14.16 ms and native readback 1.34 ms.
+These measurements do not establish speed parity or accepted model accuracy.
+
+## Shared macOS / Asahi benchmark
+
+`native.py` applies the same FP32 activations/cache, widened accumulation, exact
+GELU and 1,500-key attention fixes to either native worktree. `validation.h`
+captures the same native mel, encoder and full logit records. Both hosts run
+`benchmark_native.py` and `benchmark_whisper.cpp`, with identical HF gates,
+clip durations, warmup policy and stage parser. `benchmark_asahi.py` remains a
+compatibility entry point. The old `benchmark_macos.py` retains the original
+CPU/Metal baseline and uses the same parser.
+
+On macOS, from the repository root (reuse the worktree if it already exists):
+
+```sh
+git -C whisper/vendor/whisper.cpp worktree add --detach \
+  ../whisper-macos-matched 60c0be6ac8fa71b1a2ae2dd938a31a34a508e774
+whisper/.venv/bin/python -m whisper.scripts.prepare_native \
+  --backend macos --source whisper/vendor/whisper-macos-matched
+whisper/.venv/bin/cmake -S whisper/vendor/whisper-macos-matched \
+  -B whisper/build/macos-matched -DCMAKE_BUILD_TYPE=Release \
+  -DANE_ROOT="$PWD" -DWHISPER_BUILD_TESTS=OFF -DGGML_METAL=OFF \
+  -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=Apple -DGGML_LLAMAFILE=ON
+whisper/.venv/bin/cmake --build whisper/build/macos-matched --target whisper-cli -j4
+whisper/.venv/bin/python -m whisper.encoder_kernel \
+  --checkpoint whisper/models/hf-tiny.en/model.safetensors \
+  --output whisper/build/matched-encoder
+whisper/.venv/bin/python -m whisper.scripts.benchmark_native \
+  --backend macos --build whisper/build/macos-matched \
+  --payloads whisper/build/matched-encoder --dylib ANEFORGE_DISPATCH_DYLIB \
+  --warmups 2 --runs 10 --rounds 2 --profile-stages --profile-matmul \
+  --diagnostic-timings \
+  --output whisper/build/macos-matched-results
+```
+
+Replace `ANEFORGE_DISPATCH_DYLIB` with the existing ANEForge dispatch dylib.
+The shared command acquires the ANE/GPU locks internally on both hosts.
+The Linux command uses `--backend asahi` and its existing build/payloads,
+without `--dylib`. Generated payloads, compiler outputs and reports belong in
+`whisper/build`; reusable source is outside `.cache`. The encoder packer is
+identical on both hosts; macOS executes the restored MIL/weights and Asahi
+executes its already captured command stream.
+
+`--profile-stages` records CPU cross-K/V and encoder host stages. Mac reports
+input conversion, feed, blocking E5RT execute, read and conversion separately;
+it verifies return codes and one actual execution per encode. API wall time
+still includes runtime waiting. Per-matrix BLAS profiling, hot CPU assembly and
+clock counters are requested in `todo.md`. `--profile-matmul` records all eight
+cross-K/V products, with allocation, FP16-to-FP32 conversion, thread setup and
+GEMM timings, dimensions/strides/transposes, the BLAS entry-point provider, and
+one representative activation input per context. Actual Apple BLAS thread count
+is reported as unknown when no query is available; a CPU sampling profile is
+still needed to identify the internal hot routine and establish NEON/AMX use.
+The shared instrumentation has been verified on Asahi without changing any of
+the 18 native mel, encoder or full-logit captures.
+
+Asahi verification after this refactor: all three CPU and ANE mel/encoder/full
+logit captures are byte identical to the preceding run; all 80 full vectors
+were checked again. Both Python replay packages match the native output on
+all three clips. The production logit gate still fails. The Mac preparation
+patch is idempotent and its native adapter passes a Clang syntax check on Linux;
+Mac hardware execution remains to be tested after boot.
+
+The current precision diagnostic is `experimental.whisper_precision`, with
+`--hf-model`, `--traces` and `--output` paths. It uses the shared validation code
+and reconstructs partial-task inputs/weights from the checkpoint. Old `.cache`
+probe scripts are historical; they are no longer the active implementation.
+Adding `--paired-outputs --paired-fc1` passes all 80 fixed-history logit checks
+on Asahi (maximum NRMSE 0.255% / 0.392% / 0.384% for 11/5/23 seconds).
+It retains CPU FP32 attention, normalization, GELU and residuals and requires
+34 ANE submissions. This is a precision diagnostic, not the native production
+encoder or a demonstrated speed improvement.
 
 ## Layout and provenance
 

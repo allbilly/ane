@@ -56,6 +56,62 @@ def pack_port(array, port, size=None):
     return buffer
 
 
+def native_layout(meta):
+    """Small text descriptor for the dependency-free C++ tiny.en runner."""
+    buffers = {p["replay_bank"]: p["size"] for p in meta["layout"]["buffers"]}
+    require(set(buffers) == {3, 4, 5, 6}, "unsupported native encoder banks")
+    strides = []
+    for role, bank, channels, width in (("input", 5, 80, 3000), ("input", 4, 384, 1500),
+                                        ("output", 6, 1500, 384)):
+        matches = [p for p in meta["layout"]["ports"] if p["role"] == role
+                   and int(np.prod(port_shape(p))) == channels * width]
+        require(len(matches) == 1, "ambiguous native encoder port")
+        port = matches[0]
+        require(port["replay_bank"] == bank and port["byte_offset"] == 0, "unsupported native encoder port bank/offset")
+        view = port_view(bytearray(buffers[bank]), port)
+        if view.flags.c_contiguous:
+            stride = width * 2
+        else:
+            require(port_shape(port) == (1, channels, 1, width), "unsupported native encoder shape")
+            stride = port["compiler_layout"]["PlaneStride"]
+        require(bank != 6 or stride == width * 2, "native readback requires tight output rows")
+        strides.append(stride)
+    lengths = [meta["payloads"][name]["bytes"] for name in ("commands", "coefficients", "constants")]
+    values = [meta["td_count"], meta["td_size"], *lengths, *(buffers[i] for i in range(3, 7)), *strides[:2]]
+    return "ANE_WHISPER_V1\n" + " ".join(map(str, values)) + "\n"
+
+
+def encoder_ports(meta):
+    ports = {}
+    for role, kind, count in (("mel", "input", 80*3000), ("positions", "input", 384*1500),
+                              ("output", "output", 1500*384)):
+        matches = [p for p in meta["layout"]["ports"]
+                   if p["role"] == kind and int(np.prod(port_shape(p))) == count]
+        require(len(matches) == 1, "ambiguous encoder port: " + role)
+        ports[role] = matches[0]
+    return ports
+
+
+def write_bundle(output, meta, payloads):
+    """Write the same checkpoint-derived bundle for either native backend."""
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
+    files = {}
+    for name, data in payloads.items():
+        filename = {"source-mil":"model.mil", "source-weights":"weights.bin", "positions":"pos.f16"}.get(name, name + ".bin")
+        files[filename] = data
+    ports = encoder_ports(meta)
+    files["ports.txt"] = ("\n".join(f"{ports[role]['name']} {count}" for role, count in
+        (("mel", 80*3000), ("positions", 384*1500), ("output", 1500*384))) + "\n").encode()
+    files["layout.txt"] = native_layout(meta).encode()
+    for filename, data in files.items():
+        path = output / filename
+        if path.exists():
+            require(path.read_bytes() == data, "refusing to replace a different encoder bundle: " + str(path))
+        else:
+            path.write_bytes(data)
+
+
 def reconstruct(checkpoint, root=ROOT):
     """Require the pinned checkpoint and reproduce every captured payload byte."""
     root = Path(root)
@@ -137,16 +193,7 @@ def main():
     meta, payloads = reconstruct(a.checkpoint, a.kernels)
     if a.output:
         a.output.mkdir(parents=True, exist_ok=False)
-        for name, data in payloads.items():
-            filename = {"source-mil":"model.mil", "source-weights":"weights.bin", "positions":"pos.f16"}.get(name, name + ".bin")
-            (a.output / filename).write_bytes(data)
-        roles = (("input", 80 * 3000), ("input", 384 * 1500), ("output", 1500 * 384))
-        ports = []
-        for role, count in roles:
-            matches = [port for port in meta["layout"]["ports"] if port["role"] == role and int(np.prod(port_shape(port))) == count]
-            require(len(matches) == 1, "ambiguous encoder bundle port")
-            ports.append(f"{matches[0]['name']} {count}")
-        (a.output / "ports.txt").write_text("\n".join(ports) + "\n")
+        write_bundle(a.output, meta, payloads)
     print(json.dumps(dict(status="pass", task_count=meta["td_count"],
                          payloads={k:dict(bytes=len(v), sha256=hashlib.sha256(v).hexdigest()) for k, v in payloads.items()})))
 
