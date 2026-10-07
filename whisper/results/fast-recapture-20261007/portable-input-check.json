@@ -1,0 +1,41 @@
+{
+  "status": "prepared",
+  "host": "macOS-27.0.1-arm64-arm-64bit",
+  "utc": "2026-10-07T08:32:50.217111+00:00",
+  "checkpoint_sha256": "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad",
+  "warmups": 2,
+  "runs": 10,
+  "scope": "Complete encoder only. No CPU cross-K/V, decoder or whole-transcription timing. Python readback is a reference, not the optimized native four-worker implementation.",
+  "metric_notes": {
+    "prepare_ms": "FP16 conversion, input packing/upload, scratch zeroing and output sentinel",
+    "dispatch_ms": "Synchronous ioctl: driver work, scheduling/wait and ANE execution",
+    "readback_ms": "Logical FP16 read, copy and finite-output check",
+    "total_ms": "Sum of the three replay stages"
+  },
+  "decoder_gate": "not measured; original fast Mac graph fails the 0.005 full-logit gate",
+  "records": [],
+  "input_checks": [
+    {
+      "audio": "jfk",
+      "audio_seconds": 11.0,
+      "mel_sha256": "6b901b7dcbbf287d544281f33075f293e110e2045be417e227ff1dc51d1547da",
+      "matches_mac_input": true,
+      "expected_mac_output_sha256": "40288494a79f9ecce2dd7921081b6e7b8550150ff7902ef39497ce4cb9eb59df"
+    },
+    {
+      "audio": "jfk-first-5s",
+      "audio_seconds": 5.0,
+      "mel_sha256": "63a32c860aafe2aca626b651c0528f0b51593dd758fcbe723bfcc737282f22e4",
+      "matches_mac_input": true,
+      "expected_mac_output_sha256": "f02406a35e32aea2623c957116752461711b2a153dcad9f3e98187738842331e"
+    },
+    {
+      "audio": "jfk-repeat",
+      "audio_seconds": 23.0,
+      "mel_sha256": "aaa5138e387d0430b6755ef1310c0d52adcd66998796647845e1e89ce4bba949",
+      "matches_mac_input": true,
+      "expected_mac_output_sha256": "69d91f5eca44ea8016315724f06a62bd630e6bbbd6c490ce4b4682f2bf331651"
+    }
+  ],
+  "hardware_execution": "not attempted"
+}

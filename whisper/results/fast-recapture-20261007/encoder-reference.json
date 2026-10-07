@@ -1,0 +1,24 @@
+{
+  "checkpoint_sha256": "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad",
+  "audio_sha256": "d7d4e74b8a333ed02186008bc109a1b1a19d16da668bd56e785d80d69a16a72f",
+  "position_sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238",
+  "records": [
+    {
+      "audio": "jfk",
+      "mel_sha256": "6b901b7dcbbf287d544281f33075f293e110e2045be417e227ff1dc51d1547da",
+      "output_sha256": "40288494a79f9ecce2dd7921081b6e7b8550150ff7902ef39497ce4cb9eb59df"
+    },
+    {
+      "audio": "jfk-first-5s",
+      "mel_sha256": "63a32c860aafe2aca626b651c0528f0b51593dd758fcbe723bfcc737282f22e4",
+      "output_sha256": "f02406a35e32aea2623c957116752461711b2a153dcad9f3e98187738842331e"
+    },
+    {
+      "audio": "jfk-repeat",
+      "mel_sha256": "aaa5138e387d0430b6755ef1310c0d52adcd66998796647845e1e89ce4bba949",
+      "output_sha256": "69d91f5eca44ea8016315724f06a62bd630e6bbbd6c490ce4b4682f2bf331651"
+    }
+  ],
+  "scope": "Exact FP16 input/output hashes from the private-runtime Mac capture; arrays and learned weights are external.",
+  "pcm_sha256": "a29462b8ebd467318000e683b9117ade46230d3255ed2024e7db894abd9b38c9"
+}

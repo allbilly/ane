@@ -46,6 +46,10 @@
   the documented Linux build disables BLAS. Preserve the optimized native
   readback while switching to the original graph's padded input layout.
   Keep the existing dump and Linux diagnostic results as the baseline.
+  - [x] Add a checkpoint/audio-only profiler and exact Mac output hashes;
+    verify all three regenerated FP16 input hashes on Mac without hardware.
+  - [ ] Run checkpoint/audio-only replay profiling with exact Mac input/output
+    hashes; return dispatch, preparation, readback and total encoder times.
 
 - [ ] Qwen: return the existing macOS all-prefix BF16 oracle files
   `uzu-macos-all.npz` and `native-macos-all.npz` with their reports/hashes.

@@ -11,6 +11,7 @@ import numpy as np
 from qwen35.tests import write_tensors
 from whisper.encoder_kernel import reconstruct, pack_port, port_view, unpack
 from experimental.capture_macos_program import parse_tasks
+from whisper.replay_encoder import Encoder
 
 
 class CompactWhisperTests(unittest.TestCase):
@@ -119,6 +120,40 @@ class NativePortTests(unittest.TestCase):
         buffer = bits.tobytes()
         # Readback must preserve FP16 bits, including subnormals and NaNs.
         np.testing.assert_array_equal(port_view(buffer, port).reshape(1500, 384).view("<u2"), bits)
+
+
+class ReplayTimingTests(unittest.TestCase):
+    def test_stage_accounting_preserves_one_submission_and_output_bits(self):
+        root = Path(__file__).resolve().parents[1]
+        meta = json.loads((root / "whisper/kernels/tiny-en-encoder-fast/meta.json").read_text())
+        class MemoryBuffer:
+            def __init__(self, size):
+                self.size, self.map = size, bytearray(size)
+            def write(self, data):
+                self.map[:len(data)] = data
+        encoder = Encoder.__new__(Encoder)
+        encoder.meta = meta
+        encoder.ports = {role:next(p for p in meta["layout"]["ports"] if p["role"] == kind and
+            np.prod([p["compiler_layout"][k] for k in ("Batches", "Channels", "Height", "Width")]) == count)
+            for role, kind, count in (("mel", "input", 240000), ("output", "output", 576000))}
+        encoder.buffers = {b["replay_bank"]:MemoryBuffer(b["size"]) for b in meta["layout"]["buffers"]}
+        encoder.fd, encoder.submit_opcode, encoder.request = 7, 123, object()
+        encoder.submissions, encoder.dispatch_seconds = 0, 0.
+        calls = []
+        expected = np.full((1500, 384), .125, "<f2")
+        def submit(fd, opcode, request):
+            calls.append((fd, opcode, request))
+            port = encoder.ports["output"]
+            port_view(encoder.buffers[port["replay_bank"]].map, port)[...] = expected.reshape(1, 1, 1500, 384)
+        encoder.ioctl = submit
+        observed = encoder(np.full((80, 3000), -.5, "<f2"))
+        self.assertEqual(calls, [(7, 123, encoder.request)])
+        self.assertEqual(encoder.submissions, 1)
+        self.assertEqual(observed.tobytes(), expected.tobytes())
+        parts = encoder.last_timing_ms
+        self.assertAlmostEqual(parts["total_ms"], sum(parts[k] for k in ("prepare_ms", "dispatch_ms", "readback_ms")), places=8)
+        self.assertAlmostEqual(parts["dispatch_ms"], encoder.dispatch_seconds * 1000, places=8)
+        self.assertTrue(all(t >= 0 for t in parts.values()))
 
 
 if __name__ == "__main__":

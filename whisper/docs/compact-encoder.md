@@ -94,6 +94,31 @@ three fixtures and rejects nonfinite or unwritten output. Fixture arrays are
 optional validation data; ordinary encoder execution only needs kernels,
 checkpoint and frontend mel input.
 
+To profile either compact package without transferring any captured arrays,
+run from the repository root on Asahi:
+
+```sh
+env OPENBLAS_NUM_THREADS=1 \
+  whisper/.venv/bin/python -m whisper.scripts.benchmark_encoder \
+  --hf-model whisper/models/hf-tiny.en \
+  --compare-baseline \
+  --output whisper/.cache/encoder-replay-profile.json
+```
+
+This command acquires ANE, GPU and `/tmp/m1-gpu.lock` itself. It recreates the
+three clips from the vendored JFK WAV and checks exact Mac FP16 input/output
+hashes in `results/fast-recapture-20261007/encoder-reference.json`. WAV header
+metadata can differ; the PCM samples must match. `--prepare-only` checks the
+inputs on either host without allocating or submitting hardware.
+
+Each warm call reports preparation/upload/scratch reset, synchronous driver
+dispatch, FP16 readback and their total. Dispatch includes driver scheduling
+and waiting. It excludes CPU cross-K/V and decoder work, so compare dispatch
+with Mac's roughly 10.9 ms execute boundary rather than its 15.83 ms complete
+encode timer. Python readback is a reference implementation; retain the faster
+native four-worker readback in native transcription benchmarks. A successful
+encoder replay does not satisfy the separate full-decoder-logit gate.
+
 The Python entry point verifies packing and execution; it does not claim the
 optimized native readback performance reported from Linux. Integrating the new
 native-stride package into that Linux decoder and repeating its complete gates

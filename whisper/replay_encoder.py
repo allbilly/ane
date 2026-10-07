@@ -37,6 +37,7 @@ class Encoder:
         self.fd, self.buffers, self.bootstrap = os.open(path, os.O_RDWR | os.O_CLOEXEC), {}, None
         self.ioctl, self.submit_opcode = ioctl, SUBMIT
         self.submissions, self.dispatch_seconds = 0, 0.
+        self.last_timing_ms = None
         try:
             self.buffers[0] = Buffer(self.fd, len(commands) + len(payloads["coefficients"]) + 1)
             self.buffers[0].write(commands + payloads["coefficients"])
@@ -63,6 +64,7 @@ class Encoder:
             raise
 
     def __call__(self, mel):
+        began = time.perf_counter()
         mel = np.asarray(mel, dtype="<f2")
         require(mel.shape == (80, 3000) and bool(np.isfinite(mel).all()), "expected finite FP16 mel [80,3000]")
         port = self.ports["mel"]
@@ -77,10 +79,15 @@ class Encoder:
         port_view(output_buffer.map, output_port)[...] = np.nan
         start = time.perf_counter()
         self.ioctl(self.fd, self.submit_opcode, self.request)
-        self.dispatch_seconds += time.perf_counter() - start
+        completed = time.perf_counter()
+        self.dispatch_seconds += completed - start
         self.submissions += 1
         output = port_view(output_buffer.map, output_port).reshape(1500, 384).copy()
         require(bool(np.isfinite(output).all()), "encoder produced nonfinite/unwritten output")
+        finished = time.perf_counter()
+        self.last_timing_ms = dict(prepare_ms=(start - began) * 1000,
+            dispatch_ms=(completed - start) * 1000, readback_ms=(finished - completed) * 1000,
+            total_ms=(finished - began) * 1000)
         return output
 
     def close(self):

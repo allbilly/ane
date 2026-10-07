@@ -131,3 +131,10 @@ match would establish replay fidelity, while the full-logit failure would still
 require numerical changes to the model implementation. Keep the gate at 0.005
 and benchmark any accuracy correction again. This is three constructed JFK
 variants, not a diverse speech or word-error-rate evaluation.
+
+The [checkpoint/audio-only profiler](../scripts/benchmark_encoder.py) now reports
+dispatch, preparation and readback separately for both compact packages. It
+checks the exact Mac outputs by hash without requiring a full HWX or captured
+activation bundle. Its input preparation was verified on Mac for all three
+cases. Native Linux execution and the latest native cross-K/V profile remain
+pending; see the command in [compact encoder](compact-encoder.md).
