@@ -16,7 +16,9 @@
   E5RT-staged ANE graph exports to the same stream after I/O BAR remapping.
   Default kernels are `whisper/kernels/tiny-en-encoder-fast` (149 KiB), with native
   padded input packing and byte-exact checkpoint reconstruction. Keep the
-  1,783-task dense wrapper as a baseline: it is about 13% slower on Mac.
+  1,783-task dense wrapper as a baseline: its two input reshapes add four tasks
+  and about 13% execution overhead on Mac. The input packer now handles padding
+  while preserving the original graph; this dump issue is fixed.
   All three outputs exactly match prior captures, HF encoder cosine passes,
   and all 80 raw token choices match. The warm 11-second rerun takes 15.83 ms
   encode including cross-K/V and 66.81 ms whole transcription. See
@@ -34,6 +36,10 @@
   Original fast Mac timing passed transcript/cosine checks, not this stricter
   gate. Dump identity alone cannot fix it; retain the failure and rebenchmark
   any numerical correction.
+  - [ ] Locate the encoder operations responsible for the logit error, using
+    the shared HF decoder to keep decoder differences out of the comparison.
+  - [ ] Correct the numerical error, rerun every full logit vector on all three
+    clips, and measure the resulting warm performance without weakening the gate.
 
 - [ ] Asahi: replay the new original 1,779-task compact kernels with inputs/weights repacked from
   the pinned HF checkpoint, without a macOS compiler. Validate the same cases
@@ -42,14 +48,24 @@
   stage from 5.31 to 1.34 ms; CPU cross-K/V still costs about 28 ms.
   These latest Linux stage numbers come from the existing task notes; their raw
   reports are not present on this Mac. Compare exact encoder outputs and profile
-  dispatch/readback/cross-K/V separately. The Mac build uses Accelerate BLAS;
-  the documented Linux build disables BLAS. Preserve the optimized native
-  readback while switching to the original graph's padded input layout.
+  dispatch/readback/cross-K/V separately. CPU cross-K/V is a likely bottleneck:
+  the reported 28 ms for that stage alone exceeds the Mac's 15.83 ms encode
+  including cross-K/V. The Mac build uses Accelerate BLAS; the documented Linux
+  build disables BLAS. The exact remaining gap is unverified until the Linux
+  stage report is available; ANE clocks or driver scheduling are not established
+  causes. Preserve the optimized native readback while switching to the original
+  graph's padded input layout.
   Keep the existing dump and Linux diagnostic results as the baseline.
   - [x] Add a checkpoint/audio-only profiler and exact Mac output hashes;
     verify all three regenerated FP16 input hashes on Mac without hardware.
   - [ ] Run checkpoint/audio-only replay profiling with exact Mac input/output
-    hashes; return dispatch, preparation, readback and total encoder times.
+    hashes and `--compare-baseline`; return dispatch, preparation, readback and
+    total encoder times. Use the command in `whisper/docs/compact-encoder.md`.
+  - [ ] Obtain the native four-worker full-encoder profile, including CPU
+    cross-K/V and total encode; compare it with the Mac timing boundaries.
+  - [ ] If the cross-K/V bottleneck is confirmed, optimize its eight matrix
+    products and rebenchmark the complete transcription path, retaining the
+    exact encoder-output check and full-logit accuracy gate.
 
 - [ ] Qwen: return the existing macOS all-prefix BF16 oracle files
   `uzu-macos-all.npz` and `native-macos-all.npz` with their reports/hashes.

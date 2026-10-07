@@ -1,4 +1,5 @@
 *__pycache__*
+.DS_Store
 libane
 gpt2/training/asahi-output/
 qwen35/local-results/
