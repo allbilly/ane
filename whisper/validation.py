@@ -41,16 +41,18 @@ def compare(reference, actual):
                 max_abs=float(np.max(np.abs(a-b))))
 
 
-def logits_records(path):
-    """Read every full tiny.en vocabulary vector, rejecting truncated captures."""
+def logits_records(path, vocabulary=51864):
+    """Read complete fixed-vocabulary vectors, rejecting truncated captures."""
+    if vocabulary not in (51864, 51865):
+        raise ValueError("unsupported Whisper vocabulary")
     data, offset, records = Path(path).read_bytes(), 0, []
     while offset < len(data):
         if len(data) - offset < 8:
             raise ValueError("incomplete logit header")
-        count, vocabulary = struct.unpack_from("<2i", data, offset)
+        count, recorded_vocabulary = struct.unpack_from("<2i", data, offset)
         offset += 8
-        if not 1 <= count <= 448 or vocabulary != 51864:
-            raise ValueError("unexpected tiny.en logit record")
+        if not 1 <= count <= 448 or recorded_vocabulary != vocabulary:
+            raise ValueError("unexpected Whisper vocabulary/logit record")
         size = (count + vocabulary)*4
         if len(data) - offset < size:
             raise ValueError("incomplete logit capture")

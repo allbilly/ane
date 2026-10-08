@@ -1,0 +1,1796 @@
+{
+  "status": "FAIL_FULL_LOGIT_GATE",
+  "timings_accepted": false,
+  "utc": "2026-10-07T10:14:11.056184+00:00",
+  "kernel": "7.1.13+",
+  "cpu_affinity": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "cpu_workers": 4,
+  "warmups": 2,
+  "measured_runs_per_audio_backend": 10,
+  "rounds": 2,
+  "task_count": 1779,
+  "submissions_per_encoder": 1,
+  "checkpoint_sha256": "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad",
+  "ggml_model_sha256": "776f39cd70d01a7df3c6098f87f121b62d1fb634d1272b5f36bb6f369fc34372",
+  "payload_sha256": {
+    "commands": "2d1c742cb363289d08f3902a3a78dc1c0130db717e6bbd4bd0e97b19ee48332f",
+    "coefficients": "9c7c3a210bb565db38be08c463be16e3ab22a11fe5e0d933e9666f1d2c351bfb",
+    "constants": "70d12f5f1d79ccf50e4c73d3ed1ecd0df36ed0241223026622e5d26f66094ed1",
+    "positions": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+  },
+  "source_sha256": {
+    "whisper/asahi_encoder.h": "6457df1dcc91d6298afb2f09fd2b4aeee4967d28f93c57312875c35645c15d36",
+    "whisper/asahi_encoder.cpp": "7372e24fb0afc1c209a4bc228eebc7073535343c6d136fc3d6977db93d915dd8",
+    "whisper/asahi_full_encoder.cpp": "a22c90e2e1c23e9fb9f004f3e15c69eb6f145ad3b9164daec0cf93e034d3b3ce",
+    "whisper/encoder_kernel.py": "d5fd47092766a01fd81d083dee1539c689332233b495ed0e4e6c9c2eeb7b7b1d",
+    "whisper/kernels/tiny-en-encoder-fast/meta.json": "f42b3e8feec18bb37d75a48eeb5d24fc0cef2a79a2bf56d88c9f4981c79ee370",
+    "whisper/scripts/prepare_asahi.py": "d5f3156ae28f4e4d63d2d8d6be9e027d6645c40eb5b6898b32f94b420d409188",
+    "whisper/scripts/benchmark_asahi.py": "5212f37fb11941384d18f6811f69192eea15bef621588676f84315c0d24d14f0",
+    "whisper/scripts/benchmark_whisper.cpp": "ea9b0e5a005cf3cadb33d3749ba8f96c7482c3f0a6af88b30cfbb7c119981af7",
+    "whisper/scripts/verify_asahi_matrices.py": "ddfa9e0a0ffa5f362b73a366820fdf84a50f5d98e9724d030945514fcf743897",
+    "qwen35/ane_matmul.c": "9e705d4dee4e73f51150c6b193c3dfd0b5554feebd32f8a2539b84e85cda196f",
+    "qwen35/ane_matmul.h": "4b4743921c7906797aff79942adadb749c4bf322bbadb6fad81ef96ebbf8973d",
+    "qwen35/linear_template.h": "b7806029cc215b8a70ff3e14d4dd188988a49b24831b4909de82aea6e0e4d680",
+    "whisper/vendor/whisper-asahi/src/whisper.cpp": "ffa8e1240ba9cd8d5a2795e3d4291e9436e4f7abfc6739bcdd05828052472b39",
+    "whisper/vendor/whisper-asahi/ggml/src/ggml-cpu/simd-mappings.h": "f83b0de9f5dfff92092c2bab9ec718450884dde77d0f9809f03a62e053d4ff88",
+    "whisper/vendor/whisper-asahi/ggml/src/ggml-cpu/llamafile/sgemm.cpp": "6d35a9d1882cd9ed0e7f31e94f9a005f50816f659568d3984cf97e0db58a7981",
+    "whisper/vendor/whisper-asahi/ggml/src/ggml-cpu/simd-gemm.h": "41763b5f5c39bfc097d75a17b9d8192a705c39de11c55cb3ba0f40f20b2f0c97",
+    "whisper/vendor/whisper-asahi/src/CMakeLists.txt": "70c73f550ffd6f60b284a4728e3e821bc5204297bfb34449437fd8d359d07836"
+  },
+  "library_sha256": {
+    "libwhisper.so": "577e8221b3193b4a4ce775037a8c2008395538b84ed1b182fe0e706130bac0e0",
+    "libggml.so": "8ef4e6b8d39519b5049c072837b9e5f7db88f2666c2819c39687a3b722ab83b7",
+    "libggml-cpu.so": "a44914a6c2b1d3b52cf2c4afb2876ffb469c0074b11e3c6cedd9fe9af147e167",
+    "libggml-base.so": "9cd337348f73d79454d2818813b1c563b06b2f758827af99491b592dbb9bf928",
+    "libggml-blas.so": "f9f52d4b2313bc07e992fce125bbf55ac7f9d609c1a68cb9095b90238d82d1ca"
+  },
+  "cpu_blas": "Fedora OpenBLAS 0.3.29 OpenMP variant, one system OpenMP runtime",
+  "stages_ms": {
+    "full_input": 0.588,
+    "full_clear": 0.182,
+    "full_dispatch": 14.089,
+    "full_read": 1.3415,
+    "full_output": 0.785,
+    "cross_kv": 14.155000000000001
+  },
+  "dispatch_cpu_profile": {
+    "scope": "Thread CPU time includes kernel work; wall minus CPU includes sleeping/descheduling and hardware wait. This does not measure ANE cycles or prove a clock cause.",
+    "warmups": 2,
+    "runs": [
+      {
+        "wall_ms": 13.805748,
+        "thread_cpu_ms": 3.723585,
+        "voluntary_switches": 5281,
+        "involuntary_switches": 0
+      },
+      {
+        "wall_ms": 13.880493,
+        "thread_cpu_ms": 4.036489,
+        "voluntary_switches": 5338,
+        "involuntary_switches": 0
+      },
+      {
+        "wall_ms": 13.733876,
+        "thread_cpu_ms": 3.357652,
+        "voluntary_switches": 5256,
+        "involuntary_switches": 0
+      },
+      {
+        "wall_ms": 13.664088,
+        "thread_cpu_ms": 2.753548,
+        "voluntary_switches": 5106,
+        "involuntary_switches": 0
+      },
+      {
+        "wall_ms": 13.67542,
+        "thread_cpu_ms": 2.579161,
+        "voluntary_switches": 5054,
+        "involuntary_switches": 0
+      },
+      {
+        "wall_ms": 13.768041,
+        "thread_cpu_ms": 2.655639,
+        "voluntary_switches": 4962,
+        "involuntary_switches": 0
+      },
+      {
+        "wall_ms": 13.98228,
+        "thread_cpu_ms": 2.65171,
+        "voluntary_switches": 4779,
+        "involuntary_switches": 0
+      },
+      {
+        "wall_ms": 13.953781,
+        "thread_cpu_ms": 2.725567,
+        "voluntary_switches": 4754,
+        "involuntary_switches": 0
+      },
+      {
+        "wall_ms": 14.106316,
+        "thread_cpu_ms": 2.68017,
+        "voluntary_switches": 4574,
+        "involuntary_switches": 0
+      },
+      {
+        "wall_ms": 14.306513,
+        "thread_cpu_ms": 2.721555,
+        "voluntary_switches": 4397,
+        "involuntary_switches": 0
+      }
+    ],
+    "median": {
+      "wall_ms": 13.8431205,
+      "thread_cpu_ms": 2.723561,
+      "voluntary_switches": 5008.0,
+      "involuntary_switches": 0.0
+    }
+  },
+  "correctness": [
+    {
+      "audio": "jfk",
+      "decoder_vectors": 25,
+      "raw_argmax_matches": 25,
+      "all_histories_match": true,
+      "encoder_matches_old_linux_wrapper": true,
+      "encoder_sha256": "f42d97a1908c16c2d8ffbec9ef1c306514f6104c668459884a1537609f222770",
+      "hf_encoder_cosine": 0.9999564370739507,
+      "max_cpu_logit_nrmse": 0.0005804812456137197,
+      "max_ane_logit_nrmse": 0.02934507996031168
+    },
+    {
+      "audio": "jfk-first-5s",
+      "decoder_vectors": 8,
+      "raw_argmax_matches": 8,
+      "all_histories_match": true,
+      "encoder_matches_old_linux_wrapper": true,
+      "encoder_sha256": "f493cffe9bc7ea84fab4acd4af41e1bca0538464ceb197d88b02226d90c1c652",
+      "hf_encoder_cosine": 0.999913593600232,
+      "max_cpu_logit_nrmse": 0.0011741583724563082,
+      "max_ane_logit_nrmse": 0.05492935498744312
+    },
+    {
+      "audio": "jfk-repeat",
+      "decoder_vectors": 47,
+      "raw_argmax_matches": 47,
+      "all_histories_match": true,
+      "encoder_matches_old_linux_wrapper": true,
+      "encoder_sha256": "8cb358af1d5793aecf38941137f450ccc6a19be932b74323cd97ba74dd158b07",
+      "hf_encoder_cosine": 0.9996944687803015,
+      "max_cpu_logit_nrmse": 0.0007336442782606648,
+      "max_ane_logit_nrmse": 0.027288037579537298
+    }
+  ],
+  "full_logit_gate_nrmse": 0.005,
+  "backends": {
+    "cpu_cpu": {
+      "jfk": {
+        "wall_range_ms": [
+          316.896135,
+          544.810429
+        ],
+        "median": {
+          "encode_ms": 232.52999999999997,
+          "decoder_ms": 90.25,
+          "decode_ms": 85.715,
+          "batchd_ms": 4.545,
+          "prompt_ms": 0.0,
+          "decode_ms_per_token": 3.571458333333333,
+          "wall_ms": 338.0505395,
+          "rtf": 0.030731867227272728
+        }
+      },
+      "jfk-first-5s": {
+        "wall_range_ms": [
+          241.364725,
+          300.715301
+        ],
+        "median": {
+          "encode_ms": 234.865,
+          "decoder_ms": 29.415,
+          "decode_ms": 24.82,
+          "batchd_ms": 4.555,
+          "prompt_ms": 0.0,
+          "decode_ms_per_token": 3.545714285714286,
+          "wall_ms": 270.55240349999997,
+          "rtf": 0.05411048069999999
+        }
+      },
+      "jfk-repeat": {
+        "wall_range_ms": [
+          410.858141,
+          478.784782
+        ],
+        "median": {
+          "encode_ms": 247.57999999999998,
+          "decoder_ms": 167.42000000000002,
+          "decode_ms": 162.465,
+          "batchd_ms": 4.68,
+          "prompt_ms": 0.0,
+          "decode_ms_per_token": 3.5318478260869566,
+          "wall_ms": 445.632394,
+          "rtf": 0.01937532147826087
+        }
+      }
+    },
+    "ane_complete_cpu": {
+      "jfk": {
+        "wall_range_ms": [
+          141.704947,
+          162.483836
+        ],
+        "median": {
+          "encode_ms": 31.18,
+          "decoder_ms": 92.47999999999999,
+          "decode_ms": 87.75999999999999,
+          "batchd_ms": 4.785,
+          "prompt_ms": 0.0,
+          "decode_ms_per_token": 3.6566666666666667,
+          "wall_ms": 142.8967885,
+          "rtf": 0.012990617136363637
+        }
+      },
+      "jfk-first-5s": {
+        "wall_range_ms": [
+          68.722876,
+          92.417493
+        ],
+        "median": {
+          "encode_ms": 31.244999999999997,
+          "decoder_ms": 30.869999999999997,
+          "decode_ms": 26.005,
+          "batchd_ms": 4.66,
+          "prompt_ms": 0.0,
+          "decode_ms_per_token": 3.715,
+          "wall_ms": 70.155802,
+          "rtf": 0.0140311604
+        }
+      },
+      "jfk-repeat": {
+        "wall_range_ms": [
+          239.565225,
+          319.656136
+        ],
+        "median": {
+          "encode_ms": 45.6,
+          "decoder_ms": 214.875,
+          "decode_ms": 209.805,
+          "batchd_ms": 5.145,
+          "prompt_ms": 0.0,
+          "decode_ms_per_token": 4.5609782608695655,
+          "wall_ms": 301.63459850000004,
+          "rtf": 0.013114547760869568
+        }
+      }
+    }
+  },
+  "before_blas_jfk": {
+    "cpu_cpu": {
+      "encode_ms": 277.83500000000004,
+      "decoder_ms": 90.505,
+      "decode_ms": 86.125,
+      "batchd_ms": 4.43,
+      "prompt_ms": 0.0,
+      "decode_ms_per_token": 3.5885416666666665,
+      "wall_ms": 384.6511365,
+      "rtf": 0.03496828513636364
+    },
+    "ane_complete_cpu": {
+      "encode_ms": 45.29,
+      "decoder_ms": 94.425,
+      "decode_ms": 89.785,
+      "batchd_ms": 4.655,
+      "prompt_ms": 0.0,
+      "decode_ms_per_token": 3.741041666666667,
+      "wall_ms": 159.210424,
+      "rtf": 0.014473674909090909
+    }
+  },
+  "precision_controls": [
+    {
+      "audio": "jfk",
+      "variants": {
+        "mel_fp16_only": {
+          "max_logit_nrmse": 0.0003839573037789237,
+          "all_argmax_match": true
+        },
+        "output_fp16_only": {
+          "max_logit_nrmse": 0.00022449400131342777,
+          "all_argmax_match": true
+        },
+        "fp16_weights_fp32_arithmetic": {
+          "max_logit_nrmse": 0.0003839573037789237,
+          "all_argmax_match": true
+        },
+        "ane": {
+          "max_logit_nrmse": 0.029352113883283293,
+          "all_argmax_match": true
+        },
+        "fp16_encoder": {
+          "max_logit_nrmse": 0.003533291487640449,
+          "all_argmax_match": true
+        }
+      }
+    },
+    {
+      "audio": "jfk-first-5s",
+      "variants": {
+        "mel_fp16_only": {
+          "max_logit_nrmse": 0.0004834202741565571,
+          "all_argmax_match": true
+        },
+        "output_fp16_only": {
+          "max_logit_nrmse": 0.0007751480251540324,
+          "all_argmax_match": true
+        },
+        "fp16_weights_fp32_arithmetic": {
+          "max_logit_nrmse": 0.0004834202741565571,
+          "all_argmax_match": true
+        },
+        "ane": {
+          "max_logit_nrmse": 0.05493440605107888,
+          "all_argmax_match": true
+        },
+        "fp16_encoder": {
+          "max_logit_nrmse": 0.010543129617585873,
+          "all_argmax_match": true
+        }
+      }
+    },
+    {
+      "audio": "jfk-repeat",
+      "variants": {
+        "mel_fp16_only": {
+          "max_logit_nrmse": 0.0007785418966937677,
+          "all_argmax_match": true
+        },
+        "output_fp16_only": {
+          "max_logit_nrmse": 0.0005065450505159264,
+          "all_argmax_match": true
+        },
+        "fp16_weights_fp32_arithmetic": {
+          "max_logit_nrmse": 0.0007785418966937677,
+          "all_argmax_match": true
+        },
+        "ane": {
+          "max_logit_nrmse": 0.0272921504289776,
+          "all_argmax_match": true
+        },
+        "fp16_encoder": {
+          "max_logit_nrmse": 0.0046046587479508,
+          "all_argmax_match": true
+        }
+      }
+    }
+  ],
+  "portable_input_check": [
+    {
+      "audio": "jfk",
+      "audio_seconds": 11.0,
+      "mel_sha256": "67d8411b50625dba613f2b3b8c4b69fc249d01bedc724bf95797d5e6b59207d7",
+      "matches_mac_input": false,
+      "expected_mac_output_sha256": "40288494a79f9ecce2dd7921081b6e7b8550150ff7902ef39497ce4cb9eb59df"
+    },
+    {
+      "audio": "jfk-first-5s",
+      "audio_seconds": 5.0,
+      "mel_sha256": "e0ee77a20b60d798d68caf5f76fe656e4a4d20e1dfa957598067e682090f349b",
+      "matches_mac_input": false,
+      "expected_mac_output_sha256": "f02406a35e32aea2623c957116752461711b2a153dcad9f3e98187738842331e"
+    },
+    {
+      "audio": "jfk-repeat",
+      "audio_seconds": 23.0,
+      "mel_sha256": "d6703d194d0429ce01b35d2bc70455d6fbbbc2c0c16453702df7f33e07aa9828",
+      "matches_mac_input": false,
+      "expected_mac_output_sha256": "69d91f5eca44ea8016315724f06a62bd630e6bbbd6c490ce4b4682f2bf331651"
+    }
+  ],
+  "mac_exact_input_output_comparison": "unverified: regenerated Linux FP16 inputs differ from captured Mac hashes",
+  "limitations": "Active desktop; clocks not pinned. The 23-second measurement has substantial variation. CPU decoder math/build differs from Mac. Dispatch is synchronous ioctl including polling and scheduling, not isolated hardware execution.",
+  "raw_receipts": {
+    "fast-native-fedora-validation/summary.json": {
+      "path": "whisper/.cache/asahi-20261007/fast-native-fedora-validation/summary.json",
+      "sha256": "37607e3b6f97c0c62fd39e600ad72d483076b293ecd3c170e43728dfedda44d9"
+    },
+    "fast-native-fedora-blas-profile.log": {
+      "path": "whisper/.cache/asahi-20261007/fast-native-fedora-blas-profile.log",
+      "sha256": "f6305fc5e9d4aeb63e8d774934bdd362ccf535bac20a0d278c16ddcae615ad8f"
+    },
+    "fast-native-validation/summary.json": {
+      "path": "whisper/.cache/asahi-20261007/fast-native-validation/summary.json",
+      "sha256": "04b7ca63ae7911a32f79a1dd944fc8c486cc667917e799412a6d97ddc802ff56"
+    },
+    "fast-replay-local-inputs.json": {
+      "path": "whisper/.cache/asahi-20261007/fast-replay-local-inputs.json",
+      "sha256": "c6767a2421ce95722d2e854ad241c3137a2e26c69556ddb309e9beb400c13749"
+    },
+    "encoder-precision-control.json": {
+      "path": "whisper/.cache/asahi-20261007/encoder-precision-control.json",
+      "sha256": "3e757572899a883cd1c6bcf7e261a0389f0c3e3e4a5fafe7e883a67f76021d4e"
+    }
+  },
+  "final_native_bridge_check": {
+    "status": "PASS",
+    "records": [
+      {
+        "package": "fast-encoder-runtime",
+        "audio": "jfk",
+        "bitwise_equal": true,
+        "output_sha256": "f42d97a1908c16c2d8ffbec9ef1c306514f6104c668459884a1537609f222770"
+      },
+      {
+        "package": "fast-encoder-runtime",
+        "audio": "jfk-first-5s",
+        "bitwise_equal": true,
+        "output_sha256": "f493cffe9bc7ea84fab4acd4af41e1bca0538464ceb197d88b02226d90c1c652"
+      },
+      {
+        "package": "fast-encoder-runtime",
+        "audio": "jfk-repeat",
+        "bitwise_equal": true,
+        "output_sha256": "8cb358af1d5793aecf38941137f450ccc6a19be932b74323cd97ba74dd158b07"
+      },
+      {
+        "package": "complete-encoder",
+        "audio": "jfk",
+        "bitwise_equal": true,
+        "output_sha256": "f42d97a1908c16c2d8ffbec9ef1c306514f6104c668459884a1537609f222770"
+      },
+      {
+        "package": "complete-encoder",
+        "audio": "jfk-first-5s",
+        "bitwise_equal": true,
+        "output_sha256": "f493cffe9bc7ea84fab4acd4af41e1bca0538464ceb197d88b02226d90c1c652"
+      },
+      {
+        "package": "complete-encoder",
+        "audio": "jfk-repeat",
+        "bitwise_equal": true,
+        "output_sha256": "8cb358af1d5793aecf38941137f450ccc6a19be932b74323cd97ba74dd158b07"
+      }
+    ],
+    "source_sha256": "b13daae1c7b4a271bf0c1af828f0aecaf5ca5c0385bd8aa7b6336e76ca0434b8",
+    "library_sha256": "009ba9b9f71f953734973602f6a7dd1862c1b8eb5d01a4aa482de2383186bbfb"
+  },
+  "dispatch_affinity_profile": {
+    "scope": "Move only synchronous ioctl to efficiency CPU0 or performance CPU4; preparation/readback stay on performance cores. Two warmups and five calls per round, reversed order, bitwise outputs verified.",
+    "records": [
+      {
+        "cpu": 4,
+        "round": 1,
+        "wall_ms": 14.230242,
+        "thread_cpu_ms": 4.262423,
+        "voluntary_switches": 5073,
+        "involuntary_switches": 0,
+        "phase": "warmup"
+      },
+      {
+        "cpu": 4,
+        "round": 1,
+        "wall_ms": 14.111201,
+        "thread_cpu_ms": 4.222093,
+        "voluntary_switches": 5034,
+        "involuntary_switches": 0,
+        "phase": "warmup"
+      },
+      {
+        "cpu": 4,
+        "round": 1,
+        "wall_ms": 13.774454,
+        "thread_cpu_ms": 4.202097,
+        "voluntary_switches": 5425,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 4,
+        "round": 1,
+        "wall_ms": 13.984327,
+        "thread_cpu_ms": 4.199572,
+        "voluntary_switches": 5488,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 4,
+        "round": 1,
+        "wall_ms": 14.000369,
+        "thread_cpu_ms": 4.197699,
+        "voluntary_switches": 5105,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 4,
+        "round": 1,
+        "wall_ms": 13.677288,
+        "thread_cpu_ms": 4.138498,
+        "voluntary_switches": 5562,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 4,
+        "round": 1,
+        "wall_ms": 13.809037,
+        "thread_cpu_ms": 4.237482,
+        "voluntary_switches": 5435,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 0,
+        "round": 1,
+        "wall_ms": 28.645857,
+        "thread_cpu_ms": 7.454058,
+        "voluntary_switches": 7026,
+        "involuntary_switches": 0,
+        "phase": "warmup"
+      },
+      {
+        "cpu": 0,
+        "round": 1,
+        "wall_ms": 31.619871,
+        "thread_cpu_ms": 8.194585,
+        "voluntary_switches": 7768,
+        "involuntary_switches": 0,
+        "phase": "warmup"
+      },
+      {
+        "cpu": 0,
+        "round": 1,
+        "wall_ms": 32.417114,
+        "thread_cpu_ms": 8.388458,
+        "voluntary_switches": 7964,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 0,
+        "round": 1,
+        "wall_ms": 29.717472,
+        "thread_cpu_ms": 7.687344,
+        "voluntary_switches": 6878,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 0,
+        "round": 1,
+        "wall_ms": 32.440821,
+        "thread_cpu_ms": 8.385565,
+        "voluntary_switches": 7741,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 0,
+        "round": 1,
+        "wall_ms": 31.826703,
+        "thread_cpu_ms": 8.121109,
+        "voluntary_switches": 7596,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 0,
+        "round": 1,
+        "wall_ms": 32.294489,
+        "thread_cpu_ms": 8.399522,
+        "voluntary_switches": 7957,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 0,
+        "round": 2,
+        "wall_ms": 32.389113,
+        "thread_cpu_ms": 8.52944,
+        "voluntary_switches": 8000,
+        "involuntary_switches": 0,
+        "phase": "warmup"
+      },
+      {
+        "cpu": 0,
+        "round": 2,
+        "wall_ms": 17.081048,
+        "thread_cpu_ms": 4.567024,
+        "voluntary_switches": 3991,
+        "involuntary_switches": 0,
+        "phase": "warmup"
+      },
+      {
+        "cpu": 0,
+        "round": 2,
+        "wall_ms": 32.42653,
+        "thread_cpu_ms": 8.423304,
+        "voluntary_switches": 7954,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 0,
+        "round": 2,
+        "wall_ms": 25.982674,
+        "thread_cpu_ms": 6.668742,
+        "voluntary_switches": 6238,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 0,
+        "round": 2,
+        "wall_ms": 31.371456,
+        "thread_cpu_ms": 8.11634,
+        "voluntary_switches": 7732,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 0,
+        "round": 2,
+        "wall_ms": 32.432197,
+        "thread_cpu_ms": 8.446626,
+        "voluntary_switches": 7841,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 0,
+        "round": 2,
+        "wall_ms": 32.414822,
+        "thread_cpu_ms": 8.393828,
+        "voluntary_switches": 7998,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 4,
+        "round": 2,
+        "wall_ms": 16.684302,
+        "thread_cpu_ms": 4.550328,
+        "voluntary_switches": 3853,
+        "involuntary_switches": 0,
+        "phase": "warmup"
+      },
+      {
+        "cpu": 4,
+        "round": 2,
+        "wall_ms": 15.766269,
+        "thread_cpu_ms": 4.385689,
+        "voluntary_switches": 4018,
+        "involuntary_switches": 0,
+        "phase": "warmup"
+      },
+      {
+        "cpu": 4,
+        "round": 2,
+        "wall_ms": 15.445605,
+        "thread_cpu_ms": 4.285828,
+        "voluntary_switches": 4079,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 4,
+        "round": 2,
+        "wall_ms": 15.464772,
+        "thread_cpu_ms": 4.308925,
+        "voluntary_switches": 4089,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 4,
+        "round": 2,
+        "wall_ms": 15.329398,
+        "thread_cpu_ms": 4.313009,
+        "voluntary_switches": 4455,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 4,
+        "round": 2,
+        "wall_ms": 15.457147,
+        "thread_cpu_ms": 4.401043,
+        "voluntary_switches": 4584,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      },
+      {
+        "cpu": 4,
+        "round": 2,
+        "wall_ms": 15.461314,
+        "thread_cpu_ms": 4.417104,
+        "voluntary_switches": 4581,
+        "involuntary_switches": 0,
+        "phase": "measure"
+      }
+    ],
+    "median": {
+      "0": {
+        "wall_ms": 32.3546555,
+        "thread_cpu_ms": 8.3870115,
+        "voluntary_switches": 7791.0
+      },
+      "4": {
+        "wall_ms": 14.664883499999998,
+        "thread_cpu_ms": 4.261655,
+        "voluntary_switches": 4844.5
+      }
+    }
+  },
+  "timing_units": "milliseconds, except rtf which is dimensionless",
+  "hybrid_precision_diagnostics": {
+    "scope": "Diagnostic CPU substitutions, not the production ANE path. All variants retain FP32 host normalization, exact GELU and residual state. The passing control retains ANE convolutions and FFN first projections only.",
+    "gate_nrmse": 0.005,
+    "variants": {
+      "linear-first": {
+        "status": "FAIL",
+        "attention_mode": "ane",
+        "projection_mode": "ane",
+        "ffn_output_mode": "ane",
+        "qkv_mode": "ane",
+        "records": [
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.03435973530741573,
+            "all_argmax_match": true
+          }
+        ],
+        "raw_receipt": {
+          "path": "whisper/.cache/asahi-20261007/fp32-residual-linear-first.json",
+          "sha256": "a842b1abfe77324ca52ccb88a7209c8c47d3b6be90114408bd4756d958d7684e"
+        }
+      },
+      "attention-first": {
+        "status": "FAIL",
+        "attention_mode": "fp32",
+        "projection_mode": "ane",
+        "ffn_output_mode": "ane",
+        "qkv_mode": "ane",
+        "records": [
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.008483386773280156,
+            "all_argmax_match": true
+          }
+        ],
+        "raw_receipt": {
+          "path": "whisper/.cache/asahi-20261007/fp32-residual-attention-first.json",
+          "sha256": "a8db6290f619dee97bacdb6642a5344e54dc01e2198f61336d917aa9463e13ec"
+        }
+      },
+      "outproj-first": {
+        "status": "FAIL",
+        "attention_mode": "fp32",
+        "projection_mode": "fp32",
+        "ffn_output_mode": "ane",
+        "qkv_mode": "ane",
+        "records": [
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.008082518407348395,
+            "all_argmax_match": true
+          }
+        ],
+        "raw_receipt": {
+          "path": "whisper/.cache/asahi-20261007/fp32-residual-outproj-first.json",
+          "sha256": "a500d821796a122e32679322e4dc9614aa3ba73d0088a2c44d19959aedd00856"
+        }
+      },
+      "fc2-first": {
+        "status": "FAIL",
+        "attention_mode": "fp32",
+        "projection_mode": "fp32",
+        "ffn_output_mode": "fp32",
+        "qkv_mode": "ane",
+        "records": [
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.008982995231313285,
+            "all_argmax_match": true
+          }
+        ],
+        "raw_receipt": {
+          "path": "whisper/.cache/asahi-20261007/fp32-residual-fc2-first.json",
+          "sha256": "981fe78f0ae840ed44236022a52ddb4429e241fb3f560cf9ec25a5fa186b0da2"
+        }
+      },
+      "qkv-all": {
+        "status": "FAIL",
+        "attention_mode": "fp32",
+        "projection_mode": "ane",
+        "ffn_output_mode": "ane",
+        "qkv_mode": "fp32",
+        "records": [
+          {
+            "audio": "jfk",
+            "decoder_vectors": 25,
+            "max_logit_nrmse": 0.0027646636393530793,
+            "all_argmax_match": true
+          },
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.004584027513495403,
+            "all_argmax_match": true
+          },
+          {
+            "audio": "jfk-repeat",
+            "decoder_vectors": 47,
+            "max_logit_nrmse": 0.0059302345180769515,
+            "all_argmax_match": true
+          }
+        ],
+        "raw_receipt": {
+          "path": "whisper/.cache/asahi-20261007/fp32-residual-qkv-all.json",
+          "sha256": "043503b1564c2f920cd702cc6e3cc4ff6d211272efc0c10c098254ceeb9e90c4"
+        }
+      },
+      "qkv-outproj-all": {
+        "status": "FAIL",
+        "attention_mode": "fp32",
+        "projection_mode": "fp32",
+        "ffn_output_mode": "ane",
+        "qkv_mode": "fp32",
+        "records": [
+          {
+            "audio": "jfk",
+            "decoder_vectors": 25,
+            "max_logit_nrmse": 0.0027720315492794265,
+            "all_argmax_match": true
+          },
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.005072515554409445,
+            "all_argmax_match": true
+          },
+          {
+            "audio": "jfk-repeat",
+            "decoder_vectors": 47,
+            "max_logit_nrmse": 0.004370064520273284,
+            "all_argmax_match": true
+          }
+        ],
+        "raw_receipt": {
+          "path": "whisper/.cache/asahi-20261007/fp32-residual-qkv-outproj-all.json",
+          "sha256": "249410d9bf6f032a111e98fbe8bd2786bad94d9551e3d08dc723a2562eb48bf0"
+        }
+      },
+      "qkv-fc2-all": {
+        "status": "PASS",
+        "attention_mode": "fp32",
+        "projection_mode": "fp32",
+        "ffn_output_mode": "fp32",
+        "qkv_mode": "fp32",
+        "records": [
+          {
+            "audio": "jfk",
+            "decoder_vectors": 25,
+            "max_logit_nrmse": 0.0019219524595292731,
+            "all_argmax_match": true
+          },
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.004945608256480357,
+            "all_argmax_match": true
+          },
+          {
+            "audio": "jfk-repeat",
+            "decoder_vectors": 47,
+            "max_logit_nrmse": 0.0034733759792316267,
+            "all_argmax_match": true
+          }
+        ],
+        "raw_receipt": {
+          "path": "whisper/.cache/asahi-20261007/fp32-residual-qkv-fc2-all.json",
+          "sha256": "50b46cdfcb6c03eed77bca8e7040673e51df17812e74bbd0eec4ca6ce9020c02"
+        }
+      }
+    },
+    "warm_encoder_only": {
+      "warmups": 2,
+      "measured_runs": 10,
+      "records": [
+        {
+          "audio": "jfk",
+          "feature_sha256": "ecf8ac6819f0e41dde1f4710d077813ea4943b050e099fcb35abf3f87ed1ac37",
+          "bitwise_repeatability": true,
+          "median": {
+            "wall_ms": 574.8295734997555,
+            "dispatch_ms": 3.5515660001692595,
+            "submissions": 6.0
+          }
+        },
+        {
+          "audio": "jfk-first-5s",
+          "feature_sha256": "cb67786ffe67699189ba41afcf93f90474ab3a3fa542675fdc6b8dbb7a09a2e8",
+          "bitwise_repeatability": true,
+          "median": {
+            "wall_ms": 580.7227200002671,
+            "dispatch_ms": 3.567672000372113,
+            "submissions": 6.0
+          }
+        },
+        {
+          "audio": "jfk-repeat",
+          "feature_sha256": "31ff19a0c06daab1ebee6d36e4e626d48c7dd77788609742077a48c6f5538d0c",
+          "bitwise_repeatability": true,
+          "median": {
+            "wall_ms": 614.4366809994608,
+            "dispatch_ms": 3.584754001167312,
+            "submissions": 6.0
+          }
+        }
+      ],
+      "raw_receipt": {
+        "path": "whisper/.cache/asahi-20261007/fp32-residual-warm.json",
+        "sha256": "e74000b66a4a1cd8091a959b917a989979f1ea8a5a802492144186fded515bf8"
+      }
+    },
+    "source_sha256": {
+      "whisper/.cache/asahi-20261007/fp32_residual_probe.py": "32551433233a4c987771968d1c24f8f85486713d50adff00f1082dc52bc5e26e",
+      "whisper/.cache/asahi-20261007/fp32_residual_warm.py": "603c52d246a0441dbd84a6b43d4b816cc680f1ca56184e897fe336c4390a9aad"
+    },
+    "limitation": "The five-second passing control is narrowly below the gate. Host substitutions are much slower than the native path; this proves neither a corrected ANE graph nor macOS speed parity."
+  },
+  "rtf_correction": {
+    "reason": "Historical parser divided every clip by 11 seconds; corrected to each actual clip duration. Stage/wall timings unchanged; raw historical receipts preserved.",
+    "verified_original_records": 84,
+    "parser_sha256": "ea164d41fa4f985d5e5a3569e1c1575ae1c9e42f9c8b8fd929b18ceca14eef08"
+  },
+  "diagnostics_updated_utc": "2026-10-07T12:59:40.073248+00:00",
+  "dispatch_log_mask_probe": {
+    "scope": "Telemetry header masks only; task chain, registers, exception masks, coefficient data and input packing unchanged. Warm dispatch wall/CPU time, not isolated ANE cycles.",
+    "status": "PASS_BITWISE",
+    "output_poisoned_before_each_submission": true,
+    "correctness_cases": 9,
+    "measured_runs_per_variant": 10,
+    "median": {
+      "original": {
+        "wall_ms": 15.0379085,
+        "thread_cpu_ms": 2.957676,
+        "voluntary_switches": 4106.0
+      },
+      "quiet_debug": {
+        "wall_ms": 15.1766805,
+        "thread_cpu_ms": 3.0384215,
+        "voluntary_switches": 4140.5
+      },
+      "quiet_intermediate_events": {
+        "wall_ms": 14.203547,
+        "thread_cpu_ms": 3.0130920000000003,
+        "voluntary_switches": 4490.5
+      }
+    },
+    "conclusion": "No parity with Mac execute 10.88 ms; active-desktop variation prevents assigning a reliable gain to these masks. Production command stream unchanged.",
+    "raw_receipt": {
+      "path": "whisper/.cache/asahi-20261007/dispatch-log-mask-probe.json",
+      "sha256": "cb398734b43982d914dea9f92db9f3dcf9458d8b07da83404d946d882e1152dd"
+    },
+    "source_sha256": "2ca83fc41d0968e98c6d0ab1e97733f6958c60e540dc022f08e5c9631939c88a"
+  },
+  "driver_stage_profile": {
+    "status": "PASS_BITWISE_DIAGNOSTIC_ONLY",
+    "scope": "Synchronous ioctl wall/thread CPU times and instrumented kernel stages. wait_ns includes hardware wait plus polling/scheduling, not isolated ANE cycles.",
+    "loaded_module_build_id": "9c2e022a06b78611a108a9a212325ddfdd5933fa",
+    "warmups_per_round": 2,
+    "measured_runs_per_clip": 10,
+    "rounds": 2,
+    "all_three_outputs_match_previous_native": true,
+    "output_dtype": "FP16; reference native FP32 dump converts losslessly to FP16",
+    "median": {
+      "wall_ms": 14.2040045,
+      "thread_cpu_ms": 3.3610425,
+      "voluntary_switches": 3935.5,
+      "involuntary_switches": 0.0,
+      "enqueue_ms": 0.008896000000000001,
+      "push_ms": 0.0009375,
+      "wait_ms": 14.160629,
+      "irq_ms": 0.0107085,
+      "release_ms": 4.2e-05,
+      "other_ms": 0.025708500000000356,
+      "irq0": 3.0,
+      "irq1": 5.0
+    },
+    "per_clip": [
+      {
+        "audio": "jfk",
+        "measured_runs": 10,
+        "median": {
+          "wall_ms": 14.1691295,
+          "thread_cpu_ms": 3.600522,
+          "enqueue_ms": 0.0078125,
+          "push_ms": 0.0009580000000000001,
+          "wait_ms": 14.128317,
+          "irq_ms": 0.0107085,
+          "release_ms": 4.2e-05,
+          "other_ms": 0.026186999999999294
+        }
+      },
+      {
+        "audio": "jfk-first-5s",
+        "measured_runs": 10,
+        "median": {
+          "wall_ms": 14.182921499999999,
+          "thread_cpu_ms": 3.2107840000000003,
+          "enqueue_ms": 0.00775,
+          "push_ms": 0.0008335,
+          "wait_ms": 14.138192,
+          "irq_ms": 0.0113745,
+          "release_ms": 0.00016649999999999998,
+          "other_ms": 0.026374999999999815
+        }
+      },
+      {
+        "audio": "jfk-repeat",
+        "measured_runs": 10,
+        "median": {
+          "wall_ms": 14.294442,
+          "thread_cpu_ms": 3.3610425,
+          "enqueue_ms": 0.012291,
+          "push_ms": 0.0010834999999999998,
+          "wait_ms": 14.241295999999998,
+          "irq_ms": 0.010228500000000001,
+          "release_ms": 4.2e-05,
+          "other_ms": 0.025500499999999704
+        }
+      }
+    ],
+    "telemetry_variant_medians": {
+      "original": {
+        "wall_ms": 14.8263395,
+        "thread_cpu_ms": 3.1156575,
+        "voluntary_switches": 3607.0,
+        "involuntary_switches": 0.0,
+        "enqueue_ms": 0.0078545,
+        "push_ms": 0.0008960000000000001,
+        "wait_ms": 14.780608,
+        "irq_ms": 0.0104795,
+        "release_ms": 4.2e-05,
+        "other_ms": 0.018250499999999725,
+        "irq0": 3.0,
+        "irq1": 5.0
+      },
+      "quiet_debug": {
+        "wall_ms": 15.057868,
+        "thread_cpu_ms": 3.0443195,
+        "voluntary_switches": 3880.5,
+        "involuntary_switches": 0.0,
+        "enqueue_ms": 0.007729,
+        "push_ms": 0.000875,
+        "wait_ms": 15.024992000000001,
+        "irq_ms": 0.004167,
+        "release_ms": 4.2e-05,
+        "other_ms": 0.017666499999999807,
+        "irq0": 3.0,
+        "irq1": 0.0
+      },
+      "quiet_intermediate_events": {
+        "wall_ms": 14.331966999999999,
+        "thread_cpu_ms": 2.7803804999999997,
+        "voluntary_switches": 4038.5,
+        "involuntary_switches": 0.0,
+        "enqueue_ms": 0.007646,
+        "push_ms": 0.0008545,
+        "wait_ms": 14.3025495,
+        "irq_ms": 0.003104,
+        "release_ms": 4.2e-05,
+        "other_ms": 0.013458500000000484,
+        "irq0": 2.0,
+        "irq1": 0.0
+      }
+    },
+    "core_load_scope": "Only ioctl core placement and a separate integer CPU load change. Frequency samples are CPU policy values, not ANE clock measurements. Original task stream retained; output poisoned and checked bitwise each submission.",
+    "core_load_medians": [
+      {
+        "ioctl_cpu": 4,
+        "load_cpu": null,
+        "wall_ms": 14.7518885,
+        "thread_cpu_ms": 4.269074,
+        "voluntary_switches": 4831.5,
+        "enqueue_ms": 0.007542500000000001,
+        "push_ms": 0.0010205000000000001,
+        "wait_ms": 14.7259685,
+        "irq_ms": 0.0098345,
+        "release_ms": 2.05e-05
+      },
+      {
+        "ioctl_cpu": 0,
+        "load_cpu": null,
+        "wall_ms": 32.420004,
+        "thread_cpu_ms": 8.371037,
+        "voluntary_switches": 7972.5,
+        "enqueue_ms": 0.007168000000000001,
+        "push_ms": 0.0007295,
+        "wait_ms": 32.380144,
+        "irq_ms": 0.009293,
+        "release_ms": 4.2e-05
+      },
+      {
+        "ioctl_cpu": 4,
+        "load_cpu": 7,
+        "wall_ms": 13.9778045,
+        "thread_cpu_ms": 4.144798,
+        "voluntary_switches": 5218.0,
+        "enqueue_ms": 0.007272000000000001,
+        "push_ms": 0.000938,
+        "wait_ms": 13.9501965,
+        "irq_ms": 0.009021999999999999,
+        "release_ms": 4.15e-05
+      },
+      {
+        "ioctl_cpu": 0,
+        "load_cpu": 7,
+        "wall_ms": 13.925485,
+        "thread_cpu_ms": 3.670239,
+        "voluntary_switches": 3346.0,
+        "enqueue_ms": 0.007209,
+        "push_ms": 0.000708,
+        "wait_ms": 13.877123999999998,
+        "irq_ms": 0.009313499999999999,
+        "release_ms": 4.2e-05
+      },
+      {
+        "ioctl_cpu": 4,
+        "load_cpu": 3,
+        "wall_ms": 14.070295999999999,
+        "thread_cpu_ms": 4.2017430000000004,
+        "voluntary_switches": 5040.5,
+        "enqueue_ms": 0.007771500000000001,
+        "push_ms": 0.001042,
+        "wait_ms": 14.041333999999999,
+        "irq_ms": 0.008855,
+        "release_ms": 2.05e-05
+      },
+      {
+        "ioctl_cpu": 0,
+        "load_cpu": 3,
+        "wall_ms": 32.422649500000006,
+        "thread_cpu_ms": 8.3830455,
+        "voluntary_switches": 7938.0,
+        "enqueue_ms": 0.0069385,
+        "push_ms": 0.000709,
+        "wait_ms": 32.380248,
+        "irq_ms": 0.009543,
+        "release_ms": 6.25e-05
+      }
+    ],
+    "interpretation": "Enqueue and IRQ drain are too small to explain the Mac gap. Efficiency-core wait falls from 32.42 ms to 13.93 ms with an independent performance-core integer load, showing dependence on CPU/cluster activity. Does not measure ANE frequency or separate hardware execution from polling/scheduling.",
+    "receipts": {
+      "dispatch-stage-profile.json": {
+        "path": "whisper/.cache/asahi-20261007/dispatch-stage-profile.json",
+        "sha256": "30a37bea5fe33f97f62984179c23edf2f233b1f3b173eb71e2a05809b54dc6b0",
+        "script_sha256": "0bd80ce178586855219799d3ec656f070114e851cf05ac6144d950a38756bde8"
+      },
+      "dispatch-stage-profile-telemetry.json": {
+        "path": "whisper/.cache/asahi-20261007/dispatch-stage-profile-telemetry.json",
+        "sha256": "a7a1a89c26d1bcf84eef3368217ce37bccc74dd2359007ad0aa51ffc8c89fa96",
+        "script_sha256": "0bd80ce178586855219799d3ec656f070114e851cf05ac6144d950a38756bde8"
+      },
+      "dispatch-core-load-probe.json": {
+        "path": "whisper/.cache/asahi-20261007/dispatch-core-load-probe.json",
+        "sha256": "fd18db2a4a30c073432774d7a8114f14bcee6eccbddbc888a0918e86f72097b5",
+        "script_sha256": "0918e603d8162e2e1f6a45aa3ae413f6937180f809b01a35251a96b0c9c34bc5"
+      }
+    },
+    "polling_control": {
+      "status": "BUILT_PREPARED_NOT_HARDWARE_TESTED",
+      "default_sleep_us": 1,
+      "allowed_sleep_us": [
+        0,
+        1000
+      ],
+      "timeout_us": 1000000,
+      "planned_sleep_us": [
+        1,
+        0,
+        10,
+        50,
+        100,
+        250
+      ],
+      "source_sha256": "b604f217caaaf64a23bb6f8ae6757a0343c50a50d4d76402251086fd450f8e82",
+      "module_sha256": "ea582d707f6dc353fab8caa17e9469e2b02322d4dc3dc41768797952c5105dfb",
+      "experiment_script_sha256": "bea9ee634d8e2d92bd2ca583f5836be37d1f0185a1ef247171e11b99025ebd5d",
+      "preparation": "All three native mel/output pairs checked; checkpoint reconstructed to pinned payload hashes. Need new module loaded and poll_sleep_us writable to test intervals."
+    }
+  },
+  "paired_projection_diagnostics": {
+    "scope": "Existing dense ANE projection tasks; FP32 activation high/low planes, host FP32 sums and unfused affine input. CPU FP32 attention, normalization, GELU and residuals retained. Separate diagnostic from the native 1779-task encoder. Production full-logit gate remains failed.",
+    "gate_nrmse": 0.005,
+    "variants": [
+      {
+        "receipt": {
+          "path": "whisper/.cache/asahi-20261007/paired-qkv-one-limb-first.json",
+          "sha256": "1758acc4cab1c0cfe617ccd18a6ab8cdbcc090ca8def152bb75bb5d7f50a60f7",
+          "script_sha256": "d5f49ced997f1a0f0facba4f646fd4ff0edacc0622fb7f9af07392b0c579cf3b"
+        },
+        "status": "FAIL",
+        "limbs": 1,
+        "paired_outputs": false,
+        "output_replicas": 1,
+        "records": [
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.005588669164743608,
+            "all_argmax_match": true,
+            "submissions": 10
+          }
+        ]
+      },
+      {
+        "receipt": {
+          "path": "whisper/.cache/asahi-20261007/paired-qkv-four-limb-all.json",
+          "sha256": "522c4667b7f5ab9d4774af75b84899e9d512d411ad0a87d0d3e152432fa9421e",
+          "script_sha256": "d37cc9fce7d8d22860a7a3715a60fcd829ce317e1a381312a99986dbdbde1100"
+        },
+        "status": "PASS_DIAGNOSTIC_ONLY",
+        "limbs": 4,
+        "paired_outputs": false,
+        "output_replicas": 1,
+        "records": [
+          {
+            "audio": "jfk",
+            "decoder_vectors": 25,
+            "max_logit_nrmse": 0.001900546773092213,
+            "all_argmax_match": true,
+            "submissions": 22
+          },
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.0031578992722755893,
+            "all_argmax_match": true,
+            "submissions": 22
+          },
+          {
+            "audio": "jfk-repeat",
+            "decoder_vectors": 47,
+            "max_logit_nrmse": 0.003984012904030534,
+            "all_argmax_match": true,
+            "submissions": 22
+          }
+        ]
+      },
+      {
+        "receipt": {
+          "path": "whisper/.cache/asahi-20261007/paired-all-projections-first.json",
+          "sha256": "4abfaa8d97c485ce8093de04420c9aa558c14b7f883f0fea731a8ad11aa1e828",
+          "script_sha256": "f191381218d8d0819d961689b08032c9ec6fc9b202acc6607ab941f24eabcab0"
+        },
+        "status": "FAIL",
+        "limbs": 4,
+        "paired_outputs": true,
+        "output_replicas": 1,
+        "records": [
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.005427296331049076,
+            "all_argmax_match": true,
+            "submissions": 30
+          }
+        ]
+      },
+      {
+        "receipt": {
+          "path": "whisper/.cache/asahi-20261007/paired-all-projections-two-gains-first.json",
+          "sha256": "0c84499c74f711da63ef75ac25cbbddcc6f6612e634df4081ccce1cc19c35673",
+          "script_sha256": "01ac1239f9c527d1460ee029ca8a59b9a5bdadefe4f38c5d3581100d11a7bce3"
+        },
+        "status": "FAIL",
+        "limbs": 4,
+        "paired_outputs": true,
+        "output_replicas": 2,
+        "records": [
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.006551549826478009,
+            "all_argmax_match": true,
+            "submissions": 46
+          }
+        ]
+      },
+      {
+        "receipt": {
+          "path": "whisper/build/paired-output-four-partitions.json",
+          "sha256": "45b608f29125bba3e72e35bf5e4344d591a588556b3dcf1d1312cc364ab84356"
+        },
+        "status": "FAIL",
+        "limbs": 4,
+        "paired_outputs": true,
+        "paired_fc1": false,
+        "output_partitions": 4,
+        "output_feedback": false,
+        "records": [
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.0053218147405935,
+            "all_argmax_match": true,
+            "submissions": 78
+          }
+        ]
+      },
+      {
+        "receipt": {
+          "path": "whisper/build/paired-output-eight-partitions.json",
+          "sha256": "b0f0a4032b8d450fa0751b35febad20140d3ccc0c659a775cd928e90a829529c"
+        },
+        "status": "FAIL",
+        "limbs": 4,
+        "paired_outputs": true,
+        "paired_fc1": false,
+        "output_partitions": 8,
+        "output_feedback": false,
+        "records": [
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.0060707162722748,
+            "all_argmax_match": true,
+            "submissions": 142
+          }
+        ]
+      },
+      {
+        "receipt": {
+          "path": "whisper/build/paired-output-feedback-checked.json",
+          "sha256": "23dc6a2790ae72eb150f4b3276459f97e94f65182a03dbea8dec05c2534a842f"
+        },
+        "status": "FAIL",
+        "limbs": 4,
+        "paired_outputs": true,
+        "paired_fc1": false,
+        "output_partitions": 1,
+        "output_feedback": true,
+        "records": [
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.005427296331049064,
+            "all_argmax_match": true,
+            "submissions": 44
+          }
+        ]
+      },
+      {
+        "receipt": {
+          "path": "whisper/build/paired-all-projections-fc1-all-clips.json",
+          "sha256": "f68203a742cffcd8eb3cc33b8ac66140c062a045ccb17b9c1bbbe22da6a0b769"
+        },
+        "status": "PASS_DIAGNOSTIC_ONLY",
+        "limbs": 4,
+        "paired_outputs": true,
+        "paired_fc1": true,
+        "output_partitions": 1,
+        "output_feedback": false,
+        "records": [
+          {
+            "audio": "jfk",
+            "decoder_vectors": 25,
+            "max_logit_nrmse": 0.002551670997244008,
+            "all_argmax_match": true,
+            "submissions": 34
+          },
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.003915434121313237,
+            "all_argmax_match": true,
+            "submissions": 34
+          },
+          {
+            "audio": "jfk-repeat",
+            "decoder_vectors": 47,
+            "max_logit_nrmse": 0.0038357388455788105,
+            "all_argmax_match": true,
+            "submissions": 34
+          }
+        ]
+      },
+      {
+        "receipt": {
+          "path": "whisper/build/paired-all-projections-fc1-prefix-upload.json",
+          "sha256": "52b5c8f37cf7b912c81318420c11284ec41f73cf1ac3b91300c95ecf04d01b6d"
+        },
+        "status": "PASS_DIAGNOSTIC_ONLY",
+        "limbs": 4,
+        "paired_outputs": true,
+        "paired_fc1": true,
+        "output_partitions": 1,
+        "output_feedback": false,
+        "records": [
+          {
+            "audio": "jfk",
+            "decoder_vectors": 25,
+            "max_logit_nrmse": 0.002551670997244008,
+            "all_argmax_match": true,
+            "submissions": 34
+          },
+          {
+            "audio": "jfk-first-5s",
+            "decoder_vectors": 8,
+            "max_logit_nrmse": 0.003915434121313237,
+            "all_argmax_match": true,
+            "submissions": 34
+          },
+          {
+            "audio": "jfk-repeat",
+            "decoder_vectors": 47,
+            "max_logit_nrmse": 0.0038357388455788105,
+            "all_argmax_match": true,
+            "submissions": 34
+          }
+        ]
+      }
+    ],
+    "checkpoint_qkv_weight_residual_nonzeros": {
+      "model.encoder.layers.0.self_attn.q_proj.weight": 0,
+      "model.encoder.layers.0.self_attn.k_proj.weight": 0,
+      "model.encoder.layers.0.self_attn.v_proj.weight": 0,
+      "model.encoder.layers.1.self_attn.q_proj.weight": 0,
+      "model.encoder.layers.1.self_attn.k_proj.weight": 0,
+      "model.encoder.layers.1.self_attn.v_proj.weight": 0,
+      "model.encoder.layers.2.self_attn.q_proj.weight": 0,
+      "model.encoder.layers.2.self_attn.k_proj.weight": 0,
+      "model.encoder.layers.2.self_attn.v_proj.weight": 0,
+      "model.encoder.layers.3.self_attn.q_proj.weight": 0,
+      "model.encoder.layers.3.self_attn.k_proj.weight": 0,
+      "model.encoder.layers.3.self_attn.v_proj.weight": 0
+    },
+    "repeatability": {
+      "scope": "Encoder-only Python precision diagnostic, including CPU reference checks inside the runner. Two ANE activation planes per QKV projection; exactly zero weight planes omitted. CPU FP32 attention, normalization, nonlinearities, residuals and output projections remain. Not the native transcription benchmark.",
+      "status": "PASS_REPEATABILITY_DIAGNOSTIC_ONLY",
+      "warmups": 2,
+      "measured_runs_per_clip": 10,
+      "receipt": {
+        "path": "whisper/.cache/asahi-20261007/paired-qkv-warm.json",
+        "sha256": "604d4692be27a60284eebb5ebcc368c1ba19a0a3a35f30203fa9598cf416e116",
+        "script_sha256": "4cf626e6ff8bc6c7d3e1a3a652ae908176db258acdeee60e3a413b7f6178e9e4",
+        "runner_sha256": "01ac1239f9c527d1460ee029ca8a59b9a5bdadefe4f38c5d3581100d11a7bce3"
+      },
+      "records": [
+        {
+          "audio": "jfk",
+          "bitwise_repeatability": true,
+          "feature_sha256": "49f3142804e6ce85f40706be400e1f3c4fcc28d5d3f75fc95397b4f0ab4d4885",
+          "median": {
+            "wall_ms": 1713.3385489996726,
+            "dispatch_ms": 5.169043000023521,
+            "submissions": 14.0
+          }
+        },
+        {
+          "audio": "jfk-first-5s",
+          "bitwise_repeatability": true,
+          "feature_sha256": "331588877753c9d73671df0a4dc010c78f1313c61e5f569308c5507177fdfb13",
+          "median": {
+            "wall_ms": 1731.2019089999922,
+            "dispatch_ms": 5.214752000028966,
+            "submissions": 14.0
+          }
+        },
+        {
+          "audio": "jfk-repeat",
+          "bitwise_repeatability": true,
+          "feature_sha256": "8e06783117cf6392311d0a474394d19fa75951a77238908aaa63b2563e3f19eb",
+          "median": {
+            "wall_ms": 1719.4888604999505,
+            "dispatch_ms": 5.223016999025276,
+            "submissions": 14.0
+          }
+        }
+      ]
+    },
+    "interpretation": "Paired Q/K/V, output and FFN-first projections pass all 80 fixed-history vectors with existing ANE tasks when combined with CPU FP32 normalization/attention/GELU/residuals. Four/eight input partitions alone still fail the five-second gate. Supported residual feedback paths returned zero correction. These diagnostics do not establish a corrected native full encoder or macOS speed parity.",
+    "two_input_partitions": {
+      "status": "FAIL",
+      "max_logit_nrmse": 0.006341640600642208,
+      "raw_sha256": "687a525c1bdd969c3895bc89f2ff8b91cf400a47ca510520465789389e92222a",
+      "scope": "Failed five-second diagnostic; not a production optimization"
+    },
+    "all_projection_fc1_validation": {
+      "status": "PASS_DIAGNOSTIC_ONLY",
+      "all_80_checks_preserved": true,
+      "all_three_features_bitwise_equal": true,
+      "source": {
+        "path": "experimental/whisper_precision.py",
+        "sha256": "fd09f0fb98190c25d0a483cc32652c36f7a70384e3ae7e621ba8fa24e0c0dc3b"
+      },
+      "submissions_per_clip": 34,
+      "scope": "All encoder matrix projections run on ANE using paired activations; CPU FP32 normalization, attention, exact GELU and residuals remain. Not the native production encoder.",
+      "short_command_prefix_bytes_per_clip": {
+        "jfk": 104740,
+        "jfk-first-5s": 104740,
+        "jfk-repeat": 104740
+      },
+      "command_upload_note": "One complete command upload initializes constants; subsequent submissions upload only their active prefixes. Byte preservation verified; no warm speed improvement established."
+    }
+  },
+  "shared_source_refactor": {
+    "status": "PASS",
+    "mac_timing_records": 56,
+    "asahi_timing_records": 84,
+    "full_logit_vectors": 80,
+    "metric_parity": "All original timings retained; short/repeated Linux RTF corrected to actual clip duration",
+    "negative_checks": [
+      "truncated_logits",
+      "duplicate_run",
+      "missing_timing_block"
+    ],
+    "mac_hardware": "not available on Linux",
+    "native_rebuild": "PASS",
+    "native_output_preservation": "All three CPU and ANE mel/encoder/logit files are byte identical to previous execution",
+    "native_records": [
+      {
+        "clip": "jfk",
+        "backend": "cpu",
+        "encoder_sha256": "273f42248e1b0941badf28eaa1f07b9c15ced82dbb9f6a685a0793bd3128b4f6",
+        "vectors": 25
+      },
+      {
+        "clip": "jfk",
+        "backend": "ane",
+        "encoder_sha256": "f42d97a1908c16c2d8ffbec9ef1c306514f6104c668459884a1537609f222770",
+        "vectors": 25
+      },
+      {
+        "clip": "jfk-first-5s",
+        "backend": "cpu",
+        "encoder_sha256": "a28d86069ba3bfdb52a1f8bac7154ec04a2a6a089ef74c1fbee6c69f34180a46",
+        "vectors": 8
+      },
+      {
+        "clip": "jfk-first-5s",
+        "backend": "ane",
+        "encoder_sha256": "f493cffe9bc7ea84fab4acd4af41e1bca0538464ceb197d88b02226d90c1c652",
+        "vectors": 8
+      },
+      {
+        "clip": "jfk-repeat",
+        "backend": "cpu",
+        "encoder_sha256": "ee9888acdb9a19cf01e9abc7b7bc7020589335fe5739f7e53ba7905be2ec3bb6",
+        "vectors": 47
+      },
+      {
+        "clip": "jfk-repeat",
+        "backend": "ane",
+        "encoder_sha256": "8cb358af1d5793aecf38941137f450ccc6a19be932b74323cd97ba74dd158b07",
+        "vectors": 47
+      }
+    ],
+    "production_gate": "FAIL retained",
+    "production_max_logit_nrmse": {
+      "jfk": 0.02934666099962771,
+      "jfk-first-5s": 0.054929396250570264,
+      "jfk-repeat": 0.02728811329385991
+    },
+    "shared_runtime_hardware_checks": [
+      {
+        "kernels": "tiny-en-encoder-fast",
+        "clip": "jfk",
+        "bitwise_match": true,
+        "timing": {
+          "prepare_ms": 2.519991001463495,
+          "dispatch_ms": 14.734603999386309,
+          "readback_ms": 7.075547999193077,
+          "total_ms": 24.33014300004288
+        }
+      },
+      {
+        "kernels": "tiny-en-encoder-fast",
+        "clip": "jfk-first-5s",
+        "bitwise_match": true,
+        "timing": {
+          "prepare_ms": 2.2156110007927055,
+          "dispatch_ms": 14.821271999608143,
+          "readback_ms": 8.972280000307364,
+          "total_ms": 26.009163000708213
+        }
+      },
+      {
+        "kernels": "tiny-en-encoder-fast",
+        "clip": "jfk-repeat",
+        "bitwise_match": true,
+        "timing": {
+          "prepare_ms": 2.365447000556742,
+          "dispatch_ms": 15.079150000019581,
+          "readback_ms": 8.499065999785671,
+          "total_ms": 25.943663000361994
+        }
+      },
+      {
+        "kernels": "tiny-en-encoder",
+        "clip": "jfk",
+        "bitwise_match": true,
+        "timing": {
+          "prepare_ms": 2.69836799998302,
+          "dispatch_ms": 18.711237000388792,
+          "readback_ms": 6.7000439994444605,
+          "total_ms": 28.109648999816272
+        }
+      },
+      {
+        "kernels": "tiny-en-encoder",
+        "clip": "jfk-first-5s",
+        "bitwise_match": true,
+        "timing": {
+          "prepare_ms": 2.3371970000880538,
+          "dispatch_ms": 17.097592000936856,
+          "readback_ms": 7.223091999549069,
+          "total_ms": 26.65788100057398
+        }
+      },
+      {
+        "kernels": "tiny-en-encoder",
+        "clip": "jfk-repeat",
+        "bitwise_match": true,
+        "timing": {
+          "prepare_ms": 2.6994920008291956,
+          "dispatch_ms": 18.396776000372483,
+          "readback_ms": 9.613454998543602,
+          "total_ms": 30.70972299974528
+        }
+      }
+    ],
+    "precision_diagnostic_source": "experimental/whisper_precision.py",
+    "precision_diagnostic_preservation": "PASS: all three feature arrays bitwise identical; all 80 token choices identical and numerical metrics agree within 1e-12",
+    "precision_diagnostic_production": false,
+    "macos_adapter_syntax": "PASS: clang++ -D__APPLE__ -D__aarch64__ -fsyntax-only; hardware remains untested",
+    "macos_patcher_idempotence": "PASS",
+    "checkpoint_reconstruction": "PASS: all six pinned payload hashes",
+    "native_benchmark_summary_sha256": "b47b3ceeda53c57ac28fcc66c734b31999ce54ff2b528359a251094ac37e84e0",
+    "scope": "Source refactor verification; native production accuracy failure retained; macOS hardware not tested on Linux",
+    "source_sha256": {
+      "whisper/encoder_runtime.py": "aed071548962f884e5c0f28e83f9b7db10c6363bf181c044a86651699b5169a2",
+      "whisper/validation.py": "ab6fca6d9ae6cc30c4b2a3149bae9b30d10f6dc472b994325d8f4322b8b68d21",
+      "whisper/validation.h": "98432b1a4f7f4dc53f1fd634781d5e6ccf5ea73c5295a086c12828d26b4a021c",
+      "whisper/native.py": "2152b30debbefe7c392de2fe7178a4a4b8e662a77e2b17bc588514a76ab577ed",
+      "whisper/scripts/benchmark_native.py": "67d85fa5739b8986ae900fb9412c339241e658087a6a89e1be929037ae0cfc89",
+      "whisper/scripts/prepare_native.py": "44fbff2ed1a72158547ec7d93444d73d849afd67d5852666f9631ff891582f38",
+      "experimental/whisper_precision.py": "c868b489c3c19733572168702c91cde806d2956e4aa25dab7d541e61bcecfe5a"
+    }
+  },
+  "matrix_stage_profile": {
+    "scope": "Shared per-matrix instrumentation; profiled diagnostic timings while the native full-logit gate remains failed. This is not a replacement for the unprofiled baseline.",
+    "summary": {
+      "path": "whisper/build/matrix-profile-20261007/summary.json",
+      "sha256": "a5feed25ba65d783222f24239d3112d85261de86b0ef676da20be437b68a4388"
+    },
+    "matrix_calls": 1152,
+    "bitwise_preserved_native_files": 18,
+    "cpu_workers": 4,
+    "blas_backend_observed": true,
+    "weight_conversion": "FP16 to FP32 rows via std::async; OpenBLAS GEMM uses the system OpenMP runtime.",
+    "medians_ms": {
+      "cpu_cpu": {
+        "jfk": {
+          "allocate_ms": 0.001,
+          "convert_ms": 0.6005,
+          "thread_setup_ms": 0.003,
+          "gemm_ms": 13.519,
+          "total_ms": 14.049
+        },
+        "jfk-first-5s": {
+          "allocate_ms": 0.0005,
+          "convert_ms": 0.871,
+          "thread_setup_ms": 0.004,
+          "gemm_ms": 16.476,
+          "total_ms": 17.4075
+        },
+        "jfk-repeat": {
+          "allocate_ms": 0.0015,
+          "convert_ms": 1.0915,
+          "thread_setup_ms": 0.0045000000000000005,
+          "gemm_ms": 18.802999999999997,
+          "total_ms": 20.1675
+        }
+      },
+      "ane_complete_cpu": {
+        "jfk": {
+          "allocate_ms": 0.001,
+          "convert_ms": 0.735,
+          "thread_setup_ms": 0.005,
+          "gemm_ms": 14.715,
+          "total_ms": 15.591999999999999
+        },
+        "jfk-first-5s": {
+          "allocate_ms": 0.001,
+          "convert_ms": 0.779,
+          "thread_setup_ms": 0.005,
+          "gemm_ms": 14.253,
+          "total_ms": 15.1495
+        },
+        "jfk-repeat": {
+          "allocate_ms": 0.001,
+          "convert_ms": 0.8385,
+          "thread_setup_ms": 0.004,
+          "gemm_ms": 14.3665,
+          "total_ms": 15.282
+        }
+      }
+    },
+    "timings_accepted": false
+  },
+  "cpu_sampling_profile": {
+    "scope": "ANE plus CPU JFK transcription, four performance-core workers; user CPU cycles only, not wall-time shares or ANE cycles.",
+    "event": "apple_firestorm_pmu/cycles/u",
+    "frequency_hz": 199,
+    "transcriptions": 42,
+    "samples_reported": "3K",
+    "lost_samples": 0,
+    "sudo_required": false,
+    "self_cycle_percent": {
+      "ggml_f16_f32_gemv_4_1_2": 38.98,
+      "ggml_f16_f32_gemv_4_1_4": 13.75,
+      "ggml_flash_attention": 14.54,
+      "sgemm_kernel_NEOVERSEN1": 12.48,
+      "ggml_vec_dot_f32": 5.03
+    },
+    "artifacts": {
+      "perf.data": {
+        "path": "whisper/build/cpu-profile-20261007/perf.data",
+        "sha256": "970d478d6363897004489ef18c295b6c2c5a909bbd943e7428407b4784c05580"
+      },
+      "run.log": {
+        "path": "whisper/build/cpu-profile-20261007/run.log",
+        "sha256": "50ceee369f904fa8622edb5c431dcf346dc5ffeddb3b98189be3bd79b8f42b6d"
+      },
+      "report.txt": {
+        "path": "whisper/build/cpu-profile-20261007/report.txt",
+        "sha256": "5c8f9b4e925054232bf4935db32aa2699765d8a4efb787f1ee1624094c2afae7"
+      },
+      "flat-report.txt": {
+        "path": "whisper/build/cpu-profile-20261007/flat-report.txt",
+        "sha256": "1ebe41d6fb078b2d58279389bf1f443e817f6675f9d15e886414df66efa48b0e"
+      },
+      "buildids.txt": {
+        "path": "whisper/build/cpu-profile-20261007/buildids.txt",
+        "sha256": "71c725e06b1818213ff2cd92a799d9da8bc66647f87a3e0de62e4aeac4197bbb"
+      },
+      "hot-symbols.json": {
+        "path": "whisper/build/cpu-profile-20261007/hot-symbols.json",
+        "sha256": "cb739327b03fa18a91ca1fb1fb04bc9bb1b8aea49195fadfd5b0c37b048fb986"
+      },
+      "ggml-f16-f32-gemv-2.asm": {
+        "path": "whisper/build/cpu-profile-20261007/ggml-f16-f32-gemv-2.asm",
+        "sha256": "82e1241c8cfc44714dd62d901092ade4f6ae0922615f93fcf71b6cd36fc51c5a"
+      },
+      "ggml-f16-f32-gemv-4.asm": {
+        "path": "whisper/build/cpu-profile-20261007/ggml-f16-f32-gemv-4.asm",
+        "sha256": "be638c976629b64952649c165d29258f686058bf6e2bd01f58a13bf2ffcd0f3e"
+      },
+      "blas-sgemm-neoversen1.asm": {
+        "path": "whisper/build/cpu-profile-20261007/blas-sgemm-neoversen1.asm",
+        "sha256": "019860789c7110465bdc6c2857ac7a2b6c5e64a2fd4dfdb27326460289aad07a"
+      }
+    },
+    "limitations": "Some PAC-tagged parent addresses in DWARF callchains remain unresolved; leaf symbols resolve. Targeted hot loops use NEON FP16 widening and FP32 FMLA. Mac hot routines and AMX use remain unverified."
+  },
+  "clang_sgemm_experiment": {
+    "source": {
+      "path": "experimental/clang_sgemm.py",
+      "sha256": "405a3a23a352abb9cb42f015ef05ae5493ba70bdb78e949ecd5b7a5bf2dbc3e8"
+    },
+    "build": "whisper/build/asahi-clang-sgemm",
+    "status": "BUILD_ONLY_RUNTIME_UNTESTED",
+    "scope": "Clang only for the hot ggml sgemm translation unit; no accuracy or performance claim."
+  }
+}

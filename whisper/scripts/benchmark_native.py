@@ -37,7 +37,15 @@ def check_runtime(log, mode, expected_encodes, task_count=1779):
         raise ValueError("unexpected decoding fallback")
     dispatches = re.findall(r"ASAHI_ANE encoder: projections=(\d+) submissions=(\d+) plans=(\d+) replicas=(\d+)", log)
     complete = re.findall(r"ASAHI_FULL_ANE encoder: tasks=(\d+) submissions=(\d+)", log)
-    if mode == 2:
+    paired = re.findall(r"ASAHI_PRECISION encoder: projections=(\d+) submissions=(\d+) tasks=(\d+) read_workers=(\d+)", log)
+    if mode == 3:
+        if "ASAHI_PRECISION ready:" not in log or len(paired) != expected_encodes or dispatches or complete:
+            raise ValueError("missing native paired ANE encoder evidence")
+        if any(tuple(map(int, row)) != (24, 24, 32, 4) for row in paired):
+            raise ValueError("incomplete paired projection/task/readback execution")
+    elif paired or "ASAHI_PRECISION ready:" in log:
+        raise ValueError("unrequested paired encoder execution")
+    elif mode == 2:
         if "ASAHI_FULL_ANE ready:" not in log or len(complete) != expected_encodes or dispatches:
             raise ValueError("missing complete ANE encoder evidence")
         if any(tuple(map(int, row)) != (task_count, 1) for row in complete):
@@ -55,10 +63,20 @@ def check_runtime(log, mode, expected_encodes, task_count=1779):
 
 def parse_warm_runs(result, mode, expected_words, task_count=1779, audio_seconds=11,
                     matrix_layout="separate"):
-    marker = "ASAHI_FULL_ANE encoder:" if mode == 2 else "ASAHI_ANE encoder:" if mode else None
-    return parse_runs(result, audio_seconds, expected_words,
+    marker = "ASAHI_PRECISION encoder:" if mode == 3 else "ASAHI_FULL_ANE encoder:" if mode == 2 else "ASAHI_ANE encoder:" if mode else None
+    records = parse_runs(result, audio_seconds, expected_words,
         check_runtime=lambda log, count: check_runtime(log, mode, count, task_count),
         encoder_marker=marker, matrix_layout=matrix_layout)
+    if mode == 3:
+        precision = re.findall(r"WHISPER_PROFILE precision: pack=([\d.]+) dispatch=([\d.]+) combine=([\d.]+) ms", result.stderr)
+        transport = re.findall(r"ASAHI_PRECISION_PROFILE transport: write=([\d.]+) ioctl=([\d.]+) read=([\d.]+) copy=([\d.]+) ms", result.stderr)
+        if precision or transport:
+            if len(precision) != len(records) or len(transport) != len(records):
+                raise ValueError("incomplete native paired stage timing")
+            for row, arithmetic, io in zip(records, precision, transport):
+                row["paired_profile_ms"] = dict(zip(("pack", "transport", "combine", "write", "ioctl", "read", "copy"),
+                                                       map(float, (*arithmetic, *io))))
+    return records
 
 
 def parse_audio_runs(result, mode, correctness, task_count, backend="asahi", matrix_layout="separate"):
@@ -97,7 +115,7 @@ def run(default_backend="auto", default_encoder="complete"):
     parser.add_argument("--runs", type=int, default=5)
     parser.add_argument("--rounds", type=int, default=2)
     parser.add_argument("--encoder", choices=("projections", "complete", "paired"), default=default_encoder)
-    parser.add_argument("--precision-programs", type=Path, help="Checkpoint-verified paired Mac projection programs")
+    parser.add_argument("--precision-programs", type=Path, help="Checkpoint-verified paired projection programs or Linux payloads")
     parser.add_argument("--payloads", type=Path, help="SHA-256 checked whisper.encoder_kernel output for complete replay")
     parser.add_argument("--kernels", type=Path, default=ROOT / "kernels/tiny-en-encoder-fast")
     parser.add_argument("--diagnostic-timings", action="store_true",
@@ -141,10 +159,14 @@ def run(default_backend="auto", default_encoder="complete"):
     if args.backend == "macos" and (args.encoder not in ("complete", "paired") or not args.dylib or not args.dylib.is_file()):
         parser.error("macOS requires --encoder complete/paired and --dylib")
     if args.encoder == "paired":
-        if args.backend != "macos" or not args.precision_programs or 'WhisperMacPrecision' not in source_text:
-            parser.error("paired encoder requires the prepared Mac precision worktree and --precision-programs")
-        from whisper.scripts.prepare_macos_precision import validate_programs
-        precision_manifest = validate_programs(args.precision_programs, args.hf_model / "model.safetensors")
+        if not args.precision_programs or 'WhisperMacPrecision' not in source_text:
+            parser.error("paired encoder requires the shared precision worktree and --precision-programs")
+        if args.backend == "macos":
+            from whisper.scripts.prepare_macos_precision import validate_programs
+            precision_manifest = validate_programs(args.precision_programs, args.hf_model / "model.safetensors")
+        else:
+            from whisper.paired_kernel import validate_payloads
+            precision_manifest = validate_payloads(args.precision_programs, args.hf_model / "model.safetensors")
     args.kernels = args.kernels.resolve()
     ane_mode = 3 if args.encoder == "paired" else 2 if args.encoder == "complete" else 1
     ane_label = "ane_precision_cpu" if ane_mode == 3 else "ane_complete_cpu" if ane_mode == 2 else "ane_projections_cpu"
@@ -185,6 +207,7 @@ def run(default_backend="auto", default_encoder="complete"):
     env.pop("WHISPER_PROFILE_INPUT", None)
     env.pop("WHISPER_FUSED_CROSS_KV", None)
     env.pop("WHISPER_MACOS_PRECISION", None)
+    env.pop("WHISPER_ASAHI_PRECISION", None)
     env.pop("WHISPER_ENCODER_BLAS_ATTENTION", None)
     env.pop("WHISPER_PROFILE_ENCODER_ATTENTION", None)
     env.update(OPENBLAS_NUM_THREADS="1", OMP_WAIT_POLICY="PASSIVE", HF_HUB_OFFLINE="1")
@@ -211,6 +234,12 @@ def run(default_backend="auto", default_encoder="complete"):
                   method="Persistent contexts, warmup excluded, reversed backend order in round two; four workers, greedy English, no timestamps/fallback, full 30-second encoder context. Decoder total includes prompt plus token evaluation; whole timer includes host work and sampling.",
                   limitations="Active desktop, clocks not fixed; native ggml CPU backend without BLAS. Both hosts use the shared FP32 CPU precision patches; BLAS, compiler and driver behavior can still differ.",
                   correctness=[], backends={name:dict(runs=[], warmups=[]) for name in ("cpu_cpu", ane_label)})
+    report["collector_sha256_at_start"] = digest(Path(__file__))
+    report["build_cache_sha256"] = digest(args.build / "CMakeCache.txt")
+    if (args.build / "compile_commands.json").is_file():
+        report["compile_commands_sha256"] = digest(args.build / "compile_commands.json")
+    report["thread_environment"] = {key:env.get(key) for key in
+        ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "OMP_DYNAMIC", "OMP_WAIT_POLICY")}
     report["profile_matmul_requested"] = args.profile_matmul
     report["cross_kv_layout"] = matrix_layout
     report["encoder_attention"] = args.encoder_attention
@@ -239,6 +268,8 @@ def run(default_backend="auto", default_encoder="complete"):
             run_env["WHISPER_ASAHI_ANE"] = "1" if mode == 1 else "0"
             if mode == 2:
                 run_env["WHISPER_ASAHI_ENCODER"] = str(args.payloads.resolve())
+            elif mode == 3:
+                run_env["WHISPER_ASAHI_PRECISION"] = str(args.precision_programs.resolve())
         elif mode == 3:
             run_env.update(WHISPER_MACOS_PRECISION=str(args.precision_programs.resolve()), ANEFORGE_DYLIB=str(args.dylib.resolve()))
         elif mode:
@@ -285,6 +316,30 @@ def run(default_backend="auto", default_encoder="complete"):
                 else:
                     check_runtime(result.stderr, mode, 1, meta["td_count"] if ane_mode == 2 else 1779)
                 transcripts.append(prefix.with_suffix(".txt").read_text().strip())
+            repeat = {}
+            if ane_mode == 3:
+                # Repeat the complete native encoder and decoder, not just its
+                # transcript. Warm-run transcript checks cannot prove logits
+                # or activations are deterministic.
+                repeated = output / f"{name}-ane-repeat"
+                repeated.mkdir()
+                repeat_env = dict(run_env, WHISPER_TRACE=str(repeated))
+                if args.profile_matmul:
+                    repeat_env["WHISPER_PROFILE_INPUT"] = str(repeated / "cross-kv-input.f32")
+                repeat_command = list(command)
+                repeat_command[-1] = str(repeated / "transcript")
+                result = subprocess.run(repeat_command, env=repeat_env, capture_output=True, text=True, timeout=120)
+                write_log(repeated / "run.log", result)
+                result.check_returncode()
+                if args.backend == "macos":
+                    check_macos_runtime(result.stderr, "precision_cpu", 1, require_dispatch=True)
+                else:
+                    check_runtime(result.stderr, 3, 1)
+                for filename in ("mel.f32", "encoder.f32", "logits.bin"):
+                    original = directories[1] / filename
+                    if original.read_bytes() != (repeated / filename).read_bytes():
+                        raise ValueError("paired native repeat differs: " + name + "/" + filename)
+                    repeat[filename] = digest(original)
             if words(transcripts[0]) != words(transcripts[1]) or (name == "jfk" and words(transcripts[0]) != words(EXPECTED)):
                 raise ValueError("CPU/ANE transcript mismatch: " + name)
             cpu, ane = directories
@@ -331,6 +386,8 @@ def run(default_backend="auto", default_encoder="complete"):
                 cpu_raw_argmax_matches_hf=sum(x["cpu_argmax_match"] for x in hf_checks),
                 ane_raw_argmax_matches_hf=sum(x["ane_argmax_match"] for x in hf_checks),
                 hf_logit_checks=hf_checks))
+            if repeat:
+                report["correctness"][-1].update(repeat_bitwise_equal=True, repeat_sha256=repeat)
             # The complete FP16 export has its own captured-output relative-L2
             # gate in replay_encoder.py. Its task-defined independent HF gate
             # is cosine >= .999; the FP32 CPU features remain diagnostic here.
@@ -425,6 +482,19 @@ def run(default_backend="auto", default_encoder="complete"):
             report["library_sha256"]["libggml-blas"+suffix] = digest(libdir / ("libggml-blas"+suffix))
             report["blas_backend_observed"] = all("using BLAS backend" in (output / f"{name}-1.log").read_text()
                 for name in report["backends"])
+            if args.backend == "asahi":
+                linkage = subprocess.run(["ldd", str(libdir / "libggml-blas.so")],
+                                         capture_output=True, text=True, check=True)
+                write_log(output / "blas-linkage.txt", linkage)
+                dependencies = {}
+                for line in linkage.stdout.splitlines():
+                    if "=>" in line:
+                        path = Path(line.split("=>", 1)[1].split(" (", 1)[0].strip())
+                        if path.is_file():
+                            dependencies[str(path)] = digest(path)
+                if not any("libopenblas" in path for path in dependencies):
+                    raise ValueError("OpenBLAS dependency identity missing")
+                report["resolved_blas_dependencies"] = dependencies
         common_sources = [ROOT / name for name in (
             "encoder_kernel.py", "encoder_runtime.py", "validation.py", "validation.h", "native.py",
             "scripts/prepare_native.py", "scripts/benchmark_native.py", "scripts/benchmark_whisper.cpp")]
@@ -432,15 +502,21 @@ def run(default_backend="auto", default_encoder="complete"):
             common_sources.extend(ROOT / name for name in ("cross_kv.h", "scripts/prepare_cross_kv.py"))
         if ane_mode == 3:
             common_sources.extend(ROOT / name for name in ("macos_precision.cpp", "macos_precision.h", "scripts/prepare_macos_precision.py"))
+            if args.backend == "asahi":
+                common_sources.extend([ROOT / "paired_asahi.h", ROOT / "paired_kernel.py",
+                                       ROOT.parent / "qwen35/ane_matmul.c", ROOT.parent / "qwen35/ane_matmul.h"])
         if args.encoder_attention == "blas":
             common_sources.extend(ROOT / name for name in ("attention.py", "scripts/prepare_encoder_attention.py"))
         native_sources = [args.source / name for name in (
             "src/whisper.cpp", "src/CMakeLists.txt", "ggml/src/ggml-cpu/simd-mappings.h",
             "ggml/src/ggml-cpu/llamafile/sgemm.cpp", "ggml/src/ggml-blas/ggml-blas.cpp")]
-        if args.backend == "asahi":
-            common_sources.extend(ROOT / name for name in ("asahi_encoder.h", "asahi_encoder.cpp", "asahi_full_encoder.cpp", "scripts/prepare_asahi.py"))
-        report["source_sha256"] = {str(path):digest(path) for path in common_sources + native_sources + [args.kernels / "meta.json"]}
+        if args.backend == "asahi" and ane_mode != 3:
+            common_sources.extend(ROOT / name for name in ("asahi_encoder.h", "asahi_encoder.cpp", "asahi_full_encoder2.cpp", "scripts/prepare_asahi.py"))
+        kernel_metadata = ROOT / "kernels/tiny-en-paired/manifest.json" if ane_mode == 3 else args.kernels / "meta.json"
+        report["source_sha256"] = {str(path):digest(path) for path in common_sources + native_sources + [kernel_metadata]}
         report["artifacts"] = {str(p.relative_to(output)):digest(p) for p in output.rglob("*") if p.is_file()}
+        if digest(Path(__file__)) != report["collector_sha256_at_start"]:
+            raise ValueError("benchmark collector changed during this run")
         if report["numerical_failures"]:
             raise ValueError("numerical validation failed; warm timings are diagnostic and are not accepted")
         report.update(status="PASS", timings_accepted=True)

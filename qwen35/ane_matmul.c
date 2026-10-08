@@ -48,6 +48,8 @@ struct AneDevice {
     AneTimings timings;
 };
 
+int ane_device_fd(const AneDevice *d) { return d ? d->fd : -1; }
+
 static uint64_t profile_ns(const AneDevice *d) {
     if (!d->profiling) return 0;
     struct timespec t;
@@ -230,6 +232,14 @@ static void read_output(AneDevice *d, void *dst, const void *src, size_t bytes) 
 #endif
     read_output_serial(dst, src, bytes);
     if (!d->timings.read_threads_max) d->timings.read_threads_max = 1;
+}
+
+int ane_copy_uncached(void *dst, const void *src, size_t bytes, int threads) {
+    if (!dst || !src || !bytes || bytes % 64 || threads < 1 || threads > 4)
+        return 0;
+    AneDevice reader = {.read_threads = threads};
+    read_output(&reader, dst, src, bytes);
+    return (int)reader.timings.read_threads_max;
 }
 
 AnePlan *ane_plan_create_f16(AneDevice *d, const uint16_t *w,

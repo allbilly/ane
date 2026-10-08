@@ -1,0 +1,1469 @@
+{
+  "status": "PASS_ASAHI_PAIRED_PYTHON_GATE",
+  "scope": "Shared paired Python encoder: 24 ANE submissions / 32 hardware tasks per encode, FP32 HF host arithmetic and shared HF decoder. Native integration/timings and exact Mac speech-array comparison remain unverified.",
+  "checkpoint_sha256": "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad",
+  "script_sha256": "19978349dccf173fed33e6c9d506a272991b8b94883cb57a18944177df3ec219",
+  "gate_nrmse": 0.005,
+  "records": [
+    {
+      "audio": "jfk",
+      "encoder": {
+        "nrmse": 0.000630550146940631,
+        "cosine": 0.999999801203303,
+        "max_abs": 0.008698463439941406
+      },
+      "timings": {
+        "first_encode_ms": 1881.76050400034,
+        "submissions_per_encode": 24,
+        "hardware_tasks_per_encode": 32,
+        "read_workers": [
+          4
+        ],
+        "repeat_bitwise_equal": true,
+        "input_sha256": "179e2757da689a12be496abdb62fe07f1d8455b0e60398905e18485d01d4593a",
+        "frozen_native_logit_trace_sha256": "3211c0f3e0bd052264f293f9b371188d7b842fe4fe79b55e054d2c2ab9efddf7"
+      },
+      "checks": [
+        {
+          "nrmse": 0.00020071764279920028,
+          "cosine": 0.9999999810427525,
+          "max_abs": 0.005519866943359375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.000819397996989562,
+          "cosine": 0.9999999643255519,
+          "max_abs": 0.008779525756835938,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0009488413626629657,
+          "cosine": 0.9999999630116231,
+          "max_abs": 0.009563446044921875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00047132410454123007,
+          "cosine": 0.9999999246802351,
+          "max_abs": 0.0066935718059539795,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0003665894678527062,
+          "cosine": 0.9999999723551887,
+          "max_abs": 0.005401134490966797,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0003282879369059393,
+          "cosine": 0.9999999731239229,
+          "max_abs": 0.0048503875732421875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0008534680094788193,
+          "cosine": 0.9999999543349698,
+          "max_abs": 0.008368492126464844,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.000569620852520973,
+          "cosine": 0.9999999949261587,
+          "max_abs": 0.012243270874023438,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00011838422751362682,
+          "cosine": 0.9999999989273013,
+          "max_abs": 0.004566192626953125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0004589616051749337,
+          "cosine": 0.9999999390643267,
+          "max_abs": 0.004682660102844238,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00015937761809688342,
+          "cosine": 0.999999999087257,
+          "max_abs": 0.0053882598876953125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00019945355569639435,
+          "cosine": 0.9999999967126931,
+          "max_abs": 0.005726814270019531,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 8.481482084959936e-05,
+          "cosine": 0.9999999993542213,
+          "max_abs": 0.0043048858642578125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.000140186278600985,
+          "cosine": 0.9999999985842034,
+          "max_abs": 0.004624366760253906,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00031450880385912956,
+          "cosine": 0.9999999958773478,
+          "max_abs": 0.0066280364990234375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002517134900802945,
+          "cosine": 0.9999999943326291,
+          "max_abs": 0.0048007965087890625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 6.877271936328254e-05,
+          "cosine": 0.9999999993944342,
+          "max_abs": 0.004695892333984375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00015579906927860434,
+          "cosine": 0.9999999994173279,
+          "max_abs": 0.0056896209716796875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0001595831815036216,
+          "cosine": 0.9999999990928591,
+          "max_abs": 0.00479888916015625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00013135240713298718,
+          "cosine": 0.9999999989491524,
+          "max_abs": 0.0038404464721679688,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 6.316745534133593e-05,
+          "cosine": 0.9999999997550354,
+          "max_abs": 0.0035266876220703125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 3.458799552254396e-05,
+          "cosine": 0.9999999994042457,
+          "max_abs": 0.0029163360595703125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00025334586905246994,
+          "cosine": 0.9999999944465322,
+          "max_abs": 0.0051422119140625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00017619517751323607,
+          "cosine": 0.9999999992447393,
+          "max_abs": 0.004862785339355469,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00035106179233362287,
+          "cosine": 0.999999996941349,
+          "max_abs": 0.005740165710449219,
+          "argmax_match": true
+        }
+      ],
+      "max_logit_nrmse": 0.0009488413626629657,
+      "all_argmax_match": true
+    },
+    {
+      "audio": "jfk-first-5s",
+      "encoder": {
+        "nrmse": 0.0006630353201902584,
+        "cosine": 0.9999997802743615,
+        "max_abs": 0.06761068105697632
+      },
+      "timings": {
+        "first_encode_ms": 1894.8015699997995,
+        "submissions_per_encode": 24,
+        "hardware_tasks_per_encode": 32,
+        "read_workers": [
+          4
+        ],
+        "repeat_bitwise_equal": true,
+        "input_sha256": "7d4878cd9375e3848b62b4849e8c2ddda2257ba122bb2786eb14266ce2bebe8b",
+        "frozen_native_logit_trace_sha256": "c5683b5fa4f809c3cc87f6695012df39de615104208d1b873e87f10ffac6f885"
+      },
+      "checks": [
+        {
+          "nrmse": 0.00040038254681299567,
+          "cosine": 0.9999999598441123,
+          "max_abs": 0.004888057708740234,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0035931538167270137,
+          "cosine": 0.9999960439230731,
+          "max_abs": 0.011994883418083191,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0012343892167122484,
+          "cosine": 0.9999999169715178,
+          "max_abs": 0.011104583740234375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00041065668656351813,
+          "cosine": 0.9999999472881277,
+          "max_abs": 0.0060842931270599365,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00021386040360700956,
+          "cosine": 0.999999979462862,
+          "max_abs": 0.006727182189933956,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0004830809775810373,
+          "cosine": 0.9999998862409921,
+          "max_abs": 0.004036456346511841,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.002729975208587162,
+          "cosine": 0.9999980098207462,
+          "max_abs": 0.010769367218017578,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00015390844279321482,
+          "cosine": 0.9999999979201258,
+          "max_abs": 0.003941535949707031,
+          "argmax_match": true
+        }
+      ],
+      "max_logit_nrmse": 0.0035931538167270137,
+      "all_argmax_match": true
+    },
+    {
+      "audio": "jfk-repeat",
+      "encoder": {
+        "nrmse": 0.001005875462097214,
+        "cosine": 0.9999994941140332,
+        "max_abs": 0.32793283462524414
+      },
+      "timings": {
+        "first_encode_ms": 1874.3067840005097,
+        "submissions_per_encode": 24,
+        "hardware_tasks_per_encode": 32,
+        "read_workers": [
+          4
+        ],
+        "repeat_bitwise_equal": true,
+        "input_sha256": "f552eae2127ba9eb456e7e0399f6d08f435622195300a71c96c4a2b281dc8603",
+        "frozen_native_logit_trace_sha256": "e9a52b13b54be0f737ab2b3c01a3603c233a4282cc545a133442b612fae31ba6"
+      },
+      "checks": [
+        {
+          "nrmse": 0.00012162355818219621,
+          "cosine": 0.999999993356882,
+          "max_abs": 0.003787994384765625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0028944966832675453,
+          "cosine": 0.9999993267496418,
+          "max_abs": 0.018724799156188965,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0011515607116662956,
+          "cosine": 0.9999999354522225,
+          "max_abs": 0.012542724609375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0003008886760713964,
+          "cosine": 0.999999955974212,
+          "max_abs": 0.005310535430908203,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00040344235660152327,
+          "cosine": 0.9999999754557225,
+          "max_abs": 0.006561756134033203,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0004911608019051358,
+          "cosine": 0.9999999511510599,
+          "max_abs": 0.005963802337646484,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0014507426270838812,
+          "cosine": 0.9999997433926616,
+          "max_abs": 0.010955095291137695,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0005925853372294438,
+          "cosine": 0.999999995843992,
+          "max_abs": 0.013134002685546875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00021608425499827143,
+          "cosine": 0.9999999984356651,
+          "max_abs": 0.00638580322265625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0007528962316085695,
+          "cosine": 0.9999997881568842,
+          "max_abs": 0.005611419677734375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00029810435398878055,
+          "cosine": 0.999999998365771,
+          "max_abs": 0.00865936279296875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00040546156321384755,
+          "cosine": 0.9999999939122544,
+          "max_abs": 0.006594657897949219,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00010881088767454269,
+          "cosine": 0.9999999994718362,
+          "max_abs": 0.0053691864013671875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00010436620033364857,
+          "cosine": 0.9999999985306454,
+          "max_abs": 0.0042858123779296875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0003648605013362994,
+          "cosine": 0.9999999937897991,
+          "max_abs": 0.0060024261474609375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 8.93734033127288e-05,
+          "cosine": 0.9999999992755982,
+          "max_abs": 0.004158973693847656,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00017560708918591594,
+          "cosine": 0.9999999994804154,
+          "max_abs": 0.006336212158203125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 5.337968093603274e-05,
+          "cosine": 0.9999999993294106,
+          "max_abs": 0.00396728515625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00022808532689108456,
+          "cosine": 0.9999999980499037,
+          "max_abs": 0.005345344543457031,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 8.236266073753402e-05,
+          "cosine": 0.9999999996146683,
+          "max_abs": 0.0046329498291015625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00010430698550414765,
+          "cosine": 0.9999999991991605,
+          "max_abs": 0.00506591796875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0005104161934718686,
+          "cosine": 0.9999999799805768,
+          "max_abs": 0.006504535675048828,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00010350726516467456,
+          "cosine": 0.9999999993914691,
+          "max_abs": 0.0044193267822265625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00025709879157472193,
+          "cosine": 0.9999999982513933,
+          "max_abs": 0.0064029693603515625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002908918232775434,
+          "cosine": 0.9999999976359791,
+          "max_abs": 0.006817817687988281,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0006767601756282333,
+          "cosine": 0.9999999903925212,
+          "max_abs": 0.010374069213867188,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0023688652350646066,
+          "cosine": 0.9999976088006075,
+          "max_abs": 0.010138273239135742,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0015881814273378233,
+          "cosine": 0.9999989126676812,
+          "max_abs": 0.006979823112487793,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0003914840311964672,
+          "cosine": 0.9999999923034125,
+          "max_abs": 0.005335807800292969,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002928773738548752,
+          "cosine": 0.9999999917347,
+          "max_abs": 0.005261421203613281,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002263432222449657,
+          "cosine": 0.9999999991229724,
+          "max_abs": 0.0066356658935546875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 7.340814907998467e-05,
+          "cosine": 0.9999999994951372,
+          "max_abs": 0.0038509368896484375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00010873257199140441,
+          "cosine": 0.9999999970326111,
+          "max_abs": 0.0034608840942382812,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0001571149807211418,
+          "cosine": 0.9999999995072396,
+          "max_abs": 0.0057830810546875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0002338405942978447,
+          "cosine": 0.9999999983835716,
+          "max_abs": 0.005414009094238281,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00012764837455380467,
+          "cosine": 0.9999999996334704,
+          "max_abs": 0.005031585693359375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 4.253732694723485e-05,
+          "cosine": 0.9999999993703567,
+          "max_abs": 0.003452301025390625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00014520447523057322,
+          "cosine": 0.9999999984048493,
+          "max_abs": 0.0040531158447265625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 3.668850540451727e-05,
+          "cosine": 0.9999999994257962,
+          "max_abs": 0.0031490325927734375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00010265295388511458,
+          "cosine": 0.999999999711046,
+          "max_abs": 0.005168914794921875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 4.86348567501545e-05,
+          "cosine": 0.9999999990977891,
+          "max_abs": 0.0041713714599609375,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.0004192526220173598,
+          "cosine": 0.9999999962700775,
+          "max_abs": 0.00811004638671875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 4.9790638925124446e-05,
+          "cosine": 0.9999999997308454,
+          "max_abs": 0.004009246826171875,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00011269759306695994,
+          "cosine": 0.9999999993197496,
+          "max_abs": 0.0048770904541015625,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00010660185015455657,
+          "cosine": 0.9999999980682022,
+          "max_abs": 0.004380226135253906,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 6.034620178053533e-05,
+          "cosine": 0.9999999984069435,
+          "max_abs": 0.0054035186767578125,
+          "argmax_match": true
+        },
+        {
+          "nrmse": 0.00015562582243839614,
+          "cosine": 0.999999994750843,
+          "max_abs": 0.0065860748291015625,
+          "argmax_match": true
+        }
+      ],
+      "max_logit_nrmse": 0.0028944966832675453,
+      "all_argmax_match": true
+    }
+  ],
+  "mode": "exported-paired",
+  "kernel_manifest_sha256": "03d865d065e4916df6b9f1d7bb4869a3778d250f4230ea7b1f847b2aac032e96",
+  "programs": [
+    {
+      "name": "layer0-q_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "b8273db28bc04647fd612f8ffa7e8141e66bae90ea25ee41f7fd0d110a0c0a32",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "b55849ef93ddde6598ed66ec8bbf765ad08024f31941ab450c75a409377010ac",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer0-k_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "271dc22ec8316346e9044f8d4ed5454749170586b3ef520dbdfe6f8cb8875744",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "b993bdcb04e50ea78b435b369ef16ff799c65c54fc74165e9493e5bd2d2ff859",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer0-v_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "a435c55a9474e2ad9d36cceb684059caff7e0862354ca3195381f424c40594af",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "ebb8816a1ca0e415f46c8a20632cb9cc7e66e51af33c4104f038cdecfbf20cbf",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer0-out_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "bea2ea62d90fdcac1454874bd569f8417c5ec95851a251552af46c41b80cf277",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "f9d57c2b7f3e65b4188b155fff20ffb34483513ce5518a0fadbffce50aa51a72",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer0-fc1",
+      "input_features": 384,
+      "output_features": 1536,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        3072,
+        1,
+        6000
+      ],
+      "weight_sha256": "fd55d48987dcb1bb9effb5e58c2ac7e01428145bd3f929464c84be3541898ecb",
+      "task_count": 2,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "65b3a7302698edbf7ad85b90ed2404c4b267ba031c0416af57976af992da88a5",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "914f3699e230f61c1146266c62aabc8a1d2712a440087b71c1923e4a06f51a1e",
+        "bootstrap": "0778d3195af7d7b822918bc3d506880dd44e38d245cbfc1b9d4902141068b9f8"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer0-fc2",
+      "input_features": 1536,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        1536,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "6e064b6634b203f4295c15529777e4b01323d6825e5a0d0b47a5a22864ade100",
+      "task_count": 2,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "00ad75bc1b61c81e983c5139b8b44dfe36d03d4fa9afb433d1a439448b9e8a28",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "f170bb024bf9697a7b5a4da317f924f55d7cf61d8c89423b8aa7c545093d41c1",
+        "bootstrap": "21514b8045f1e2e1c8842324155379648142e81401ddf9fd32c3200c4cb47d3a"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer1-q_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "7f1da6ea2af9d553b942b832afbc878e1e0166de5ac8cafb1766106c9c45e9c6",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "82b0fb1e079059ec42b7b0f44b5a3751e51a919d7c4452d27b0cbe448f0002e2",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer1-k_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "95c6f06406de069d2d7f3e365a09121cb9f3d178476881f6b8562357c8bf2907",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "0cd37fe6e0a2bcfbdf8607bc8b08ffc5677deb15ea131c21ac18951b5fdd28ca",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer1-v_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "ba4ae44454c15885d719ed6409fe46f11247bd7feac33728ce2f45876787741c",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "f6013d3e40a815ce510b3bd6ada444a8d56b5b417cce09659c02a1051846d9be",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer1-out_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "f2e5ecf24a8f785c988c7ed4e5889c10268259ec48663d09865f3d596900bae6",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "fddaf5b6e10b962106b52d4e0da56c056919460bd35480d107236ecbc84b6e56",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer1-fc1",
+      "input_features": 384,
+      "output_features": 1536,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        3072,
+        1,
+        6000
+      ],
+      "weight_sha256": "eea79cff6791f4c8043f79cd760d97ec2404fadb090bffab6686466e6ae433a2",
+      "task_count": 2,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "65b3a7302698edbf7ad85b90ed2404c4b267ba031c0416af57976af992da88a5",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "3442dc3ce20f77b3bd25f2263fe4409dd37d77ef68712323f4d93a5e562fb703",
+        "bootstrap": "0778d3195af7d7b822918bc3d506880dd44e38d245cbfc1b9d4902141068b9f8"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer1-fc2",
+      "input_features": 1536,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        1536,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "79f38aebd1e39dfa0f3eca61ed55f2e23753b78a24861de4b418cb5e185fde4b",
+      "task_count": 2,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "00ad75bc1b61c81e983c5139b8b44dfe36d03d4fa9afb433d1a439448b9e8a28",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "0de303f70c372a54583ea1d85c7151435304a649e7720c25db8f19269560b77c",
+        "bootstrap": "21514b8045f1e2e1c8842324155379648142e81401ddf9fd32c3200c4cb47d3a"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer2-q_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "18a85a67b17723dec29b36a9d97ea13a2e38c69b643eeb4b0b7ca8452169bd5b",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "232452734643c85f4648570ab3090e6b1b2d80e3ca3e760e89248292f38706a5",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer2-k_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "646911bcf0c0f4f508489f4364775462a7b6f4457ed6867feb165bbb668ee2dc",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "ad9fd60c0f049e6a4a3bab76a8a8a4fdd0d661b99fcb9fd1b85d5877060cde94",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer2-v_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "5eb02feaeb6ea927010b32806320da1b2ecb3fc952d50cb8cfd59a8c15fb56e4",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "6ae347ce8f30f472197382af76d0cea76d31965efe926be3c006c7fab862b487",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer2-out_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "5dd96bfcd2123efec154d75d2b95a0008d6279e6c49489e756e663e4b6054c95",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "5c132746589a081a4053ed7602a0fe7ff68637d0127c3e72dba5acca09d9f38b",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer2-fc1",
+      "input_features": 384,
+      "output_features": 1536,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        3072,
+        1,
+        6000
+      ],
+      "weight_sha256": "bf660400cd9ac106130c8d5fc57347bab2a7fe8f225bd3b7b3e9d9bcf8d7a679",
+      "task_count": 2,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "65b3a7302698edbf7ad85b90ed2404c4b267ba031c0416af57976af992da88a5",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "89a519fd2a850c65b85567874c97cc471555db5d91f427d291d86d5efca91288",
+        "bootstrap": "0778d3195af7d7b822918bc3d506880dd44e38d245cbfc1b9d4902141068b9f8"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer2-fc2",
+      "input_features": 1536,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        1536,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "d265f0ea1022003f6684e53cb5b2a3e43a8d484c87dc60d53daef7cb11b2bf34",
+      "task_count": 2,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "00ad75bc1b61c81e983c5139b8b44dfe36d03d4fa9afb433d1a439448b9e8a28",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "2ce5bed2493d486e19fd4ba2584ea628c635e449124c08aff1b1e7ac76d5fbf6",
+        "bootstrap": "21514b8045f1e2e1c8842324155379648142e81401ddf9fd32c3200c4cb47d3a"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer3-q_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "0cdc47779defa34d103d0f06671ea3aa6347abce68e4a35985ef523a2abf9b68",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "23fcf17bf1d68adaed62291cfa922f2b6e2fc3fff7dba4d51f771ff74f092eff",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer3-k_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "59edd0264b7bd534f3ac7f9b2909f8cb82c9614267942c9fe65c9845c668c8f7",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "af82cd41c5f40814925da7748a705eca9182914f879f08582b92c6785266b476",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer3-v_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "083f13f762aa6888a594c9af19e8d4f02001fec17e65b104e2350881faf9a16f",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "ecf3396a412e5ad01d7e30f99d012844ce2715d437399d148e59c26c13850c53",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer3-out_proj",
+      "input_features": 384,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "6b8988d468e34e48178d746f46af74412fabbfaf8d18f73bbd1a259302cb1a4b",
+      "task_count": 1,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "a866509ecec5aba5d71dcd3aa942c429360cb7a5d7e575f982902d7464ba476e",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "105e0151f7adbb964e7a044f5e8c5392e7de6ca8cff8303df8ffa926161dab65",
+        "bootstrap": "3cff380ade84d6f7c08088543d4f1de4c8d53b8538d59dff217fb65c3d471d12"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer3-fc1",
+      "input_features": 384,
+      "output_features": 1536,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        384,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        3072,
+        1,
+        6000
+      ],
+      "weight_sha256": "24215fb86c9d4db626590dfb9572f55ed4038a4aa5d71ae25bc4a0b24f56a98c",
+      "task_count": 2,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "65b3a7302698edbf7ad85b90ed2404c4b267ba031c0416af57976af992da88a5",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "758f893faea65b970584dcadf995b74bba90f85ccac6a75f4b211e06e34742cf",
+        "bootstrap": "0778d3195af7d7b822918bc3d506880dd44e38d245cbfc1b9d4902141068b9f8"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    },
+    {
+      "name": "layer3-fc2",
+      "input_features": 1536,
+      "output_features": 384,
+      "contraction_partitions": 2,
+      "gains": [
+        1.0,
+        1.375
+      ],
+      "temporal_planes": 4,
+      "input_shape": [
+        1,
+        1536,
+        1,
+        6000
+      ],
+      "output_shape": [
+        1,
+        768,
+        1,
+        6000
+      ],
+      "weight_sha256": "7e4e82f0ffdd02456857260b4bb544dc7ff9ab864a529deffd639e4d4a8d8861",
+      "task_count": 2,
+      "target": "apple,t8103",
+      "runtime": "Asahi ANE DRM",
+      "payload_sha256": {
+        "commands": "00ad75bc1b61c81e983c5139b8b44dfe36d03d4fa9afb433d1a439448b9e8a28",
+        "constants": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+        "coefficients": "d239857cd7a8489f80037c4c76a79e8be611b6bcc551c29c75808555d0347795",
+        "bootstrap": "21514b8045f1e2e1c8842324155379648142e81401ddf9fd32c3200c4cb47d3a"
+      },
+      "reader_binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+      "reader_source": "qwen35/ane_matmul.c::ane_copy_uncached"
+    }
+  ],
+  "runtime_source_sha256": "3570de9f081d68e5962ac12f70b03821bdb527ec8221830533c61a40d49dcea2",
+  "shared_arithmetic_source_sha256": "5e0a7415715fa5b47a75ab68d68863b1c1dfe9e59a213b38a36c758ed19f9da2",
+  "underlying_status": "PASS_DIAGNOSTIC_ONLY",
+  "host": {
+    "os": "Linux",
+    "kernel": "7.1.13+",
+    "machine": "aarch64",
+    "chip": "Apple M1 T8103/J313"
+  },
+  "vectors": 80,
+  "maximum_logit_nrmse": 0.0035931538167270137,
+  "qualification": "Shared paired Python encoder through the independent HF decoder passes 80 fixed native token-prefix full-vocabulary vectors on matching local native mel inputs. This does not qualify the original fused encoder, native paired whisper.cpp path, or exact Mac speech-fixture agreement.",
+  "native_warm_timings_qualified": false,
+  "copy_optimization": [
+    {
+      "audio": "jfk",
+      "encoder_fp32_sha256": "92e15e0f4ddc52550ba869e71490a4bdd16a34a6ea6f9ad01272c24ae8adbff7",
+      "original_uncached_array_ms": 16193.50340200026,
+      "cached_byte_copy_ms": 2936.3108820007255,
+      "cached_four_worker_neon_ms": 1881.76050400034,
+      "encoder_bits_and_full_logit_checks_unchanged": true
+    },
+    {
+      "audio": "jfk-first-5s",
+      "encoder_fp32_sha256": "473049956a81a619c562fe56c5295793d8f60e34d5763da77415472a007de136",
+      "original_uncached_array_ms": 16120.930625000256,
+      "cached_byte_copy_ms": 2909.3824159999713,
+      "cached_four_worker_neon_ms": 1894.8015699997995,
+      "encoder_bits_and_full_logit_checks_unchanged": true
+    },
+    {
+      "audio": "jfk-repeat",
+      "encoder_fp32_sha256": "c62a339fbdf383c1eb15d93f955a2a40c010fa7e1360843ecc31f7023bd83ecd",
+      "original_uncached_array_ms": 16098.486814999887,
+      "cached_byte_copy_ms": 3023.735867999676,
+      "cached_four_worker_neon_ms": 1874.3067840005097,
+      "encoder_bits_and_full_logit_checks_unchanged": true
+    }
+  ],
+  "copy_timing_scope": "One first encoder call per clip in a persistent shared Python paired encoder; setup/model loading excluded. These diagnostics are not warmed native transcription benchmarks.",
+  "reader_build": {
+    "source": "qwen35/ane_matmul.c",
+    "source_sha256": "a90c76e0ff93d279b608cff21405ab627d3a8f1664ad3cc40eef0476a588f968",
+    "header_sha256": "29b9f6588282866a7c5e7b58fb9ce5377e196f4398059eed5920f726c5b86524",
+    "binary_sha256": "63feb201d6755d948f7a1fac7fc1f651ad63548a577843e078cf297e32841edf",
+    "flags": [
+      "-std=gnu11",
+      "-O3",
+      "-march=armv8.2-a+fp16",
+      "-fopenmp",
+      "-shared",
+      "-fPIC",
+      "-lm"
+    ]
+  },
+  "raw_evidence": {
+    "whisper/build/asahi-exported-paired-20261008.json": {
+      "sha256": "c4ac6d6242e29e03b3ef550381cd9d4ab50e801daa9919648bc12dcfa03c4f5b"
+    },
+    "whisper/build/asahi-exported-paired-cached-20261008.json": {
+      "sha256": "6d0afe01e94f4407734e0bbcac96b92897c1def44fc331c296f2245436ac2764"
+    },
+    "whisper/build/asahi-exported-paired-neon-20261008.json": {
+      "sha256": "b32e5373bf80e45e4ca8a88d41f45f9c7a24a6a5dd4efe8d283c35804a6bf256"
+    }
+  },
+  "host_tests": "Nine paired reconstruction/transport tests pass; raw sparse hardware tests cover all three shapes with bitwise repeatability; native reader exact-copy/worker/bounds checks pass."
+}

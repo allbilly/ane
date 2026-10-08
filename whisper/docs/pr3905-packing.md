@@ -145,7 +145,7 @@ ignored and need a future external handoff. No large packed weights or HWX
 files need transfer: regenerate them on Asahi from the external checkpoint.
 The loader checks checkpoint, packet and fixture hashes before opening the
 device. Device discovery requires native ARM64 Linux, the base-M1 device tree
-and the `ane` driver; verification rejects this Mac before device access.
+and the `ane` driver; verification rejects unsupported hosts before device access.
 
 Each model has zero-mel plus the three existing JFK mel fixtures, for 12
 encoder cases. The three zero-input outputs reproduce the earlier timed Mac
@@ -165,7 +165,13 @@ must have NRMSE < 0.005, matching histories/raw argmaxes and repeatable outputs.
 Check the native whisper.cpp decoder against the same reference before
 qualifying the complete path. Retain per-model hashes, vector counts and
 pass/fail receipts; the original tiny.en 80-vector gate cannot qualify
-multilingual tiny/base/small. These checks remain pending in
+multilingual tiny/base/small. Local Asahi speech checks now fail this separate
+numerical gate for all three models; their native FP32 CPU references pass.
+See the [tiny](../results/pr3905-asahi-tiny-accuracy-20261008.json),
+[base](../results/pr3905-asahi-base-accuracy-20261008.json) and
+[small](../results/pr3905-asahi-small-accuracy-20261008.json) receipts.
+Comparisons with the exact saved Mac speech arrays remain unverified. This
+broader numerical investigation is outside the completed tiny timing task in
 [the repository TODO](../../todo.md).
 
 The report separates input preparation/scratch clearing, blocking ioctl wall
@@ -239,21 +245,73 @@ warmups and decoder heating differ from the isolated Mac library-substitution
 harness, so keep those comparison boundaries explicit. A transcript or an
 encoder replay pass does not establish the strict full-decoder-logit gate.
 
+To reproduce the isolated Mac timing method on Asahi, start with tiny:
+
+```sh
+taskset -c 4-7 env OPENBLAS_NUM_THREADS=4 OMP_NUM_THREADS=4 \
+  LD_LIBRARY_PATH=/home/asahi/.cache/applegpu-gpt2/runtime/usr/lib64 \
+  whisper/.venv/bin/python -m whisper.scripts.benchmark_pr_encoder \
+  --model tiny --build whisper/build/pr3905-asahi-native \
+  --output whisper/build/pr3905-asahi-tiny-new
+```
+
+The command uses the unchanged Mac C++ timing harness: two fresh persistent
+contexts, two excluded warmups and five measurements each, with four workers.
+It reconstructs and validates the checkpoint payloads, checks three warmup and
+20 measured zero-mel replays against the existing exact Mac output hash, then records every native
+encode and host/dispatch/readback stage. Zero mel and its reference hash need
+no NPZ transfer; the speech fixture and full-decoder gates remain separate.
+The default checkpoint is `whisper/models/ggml-tiny.bin`; it must already
+exist and match the package. The loader/runtime, model, payload, build and
+source identities are retained in the result. The library path above supplies
+the local extracted Fedora libgfortran; omit it when the system provides it.
+Repeat with `--model base` or `--model small` and a new output directory. Measured
+Asahi medians are **32.13 / 72.70 / 282.32 ms** for tiny/base/small; tiny uses
+the [latest profiled run](../results/pr3905-asahi-tiny-profiled-20261008.json). The
+[README table](../../README.md) compares the saved Mac runs. Each model has
+ten native measurements and 23 exact Mac zero-mel output matches. The native API
+passes frame count before mel channel
+count; the initial adapter reversed those dimensions and rejected encoding.
+The corrected adapter passed the public-API host regression and hardware run.
+A separate three-warmup/twenty-measurement Python replay matched each exact Mac
+zero-mel output hash on every call. This qualifies three zero-mel encoder cases;
+speech fixtures and strict decoder accuracy remain pending.
+Asahi receipts: [tiny](../results/pr3905-asahi-tiny-20261008.json),
+[base](../results/pr3905-asahi-base-20261008.json),
+[small](../results/pr3905-asahi-small-20261008.json).
+
+The execution-stage comparison excludes input staging, output readback and CPU
+cross-K/V. The saved [Mac direct-dispatch run](../results/pr3905-m1-20261008/direct-dispatch.json)
+has three warmups and 20 measured E5RT executions; the native Linux stage comes
+from the two-context encode benchmark above. The Python Linux column uses the
+same three-warmup/twenty-measurement method as that Mac run.
+
+| Model | Mac E5RT execute median | Asahi native blocking ioctl median | Asahi Python blocking ioctl median |
+| --- | ---: | ---: | ---: |
+| tiny | 10.89 ms | 14.21 ms | 14.17 ms |
+| base | 23.29 ms | 30.22 ms | 39.93 ms |
+| small | 79.41 ms | 106.86 ms | 237.63 ms |
+
+The standalone Python measurements varied substantially: base dispatch drifted
+from 30.09 to 69.93 ms, and small ranged 152.50–240.64 ms. Native context dispatch
+was much steadier. Clocks were not controlled; driver profiling and clock/power
+observations remain necessary before attributing this context-dependent gap.
+
 The adapter passes host tests on all three real weighted exports and all 12
 fixture transfers, using an in-memory fake submission transport. Serial and
 four-worker OpenMP readback both reproduce the independently widened NumPy
 reference bytes. Commands, both coefficient banks, bootstrap, padded inputs,
 output conversion, rejection and resource cleanup are checked. The isolated `whisper-cli`/`whisper-bench`
-build is checked on Mac with hardware initialization guarded. Linux build and
-hardware execution remain pending; see
+build is checked on Mac with hardware initialization guarded. Linux build
+and zero-mel hardware execution now pass for all three models. See
 [native preparation evidence](../results/pr3905-m1-20261008/native-preparation.json).
 
 ## Execution boundary
 
 Repacking and preparation require no Apple compiler or Accelerate. The Python
-loader and native adapter are prepared and host-tested; actual Linux build,
-execution, performance and strict accuracy still need verification. No Asahi host is
-accessible from this Mac, so no hardware replay result is claimed.
+loader and native adapter run tiny/base/small on Linux with measured performance
+and exact Mac zero-mel encoder agreement. Speech fixture comparison and strict
+decoder accuracy still need verification.
 
 The timed Mac E5RT program and offline HWX compile the same MIL/weights
 separately. Their executed instruction identity has not been established.

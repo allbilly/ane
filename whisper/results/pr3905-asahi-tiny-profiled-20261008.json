@@ -1,0 +1,1116 @@
+{
+  "status": "PASS_ZERO_MEL_DIAGNOSTIC_TIMING",
+  "utc": "2026-10-08T10:31:46.631512+00:00",
+  "model": "tiny",
+  "method": "Two persistent contexts, two excluded warmups and five measurements each; four CPU and readback workers, full-context zero mel.",
+  "scope": "Native ANE encoder plus CPU cross-K/V; loading, compilation, Python replay checks and decoding excluded from encode_ms.",
+  "accuracy_qualification": "Strict full-decoder accuracy remains unverified; this is a diagnostic speed reference.",
+  "contexts": [
+    [
+      {
+        "phase": "warmup",
+        "index": 0,
+        "encode_ms": 32.913002,
+        "convert_ms": 0.26,
+        "pack_ms": 0.023,
+        "clear_ms": 0.141,
+        "dispatch_ms": 14.154,
+        "read_ms": 1.457,
+        "widen_ms": 0.503,
+        "ane_total_ms": 16.538,
+        "read_workers": 4
+      },
+      {
+        "phase": "warmup",
+        "index": 1,
+        "encode_ms": 32.098003,
+        "convert_ms": 0.302,
+        "pack_ms": 0.024,
+        "clear_ms": 0.136,
+        "dispatch_ms": 14.128,
+        "read_ms": 1.425,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.402,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 2,
+        "encode_ms": 32.135002,
+        "convert_ms": 0.302,
+        "pack_ms": 0.024,
+        "clear_ms": 0.134,
+        "dispatch_ms": 14.275,
+        "read_ms": 1.347,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.469,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 3,
+        "encode_ms": 32.482002,
+        "convert_ms": 0.302,
+        "pack_ms": 0.023,
+        "clear_ms": 0.138,
+        "dispatch_ms": 14.187,
+        "read_ms": 1.318,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.355,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 4,
+        "encode_ms": 32.115002,
+        "convert_ms": 0.306,
+        "pack_ms": 0.022,
+        "clear_ms": 0.141,
+        "dispatch_ms": 14.277,
+        "read_ms": 1.317,
+        "widen_ms": 0.389,
+        "ane_total_ms": 16.452,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 5,
+        "encode_ms": 32.120003,
+        "convert_ms": 0.306,
+        "pack_ms": 0.024,
+        "clear_ms": 0.175,
+        "dispatch_ms": 14.227,
+        "read_ms": 1.36,
+        "widen_ms": 0.346,
+        "ane_total_ms": 16.438,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 6,
+        "encode_ms": 32.348003,
+        "convert_ms": 0.302,
+        "pack_ms": 0.023,
+        "clear_ms": 0.159,
+        "dispatch_ms": 14.247,
+        "read_ms": 1.315,
+        "widen_ms": 0.386,
+        "ane_total_ms": 16.432,
+        "read_workers": 4
+      }
+    ],
+    [
+      {
+        "phase": "warmup",
+        "index": 0,
+        "encode_ms": 32.526001,
+        "convert_ms": 0.26,
+        "pack_ms": 0.027,
+        "clear_ms": 0.184,
+        "dispatch_ms": 13.927,
+        "read_ms": 1.437,
+        "widen_ms": 0.436,
+        "ane_total_ms": 16.271,
+        "read_workers": 4
+      },
+      {
+        "phase": "warmup",
+        "index": 1,
+        "encode_ms": 31.909002,
+        "convert_ms": 0.302,
+        "pack_ms": 0.023,
+        "clear_ms": 0.157,
+        "dispatch_ms": 14.096,
+        "read_ms": 1.36,
+        "widen_ms": 0.338,
+        "ane_total_ms": 16.275,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 2,
+        "encode_ms": 32.101002,
+        "convert_ms": 0.302,
+        "pack_ms": 0.023,
+        "clear_ms": 0.14,
+        "dispatch_ms": 14.243,
+        "read_ms": 1.336,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.43,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 3,
+        "encode_ms": 32.284,
+        "convert_ms": 0.302,
+        "pack_ms": 0.022,
+        "clear_ms": 0.143,
+        "dispatch_ms": 14.177,
+        "read_ms": 1.337,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.368,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 4,
+        "encode_ms": 32.018002,
+        "convert_ms": 0.305,
+        "pack_ms": 0.023,
+        "clear_ms": 0.145,
+        "dispatch_ms": 14.236,
+        "read_ms": 1.342,
+        "widen_ms": 0.39,
+        "ane_total_ms": 16.441,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 5,
+        "encode_ms": 31.980001,
+        "convert_ms": 0.306,
+        "pack_ms": 0.022,
+        "clear_ms": 0.131,
+        "dispatch_ms": 14.16,
+        "read_ms": 1.31,
+        "widen_ms": 0.389,
+        "ane_total_ms": 16.318,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 6,
+        "encode_ms": 32.479,
+        "convert_ms": 0.305,
+        "pack_ms": 0.025,
+        "clear_ms": 0.138,
+        "dispatch_ms": 14.24,
+        "read_ms": 1.318,
+        "widen_ms": 0.389,
+        "ane_total_ms": 16.415,
+        "read_workers": 4
+      }
+    ]
+  ],
+  "timings_accepted": false,
+  "host_state_before": {
+    "/sys/devices/system/cpu/cpufreq/policy4/affected_cpus": "4 5 6 7",
+    "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "schedutil",
+    "/sys/devices/system/cpu/cpufreq/policy4/scaling_cur_freq": "2772000",
+    "/sys/devices/system/cpu/cpufreq/policy4/scaling_min_freq": "600000",
+    "/sys/devices/system/cpu/cpufreq/policy4/scaling_max_freq": "2988000",
+    "/sys/devices/system/cpu/cpufreq/policy0/affected_cpus": "0 1 2 3",
+    "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "schedutil",
+    "/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq": "600000",
+    "/sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq": "600000",
+    "/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq": "2064000"
+  },
+  "unavailable_counters": [
+    "ANE clock",
+    "ANE hardware execution duration",
+    "package energy"
+  ],
+  "driver_profiling": {
+    "enabled": true,
+    "module_file_sha256": "ea582d707f6dc353fab8caa17e9469e2b02322d4dc3dc41768797952c5105dfb",
+    "profiling_source_sha256": "b604f217caaaf64a23bb6f8ae6757a0343c50a50d4d76402251086fd450f8e82",
+    "scope": "Driver wall times sampled after submission, outside encoder timers; wait includes completion polling.",
+    "native_last_submissions": [
+      {
+        "context": 1,
+        "scope": "Last of seven native calls only",
+        "tasks": 1779,
+        "poll_sleep_us": 1,
+        "enqueue_ns": 7625,
+        "push_ns": 709,
+        "wait_ns": 14218992,
+        "irq_ns": 9000,
+        "release_ns": 41,
+        "irq0": 3,
+        "irq1": 5,
+        "result": 0
+      },
+      {
+        "context": 2,
+        "scope": "Last of seven native calls only",
+        "tasks": 1779,
+        "poll_sleep_us": 1,
+        "enqueue_ns": 7291,
+        "push_ns": 792,
+        "wait_ns": 14213451,
+        "irq_ns": 8916,
+        "release_ns": 0,
+        "irq0": 3,
+        "irq1": 5,
+        "result": 0
+      }
+    ],
+    "python_replay_median_ms": {
+      "enqueue_ms": 0.007271,
+      "push_ms": 0.000709,
+      "wait_ms": 14.0479115,
+      "irq_ms": 0.0092705,
+      "release_ms": 0.0
+    }
+  },
+  "checkpoint_sha256": "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21",
+  "hwx_sha256": "405a659494c647b85ea01813b330c97aadad5216d3bc80f0c1a2a1235a95ec42",
+  "position_sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238",
+  "task_count": 1779,
+  "payload_sha256": {
+    "commands": {
+      "bytes": 1277952,
+      "sha256": "29610cac184b8c8d4a062de764ffd10f376a93e9908ae51d11889f8634041666"
+    },
+    "constants": {
+      "bytes": 26112,
+      "sha256": "066797151963c8a30a11a65979317f3ca4dd3d52e6d94efcbc9e336164c556ef"
+    },
+    "positions": {
+      "bytes": 1152000,
+      "sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+    },
+    "coefficients-1": {
+      "bytes": 15450112,
+      "sha256": "0279e2089fff53a10dd05fcbb4906b14b351f1b606e1cf420c1c3453681c59ca"
+    },
+    "bootstrap": {
+      "bytes": 504,
+      "sha256": "373fe84dffa3225eb4754e2172cd8d4b0f0150abf1cf3a768f10a4d54cb0275d"
+    }
+  },
+  "build_cache_sha256": "1b150aef1f0823e9e7bd24b91e33fa742e7d974f61983040fc71072eb06cb3e7",
+  "driver_sha256": "15abd95331917365d5aa7f0c83a839af04ec25d22a9eabc539c5eae86f4d8e49",
+  "driver_source_sha256": "9fc8098947fa1cddb27950cb1b60bb5816b15b4634d35961cacb6a367c75dfdf",
+  "library_sha256": {
+    "libggml-base.so": "09933e337bd77f646ab43694639348d0339636aa1a4518c7b357a383b2f63036",
+    "libggml-blas.so": "11f7924b11e0d9ff640fb26c93f41a1e7510ecf8ca466862236814af374c9df8",
+    "libggml-cpu.so": "3580a8efa417a91c9a17683af2384958d30ad588b21b60d3f5eacfae10fe0f6a",
+    "libggml.so": "7bc92e8da83d006cecf860d9b77447708ac2f1f78ed9e36adca2063b7ebb28ac",
+    "libwhisper.so": "993a722064dc5fc8c56626b120669d07b4216f646f72ef1e50fbce53e252fd39"
+  },
+  "adapter_source_sha256": "878901e10fd7918ff5142723282eb2d0108f730a08da1c6d74f3a7a5a074f7a1",
+  "cpu_affinity": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "resolved_blas_dependencies": {
+    "/home/asahi/ane/whisper/build/pr3905-asahi-native/bin/libggml-base.so.0": "09933e337bd77f646ab43694639348d0339636aa1a4518c7b357a383b2f63036",
+    "/home/asahi/ane/whisper/.cache/asahi-20261007/blas-devel/usr/lib64/libopenblaso.so.0": "066b889eaf04052b26b0e49f960636dd45f06af741a2bb86739b119b37af8a63",
+    "/lib64/libstdc++.so.6": "567b8f4d2edcba100a9ea1da822b34f2668bbb49fc7c616e322b76f83f34e5b5",
+    "/lib64/libm.so.6": "ec97fd4b451cb389fd8c7dd61a562e0d8166fe579dc4b881d3ed441e9a2fe6a3",
+    "/lib64/libgcc_s.so.1": "02f0e27d3f525c4a2ac473f00c152fbf6875f7b01b0282272c6e1122873e1b48",
+    "/lib64/libc.so.6": "f58dfc8ccacb0dfb274c0d7780906ee82337579e04fb6120e1d746d9693bf9f3",
+    "/lib64/libgomp.so.1": "3bcb3fb94dfb82238630b833830298e42649e68fe4c59818c72a73a0cc78f045",
+    "/home/asahi/.cache/applegpu-gpt2/runtime/usr/lib64/libgfortran.so.5": "9b18a98800cdfab1a775a7818ba2e0d376a772bf67dac682339c715404524500"
+  },
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "4",
+    "OMP_NUM_THREADS": "4",
+    "OMP_DYNAMIC": "FALSE",
+    "OMP_WAIT_POLICY": "PASSIVE"
+  },
+  "zero_mel_check": {
+    "expected_output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+    "warmups": 3,
+    "measured_runs": 20,
+    "samples": [
+      {
+        "index": 0,
+        "phase": "warmup",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.325567000094452,
+        "dispatch_ms": 14.206658999682986,
+        "readback_ms": 5.561556999964523,
+        "total_ms": 21.09378299974196,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 6917,
+          "push_ns": 667,
+          "wait_ns": 14177076,
+          "irq_ns": 5833,
+          "release_ns": 42,
+          "irq0": 2,
+          "irq1": 3,
+          "result": 0
+        }
+      },
+      {
+        "index": 1,
+        "phase": "warmup",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.1946520007768413,
+        "dispatch_ms": 14.217408999684267,
+        "readback_ms": 5.519766000361415,
+        "total_ms": 20.931827000822523,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 11708,
+          "push_ns": 1000,
+          "wait_ns": 14177701,
+          "irq_ns": 6791,
+          "release_ns": 42,
+          "irq0": 2,
+          "irq1": 4,
+          "result": 0
+        }
+      },
+      {
+        "index": 2,
+        "phase": "warmup",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.0378620008850703,
+        "dispatch_ms": 14.052910999453161,
+        "readback_ms": 5.50626600124815,
+        "total_ms": 20.59703900158638,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 8000,
+          "push_ns": 667,
+          "wait_ns": 14015911,
+          "irq_ns": 8459,
+          "release_ns": 0,
+          "irq0": 3,
+          "irq1": 4,
+          "result": 0
+        }
+      },
+      {
+        "index": 3,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.0143620002054377,
+        "dispatch_ms": 13.865996999811614,
+        "readback_ms": 5.618639001113479,
+        "total_ms": 20.49899800113053,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7292,
+          "push_ns": 833,
+          "wait_ns": 13832372,
+          "irq_ns": 10042,
+          "release_ns": 0,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 4,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.0208620005869307,
+        "dispatch_ms": 14.129035998848849,
+        "readback_ms": 6.054759000107879,
+        "total_ms": 21.20465699954366,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7292,
+          "push_ns": 709,
+          "wait_ns": 14092618,
+          "irq_ns": 8959,
+          "release_ns": 41,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 5,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.1023200004274258,
+        "dispatch_ms": 14.258117000281345,
+        "readback_ms": 5.842344999109628,
+        "total_ms": 21.2027819998184,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7459,
+          "push_ns": 833,
+          "wait_ns": 14222284,
+          "irq_ns": 9542,
+          "release_ns": 41,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 6,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.3474420011334587,
+        "dispatch_ms": 14.654777998657664,
+        "readback_ms": 7.318410000152653,
+        "total_ms": 23.320629999943776,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 11708,
+          "push_ns": 1167,
+          "wait_ns": 14604821,
+          "irq_ns": 11666,
+          "release_ns": 0,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 7,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.19327699940186,
+        "dispatch_ms": 14.039118999789935,
+        "readback_ms": 5.422391999672982,
+        "total_ms": 20.654787998864776,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7000,
+          "push_ns": 667,
+          "wait_ns": 14004328,
+          "irq_ns": 9584,
+          "release_ns": 41,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 8,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.1041120014851913,
+        "dispatch_ms": 13.98261999929673,
+        "readback_ms": 5.495391000295058,
+        "total_ms": 20.58212300107698,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7541,
+          "push_ns": 667,
+          "wait_ns": 13950037,
+          "irq_ns": 8792,
+          "release_ns": 42,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 9,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.0008619992731838,
+        "dispatch_ms": 13.896872000259464,
+        "readback_ms": 5.509348999112262,
+        "total_ms": 20.40708299864491,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7250,
+          "push_ns": 708,
+          "wait_ns": 13863580,
+          "irq_ns": 9375,
+          "release_ns": 0,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 10,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.0765280003397493,
+        "dispatch_ms": 13.957286999357166,
+        "readback_ms": 5.565849000049639,
+        "total_ms": 20.599663999746554,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7209,
+          "push_ns": 833,
+          "wait_ns": 13921996,
+          "irq_ns": 8791,
+          "release_ns": 42,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 11,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.0293630002706777,
+        "dispatch_ms": 13.958912000816781,
+        "readback_ms": 5.668055000569439,
+        "total_ms": 20.656330001656897,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7292,
+          "push_ns": 708,
+          "wait_ns": 13920829,
+          "irq_ns": 12042,
+          "release_ns": 0,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 12,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.0226129998045508,
+        "dispatch_ms": 14.066785000977688,
+        "readback_ms": 5.94426099996781,
+        "total_ms": 21.03365900075005,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7000,
+          "push_ns": 833,
+          "wait_ns": 14032537,
+          "irq_ns": 9041,
+          "release_ns": 0,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 13,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.1121530005766544,
+        "dispatch_ms": 14.148533999104984,
+        "readback_ms": 5.662097999447724,
+        "total_ms": 20.922784999129362,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7500,
+          "push_ns": 792,
+          "wait_ns": 14113910,
+          "irq_ns": 8750,
+          "release_ns": 0,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 14,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.1297780001768842,
+        "dispatch_ms": 14.242617000491009,
+        "readback_ms": 5.460807999043027,
+        "total_ms": 20.83320299971092,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7542,
+          "push_ns": 792,
+          "wait_ns": 14205742,
+          "irq_ns": 10542,
+          "release_ns": 0,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 15,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.0325289986212738,
+        "dispatch_ms": 13.840580000760383,
+        "readback_ms": 5.481516000145348,
+        "total_ms": 20.354624999527005,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7167,
+          "push_ns": 667,
+          "wait_ns": 13808122,
+          "irq_ns": 8791,
+          "release_ns": 42,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 16,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 0.9823630007304018,
+        "dispatch_ms": 13.899495999794453,
+        "readback_ms": 5.653180998706375,
+        "total_ms": 20.53503999923123,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7333,
+          "push_ns": 709,
+          "wait_ns": 13869330,
+          "irq_ns": 8875,
+          "release_ns": 41,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 17,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 0.9551959992677439,
+        "dispatch_ms": 13.862580000932212,
+        "readback_ms": 5.667180999807897,
+        "total_ms": 20.484957000007853,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 6875,
+          "push_ns": 792,
+          "wait_ns": 13833747,
+          "irq_ns": 9208,
+          "release_ns": 0,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 18,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.0036960011348128,
+        "dispatch_ms": 14.136076999420766,
+        "readback_ms": 5.877802999748383,
+        "total_ms": 21.01757600030396,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7541,
+          "push_ns": 666,
+          "wait_ns": 14106911,
+          "irq_ns": 9333,
+          "release_ns": 0,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 19,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.01311300022644,
+        "dispatch_ms": 14.090619000853621,
+        "readback_ms": 5.9455099999468075,
+        "total_ms": 21.04924200102687,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7166,
+          "push_ns": 709,
+          "wait_ns": 14063286,
+          "irq_ns": 9625,
+          "release_ns": 0,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 20,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.0591540012683254,
+        "dispatch_ms": 14.519946998916566,
+        "readback_ms": 5.944301999988966,
+        "total_ms": 21.523403000173857,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7041,
+          "push_ns": 834,
+          "wait_ns": 14493322,
+          "irq_ns": 9000,
+          "release_ns": 0,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 21,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.0539039994910127,
+        "dispatch_ms": 14.48044700009632,
+        "readback_ms": 6.16525800069212,
+        "total_ms": 21.69960900027945,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 6917,
+          "push_ns": 708,
+          "wait_ns": 14453573,
+          "irq_ns": 9416,
+          "release_ns": 42,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      },
+      {
+        "index": 22,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.05502900078136,
+        "dispatch_ms": 14.454697999099153,
+        "readback_ms": 6.303006000962341,
+        "total_ms": 21.812733000842854,
+        "driver_profile": {
+          "tasks": 1779,
+          "poll_sleep_us": 1,
+          "enqueue_ns": 7000,
+          "push_ns": 708,
+          "wait_ns": 14427698,
+          "irq_ns": 9084,
+          "release_ns": 41,
+          "irq0": 3,
+          "irq1": 5,
+          "result": 0
+        }
+      }
+    ],
+    "scope": "Python complete encoder only; CPU cross-K/V and decoder excluded.",
+    "repeat_bitwise_equal": true,
+    "status": "PASS_EXACT_MAC_ZERO_MEL",
+    "median_ms": {
+      "prepare_ms": 1.0432164990561432,
+      "dispatch_ms": 14.078702000915655,
+      "readback_ms": 5.667618000188668,
+      "total_ms": 20.87799399942014
+    }
+  },
+  "mac_reference_receipt_sha256": "8ade612d54931a6c86545e3584329903143fda61302108a618ed24bddf716d93",
+  "mac_reference": {
+    "apple": {
+      "runs": [
+        {
+          "round": 1,
+          "index": 2,
+          "encode_ms": 17.301001,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 1,
+          "index": 3,
+          "encode_ms": 16.716002,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 1,
+          "index": 4,
+          "encode_ms": 16.505001,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 1,
+          "index": 5,
+          "encode_ms": 16.666,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 1,
+          "index": 6,
+          "encode_ms": 16.766001,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 2,
+          "index": 2,
+          "encode_ms": 17.244001,
+          "log": "tiny-encode-only-apple-2.log"
+        },
+        {
+          "round": 2,
+          "index": 3,
+          "encode_ms": 17.138,
+          "log": "tiny-encode-only-apple-2.log"
+        },
+        {
+          "round": 2,
+          "index": 4,
+          "encode_ms": 17.208,
+          "log": "tiny-encode-only-apple-2.log"
+        },
+        {
+          "round": 2,
+          "index": 5,
+          "encode_ms": 17.431002,
+          "log": "tiny-encode-only-apple-2.log"
+        },
+        {
+          "round": 2,
+          "index": 6,
+          "encode_ms": 18.339001,
+          "log": "tiny-encode-only-apple-2.log"
+        }
+      ],
+      "warmups": [
+        {
+          "round": 1,
+          "index": 0,
+          "encode_ms": 24.463001,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 1,
+          "index": 1,
+          "encode_ms": 18.181002,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 2,
+          "index": 0,
+          "encode_ms": 19.652,
+          "log": "tiny-encode-only-apple-2.log"
+        },
+        {
+          "round": 2,
+          "index": 1,
+          "encode_ms": 18.839001,
+          "log": "tiny-encode-only-apple-2.log"
+        }
+      ],
+      "contexts": [
+        {
+          "round": 1,
+          "command": [
+            "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/benchmark-encode",
+            "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+            "2",
+            "5"
+          ],
+          "env_overrides": {
+            "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+            "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+            "OPENBLAS_NUM_THREADS": "4",
+            "OMP_NUM_THREADS": "4",
+            "VECLIB_MAXIMUM_THREADS": "4"
+          },
+          "log": "tiny-encode-only-apple-1.log",
+          "log_sha256": "87574a0da80ba4bba3918fd52a3feb85daef9ce9c568271bcca6bf13ce3fe0ce",
+          "driver_binary_sha256": "2d39e76c386bfb2f8569fda1714788a314cde1659baebb10dd65e54577c5dcab"
+        },
+        {
+          "round": 2,
+          "command": [
+            "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/benchmark-encode",
+            "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+            "2",
+            "5"
+          ],
+          "env_overrides": {
+            "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+            "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+            "OPENBLAS_NUM_THREADS": "4",
+            "OMP_NUM_THREADS": "4",
+            "VECLIB_MAXIMUM_THREADS": "4"
+          },
+          "log": "tiny-encode-only-apple-2.log",
+          "log_sha256": "99e4106b8b5a5c6f0a0e25e927e1a24a49ffebb939e74bb55c2fa128b05b1e5e",
+          "driver_binary_sha256": "2d39e76c386bfb2f8569fda1714788a314cde1659baebb10dd65e54577c5dcab"
+        }
+      ],
+      "median_encode_ms": 17.173000000000002,
+      "range_encode_ms": [
+        16.505001,
+        18.339001
+      ]
+    },
+    "openblas": {
+      "runs": [
+        {
+          "round": 1,
+          "index": 2,
+          "encode_ms": 29.381001,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 1,
+          "index": 3,
+          "encode_ms": 27.167002,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 1,
+          "index": 4,
+          "encode_ms": 27.922001,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 1,
+          "index": 5,
+          "encode_ms": 26.745001,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 1,
+          "index": 6,
+          "encode_ms": 25.077002,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 2,
+          "index": 2,
+          "encode_ms": 33.539001,
+          "log": "tiny-encode-only-openblas-2.log"
+        },
+        {
+          "round": 2,
+          "index": 3,
+          "encode_ms": 26.541,
+          "log": "tiny-encode-only-openblas-2.log"
+        },
+        {
+          "round": 2,
+          "index": 4,
+          "encode_ms": 32.657001,
+          "log": "tiny-encode-only-openblas-2.log"
+        },
+        {
+          "round": 2,
+          "index": 5,
+          "encode_ms": 34.669003,
+          "log": "tiny-encode-only-openblas-2.log"
+        },
+        {
+          "round": 2,
+          "index": 6,
+          "encode_ms": 31.219002,
+          "log": "tiny-encode-only-openblas-2.log"
+        }
+      ],
+      "warmups": [
+        {
+          "round": 1,
+          "index": 0,
+          "encode_ms": 29.949001,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 1,
+          "index": 1,
+          "encode_ms": 24.924002,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 2,
+          "index": 0,
+          "encode_ms": 28.261002,
+          "log": "tiny-encode-only-openblas-2.log"
+        },
+        {
+          "round": 2,
+          "index": 1,
+          "encode_ms": 27.859001,
+          "log": "tiny-encode-only-openblas-2.log"
+        }
+      ],
+      "contexts": [
+        {
+          "round": 1,
+          "command": [
+            "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/benchmark-encode",
+            "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+            "2",
+            "5"
+          ],
+          "env_overrides": {
+            "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+            "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+            "OPENBLAS_NUM_THREADS": "4",
+            "OMP_NUM_THREADS": "4",
+            "VECLIB_MAXIMUM_THREADS": "4"
+          },
+          "log": "tiny-encode-only-openblas-1.log",
+          "log_sha256": "74d1a37ac3bc18af4f252a23635c6a83ade26039c2cb9126a5d61a08c96b039e",
+          "driver_binary_sha256": "29a27e30bbe773604962d00fe8a3d965f83dc4817bc2b9c127f94fe810650dae"
+        },
+        {
+          "round": 2,
+          "command": [
+            "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/benchmark-encode",
+            "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+            "2",
+            "5"
+          ],
+          "env_overrides": {
+            "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+            "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+            "OPENBLAS_NUM_THREADS": "4",
+            "OMP_NUM_THREADS": "4",
+            "VECLIB_MAXIMUM_THREADS": "4"
+          },
+          "log": "tiny-encode-only-openblas-2.log",
+          "log_sha256": "0a03382c5636244e1d21d17b830ad0131d656ccedecebe2304831fc18807c712",
+          "driver_binary_sha256": "29a27e30bbe773604962d00fe8a3d965f83dc4817bc2b9c127f94fe810650dae"
+        }
+      ],
+      "median_encode_ms": 28.651501000000003,
+      "range_encode_ms": [
+        25.077002,
+        34.669003
+      ]
+    }
+  },
+  "warmups_per_context": 2,
+  "measured_runs_per_context": 5,
+  "median_ms": {
+    "encode_ms": 32.1275025,
+    "convert_ms": 0.3035,
+    "pack_ms": 0.023,
+    "clear_ms": 0.1405,
+    "dispatch_ms": 14.238,
+    "read_ms": 1.327,
+    "widen_ms": 0.387,
+    "ane_total_ms": 16.430999999999997
+  },
+  "encode_range_ms": [
+    31.980001,
+    32.482002
+  ],
+  "host_state_after": {
+    "/sys/devices/system/cpu/cpufreq/policy4/affected_cpus": "4 5 6 7",
+    "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "schedutil",
+    "/sys/devices/system/cpu/cpufreq/policy4/scaling_cur_freq": "600000",
+    "/sys/devices/system/cpu/cpufreq/policy4/scaling_min_freq": "600000",
+    "/sys/devices/system/cpu/cpufreq/policy4/scaling_max_freq": "2988000",
+    "/sys/devices/system/cpu/cpufreq/policy0/affected_cpus": "0 1 2 3",
+    "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "schedutil",
+    "/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq": "600000",
+    "/sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq": "600000",
+    "/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq": "2064000"
+  }
+}

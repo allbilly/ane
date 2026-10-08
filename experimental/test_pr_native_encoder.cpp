@@ -76,7 +76,8 @@ template<typename F> static void rejects(F action, const char * reason) {
 
 int main(int argc, char ** argv) {
     try {
-        require(argc == 3, "usage: test_pr_native_encoder PAYLOAD_DIRECTORY FIXTURE_DIRECTORY");
+        require(argc == 3 || (argc == 4 && !std::strcmp(argv[3], "zero-mel")),
+                "usage: test_pr_native_encoder PAYLOAD_DIRECTORY FIXTURE_DIRECTORY [zero-mel]");
         const std::string directory = argv[1], fixtures = argv[2];
         std::ifstream file(directory + "/native-layout.txt");
         const std::string descriptor((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
@@ -102,7 +103,9 @@ int main(int argc, char ** argv) {
             require(whisper_asahi_full_model_matches(&context, 80, 1500, plan.state, plan.layers), "model dimensions rejected");
             require(!whisper_asahi_full_model_matches(&context, 80, 1500, plan.state + 1, plan.layers) &&
                     !whisper_asahi_full_model_matches(&context, 80, 1499, plan.state, plan.layers), "wrong model dimensions accepted");
-            for (const char * name : {"zero-mel", "jfk", "jfk-first-5s", "jfk-repeat"}) {
+            const auto cases = argc == 4 ? std::vector<const char *>{"zero-mel"}
+                                        : std::vector<const char *>{"zero-mel", "jfk", "jfk-first-5s", "jfk-repeat"};
+            for (const char * name : cases) {
                 auto mel = read_array<float>(fixtures + "/" + name + ".mel.f32", 80 * 3000);
                 transport->mel = read_array<uint16_t>(fixtures + "/" + name + ".mel.f16", 80 * 3000);
                 transport->expected = read_array<uint16_t>(fixtures + "/" + name + ".out.f16", size_t(plan.state) * 1500);
@@ -110,7 +113,7 @@ int main(int argc, char ** argv) {
                 transport->padded_mel = read_array<uint8_t>(fixtures + "/" + name + ".mel.padded.bin", plan.buffers.at(5));
                 std::vector<float> output(size_t(plan.state) * 1500);
                 const auto before = runtime.submissions;
-                runtime.encode(80, 3000, mel.data(), output.data());
+                whisper_aneforge_encode(&context, 3000, 80, mel.data(), output.data());
                 require(runtime.submissions == before + 1 && runtime.mel16 == transport->mel, "wrong submission count/conversion");
                 require(!std::memcmp(output.data(), expected_f32.data(), output.size() * sizeof(float)), "wrong native readback/widening");
 #ifdef _OPENMP
@@ -145,8 +148,8 @@ int main(int argc, char ** argv) {
         rejects([&] { Runtime runtime(plan, payloads, std::unique_ptr<Transport>(new FakeTransport(failed, plan, payloads))); }, "allocation failed");
         require(failed->created == 3 && failed->released == 3 && failed->memory.empty(), "partial allocation leaked");
         if (!native_m1()) require(whisper_aneforge_init("/missing") == nullptr, "native host guard failed");
-        std::printf("PASS_HOST_NATIVE_TRANSFER state=%d tasks=%u cases=4 coefficient_banks=%d hardware_execution=unverified\n",
-                    plan.state, plan.td_count, plan.state == 768 ? 2 : 1);
+        std::printf("PASS_HOST_NATIVE_TRANSFER state=%d tasks=%u cases=%d coefficient_banks=%d hardware_execution=unverified\n",
+                    plan.state, plan.td_count, argc == 4 ? 1 : 4, plan.state == 768 ? 2 : 1);
         return 0;
     } catch (const std::exception & error) {
         std::fprintf(stderr, "host native test failed: %s\n", error.what());

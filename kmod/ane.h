@@ -52,6 +52,8 @@ struct ane_request {
 	u32 td_count;
 	u32 btsp_iova;
 	u32 bar[ANE_TILE_COUNT];
+	bool profile_submit;
+	u64 enqueue_ns;
 };
 
 #endif /* __ANE_H__ */

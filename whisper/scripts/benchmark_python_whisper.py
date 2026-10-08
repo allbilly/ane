@@ -8,8 +8,10 @@ import platform
 import statistics
 import time
 import wave
+import sys
 
-from test_macos import digest, words
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from whisper.validation import digest, words
 
 ROOT = Path(__file__).resolve().parents[1]
 

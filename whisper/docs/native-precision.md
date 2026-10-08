@@ -67,10 +67,20 @@ All 144 timed/warmup transcriptions are retained. The paired timed contexts make
 1,728 actual ANE submissions, and the three correctness runs add 72. All 1,152
 timed/warmup cross-K/V matrix profiles are retained; correctness adds 48.
 The active desktop and unfixed clocks limit comparisons with older runs.
-This correction passes the requested fixtures; broader audio accuracy and
-Linux execution have not been verified. The [paired Linux export preparation](asahi-paired-export.md)
-now provides checkpoint-only H13G command, constant and coefficient reconstruction
-for all 24 programs; native Linux integration and hardware verification remain pending.
+This correction passes the requested fixtures; broader audio accuracy remains
+unverified. The [paired Linux replay](asahi-paired-export.md) now reconstructs
+and executes all 24 exported programs through the shared Python encoder. Its
+80-vector independent HF decoder gate passes on matching local native mel
+inputs, with byte-identical repeatability. Native Linux C++ also passes all
+80 vectors through its own decoder, with worst paired/HF NRMSE **0.408%** and
+byte-identical repeated mel/features/full logits on all three clips. It shares
+the Mac packing and combination code. Its warm JFK encode/decoder/whole medians
+are **624.32 / 78.79 / 723.42 ms**, versus **216.57 / 72.95 / 307.35 ms** for the
+matched Linux CPU build. The dominant measured cost is **379.37 ms** reading
+332.66 MB through Linux write-combined mappings. See the
+[native Linux receipt and commands](asahi-paired-export.md#native-whispercpp-on-asahi).
+Exact Mac speech-array comparison and actual E5RT/offline executable identity
+remain pending; the passing control does not correct the original fused graph.
 
 ## Reproduce on Mac
 
@@ -112,5 +122,6 @@ benchmark acquires the same hardware locks and validates all 80 full vectors
 with the same 0.005 gate. Compilation occurs during context initialization and
 is excluded from warm transcription time. Native opt-in is
 `WHISPER_MACOS_PRECISION=PROGRAM_DIRECTORY` with `ANEFORGE_DYLIB` set.
-This runtime uses macOS E5RT; an Asahi native implementation/export and hardware
-validation are still required.
+The Mac transport uses E5RT. The same C++ arithmetic now also runs with the
+validated Asahi DRM transport and `WHISPER_ASAHI_PRECISION`; see the Linux guide
+above for preparation and the measured remaining readback gap.

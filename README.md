@@ -47,21 +47,72 @@ use multilingual tiny/base/small, the full 1,500-position audio context and four
 threads. Encoder time includes input staging, the full ANE encoder and CPU
 cross-attention K/V; compilation and decoding are excluded.
 
-| Model | macOS: ANE + Accelerate BLAS **measured** | macOS: ANE + OpenBLAS NEON **measured** | Asahi: ANE + OpenBLAS **projected** |
+| Model | macOS: ANE + Accelerate BLAS **measured** | macOS: ANE + OpenBLAS NEON **measured** | Asahi: ANE + OpenBLAS **measured** |
 |---|---:|---:|---:|
-| tiny | 17.17 ms | 28.65 ms | **≈29 ms** |
-| base | 36.69 ms | 63.30 ms | **≈63 ms** |
-| small | 142.51 ms | 334.71 ms | **≈335 ms** |
+| tiny | 17.17 ms | 28.65 ms | **32.13 ms** |
+| base | 36.69 ms | 63.30 ms | **72.70 ms** |
+| small | 142.51 ms | 334.71 ms | **282.32 ms** |
 
-The Asahi projections use the Mac OpenBLAS medians rounded to whole milliseconds,
-assuming Linux ANE and CPU performance match that surrogate. Linux driver
-overhead is unmeasured; small's Mac OpenBLAS samples ranged **297–406 ms**.
-Strict full-decoder accuracy has not been validated for these speed-reference
-runs. See [measured runs](whisper/results/pr3905-m1-20261008/host-encode-only.json),
+All three ran on Asahi with the unchanged Mac timing harness: two persistent
+contexts, two excluded warmups and five measurements each. The ten measured
+calls ranged **31.98–32.48 / 72.35–75.57 / 281.02–288.75 ms** for tiny/base/small.
+Native blocking ANE dispatch medians were **14.24 / 30.22 / 106.86 ms**, and
+readback medians were **1.33 / 1.81 / 2.71 ms**. Each model's zero-mel encoder
+output matched its Mac hash byte for byte on all 23 calls of a separate
+three-warmup/twenty-measurement replay, including small's two coefficient banks.
+Compared with saved Mac OpenBLAS medians, tiny/base took **12.1% / 14.8% longer**
+and small took **15.7% less time**. The libraries differ (Fedora OpenBLAS 0.3.29
+versus Mac 0.3.34), clocks were not controlled, and small's Mac samples ranged
+**297–406 ms**; these results do not isolate the source of the difference.
+These are encoder timing comparisons with exact Mac zero-input output agreement.
+Separate local speech checks now measure maximum encoder relative L2 error
+against an independent FP32 reference of **3.63% / 1.87% / 2.66%** for
+tiny/base/small. The corresponding strict numerical checks fail, while all
+81/84/90 raw token argmaxes match. These are local numerical results, separate
+from the exact Mac zero-mel replay comparison and the encoder timing boundary.
+See the [tiny](whisper/results/pr3905-asahi-tiny-accuracy-20261008.json),
+[base](whisper/results/pr3905-asahi-base-accuracy-20261008.json) and
+[small](whisper/results/pr3905-asahi-small-accuracy-20261008.json) accuracy receipts.
+The latest tiny run also profiles the loaded driver at its original 1-us poll
+setting: the last native call in each context spent about 14.21 ms waiting for
+completion and 0.009 ms draining IRQ events. These are driver wall times, with
+no ANE clock or hardware-duration counter available.
+See Asahi receipts for [tiny profiled rerun](whisper/results/pr3905-asahi-tiny-profiled-20261008.json),
+[base](whisper/results/pr3905-asahi-base-20261008.json) and
+[small](whisper/results/pr3905-asahi-small-20261008.json),
+[Mac measured runs](whisper/results/pr3905-m1-20261008/host-encode-only.json),
 [benchmark details](whisper/docs/benchmark-macos.md#cpu-cross-kv-library-substitution)
 and [checkpoint repacking/native replay](whisper/docs/pr3905-packing.md).
 Large weights and HWX dumps remain ignored; Asahi rebuilds them from external
 safetensors or lossless F16/F32 GGUF using the compact packing recipes.
+
+**Accuracy-qualified tiny.en paired control.** Native Asahi whisper.cpp now
+reuses the macOS C++ packing and FP32 combination arithmetic with a Linux DRM
+transport. All **80 full-vocabulary decoder vectors** pass NRMSE < 0.005 versus
+CPU and independent HF, with matching histories/raw argmaxes. Worst paired/HF
+NRMSE is **0.408%**; repeated mel, encoder outputs and complete decoder traces
+are byte identical on all three clips. Each encode uses 24 submissions / 32
+hardware tasks and four existing graph workers.
+
+| Tiny.en, 11-second JFK clip | Encoder + cross-K/V | Decoder total | Whole transcription |
+|---|---:|---:|---:|
+| macOS FP32 CPU + Apple BLAS — saved | 252.24 ms | 85.94 ms | 369.01 ms |
+| macOS paired ANE + Apple BLAS — saved | 366.88 ms | 87.14 ms | 483.76 ms |
+| Asahi FP32 CPU + OpenBLAS — measured | 216.57 ms | 72.95 ms | 307.35 ms |
+| Asahi paired ANE + OpenBLAS — measured | **624.32 ms** | **78.79 ms** | **723.42 ms** |
+
+Each backend has two persistent contexts, two excluded warmups and ten
+measurements per clip per context, four workers and a full 30-second encoder
+context. The paired path remains slower than CPU and macOS. Linux readback takes
+**379.37 ms** for 332.66 MB of padded FP16 products, versus **13.34 ms** in blocking
+ioctl. The buffers use the driver's write-combined mapping; packing and combining
+take 10.43 / 12.50 ms. CPU BLAS libraries and frontends differ across hosts, and
+clocks were not fixed. This validates native accuracy on local matching inputs;
+exact Mac speech arrays and E5RT executable identity remain unverified. The
+original fused fast graph still fails its separate strict accuracy gate.
+[Native Asahi receipt](whisper/results/asahi-native-precision-20261008.json),
+[saved Mac receipt](whisper/results/macos-native-precision-20261007.json) and
+[shared preparation/run commands](whisper/docs/asahi-paired-export.md#native-whispercpp-on-asahi).
 
 [GPT-2 training on Asahi](gpt2/training/README-asahi.md) replays the captured
 forward and backward kernels through the same driver. A full 124M parameter

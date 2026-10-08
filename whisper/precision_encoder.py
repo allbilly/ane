@@ -1,4 +1,4 @@
-"""ANE paired-plane projections with FP32 host encoder arithmetic on macOS."""
+"""Shared paired-plane ANE projections with FP32 host encoder arithmetic."""
 import copy
 import hashlib
 from pathlib import Path
@@ -11,7 +11,7 @@ from whisper.validation import digest
 CHECKPOINT_SHA256 = "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad"
 
 
-class PairedMacEncoder:
+class PairedEncoder:
     """24 actual ANE submissions; HF encoder operations retain FP32 precision.
 
     Every projection splits its contraction in two, uses two rounding grids,
@@ -20,14 +20,21 @@ class PairedMacEncoder:
     encoder weights fit FP16 exactly. Convolutions and attention stay on CPU.
     """
 
-    def __init__(self, hf_encoder, checkpoint, directory):
-        if platform.system() != "Darwin" or digest(checkpoint) != CHECKPOINT_SHA256:
-            raise ValueError("requires macOS and the pinned tiny.en checkpoint")
-        import aneforge as af
+    def __init__(self, hf_encoder, checkpoint, directory=None):
+        if platform.system() not in ("Darwin", "Linux") or digest(checkpoint) != CHECKPOINT_SHA256:
+            raise ValueError("requires Apple Silicon and the pinned tiny.en checkpoint")
         import torch
 
         self.encoder = copy.deepcopy(hf_encoder).eval()
-        self.programs, self.receipts = [], []
+        self.programs, self.receipts, self.projections = [], [], []
+        self.replay = None
+        if platform.system() == "Linux":
+            from whisper.paired_replay import PairedReplay, ROOT
+            self.replay = PairedReplay(checkpoint, Path(directory) if directory else ROOT)
+        else:
+            if directory is None:
+                raise ValueError("Mac paired projections require a build directory")
+            import aneforge as af
         self.submissions = 0
         owner = self
         self.gains = (1., 1.375)
@@ -43,20 +50,25 @@ class PairedMacEncoder:
                 self.partitions = 2
                 half = self.k // self.partitions
                 grouped = np.concatenate([weights[:, :half], weights[:, half:]], axis=0)
-                node = af.input((1, self.k, 1, 6000))
-                output = af.conv(node, grouped.reshape(2*self.n, half, 1, 1), groups=2)
-                build = Path(directory) / name
-                self.program = af.compile(output, build_dir=build, opt=0)
-                if self.program._prog._device_mask != 4:
-                    self.program.release()
-                    raise RuntimeError("paired projection must execute on ANE only")
+                if owner.replay:
+                    self.program = owner.replay.projection(weights, name)
+                    evidence = self.program.receipt
+                else:
+                    node = af.input((1, self.k, 1, 6000))
+                    output = af.conv(node, grouped.reshape(2*self.n, half, 1, 1), groups=2)
+                    build = Path(directory) / name
+                    self.program = af.compile(output, build_dir=build, opt=0)
+                    if self.program._prog._device_mask != 4:
+                        self.program.release()
+                        raise RuntimeError("paired projection must execute on ANE only")
+                    evidence = dict(device_mask=4, mil_sha256=digest(build / "model.mil"))
                 owner.programs.append(self.program)
+                owner.projections.append(self)
                 self.feed, self.output = self.program.input_view(), self.program.output_view()
                 owner.receipts.append(dict(name=name, input_features=self.k, output_features=self.n,
                     contraction_partitions=2, gains=list(owner.gains), temporal_planes=4,
                     input_shape=[1,self.k,1,6000], output_shape=[1,2*self.n,1,6000],
-                    device_mask=4, mil_sha256=digest(build / "model.mil"),
-                    weight_sha256=hashlib.sha256(weights.tobytes()).hexdigest()))
+                    weight_sha256=hashlib.sha256(weights.tobytes()).hexdigest(), **evidence))
 
             def forward(self, tensor):
                 x = tensor.detach().numpy()
@@ -70,7 +82,10 @@ class PairedMacEncoder:
                     begin = index*3000
                     self.feed[0,:,0,begin:begin+1500] = high
                     self.feed[0,:,0,begin+1500:begin+3000] = low
-                self.program._prog.execute()
+                if owner.replay:
+                    self.program.execute()
+                else:
+                    self.program._prog.execute()
                 owner.submissions += 1
                 values = self.output.astype(np.float32).reshape(2,self.n,6000)
                 result = np.zeros((self.n,1500), np.float32)
@@ -105,6 +120,20 @@ class PairedMacEncoder:
         return output
 
     def close(self):
+        # Drop exported NumPy views before closing Linux mmap buffers.
+        for projection in self.projections:
+            projection.feed = projection.output = None
+        self.projections.clear()
         for program in self.programs:
             program.release()
         self.programs.clear()
+        if self.replay:
+            self.replay.close()
+
+
+class PairedMacEncoder(PairedEncoder):
+    """Keep the existing Mac entry point and its platform guard."""
+    def __init__(self, hf_encoder, checkpoint, directory):
+        if platform.system() != "Darwin":
+            raise ValueError("requires macOS and the pinned tiny.en checkpoint")
+        super().__init__(hf_encoder, checkpoint, directory)

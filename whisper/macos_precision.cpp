@@ -4,11 +4,15 @@
 #include <cstring>
 
 bool whisper_macos_precision_enabled() {
+#ifdef __linux__
+    const char * path = std::getenv("WHISPER_ASAHI_PRECISION");
+#else
     const char * path = std::getenv("WHISPER_MACOS_PRECISION");
+#endif
     return path && *path;
 }
 
-#if defined(__APPLE__) && defined(__aarch64__)
+#if (defined(__APPLE__) || defined(__linux__)) && defined(__aarch64__)
 #include <arm_neon.h>
 #include <cfloat>
 #include <cstdio>
@@ -18,27 +22,39 @@ bool whisper_macos_precision_enabled() {
 #include <string>
 #include <vector>
 
+#ifdef __linux__
+#include "paired_asahi.h"
+#else
 struct ane_e5rt_program;
 using compile_fn = ane_e5rt_program * (*)(const char *, const char *, uint64_t,
     const char * const *, const size_t *, size_t, const char * const *, const size_t *, size_t);
 using buffer_fn = int (*)(ane_e5rt_program *, const char *, void **, size_t *);
 using execute_fn = int (*)(ane_e5rt_program *);
 using release_fn = void (*)(ane_e5rt_program *);
+#endif
 
 struct WhisperMacPrecision::Impl {
     struct Plan {
         Impl * owner;
+#ifdef __linux__
+        std::unique_ptr<whisper_paired::Program> replay;
+#else
         ane_e5rt_program * program;
+#endif
         float16_t * feed;
         const float16_t * output;
         int k, n;
         std::string name;
     };
+#ifdef __linux__
+    std::unique_ptr<whisper_paired::Device> device;
+#else
     void * library = nullptr;
     compile_fn compile = nullptr;
     buffer_fn input_buffer = nullptr, output_buffer = nullptr;
     execute_fn execute = nullptr;
     release_fn release = nullptr;
+#endif
     std::string root;
     std::map<const ggml_tensor *, Plan> plans;
     int submissions = 0;
@@ -66,11 +82,19 @@ static void transpose4(float32x4_t & a, float32x4_t & b, float32x4_t & c, float3
 }
 
 WhisperMacPrecision::WhisperMacPrecision() : impl(new Impl) {
+    impl->profiling = std::getenv("WHISPER_PROFILE");
+#ifdef __linux__
+    if (std::getenv("ANEFORGE_ENCODER") || std::getenv("WHISPER_ASAHI_ENCODER") ||
+        (std::getenv("WHISPER_ASAHI_ANE") && std::strcmp(std::getenv("WHISPER_ASAHI_ANE"), "0")))
+        GGML_ABORT("paired projections exclude other encoder backends");
+    impl->root = std::getenv("WHISPER_ASAHI_PRECISION");
+    impl->device.reset(new whisper_paired::Device);
+    std::fprintf(stderr, "ASAHI_PRECISION ready: shared FP32 host arithmetic; captured paired ANE projections\n");
+#else
     const char * library = std::getenv("ANEFORGE_DYLIB");
     if (!library || std::getenv("ANEFORGE_ENCODER"))
         GGML_ABORT("precision projections require ANEFORGE_DYLIB and exclude ANEFORGE_ENCODER");
     impl->root = std::getenv("WHISPER_MACOS_PRECISION");
-    impl->profiling = std::getenv("WHISPER_PROFILE");
     impl->library = dlopen(library, RTLD_NOW | RTLD_LOCAL);
     if (!impl->library) GGML_ABORT("precision E5RT runtime dlopen failed");
     impl->compile = reinterpret_cast<compile_fn>(dlsym(impl->library, "ane_e5rt_program_compile"));
@@ -81,11 +105,14 @@ WhisperMacPrecision::WhisperMacPrecision() : impl(new Impl) {
     if (!impl->compile || !impl->input_buffer || !impl->output_buffer || !impl->execute || !impl->release)
         GGML_ABORT("precision E5RT runtime symbols missing");
     std::fprintf(stderr, "MACOS_PRECISION ready: FP32 host arithmetic and paired ANE projections\n");
+#endif
 }
 
 WhisperMacPrecision::~WhisperMacPrecision() {
+#ifndef __linux__
     for (auto & item : impl->plans) impl->release(item.second.program);
     if (impl->library) dlclose(impl->library);
+#endif
 }
 
 ggml_tensor * WhisperMacPrecision::project(ggml_context * ctx, ggml_tensor * weight, ggml_tensor * input,
@@ -122,6 +149,11 @@ ggml_tensor * WhisperMacPrecision::project(ggml_context * ctx, ggml_tensor * wei
                                 original.data()+n*plan.k+part*half, half*2))
                     GGML_ABORT("precision ANE weights differ from native checkpoint");
 
+#ifdef __linux__
+        plan.replay.reset(new whisper_paired::Program(*impl->device, directory, plan.k, plan.n));
+        plan.feed = impl->device->feed.data();
+        plan.output = impl->device->result.data();
+#else
         const char * in = "t0", * out = "t1";
         const size_t input_bytes = size_t(plan.k)*6000*2, output_bytes = size_t(2*plan.n)*6000*2;
         plan.program = impl->compile((directory+"/model.mil").c_str(), (directory+"/native-cache").c_str(),
@@ -134,22 +166,37 @@ ggml_tensor * WhisperMacPrecision::project(ggml_context * ctx, ggml_tensor * wei
             GGML_ABORT("precision ANE port layout mismatch");
         plan.feed = static_cast<float16_t *>(feed);
         plan.output = static_cast<const float16_t *>(output);
-        found = impl->plans.emplace(weight, plan).first;
+#endif
+        found = impl->plans.emplace(weight, std::move(plan)).first;
     }
     ggml_tensor * sources[] = {weight, input};
+#ifdef __linux__
+    const int tasks = GGML_N_TASKS_MAX;
+#else
+    const int tasks = 1;
+#endif
     return ggml_custom_4d(ctx, GGML_TYPE_F32, weight->ne[1], 1500, 1, 1,
-                          sources, 2, compute, 1, &found->second);
+                          sources, 2, compute, tasks, &found->second);
 }
 
 void WhisperMacPrecision::compute(ggml_tensor * dst, int ith, int nth, void * userdata) {
+#ifndef __linux__
     (void) nth;
     if (ith) return;
+#endif
     auto & plan = *static_cast<Impl::Plan *>(userdata);
     auto & state = *plan.owner;
     const auto * input = dst->src[1];
     const auto t0 = ggml_time_us();
     const float gains[] = {1.f, 1.375f};
-    for (int position = 0; position < 1500; position += 4) {
+#ifdef __linux__
+    if (nth != 4) GGML_ABORT("paired Linux arithmetic requires four workers");
+    const int first_position = 4*(375*ith/nth), last_position = 4*(375*(ith+1)/nth);
+    const int first_channel = 4*((plan.n/4)*ith/nth), last_channel = 4*((plan.n/4)*(ith+1)/nth);
+#else
+    const int first_position = 0, last_position = 1500, first_channel = 0, last_channel = plan.n;
+#endif
+    for (int position = first_position; position < last_position; position += 4) {
         for (int channel = 0; channel < plan.k; channel += 4) {
             float32x4_t values[4];
             for (int row = 0; row < 4; ++row)
@@ -170,11 +217,18 @@ void WhisperMacPrecision::compute(ggml_tensor * dst, int ith, int nth, void * us
             }
         }
     }
+#ifdef __linux__
+    #pragma omp barrier
+#endif
     const auto t1 = ggml_time_us();
+#ifdef __linux__
+    plan.replay->execute(ith, nth);
+#else
     if (state.execute(plan.program)) GGML_ABORT("precision ANE execute failed; no CPU fallback");
-    ++state.submissions;
+#endif
+    if (!ith) ++state.submissions;
     const auto t2 = ggml_time_us();
-    for (int channel = 0; channel < plan.n; channel += 4) {
+    for (int channel = first_channel; channel < last_channel; channel += 4) {
         for (int position = 0; position < 1500; position += 4) {
             float32x4_t values[4] = {vdupq_n_f32(0), vdupq_n_f32(0), vdupq_n_f32(0), vdupq_n_f32(0)};
             for (int grid = 0; grid < 2; ++grid) {
@@ -197,14 +251,30 @@ void WhisperMacPrecision::compute(ggml_tensor * dst, int ith, int nth, void * us
             }
         }
     }
+#ifdef __linux__
+    #pragma omp barrier
+#endif
     const auto t3 = ggml_time_us();
-    state.pack_us += t1-t0; state.execute_us += t2-t1; state.combine_us += t3-t2;
+    if (!ith) {
+        state.pack_us += t1-t0; state.execute_us += t2-t1; state.combine_us += t3-t2;
+    }
 }
 
 void WhisperMacPrecision::finish_encoder() {
     if (impl->submissions != 24 || impl->plans.size() != 24)
         GGML_ABORT("precision encoder did not execute all 24 projections");
+#ifdef __linux__
+    if (impl->device->tasks != 32 || impl->device->read_workers != 4)
+        GGML_ABORT("paired encoder task/readback count mismatch");
+    std::fprintf(stderr, "ASAHI_PRECISION encoder: projections=24 submissions=24 tasks=32 read_workers=4\n");
+    if (impl->profiling)
+        std::fprintf(stderr, "ASAHI_PRECISION_PROFILE transport: write=%.3f ioctl=%.3f read=%.3f copy=%.3f ms\n",
+            impl->device->write_us/1000., impl->device->ioctl_us/1000.,
+            impl->device->read_us/1000., impl->device->copy_us/1000.);
+    impl->device->reset_profile();
+#else
     std::fprintf(stderr, "MACOS_PRECISION encoder: projections=24 submissions=24\n");
+#endif
     if (impl->profiling)
         std::fprintf(stderr, "WHISPER_PROFILE precision: pack=%.3f dispatch=%.3f combine=%.3f ms\n",
             impl->pack_us/1000., impl->execute_us/1000., impl->combine_us/1000.);

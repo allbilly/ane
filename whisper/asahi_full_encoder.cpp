@@ -378,7 +378,8 @@ bool whisper_asahi_full_model_matches(const whisper_aneforge_context * ctx, int 
 void whisper_aneforge_encode(struct whisper_aneforge_context * ctx, int64_t n_mel, int64_t n_len, const float * mel, float * out) {
     try {
         whisper_pr::require(ctx && ctx->runtime, "uninitialized native PR encoder");
-        ctx->runtime->encode(n_mel, n_len, mel, out);
+        // whisper.cpp passes GGML dimensions: frames first, mel channels second.
+        ctx->runtime->encode(n_len, n_mel, mel, out);
         if (std::getenv("WHISPER_PROFILE")) {
             const auto & t = ctx->runtime->timing;
             std::fprintf(stderr, "ASAHI_PR_PROFILE encoder: convert=%.3f pack=%.3f clear=%.3f dispatch=%.3f read=%.3f widen=%.3f total=%.3f ms submissions=1 read_workers=%d\n",

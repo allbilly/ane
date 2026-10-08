@@ -27,16 +27,21 @@ int main(int argc, char ** argv) {
         const auto mel = read<float>(argv[2]);
         const auto tokens = read<whisper_token>(argv[3]);
         if (mel.size() != 80 * 3000 || tokens.size() < 2 || tokens.size() > 448)
-            throw std::runtime_error("expected tiny.en mel and bounded token history");
+            throw std::runtime_error("expected Whisper mel and bounded token history");
         ggml_backend_load_all();
         auto params = whisper_context_default_params();
         params.use_gpu = false;
         params.flash_attn = true;
         std::unique_ptr<whisper_context, decltype(&whisper_free)> ctx(
             whisper_init_from_file_with_params(argv[1], params), whisper_free);
-        if (!ctx || whisper_n_vocab(ctx.get()) != 51864 ||
-            tokens[0] != whisper_token_sot(ctx.get()) || tokens[1] != whisper_token_not(ctx.get()))
-            throw std::runtime_error("expected tiny.en and its no-timestamps prompt");
+        if (!ctx) throw std::runtime_error("Whisper context initialization failed");
+        const int vocabulary = whisper_n_vocab(ctx.get());
+        const int prompt = vocabulary == 51865 ? 4 : 2;
+        if ((vocabulary != 51864 && vocabulary != 51865) || tokens.size() < size_t(prompt) ||
+            tokens[0] != whisper_token_sot(ctx.get()) || tokens[prompt-1] != whisper_token_not(ctx.get()) ||
+            (prompt == 4 && (tokens[1] != whisper_token_lang(ctx.get(), whisper_lang_id("en")) ||
+                            tokens[2] != whisper_token_transcribe(ctx.get()))))
+            throw std::runtime_error("expected English no-timestamps prompt and supported vocabulary");
         if (whisper_set_mel(ctx.get(), mel.data(), 3000, 80)) throw std::runtime_error("mel setup failed");
         const auto start = std::chrono::steady_clock::now();
         if (whisper_encode(ctx.get(), 0, 4)) throw std::runtime_error("encoder failed");
@@ -46,14 +51,14 @@ int main(int argc, char ** argv) {
         if (!out) throw std::runtime_error("output open failed");
         int past = 0;
         for (size_t offset = 0; offset < tokens.size();) {
-            const int count = offset ? 1 : 2;
+            const int count = offset ? 1 : prompt;
             if (whisper_decode(ctx.get(), tokens.data() + offset, count, past, 4))
                 throw std::runtime_error("decoder failed");
-            const int header[] = {count, 51864};
+            const int header[] = {count, vocabulary};
             out.write(reinterpret_cast<const char *>(header), sizeof(header));
             out.write(reinterpret_cast<const char *>(tokens.data() + offset), count * sizeof(whisper_token));
-            const float * logits = whisper_get_logits(ctx.get()) + (count - 1) * 51864;
-            out.write(reinterpret_cast<const char *>(logits), 51864 * sizeof(float));
+            const float * logits = whisper_get_logits(ctx.get()) + (count - 1) * vocabulary;
+            out.write(reinterpret_cast<const char *>(logits), vocabulary * sizeof(float));
             offset += count;
             past += count;
         }

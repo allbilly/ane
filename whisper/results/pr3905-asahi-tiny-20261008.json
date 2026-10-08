@@ -1,0 +1,371 @@
+{
+  "status": "PASS_ZERO_MEL_DIAGNOSTIC_TIMING",
+  "utc": "2026-10-08T08:39:26.087267+00:00",
+  "model": "tiny",
+  "method": "Two persistent contexts, two excluded warmups and five measurements each; four CPU and readback workers, full-context zero mel.",
+  "scope": "Native ANE encoder plus CPU cross-K/V; loading, compilation, Python replay checks and decoding excluded from encode_ms.",
+  "accuracy_qualification": "Strict full-decoder accuracy remains unverified; this is a diagnostic speed reference.",
+  "contexts": [
+    [
+      {
+        "phase": "warmup",
+        "index": 0,
+        "encode_ms": 32.835003,
+        "convert_ms": 0.265,
+        "pack_ms": 0.025,
+        "clear_ms": 0.161,
+        "dispatch_ms": 13.901,
+        "read_ms": 1.473,
+        "widen_ms": 0.491,
+        "ane_total_ms": 16.316,
+        "read_workers": 4
+      },
+      {
+        "phase": "warmup",
+        "index": 1,
+        "encode_ms": 32.342003,
+        "convert_ms": 0.302,
+        "pack_ms": 0.023,
+        "clear_ms": 0.138,
+        "dispatch_ms": 14.255,
+        "read_ms": 1.315,
+        "widen_ms": 0.344,
+        "ane_total_ms": 16.378,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 2,
+        "encode_ms": 32.0,
+        "convert_ms": 0.309,
+        "pack_ms": 0.024,
+        "clear_ms": 0.134,
+        "dispatch_ms": 14.171,
+        "read_ms": 1.354,
+        "widen_ms": 0.349,
+        "ane_total_ms": 16.341,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 3,
+        "encode_ms": 32.038002,
+        "convert_ms": 0.305,
+        "pack_ms": 0.024,
+        "clear_ms": 0.136,
+        "dispatch_ms": 14.239,
+        "read_ms": 1.313,
+        "widen_ms": 0.386,
+        "ane_total_ms": 16.403,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 4,
+        "encode_ms": 32.140003,
+        "convert_ms": 0.302,
+        "pack_ms": 0.025,
+        "clear_ms": 0.135,
+        "dispatch_ms": 14.24,
+        "read_ms": 1.343,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.432,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 5,
+        "encode_ms": 41.273003,
+        "convert_ms": 0.302,
+        "pack_ms": 0.022,
+        "clear_ms": 0.162,
+        "dispatch_ms": 14.062,
+        "read_ms": 1.359,
+        "widen_ms": 0.337,
+        "ane_total_ms": 16.244,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 6,
+        "encode_ms": 32.059002,
+        "convert_ms": 0.302,
+        "pack_ms": 0.021,
+        "clear_ms": 0.135,
+        "dispatch_ms": 14.083,
+        "read_ms": 1.44,
+        "widen_ms": 0.338,
+        "ane_total_ms": 16.318,
+        "read_workers": 4
+      }
+    ],
+    [
+      {
+        "phase": "warmup",
+        "index": 0,
+        "encode_ms": 32.786003,
+        "convert_ms": 0.264,
+        "pack_ms": 0.026,
+        "clear_ms": 0.16,
+        "dispatch_ms": 14.109,
+        "read_ms": 1.481,
+        "widen_ms": 0.449,
+        "ane_total_ms": 16.489,
+        "read_workers": 4
+      },
+      {
+        "phase": "warmup",
+        "index": 1,
+        "encode_ms": 31.988001,
+        "convert_ms": 0.302,
+        "pack_ms": 0.026,
+        "clear_ms": 0.146,
+        "dispatch_ms": 14.212,
+        "read_ms": 1.31,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.384,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 2,
+        "encode_ms": 32.186001,
+        "convert_ms": 0.302,
+        "pack_ms": 0.025,
+        "clear_ms": 0.155,
+        "dispatch_ms": 14.256,
+        "read_ms": 1.375,
+        "widen_ms": 0.39,
+        "ane_total_ms": 16.503,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 3,
+        "encode_ms": 33.127003,
+        "convert_ms": 0.307,
+        "pack_ms": 0.027,
+        "clear_ms": 0.19,
+        "dispatch_ms": 14.225,
+        "read_ms": 1.312,
+        "widen_ms": 0.391,
+        "ane_total_ms": 16.452,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 4,
+        "encode_ms": 32.18,
+        "convert_ms": 0.308,
+        "pack_ms": 0.026,
+        "clear_ms": 0.148,
+        "dispatch_ms": 14.198,
+        "read_ms": 1.365,
+        "widen_ms": 0.364,
+        "ane_total_ms": 16.409,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 5,
+        "encode_ms": 31.976002,
+        "convert_ms": 0.302,
+        "pack_ms": 0.025,
+        "clear_ms": 0.142,
+        "dispatch_ms": 14.147,
+        "read_ms": 1.356,
+        "widen_ms": 0.338,
+        "ane_total_ms": 16.31,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 6,
+        "encode_ms": 33.297001,
+        "convert_ms": 0.302,
+        "pack_ms": 0.025,
+        "clear_ms": 0.137,
+        "dispatch_ms": 14.215,
+        "read_ms": 2.566,
+        "widen_ms": 0.387,
+        "ane_total_ms": 17.632,
+        "read_workers": 4
+      }
+    ]
+  ],
+  "timings_accepted": false,
+  "checkpoint_sha256": "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21",
+  "hwx_sha256": "405a659494c647b85ea01813b330c97aadad5216d3bc80f0c1a2a1235a95ec42",
+  "position_sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238",
+  "task_count": 1779,
+  "payload_sha256": {
+    "commands": {
+      "bytes": 1277952,
+      "sha256": "29610cac184b8c8d4a062de764ffd10f376a93e9908ae51d11889f8634041666"
+    },
+    "constants": {
+      "bytes": 26112,
+      "sha256": "066797151963c8a30a11a65979317f3ca4dd3d52e6d94efcbc9e336164c556ef"
+    },
+    "positions": {
+      "bytes": 1152000,
+      "sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+    },
+    "coefficients-1": {
+      "bytes": 15450112,
+      "sha256": "0279e2089fff53a10dd05fcbb4906b14b351f1b606e1cf420c1c3453681c59ca"
+    },
+    "bootstrap": {
+      "bytes": 504,
+      "sha256": "373fe84dffa3225eb4754e2172cd8d4b0f0150abf1cf3a768f10a4d54cb0275d"
+    }
+  },
+  "build_cache_sha256": "1b150aef1f0823e9e7bd24b91e33fa742e7d974f61983040fc71072eb06cb3e7",
+  "driver_sha256": "15abd95331917365d5aa7f0c83a839af04ec25d22a9eabc539c5eae86f4d8e49",
+  "driver_source_sha256": "9fc8098947fa1cddb27950cb1b60bb5816b15b4634d35961cacb6a367c75dfdf",
+  "library_sha256": {
+    "libggml-base.so": "09933e337bd77f646ab43694639348d0339636aa1a4518c7b357a383b2f63036",
+    "libggml-blas.so": "11f7924b11e0d9ff640fb26c93f41a1e7510ecf8ca466862236814af374c9df8",
+    "libggml-cpu.so": "3580a8efa417a91c9a17683af2384958d30ad588b21b60d3f5eacfae10fe0f6a",
+    "libggml.so": "7bc92e8da83d006cecf860d9b77447708ac2f1f78ed9e36adca2063b7ebb28ac",
+    "libwhisper.so": "993a722064dc5fc8c56626b120669d07b4216f646f72ef1e50fbce53e252fd39"
+  },
+  "adapter_source_sha256": "878901e10fd7918ff5142723282eb2d0108f730a08da1c6d74f3a7a5a074f7a1",
+  "cpu_affinity": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "resolved_blas_dependencies": {
+    "/home/asahi/ane/whisper/build/pr3905-asahi-native/bin/libggml-base.so.0": "09933e337bd77f646ab43694639348d0339636aa1a4518c7b357a383b2f63036",
+    "/home/asahi/ane/whisper/.cache/asahi-20261007/blas-devel/usr/lib64/libopenblaso.so.0": "066b889eaf04052b26b0e49f960636dd45f06af741a2bb86739b119b37af8a63",
+    "/lib64/libstdc++.so.6": "567b8f4d2edcba100a9ea1da822b34f2668bbb49fc7c616e322b76f83f34e5b5",
+    "/lib64/libm.so.6": "ec97fd4b451cb389fd8c7dd61a562e0d8166fe579dc4b881d3ed441e9a2fe6a3",
+    "/lib64/libgcc_s.so.1": "02f0e27d3f525c4a2ac473f00c152fbf6875f7b01b0282272c6e1122873e1b48",
+    "/lib64/libc.so.6": "f58dfc8ccacb0dfb274c0d7780906ee82337579e04fb6120e1d746d9693bf9f3",
+    "/lib64/libgomp.so.1": "3bcb3fb94dfb82238630b833830298e42649e68fe4c59818c72a73a0cc78f045",
+    "/home/asahi/.cache/applegpu-gpt2/runtime/usr/lib64/libgfortran.so.5": "9b18a98800cdfab1a775a7818ba2e0d376a772bf67dac682339c715404524500"
+  },
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "4",
+    "OMP_NUM_THREADS": "4",
+    "OMP_DYNAMIC": "FALSE"
+  },
+  "zero_mel_check": {
+    "output_sha256": [
+      "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+      "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb"
+    ],
+    "expected_output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+    "repeat_bitwise_equal": true
+  },
+  "mac_reference_receipt_sha256": "8ade612d54931a6c86545e3584329903143fda61302108a618ed24bddf716d93",
+  "warmups_per_context": 2,
+  "measured_runs_per_context": 5,
+  "median_ms": {
+    "encode_ms": 32.1600015,
+    "convert_ms": 0.302,
+    "pack_ms": 0.025,
+    "clear_ms": 0.1395,
+    "dispatch_ms": 14.2065,
+    "read_ms": 1.3575,
+    "widen_ms": 0.375,
+    "ane_total_ms": 16.406
+  },
+  "encode_range_ms": [
+    31.976002,
+    41.273003
+  ],
+  "mac_reference": {
+    "receipt": "whisper/results/pr3905-m1-20261008/host-encode-only.json",
+    "origin": "Saved measurements executed on macOS, not execution of Accelerate on Linux.",
+    "backends": {
+      "apple": {
+        "median_encode_ms": 17.173000000000002,
+        "range_encode_ms": [
+          16.505001,
+          18.339001
+        ]
+      },
+      "openblas": {
+        "median_encode_ms": 28.651501000000003,
+        "range_encode_ms": [
+          25.077002,
+          34.669003
+        ]
+      }
+    }
+  },
+  "measurement_valid": true,
+  "timings_accepted_definition": "False means strict full-decoder accuracy is not yet qualified; native timing itself completed successfully.",
+  "raw_evidence": {
+    "whisper/build/pr3905-asahi-tiny-abi-fixed-20261008/summary.json": {
+      "sha256": "a6850e132053b6c45cb5488a648a9b2d423569a263c03b8622b02b5a6335aae2"
+    },
+    "whisper/build/pr3905-asahi-tiny-zero-20261008.json": {
+      "sha256": "eb79677e08c1aa0bfa589e0fa90f7e6a944d1e85b1dc2bc5b6c595daf0184302"
+    },
+    "whisper/build/pr3905-asahi-tiny-abi-fixed-20261008/context-1.log": {
+      "sha256": "a9d110d460c7315b5315254d31e9361b91296fd62bed40dc2054b72ace9be22d"
+    },
+    "whisper/build/pr3905-asahi-tiny-abi-fixed-20261008/context-2.log": {
+      "sha256": "834ed98fe5d889703e2eff543bfa1f88f7bbc12e5963a3258dc6121d176a6018"
+    },
+    "whisper/build/pr3905-asahi-tiny-abi-fixed-20261008/blas-linkage.txt": {
+      "sha256": "2ef08c107826c5d52d3641d9ff43216057ec2ba04df2c6dce8e82bea12e89868"
+    }
+  },
+  "zero_mel_validation": {
+    "status": "PASS_EXACT_MAC_ZERO_MEL",
+    "model": "tiny",
+    "warmups": 3,
+    "measured_runs": 20,
+    "task_count": 1779,
+    "submissions_per_call": 1,
+    "expected_output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+    "all_bitwise_match_mac": true,
+    "scope": "Python complete encoder only; CPU cross-K/V and decoder excluded.",
+    "median_ms": {
+      "prepare_ms": 1.0299545001544175,
+      "dispatch_ms": 14.172044499900949,
+      "readback_ms": 5.819579999979396,
+      "total_ms": 21.021411499987153
+    },
+    "all_23_output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+    "native_output_scope": "Exact Mac output comparisons used Python hardware replay; native timing used the separately host-tested native transfer implementation."
+  },
+  "openblas_get_config": "OpenBLAS 0.3.29 DYNAMIC_ARCH NO_AFFINITY USE_OPENMP neoversen1 MAX_THREADS=128",
+  "openblas_get_corename": "neoversen1",
+  "host": {
+    "os": "Linux",
+    "kernel": "7.1.13+",
+    "machine": "aarch64",
+    "chip": "Apple M1 T8103/J313",
+    "clock_control": "No fixed-clock or thermal control; retained all measured samples."
+  },
+  "native_api_regression": {
+    "issue": "whisper.cpp external encoder API supplies 3000 frames then 80 mel channels; internal Runtime expects channels then frames.",
+    "fix": "Swap those dimensions at the public C API boundary.",
+    "adapter_source": "whisper/asahi_full_encoder.cpp",
+    "test_source": "experimental/test_pr_native_encoder.cpp",
+    "test_source_sha256": "82f290eec6597be58242452a0936e65d3ad553b50cfcba9cbca591744e2df9b2",
+    "host_test_result": "PASS_HOST_NATIVE_TRANSFER state=384 tasks=1779 cases=1 coefficient_banks=1 hardware_execution=unverified",
+    "host_test_scope": "FakeTransport public API staging, readback, rejection and cleanup, distinct from actual hardware benchmark."
+  },
+  "relative_to_mac": {
+    "openblas_percent_slower": 12.245433494042768,
+    "accelerate_time_ratio": 1.872707243929424
+  },
+  "dispatch_comparison": {
+    "scope": "Same zero mel and positions, three excluded warmups and 20 measurements. Blocking Asahi ioctl wall time versus Mac E5RT execute wall time; input staging, output read and CPU cross-K/V excluded. Actual executed instruction identity across the separately compiled E5RT and HWX exports remains unproven.",
+    "mac_receipt": "whisper/results/pr3905-m1-20261008/direct-dispatch.json",
+    "mac_receipt_sha256": "88a2956c4720864bff1cd8723a9e9aa20889dc54bdc7cb6388d89a5a4decc5d4",
+    "asahi_blocking_ioctl_median_ms": 14.172044499900949,
+    "mac_e5rt_execute_median_ms": 10.8935835,
+    "asahi_percent_slower": 30.095340067856903,
+    "native_ioctl_median_ms": 14.2065,
+    "native_vs_mac_percent_slower": 30.41163176469892,
+    "native_method": "Two contexts, two excluded warmups and five measurements each; count differs from the Mac three-warmup/twenty-measurement direct-dispatch run."
+  }
+}

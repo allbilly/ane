@@ -22,7 +22,7 @@ sys.path.insert(0, str(ROOT / "whisper/scripts"))
 from experimental.capture_macos_program import export
 from experimental.replay_capture import GATE
 from experimental.verify_macos_capture import verify
-from whisper.scripts.benchmark_asahi import compare, logits_records
+from whisper.validation import compare, logits_records
 from whisper.scripts.benchmark_macos import parse_runs
 from whisper.encoder_kernel import require
 

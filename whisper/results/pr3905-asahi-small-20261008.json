@@ -1,0 +1,562 @@
+{
+  "status": "PASS_ZERO_MEL_DIAGNOSTIC_TIMING",
+  "utc": "2026-10-08T08:54:07.346859+00:00",
+  "model": "small",
+  "method": "Two persistent contexts, two excluded warmups and five measurements each; four CPU and readback workers, full-context zero mel.",
+  "scope": "Native ANE encoder plus CPU cross-K/V; loading, compilation, Python replay checks and decoding excluded from encode_ms.",
+  "accuracy_qualification": "Strict full-decoder accuracy remains unverified; this is a diagnostic speed reference.",
+  "contexts": [
+    [
+      {
+        "phase": "warmup",
+        "index": 0,
+        "encode_ms": 295.074005,
+        "convert_ms": 0.263,
+        "pack_ms": 0.024,
+        "clear_ms": 0.282,
+        "dispatch_ms": 110.158,
+        "read_ms": 4.475,
+        "widen_ms": 1.058,
+        "ane_total_ms": 116.259,
+        "read_workers": 4
+      },
+      {
+        "phase": "warmup",
+        "index": 1,
+        "encode_ms": 282.659027,
+        "convert_ms": 0.302,
+        "pack_ms": 0.025,
+        "clear_ms": 0.259,
+        "dispatch_ms": 107.146,
+        "read_ms": 2.721,
+        "widen_ms": 0.719,
+        "ane_total_ms": 111.171,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 2,
+        "encode_ms": 283.167023,
+        "convert_ms": 0.302,
+        "pack_ms": 0.024,
+        "clear_ms": 0.27,
+        "dispatch_ms": 106.6,
+        "read_ms": 2.723,
+        "widen_ms": 0.771,
+        "ane_total_ms": 110.69,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 3,
+        "encode_ms": 282.258026,
+        "convert_ms": 0.302,
+        "pack_ms": 0.026,
+        "clear_ms": 0.239,
+        "dispatch_ms": 106.497,
+        "read_ms": 2.726,
+        "widen_ms": 0.715,
+        "ane_total_ms": 110.505,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 4,
+        "encode_ms": 281.439026,
+        "convert_ms": 0.302,
+        "pack_ms": 0.026,
+        "clear_ms": 0.269,
+        "dispatch_ms": 107.106,
+        "read_ms": 2.707,
+        "widen_ms": 0.774,
+        "ane_total_ms": 111.184,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 5,
+        "encode_ms": 281.409027,
+        "convert_ms": 0.308,
+        "pack_ms": 0.025,
+        "clear_ms": 0.249,
+        "dispatch_ms": 106.758,
+        "read_ms": 2.707,
+        "widen_ms": 0.773,
+        "ane_total_ms": 110.819,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 6,
+        "encode_ms": 281.078003,
+        "convert_ms": 0.302,
+        "pack_ms": 0.026,
+        "clear_ms": 0.253,
+        "dispatch_ms": 107.401,
+        "read_ms": 2.753,
+        "widen_ms": 0.67,
+        "ane_total_ms": 111.406,
+        "read_workers": 4
+      }
+    ],
+    [
+      {
+        "phase": "warmup",
+        "index": 0,
+        "encode_ms": 293.662018,
+        "convert_ms": 0.302,
+        "pack_ms": 0.021,
+        "clear_ms": 0.26,
+        "dispatch_ms": 108.254,
+        "read_ms": 2.966,
+        "widen_ms": 1.151,
+        "ane_total_ms": 112.953,
+        "read_workers": 4
+      },
+      {
+        "phase": "warmup",
+        "index": 1,
+        "encode_ms": 282.184021,
+        "convert_ms": 0.302,
+        "pack_ms": 0.025,
+        "clear_ms": 0.257,
+        "dispatch_ms": 107.661,
+        "read_ms": 2.657,
+        "widen_ms": 0.67,
+        "ane_total_ms": 111.572,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 2,
+        "encode_ms": 286.233002,
+        "convert_ms": 0.302,
+        "pack_ms": 0.025,
+        "clear_ms": 0.263,
+        "dispatch_ms": 106.78,
+        "read_ms": 2.726,
+        "widen_ms": 0.751,
+        "ane_total_ms": 110.846,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 3,
+        "encode_ms": 282.388,
+        "convert_ms": 0.302,
+        "pack_ms": 0.023,
+        "clear_ms": 0.259,
+        "dispatch_ms": 107.142,
+        "read_ms": 2.715,
+        "widen_ms": 0.71,
+        "ane_total_ms": 111.151,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 4,
+        "encode_ms": 288.754028,
+        "convert_ms": 0.302,
+        "pack_ms": 0.025,
+        "clear_ms": 0.251,
+        "dispatch_ms": 107.677,
+        "read_ms": 2.696,
+        "widen_ms": 0.72,
+        "ane_total_ms": 111.672,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 5,
+        "encode_ms": 281.016022,
+        "convert_ms": 0.307,
+        "pack_ms": 0.025,
+        "clear_ms": 0.25,
+        "dispatch_ms": 106.721,
+        "read_ms": 2.696,
+        "widen_ms": 0.777,
+        "ane_total_ms": 110.776,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 6,
+        "encode_ms": 283.149017,
+        "convert_ms": 0.31,
+        "pack_ms": 0.026,
+        "clear_ms": 0.268,
+        "dispatch_ms": 106.935,
+        "read_ms": 2.654,
+        "widen_ms": 0.775,
+        "ane_total_ms": 110.968,
+        "read_workers": 4
+      }
+    ]
+  ],
+  "timings_accepted": false,
+  "checkpoint_sha256": "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b",
+  "hwx_sha256": "f281f0d9d618a119e2f6e44826f91978d4ddf5eccd5d89e6f21fa06c5f2b4d08",
+  "position_sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384",
+  "task_count": 10015,
+  "payload_sha256": {
+    "commands": {
+      "bytes": 7258112,
+      "sha256": "a6b2e23f42f45d017205afc9a8667ae5aa71e0708bb35a12fe487b970b1fde45"
+    },
+    "constants": {
+      "bytes": 144384,
+      "sha256": "a65af56eb8d4aec4045f744238617af6e64ffc84ddbd73eb1fc1e4c49fd018f9"
+    },
+    "positions": {
+      "bytes": 2304000,
+      "sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384"
+    },
+    "coefficients-1": {
+      "bytes": 134201344,
+      "sha256": "b832d0928b7594ca4b708e444b4761d961f2ef6bbab3b76684a4a810bbb3c6cc"
+    },
+    "coefficients-8": {
+      "bytes": 40599552,
+      "sha256": "6b04e5644410cac861ff54c9dd03859e0cd597032e26aebf185e615e0c3d139a"
+    },
+    "bootstrap": {
+      "bytes": 504,
+      "sha256": "45a2d39a4e2e1b56239bc8ee7ea1c56f1e52a50b998bd91075d79355a959ba94"
+    }
+  },
+  "build_cache_sha256": "1b150aef1f0823e9e7bd24b91e33fa742e7d974f61983040fc71072eb06cb3e7",
+  "driver_sha256": "15abd95331917365d5aa7f0c83a839af04ec25d22a9eabc539c5eae86f4d8e49",
+  "driver_source_sha256": "9fc8098947fa1cddb27950cb1b60bb5816b15b4634d35961cacb6a367c75dfdf",
+  "library_sha256": {
+    "libggml-base.so": "09933e337bd77f646ab43694639348d0339636aa1a4518c7b357a383b2f63036",
+    "libggml-blas.so": "11f7924b11e0d9ff640fb26c93f41a1e7510ecf8ca466862236814af374c9df8",
+    "libggml-cpu.so": "3580a8efa417a91c9a17683af2384958d30ad588b21b60d3f5eacfae10fe0f6a",
+    "libggml.so": "7bc92e8da83d006cecf860d9b77447708ac2f1f78ed9e36adca2063b7ebb28ac",
+    "libwhisper.so": "993a722064dc5fc8c56626b120669d07b4216f646f72ef1e50fbce53e252fd39"
+  },
+  "adapter_source_sha256": "878901e10fd7918ff5142723282eb2d0108f730a08da1c6d74f3a7a5a074f7a1",
+  "cpu_affinity": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "resolved_blas_dependencies": {
+    "/home/asahi/ane/whisper/build/pr3905-asahi-native/bin/libggml-base.so.0": "09933e337bd77f646ab43694639348d0339636aa1a4518c7b357a383b2f63036",
+    "/home/asahi/ane/whisper/.cache/asahi-20261007/blas-devel/usr/lib64/libopenblaso.so.0": "066b889eaf04052b26b0e49f960636dd45f06af741a2bb86739b119b37af8a63",
+    "/lib64/libstdc++.so.6": "567b8f4d2edcba100a9ea1da822b34f2668bbb49fc7c616e322b76f83f34e5b5",
+    "/lib64/libm.so.6": "ec97fd4b451cb389fd8c7dd61a562e0d8166fe579dc4b881d3ed441e9a2fe6a3",
+    "/lib64/libgcc_s.so.1": "02f0e27d3f525c4a2ac473f00c152fbf6875f7b01b0282272c6e1122873e1b48",
+    "/lib64/libc.so.6": "f58dfc8ccacb0dfb274c0d7780906ee82337579e04fb6120e1d746d9693bf9f3",
+    "/lib64/libgomp.so.1": "3bcb3fb94dfb82238630b833830298e42649e68fe4c59818c72a73a0cc78f045",
+    "/home/asahi/.cache/applegpu-gpt2/runtime/usr/lib64/libgfortran.so.5": "9b18a98800cdfab1a775a7818ba2e0d376a772bf67dac682339c715404524500"
+  },
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "4",
+    "OMP_NUM_THREADS": "4",
+    "OMP_DYNAMIC": "FALSE",
+    "OMP_WAIT_POLICY": "PASSIVE"
+  },
+  "zero_mel_check": {
+    "expected_output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+    "warmups": 3,
+    "measured_runs": 20,
+    "samples": [
+      {
+        "index": 0,
+        "phase": "warmup",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 1.9260750000285043,
+        "dispatch_ms": 107.47373200001675,
+        "readback_ms": 12.226070999986405,
+        "total_ms": 121.62587800003166
+      },
+      {
+        "index": 1,
+        "phase": "warmup",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 1.53370200041536,
+        "dispatch_ms": 118.61293199990541,
+        "readback_ms": 16.60080100009509,
+        "total_ms": 136.74743500041586
+      },
+      {
+        "index": 2,
+        "phase": "warmup",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 1.8130339999515854,
+        "dispatch_ms": 171.7236130002675,
+        "readback_ms": 25.812844000029145,
+        "total_ms": 199.34949100024824
+      },
+      {
+        "index": 3,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 2.885903999867878,
+        "dispatch_ms": 234.8615000000791,
+        "readback_ms": 23.42652100014675,
+        "total_ms": 261.17392500009373
+      },
+      {
+        "index": 4,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 2.8531960001600964,
+        "dispatch_ms": 236.8886989997918,
+        "readback_ms": 26.3559670001996,
+        "total_ms": 266.0978620001515
+      },
+      {
+        "index": 5,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 2.9404449996945914,
+        "dispatch_ms": 238.3738590001485,
+        "readback_ms": 23.13964799986934,
+        "total_ms": 264.45395199971244
+      },
+      {
+        "index": 6,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 2.8703210000458057,
+        "dispatch_ms": 198.87945099981152,
+        "readback_ms": 21.84356999987358,
+        "total_ms": 223.5933419997309
+      },
+      {
+        "index": 7,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 2.921111999967252,
+        "dispatch_ms": 229.91298099987034,
+        "readback_ms": 26.64454800014937,
+        "total_ms": 259.47864099998696
+      },
+      {
+        "index": 8,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 3.071653000006336,
+        "dispatch_ms": 239.69222900041132,
+        "readback_ms": 26.74667299970679,
+        "total_ms": 269.51055500012444
+      },
+      {
+        "index": 9,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 3.6186510001243732,
+        "dispatch_ms": 239.04431500022838,
+        "readback_ms": 26.825046999874758,
+        "total_ms": 269.4880130002275
+      },
+      {
+        "index": 10,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 3.813650000211055,
+        "dispatch_ms": 240.6416819999322,
+        "readback_ms": 26.414049999857525,
+        "total_ms": 270.86938200000077
+      },
+      {
+        "index": 11,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 3.4201510002276336,
+        "dispatch_ms": 240.34122600005503,
+        "readback_ms": 28.723163999984536,
+        "total_ms": 272.4845410002672
+      },
+      {
+        "index": 12,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 3.6396919999788224,
+        "dispatch_ms": 240.58530799993605,
+        "readback_ms": 24.243683999884524,
+        "total_ms": 268.4686839997994
+      },
+      {
+        "index": 13,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 3.616816999965522,
+        "dispatch_ms": 238.45731699975659,
+        "readback_ms": 26.78525700002865,
+        "total_ms": 268.85939099975076
+      },
+      {
+        "index": 14,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 3.0976940001892217,
+        "dispatch_ms": 152.5013659997967,
+        "readback_ms": 21.87706899985642,
+        "total_ms": 177.47612899984233
+      },
+      {
+        "index": 15,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 2.866861999791581,
+        "dispatch_ms": 224.14604699997653,
+        "readback_ms": 26.616632000241225,
+        "total_ms": 253.62954100000934
+      },
+      {
+        "index": 16,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 3.1029860001581255,
+        "dispatch_ms": 235.52591399993617,
+        "readback_ms": 26.7843400001766,
+        "total_ms": 265.4132400002709
+      },
+      {
+        "index": 17,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 3.2773600000837178,
+        "dispatch_ms": 238.7546499999189,
+        "readback_ms": 26.453340999978536,
+        "total_ms": 268.48535099998116
+      },
+      {
+        "index": 18,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 2.8513199999906647,
+        "dispatch_ms": 239.4739380001738,
+        "readback_ms": 26.846505999856163,
+        "total_ms": 269.17176400002063
+      },
+      {
+        "index": 19,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 3.5979419999421225,
+        "dispatch_ms": 200.90452599970376,
+        "readback_ms": 12.76190199996563,
+        "total_ms": 217.26436999961152
+      },
+      {
+        "index": 20,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 1.621785000224918,
+        "dispatch_ms": 179.5550369997727,
+        "readback_ms": 27.487252999890188,
+        "total_ms": 208.66407499988782
+      },
+      {
+        "index": 21,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 2.9564450001089426,
+        "dispatch_ms": 239.93797799994354,
+        "readback_ms": 26.986337999915122,
+        "total_ms": 269.8807609999676
+      },
+      {
+        "index": 22,
+        "phase": "measure",
+        "output_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "prepare_ms": 3.401443999791809,
+        "dispatch_ms": 218.04732400005378,
+        "readback_ms": 25.79117799996311,
+        "total_ms": 247.2399459998087
+      }
+    ],
+    "scope": "Python complete encoder only; CPU cross-K/V and decoder excluded.",
+    "repeat_bitwise_equal": true,
+    "status": "PASS_EXACT_MAC_ZERO_MEL",
+    "median_ms": {
+      "prepare_ms": 3.0846735000977787,
+      "dispatch_ms": 237.63127899997016,
+      "readback_ms": 26.53498650010988,
+      "total_ms": 265.7555510002112
+    },
+    "native_output_scope": "Exact Mac output comparisons used Python hardware replay; native timing used the separately host-tested native transfer implementation."
+  },
+  "mac_reference_receipt_sha256": "8ade612d54931a6c86545e3584329903143fda61302108a618ed24bddf716d93",
+  "warmups_per_context": 2,
+  "measured_runs_per_context": 5,
+  "median_ms": {
+    "encode_ms": 282.32301299999995,
+    "convert_ms": 0.302,
+    "pack_ms": 0.025,
+    "clear_ms": 0.256,
+    "dispatch_ms": 106.8575,
+    "read_ms": 2.711,
+    "widen_ms": 0.761,
+    "ane_total_ms": 110.90700000000001
+  },
+  "encode_range_ms": [
+    281.016022,
+    288.754028
+  ],
+  "mac_reference": {
+    "receipt": "whisper/results/pr3905-m1-20261008/host-encode-only.json",
+    "origin": "Saved measurements executed on macOS, not execution of Accelerate on Linux.",
+    "backends": {
+      "apple": {
+        "median_encode_ms": 142.509506,
+        "range_encode_ms": [
+          135.651001,
+          164.609009
+        ]
+      },
+      "openblas": {
+        "median_encode_ms": 334.70901449999997,
+        "range_encode_ms": [
+          296.495026,
+          405.673004
+        ]
+      }
+    }
+  },
+  "measurement_valid": true,
+  "timings_accepted_definition": "False means strict full-decoder accuracy is not yet qualified; native timing itself completed successfully.",
+  "raw_evidence": {
+    "whisper/build/pr3905-asahi-small-20261008/summary.json": {
+      "sha256": "134f920a818ce4be04cd3f00655d3ec155e0c1de91423e45f1a7e94c5763b2b6"
+    },
+    "whisper/build/pr3905-asahi-small-20261008/context-1.log": {
+      "sha256": "e5e02e0d5b096d28b7bd9f7454a954f89f0b842888d8941d6556c603dc42f17e"
+    },
+    "whisper/build/pr3905-asahi-small-20261008/context-2.log": {
+      "sha256": "3e0c0fd4b449509dd6ec5051ba457ecb77bf3560e3748bbc9f4438c0a2f2bda7"
+    },
+    "whisper/build/pr3905-asahi-small-20261008/blas-linkage.txt": {
+      "sha256": "3007e5973c19716a4d19c0f02a8dc0779ea5656bcb654858691acd296152c054"
+    }
+  },
+  "host": {
+    "os": "Linux",
+    "kernel": "7.1.13+",
+    "machine": "aarch64",
+    "chip": "Apple M1 T8103/J313",
+    "clock_control": "No fixed-clock or thermal control; retained all measured samples."
+  },
+  "openblas_get_config": "OpenBLAS 0.3.29 DYNAMIC_ARCH NO_AFFINITY USE_OPENMP neoversen1 MAX_THREADS=128",
+  "openblas_get_corename": "neoversen1",
+  "coefficient_banks": 2,
+  "relative_to_mac": {
+    "openblas_percent_slower": -15.651207236905783,
+    "accelerate_time_ratio": 1.9810819707704268
+  },
+  "dispatch_comparison": {
+    "scope": "Same zero mel and positions, three excluded warmups and 20 measurements. Blocking Asahi ioctl wall time versus Mac E5RT execute wall time; input staging, output read and CPU cross-K/V excluded. Actual executed instruction identity across the separately compiled E5RT and HWX exports remains unproven.",
+    "mac_receipt": "whisper/results/pr3905-m1-20261008/direct-dispatch.json",
+    "mac_receipt_sha256": "88a2956c4720864bff1cd8723a9e9aa20889dc54bdc7cb6388d89a5a4decc5d4",
+    "asahi_blocking_ioctl_median_ms": 237.63127899997016,
+    "mac_e5rt_execute_median_ms": 79.408896,
+    "asahi_percent_slower": 199.25019861750775,
+    "native_ioctl_median_ms": 106.8575,
+    "native_vs_mac_percent_slower": 34.56615742397426,
+    "native_method": "Two contexts, two excluded warmups and five measurements each; count differs from the Mac three-warmup/twenty-measurement direct-dispatch run."
+  }
+}

@@ -5,14 +5,17 @@ import json
 from pathlib import Path
 import shutil
 import tempfile
+from types import SimpleNamespace
 import unittest
 import zlib
 
 import numpy as np
 
 from whisper.encoder_kernel import pack_port, port_view
-from whisper.paired_kernel import ROOT, pack_coefficients, reconstruct, validate_layout
+from whisper.paired_kernel import ROOT, pack_coefficients, reconstruct, validate_layout, write_payloads, validate_payloads
 from whisper.scripts.package_asahi_precision import accuracy_receipt
+from whisper.paired_replay import Projection
+from experimental.test_pr_encoder_replay import MemoryBuffer, Submission
 
 REPO = Path(__file__).resolve().parents[1]
 CHECKPOINT = REPO / "whisper/models/hf-tiny.en/model.safetensors"
@@ -112,6 +115,101 @@ class PairedKernelTests(unittest.TestCase):
             path.write_text(json.dumps(receipt))
             with self.assertRaisesRegex(ValueError, "full-vector gate"):
                 accuracy_receipt(path, programs)
+
+    def test_native_payloads_bind_templates_weights_and_descriptors(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp)/"payloads"
+            write_payloads(path, self.manifest, self.programs)
+            self.assertEqual(validate_payloads(path, CHECKPOINT), self.manifest)
+            descriptor = path/"layer0-fc1/native-layout.txt"
+            original = descriptor.read_text()
+            descriptor.write_text(original.replace(" 12032 ", " 12000 ", 1))
+            with self.assertRaisesRegex(ValueError, "descriptor changed"):
+                validate_payloads(path, CHECKPOINT)
+            descriptor.write_text(original)
+            coefficients = path/"layer0-fc1/coefficients.bin"
+            changed = bytearray(coefficients.read_bytes())
+            changed[-1] ^= 1
+            coefficients.write_bytes(changed)
+            with self.assertRaisesRegex(ValueError, "differs from checkpoint/template"):
+                validate_payloads(path, CHECKPOINT)
+
+    def test_native_runtime_gate_rejects_fallback_and_partial_execution(self):
+        from whisper.scripts.benchmark_native import check_runtime
+        base = "use gpu = 0\nfallbacks = 0 p / 0 h\nASAHI_PRECISION ready: shared arithmetic\n"
+        complete = "ASAHI_PRECISION encoder: projections=24 submissions=24 tasks=32 read_workers=4\n"
+        check_runtime(base+complete, 3, 1)
+        for changed in (complete.replace("tasks=32", "tasks=24"),
+                        complete.replace("read_workers=4", "read_workers=1"), ""):
+            with self.assertRaises(ValueError):
+                check_runtime(base+changed, 3, 1)
+        with self.assertRaisesRegex(ValueError, "fallback"):
+            check_runtime((base+complete).replace("0 p / 0 h", "1 p / 0 h"), 3, 1)
+        with self.assertRaisesRegex(ValueError, "unrequested"):
+            check_runtime(base+complete, 0, 1)
+
+
+class PairedReplayTransportTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _, cls.programs = reconstruct(CHECKPOINT)
+
+    def setUp(self):
+        MemoryBuffer.instances, MemoryBuffer.fail_at = [], None
+
+    def test_each_shape_submits_complete_tasks_and_preserves_four_padded_planes(self):
+        for name in ("layer0-q_proj", "layer0-fc1", "layer0-fc2"):
+            program = self.programs[name]
+            def submit(fd, opcode, request):
+                self.assertEqual((fd, opcode), (99, 123))
+                self.assertEqual((request.td_count, request.td_size),
+                                 (program["meta"]["td_count"], 628))
+                self.assertEqual(request.handles[1], 0)
+                self.assertEqual(request.tsk_size, len(program["commands"]))
+                self.assertEqual(runtime.buffers[0].map[:request.tsk_size], program["commands"])
+                self.assertEqual(runtime.buffers[0].map[request.tsk_size:-1], program["coefficients"])
+                self.assertEqual(runtime.bootstrap.map, program["bootstrap"])
+                rows = np.frombuffer(runtime.buffers[4].map, np.uint8).reshape(-1, 12032)
+                self.assertFalse(rows[:, 12000:].any())
+                view = runtime.input_view()
+                for plane in range(4):
+                    self.assertEqual(view[0, 0, 0, plane*1500], plane+1)
+                self.assertTrue(np.isnan(runtime.output_view()).all())
+                port_view(runtime.buffers[5].map, runtime.ports["output"])[...] = np.float16(2)
+            bindings = SimpleNamespace(Buffer=MemoryBuffer, Submit=Submission, SUBMIT=123, ioctl=submit)
+            runtime = Projection(program, 99, bindings)
+            runtime.input_view()[...] = 0
+            for plane in range(4):
+                runtime.input_view()[0, 0, 0, plane*1500] = plane+1
+            runtime.execute()
+            self.assertEqual(runtime.submissions, 1)
+            self.assertTrue((runtime.output_view() == 2).all())
+            runtime.release()
+            self.assertTrue(all(b.closed for b in MemoryBuffer.instances))
+            MemoryBuffer.instances = []
+
+    def test_unwritten_output_and_nonfinite_input_are_rejected(self):
+        calls = []
+        bindings = SimpleNamespace(Buffer=MemoryBuffer, Submit=Submission, SUBMIT=123,
+                                   ioctl=lambda *_:calls.append(1))
+        runtime = Projection(self.programs["layer0-q_proj"], 99, bindings)
+        try:
+            with self.assertRaisesRegex(ValueError, "unwritten/nonfinite"):
+                runtime.execute()
+            runtime.input_view()[0, 0, 0, 0] = np.inf
+            with self.assertRaisesRegex(ValueError, "nonfinite paired input"):
+                runtime.execute()
+            self.assertEqual(len(calls), 1)
+        finally:
+            runtime.release()
+
+    def test_partial_allocation_failure_releases_every_created_buffer(self):
+        MemoryBuffer.fail_at = 3
+        bindings = SimpleNamespace(Buffer=MemoryBuffer, Submit=Submission, SUBMIT=123)
+        with self.assertRaisesRegex(OSError, "allocation failed"):
+            Projection(self.programs["layer0-q_proj"], 99, bindings)
+        self.assertEqual(len(MemoryBuffer.instances), 3)
+        self.assertTrue(all(b.closed for b in MemoryBuffer.instances))
 
 
 if __name__ == "__main__":

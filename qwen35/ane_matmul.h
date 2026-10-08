@@ -1,6 +1,7 @@
 #ifndef QWEN35_ANE_MATMUL_H
 #define QWEN35_ANE_MATMUL_H
 #include <stdint.h>
+#include <stddef.h>
 typedef struct AneDevice AneDevice;
 typedef struct AnePlan AnePlan;
 typedef struct {
@@ -8,9 +9,13 @@ typedef struct {
     uint32_t read_threads_max;
 } AneTimings;
 AneDevice *ane_device_open(void);
+// Borrow the guarded M1 ANE fd; the device retains ownership.
+int ane_device_fd(const AneDevice *device);
 void ane_device_profile(AneDevice *device, int enabled);
 void ane_device_read_threads(AneDevice *device, int threads);
 AneTimings ane_device_timings(const AneDevice *device);
+// Copy whole cache lines; returns the actual number of read workers, or 0.
+int ane_copy_uncached(void *dst, const void *src, size_t bytes, int threads);
 void ane_device_close(AneDevice *device);
 AnePlan *ane_plan_create_f16(AneDevice *device, const uint16_t *weights,
                             int inputs, int outputs);

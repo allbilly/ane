@@ -2,7 +2,6 @@
 """Transcribe JFK with CPU, Metal and ANEForge; reject fallback and compare words."""
 import argparse
 import datetime
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -11,17 +10,13 @@ import re
 import statistics
 import subprocess
 import time
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def words(text):
-    return re.findall(r"[a-z0-9']+", text.lower())
-
-
-def digest(path):
-    with path.open("rb") as file:
-        return hashlib.file_digest(file, "sha256").hexdigest()
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from whisper.validation import digest, words
 
 
 def main():

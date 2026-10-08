@@ -100,6 +100,37 @@ the driver. `-i` skips removal of its persistent overlay soft dependency.
 Rebuild the modules against matching development files after a
 kernel update; a `.ko` is specific to its kernel build.
 
+## Submission profiling
+
+The optional `profile_submit=1` module parameter records the last submission
+in `/sys/module/ane/parameters/profile_last`, readable without sudo. It reports
+task count, enqueue/push/completion-wait/IRQ-drain/release wall times in
+nanoseconds, drained event counts and the result. Completion wait includes
+polling and scheduling; it is not an ANE cycle counter. Profiling defaults off
+and does not change the submission ABI or task registers.
+
+To load the locally built profiling driver while retaining the existing overlay:
+
+```sh
+sudo rmmod ane && sudo insmod "$PWD/kmod/ane.ko" profile_submit=1
+sudo setfacl -m "u:$USER:rw" /dev/accel/accel0
+cat /sys/module/ane/parameters/profile_last
+```
+
+For controlled polling experiments, `poll_sleep_us` changes the maximum sleep
+argument passed to the existing completion poll. It defaults to the original
+1 microsecond, accepts 0 for busy polling, and rejects values above 1,000.
+The one-second submission timeout is unchanged. Updating this parameter
+normally requires root; keep it at 1 outside an explicit experiment. The new
+control is build checked; interval comparisons still need hardware validation.
+
+On this M1, the unchanged 1,779-task Whisper stream was profiled on all three
+clips with bitwise output checks. Median dispatch was 14.20 ms, including
+14.16 ms in completion wait, 0.009 ms enqueue and 0.011 ms IRQ drain. Thus
+enqueue and IRQ cleanup do not explain the Mac execution gap. See
+[`whisper/results/asahi-fast-20261007.json`](../whisper/results/asahi-fast-20261007.json)
+for scope, repetition counts and the CPU/core-load controls.
+
 `ane-overlay.dts` contains external phandle markers that the module resolves
 at load time. **Do not pass the generated `ane.dtbo` directly to a boot loader
 or a generic overlay loader.** The embedded overlay has no dependency on

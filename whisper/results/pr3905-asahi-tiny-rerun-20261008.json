@@ -1,0 +1,768 @@
+{
+  "status": "PASS_ZERO_MEL_DIAGNOSTIC_TIMING",
+  "utc": "2026-10-08T09:48:23.556312+00:00",
+  "model": "tiny",
+  "method": "Two persistent contexts, two excluded warmups and five measurements each; four CPU and readback workers, full-context zero mel.",
+  "scope": "Native ANE encoder plus CPU cross-K/V; loading, compilation, Python replay checks and decoding excluded from encode_ms.",
+  "accuracy_qualification": "Strict full-decoder accuracy remains unverified; this is a diagnostic speed reference.",
+  "contexts": [
+    [
+      {
+        "phase": "warmup",
+        "index": 0,
+        "encode_ms": 32.690002,
+        "convert_ms": 0.28,
+        "pack_ms": 0.026,
+        "clear_ms": 0.159,
+        "dispatch_ms": 14.062,
+        "read_ms": 1.434,
+        "widen_ms": 0.427,
+        "ane_total_ms": 16.388,
+        "read_workers": 4
+      },
+      {
+        "phase": "warmup",
+        "index": 1,
+        "encode_ms": 31.901001,
+        "convert_ms": 0.302,
+        "pack_ms": 0.023,
+        "clear_ms": 0.13,
+        "dispatch_ms": 14.042,
+        "read_ms": 1.356,
+        "widen_ms": 0.341,
+        "ane_total_ms": 16.195,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 2,
+        "encode_ms": 32.030003,
+        "convert_ms": 0.302,
+        "pack_ms": 0.024,
+        "clear_ms": 0.133,
+        "dispatch_ms": 14.204,
+        "read_ms": 1.33,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.379,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 3,
+        "encode_ms": 31.933001,
+        "convert_ms": 0.302,
+        "pack_ms": 0.024,
+        "clear_ms": 0.132,
+        "dispatch_ms": 14.217,
+        "read_ms": 1.313,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.374,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 4,
+        "encode_ms": 32.43,
+        "convert_ms": 0.302,
+        "pack_ms": 0.022,
+        "clear_ms": 0.137,
+        "dispatch_ms": 14.03,
+        "read_ms": 1.869,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.747,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 5,
+        "encode_ms": 32.083,
+        "convert_ms": 0.302,
+        "pack_ms": 0.024,
+        "clear_ms": 0.134,
+        "dispatch_ms": 14.257,
+        "read_ms": 1.323,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.427,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 6,
+        "encode_ms": 31.919001,
+        "convert_ms": 0.302,
+        "pack_ms": 0.023,
+        "clear_ms": 0.133,
+        "dispatch_ms": 14.112,
+        "read_ms": 1.356,
+        "widen_ms": 0.386,
+        "ane_total_ms": 16.313,
+        "read_workers": 4
+      }
+    ],
+    [
+      {
+        "phase": "warmup",
+        "index": 0,
+        "encode_ms": 34.384003,
+        "convert_ms": 0.303,
+        "pack_ms": 0.023,
+        "clear_ms": 0.149,
+        "dispatch_ms": 14.295,
+        "read_ms": 2.898,
+        "widen_ms": 0.433,
+        "ane_total_ms": 18.101,
+        "read_workers": 4
+      },
+      {
+        "phase": "warmup",
+        "index": 1,
+        "encode_ms": 36.356003,
+        "convert_ms": 0.302,
+        "pack_ms": 0.024,
+        "clear_ms": 0.137,
+        "dispatch_ms": 14.273,
+        "read_ms": 2.641,
+        "widen_ms": 0.393,
+        "ane_total_ms": 17.772,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 2,
+        "encode_ms": 32.114002,
+        "convert_ms": 0.305,
+        "pack_ms": 0.024,
+        "clear_ms": 0.14,
+        "dispatch_ms": 14.222,
+        "read_ms": 1.343,
+        "widen_ms": 0.39,
+        "ane_total_ms": 16.423,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 3,
+        "encode_ms": 32.126003,
+        "convert_ms": 0.305,
+        "pack_ms": 0.024,
+        "clear_ms": 0.138,
+        "dispatch_ms": 14.244,
+        "read_ms": 1.341,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.438,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 4,
+        "encode_ms": 32.07,
+        "convert_ms": 0.302,
+        "pack_ms": 0.025,
+        "clear_ms": 0.141,
+        "dispatch_ms": 14.208,
+        "read_ms": 1.383,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.446,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 5,
+        "encode_ms": 32.745003,
+        "convert_ms": 0.302,
+        "pack_ms": 0.025,
+        "clear_ms": 0.138,
+        "dispatch_ms": 14.2,
+        "read_ms": 1.361,
+        "widen_ms": 0.387,
+        "ane_total_ms": 16.412,
+        "read_workers": 4
+      },
+      {
+        "phase": "measure",
+        "index": 6,
+        "encode_ms": 33.503002,
+        "convert_ms": 0.307,
+        "pack_ms": 0.025,
+        "clear_ms": 0.147,
+        "dispatch_ms": 14.294,
+        "read_ms": 1.986,
+        "widen_ms": 0.407,
+        "ane_total_ms": 17.167,
+        "read_workers": 4
+      }
+    ]
+  ],
+  "timings_accepted": false,
+  "checkpoint_sha256": "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21",
+  "hwx_sha256": "405a659494c647b85ea01813b330c97aadad5216d3bc80f0c1a2a1235a95ec42",
+  "position_sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238",
+  "task_count": 1779,
+  "payload_sha256": {
+    "commands": {
+      "bytes": 1277952,
+      "sha256": "29610cac184b8c8d4a062de764ffd10f376a93e9908ae51d11889f8634041666"
+    },
+    "constants": {
+      "bytes": 26112,
+      "sha256": "066797151963c8a30a11a65979317f3ca4dd3d52e6d94efcbc9e336164c556ef"
+    },
+    "positions": {
+      "bytes": 1152000,
+      "sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+    },
+    "coefficients-1": {
+      "bytes": 15450112,
+      "sha256": "0279e2089fff53a10dd05fcbb4906b14b351f1b606e1cf420c1c3453681c59ca"
+    },
+    "bootstrap": {
+      "bytes": 504,
+      "sha256": "373fe84dffa3225eb4754e2172cd8d4b0f0150abf1cf3a768f10a4d54cb0275d"
+    }
+  },
+  "build_cache_sha256": "1b150aef1f0823e9e7bd24b91e33fa742e7d974f61983040fc71072eb06cb3e7",
+  "driver_sha256": "15abd95331917365d5aa7f0c83a839af04ec25d22a9eabc539c5eae86f4d8e49",
+  "driver_source_sha256": "9fc8098947fa1cddb27950cb1b60bb5816b15b4634d35961cacb6a367c75dfdf",
+  "library_sha256": {
+    "libggml-base.so": "09933e337bd77f646ab43694639348d0339636aa1a4518c7b357a383b2f63036",
+    "libggml-blas.so": "11f7924b11e0d9ff640fb26c93f41a1e7510ecf8ca466862236814af374c9df8",
+    "libggml-cpu.so": "3580a8efa417a91c9a17683af2384958d30ad588b21b60d3f5eacfae10fe0f6a",
+    "libggml.so": "7bc92e8da83d006cecf860d9b77447708ac2f1f78ed9e36adca2063b7ebb28ac",
+    "libwhisper.so": "993a722064dc5fc8c56626b120669d07b4216f646f72ef1e50fbce53e252fd39"
+  },
+  "adapter_source_sha256": "878901e10fd7918ff5142723282eb2d0108f730a08da1c6d74f3a7a5a074f7a1",
+  "cpu_affinity": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "resolved_blas_dependencies": {
+    "/home/asahi/ane/whisper/build/pr3905-asahi-native/bin/libggml-base.so.0": "09933e337bd77f646ab43694639348d0339636aa1a4518c7b357a383b2f63036",
+    "/home/asahi/ane/whisper/.cache/asahi-20261007/blas-devel/usr/lib64/libopenblaso.so.0": "066b889eaf04052b26b0e49f960636dd45f06af741a2bb86739b119b37af8a63",
+    "/lib64/libstdc++.so.6": "567b8f4d2edcba100a9ea1da822b34f2668bbb49fc7c616e322b76f83f34e5b5",
+    "/lib64/libm.so.6": "ec97fd4b451cb389fd8c7dd61a562e0d8166fe579dc4b881d3ed441e9a2fe6a3",
+    "/lib64/libgcc_s.so.1": "02f0e27d3f525c4a2ac473f00c152fbf6875f7b01b0282272c6e1122873e1b48",
+    "/lib64/libc.so.6": "f58dfc8ccacb0dfb274c0d7780906ee82337579e04fb6120e1d746d9693bf9f3",
+    "/lib64/libgomp.so.1": "3bcb3fb94dfb82238630b833830298e42649e68fe4c59818c72a73a0cc78f045",
+    "/home/asahi/.cache/applegpu-gpt2/runtime/usr/lib64/libgfortran.so.5": "9b18a98800cdfab1a775a7818ba2e0d376a772bf67dac682339c715404524500"
+  },
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "4",
+    "OMP_NUM_THREADS": "4",
+    "OMP_DYNAMIC": "FALSE",
+    "OMP_WAIT_POLICY": "PASSIVE"
+  },
+  "zero_mel_check": {
+    "expected_output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+    "warmups": 3,
+    "measured_runs": 20,
+    "samples": [
+      {
+        "index": 0,
+        "phase": "warmup",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.189650000014808,
+        "dispatch_ms": 14.060008999877027,
+        "readback_ms": 5.444340000394732,
+        "total_ms": 20.693999000286567
+      },
+      {
+        "index": 1,
+        "phase": "warmup",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 0.9878609998850152,
+        "dispatch_ms": 13.85818000017025,
+        "readback_ms": 5.542504999539233,
+        "total_ms": 20.3885459995945
+      },
+      {
+        "index": 2,
+        "phase": "warmup",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 0.989193999885174,
+        "dispatch_ms": 14.072384999963106,
+        "readback_ms": 6.284078000135196,
+        "total_ms": 21.345656999983476
+      },
+      {
+        "index": 3,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.2392319995342405,
+        "dispatch_ms": 14.144384000246646,
+        "readback_ms": 5.56925399996544,
+        "total_ms": 20.952869999746326
+      },
+      {
+        "index": 4,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.033859999552078,
+        "dispatch_ms": 13.900929000556062,
+        "readback_ms": 5.5437549999624025,
+        "total_ms": 20.478544000070542
+      },
+      {
+        "index": 5,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.113568000619125,
+        "dispatch_ms": 13.930303000051936,
+        "readback_ms": 5.549796999730461,
+        "total_ms": 20.59366800040152
+      },
+      {
+        "index": 6,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 0.9440699996048352,
+        "dispatch_ms": 13.737264999690524,
+        "readback_ms": 5.327466000380809,
+        "total_ms": 20.00880099967617
+      },
+      {
+        "index": 7,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 0.8493220002492308,
+        "dispatch_ms": 13.778638000076171,
+        "readback_ms": 5.517505999705463,
+        "total_ms": 20.145466000030865
+      },
+      {
+        "index": 8,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 0.9114459999182145,
+        "dispatch_ms": 13.825220999933663,
+        "readback_ms": 5.660212000293541,
+        "total_ms": 20.396879000145418
+      },
+      {
+        "index": 9,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 0.9350279997306643,
+        "dispatch_ms": 14.021094000781886,
+        "readback_ms": 5.66612799957511,
+        "total_ms": 20.62225000008766
+      },
+      {
+        "index": 10,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 0.9488200003033853,
+        "dispatch_ms": 14.068884000153048,
+        "readback_ms": 5.874999999832653,
+        "total_ms": 20.892704000289086
+      },
+      {
+        "index": 11,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 0.973903000158316,
+        "dispatch_ms": 14.247549000174331,
+        "readback_ms": 6.025122999744781,
+        "total_ms": 21.246575000077428
+      },
+      {
+        "index": 12,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.0185690007347148,
+        "dispatch_ms": 14.231174000087776,
+        "readback_ms": 5.968582999230421,
+        "total_ms": 21.21832600005291
+      },
+      {
+        "index": 13,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.011194000057003,
+        "dispatch_ms": 14.271090999500302,
+        "readback_ms": 6.199829000252066,
+        "total_ms": 21.48211399980937
+      },
+      {
+        "index": 14,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.1037349995604018,
+        "dispatch_ms": 14.48446199992759,
+        "readback_ms": 6.150371000330779,
+        "total_ms": 21.73856799981877
+      },
+      {
+        "index": 15,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.1349419992257026,
+        "dispatch_ms": 14.486129000033543,
+        "readback_ms": 6.296077000115474,
+        "total_ms": 21.91714799937472
+      },
+      {
+        "index": 16,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.098817000638519,
+        "dispatch_ms": 14.531252999404387,
+        "readback_ms": 6.128539000201272,
+        "total_ms": 21.758609000244178
+      },
+      {
+        "index": 17,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 0.9389039996676729,
+        "dispatch_ms": 14.619335000134015,
+        "readback_ms": 6.220620000021881,
+        "total_ms": 21.77885899982357
+      },
+      {
+        "index": 18,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.1384420004105777,
+        "dispatch_ms": 15.277700999831723,
+        "readback_ms": 6.6824469995481195,
+        "total_ms": 23.09858999979042
+      },
+      {
+        "index": 19,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.2729410000247299,
+        "dispatch_ms": 15.5009890004294,
+        "readback_ms": 6.700571999317617,
+        "total_ms": 23.474501999771746
+      },
+      {
+        "index": 20,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.2658570003623026,
+        "dispatch_ms": 15.552113999547146,
+        "readback_ms": 6.644613999924331,
+        "total_ms": 23.46258499983378
+      },
+      {
+        "index": 21,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.2230660004206584,
+        "dispatch_ms": 15.54244699946139,
+        "readback_ms": 7.035276000351587,
+        "total_ms": 23.800789000233635
+      },
+      {
+        "index": 22,
+        "phase": "measure",
+        "output_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "prepare_ms": 1.2677730001087184,
+        "dispatch_ms": 15.576196999973035,
+        "readback_ms": 7.152107000365504,
+        "total_ms": 23.996077000447258
+      }
+    ],
+    "scope": "Python complete encoder only; CPU cross-K/V and decoder excluded.",
+    "repeat_bitwise_equal": true,
+    "status": "PASS_EXACT_MAC_ZERO_MEL",
+    "median_ms": {
+      "prepare_ms": 1.0663385000952985,
+      "dispatch_ms": 14.259319999837317,
+      "readback_ms": 6.076830999973026,
+      "total_ms": 21.3643444999434
+    }
+  },
+  "mac_reference_receipt_sha256": "8ade612d54931a6c86545e3584329903143fda61302108a618ed24bddf716d93",
+  "mac_reference": {
+    "apple": {
+      "runs": [
+        {
+          "round": 1,
+          "index": 2,
+          "encode_ms": 17.301001,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 1,
+          "index": 3,
+          "encode_ms": 16.716002,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 1,
+          "index": 4,
+          "encode_ms": 16.505001,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 1,
+          "index": 5,
+          "encode_ms": 16.666,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 1,
+          "index": 6,
+          "encode_ms": 16.766001,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 2,
+          "index": 2,
+          "encode_ms": 17.244001,
+          "log": "tiny-encode-only-apple-2.log"
+        },
+        {
+          "round": 2,
+          "index": 3,
+          "encode_ms": 17.138,
+          "log": "tiny-encode-only-apple-2.log"
+        },
+        {
+          "round": 2,
+          "index": 4,
+          "encode_ms": 17.208,
+          "log": "tiny-encode-only-apple-2.log"
+        },
+        {
+          "round": 2,
+          "index": 5,
+          "encode_ms": 17.431002,
+          "log": "tiny-encode-only-apple-2.log"
+        },
+        {
+          "round": 2,
+          "index": 6,
+          "encode_ms": 18.339001,
+          "log": "tiny-encode-only-apple-2.log"
+        }
+      ],
+      "warmups": [
+        {
+          "round": 1,
+          "index": 0,
+          "encode_ms": 24.463001,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 1,
+          "index": 1,
+          "encode_ms": 18.181002,
+          "log": "tiny-encode-only-apple-1.log"
+        },
+        {
+          "round": 2,
+          "index": 0,
+          "encode_ms": 19.652,
+          "log": "tiny-encode-only-apple-2.log"
+        },
+        {
+          "round": 2,
+          "index": 1,
+          "encode_ms": 18.839001,
+          "log": "tiny-encode-only-apple-2.log"
+        }
+      ],
+      "contexts": [
+        {
+          "round": 1,
+          "command": [
+            "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/benchmark-encode",
+            "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+            "2",
+            "5"
+          ],
+          "env_overrides": {
+            "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+            "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+            "OPENBLAS_NUM_THREADS": "4",
+            "OMP_NUM_THREADS": "4",
+            "VECLIB_MAXIMUM_THREADS": "4"
+          },
+          "log": "tiny-encode-only-apple-1.log",
+          "log_sha256": "87574a0da80ba4bba3918fd52a3feb85daef9ce9c568271bcca6bf13ce3fe0ce",
+          "driver_binary_sha256": "2d39e76c386bfb2f8569fda1714788a314cde1659baebb10dd65e54577c5dcab"
+        },
+        {
+          "round": 2,
+          "command": [
+            "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/benchmark-encode",
+            "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+            "2",
+            "5"
+          ],
+          "env_overrides": {
+            "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+            "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+            "OPENBLAS_NUM_THREADS": "4",
+            "OMP_NUM_THREADS": "4",
+            "VECLIB_MAXIMUM_THREADS": "4"
+          },
+          "log": "tiny-encode-only-apple-2.log",
+          "log_sha256": "99e4106b8b5a5c6f0a0e25e927e1a24a49ffebb939e74bb55c2fa128b05b1e5e",
+          "driver_binary_sha256": "2d39e76c386bfb2f8569fda1714788a314cde1659baebb10dd65e54577c5dcab"
+        }
+      ],
+      "median_encode_ms": 17.173000000000002,
+      "range_encode_ms": [
+        16.505001,
+        18.339001
+      ]
+    },
+    "openblas": {
+      "runs": [
+        {
+          "round": 1,
+          "index": 2,
+          "encode_ms": 29.381001,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 1,
+          "index": 3,
+          "encode_ms": 27.167002,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 1,
+          "index": 4,
+          "encode_ms": 27.922001,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 1,
+          "index": 5,
+          "encode_ms": 26.745001,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 1,
+          "index": 6,
+          "encode_ms": 25.077002,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 2,
+          "index": 2,
+          "encode_ms": 33.539001,
+          "log": "tiny-encode-only-openblas-2.log"
+        },
+        {
+          "round": 2,
+          "index": 3,
+          "encode_ms": 26.541,
+          "log": "tiny-encode-only-openblas-2.log"
+        },
+        {
+          "round": 2,
+          "index": 4,
+          "encode_ms": 32.657001,
+          "log": "tiny-encode-only-openblas-2.log"
+        },
+        {
+          "round": 2,
+          "index": 5,
+          "encode_ms": 34.669003,
+          "log": "tiny-encode-only-openblas-2.log"
+        },
+        {
+          "round": 2,
+          "index": 6,
+          "encode_ms": 31.219002,
+          "log": "tiny-encode-only-openblas-2.log"
+        }
+      ],
+      "warmups": [
+        {
+          "round": 1,
+          "index": 0,
+          "encode_ms": 29.949001,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 1,
+          "index": 1,
+          "encode_ms": 24.924002,
+          "log": "tiny-encode-only-openblas-1.log"
+        },
+        {
+          "round": 2,
+          "index": 0,
+          "encode_ms": 28.261002,
+          "log": "tiny-encode-only-openblas-2.log"
+        },
+        {
+          "round": 2,
+          "index": 1,
+          "encode_ms": 27.859001,
+          "log": "tiny-encode-only-openblas-2.log"
+        }
+      ],
+      "contexts": [
+        {
+          "round": 1,
+          "command": [
+            "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/benchmark-encode",
+            "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+            "2",
+            "5"
+          ],
+          "env_overrides": {
+            "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+            "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+            "OPENBLAS_NUM_THREADS": "4",
+            "OMP_NUM_THREADS": "4",
+            "VECLIB_MAXIMUM_THREADS": "4"
+          },
+          "log": "tiny-encode-only-openblas-1.log",
+          "log_sha256": "74d1a37ac3bc18af4f252a23635c6a83ade26039c2cb9126a5d61a08c96b039e",
+          "driver_binary_sha256": "29a27e30bbe773604962d00fe8a3d965f83dc4817bc2b9c127f94fe810650dae"
+        },
+        {
+          "round": 2,
+          "command": [
+            "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/benchmark-encode",
+            "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+            "2",
+            "5"
+          ],
+          "env_overrides": {
+            "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+            "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+            "OPENBLAS_NUM_THREADS": "4",
+            "OMP_NUM_THREADS": "4",
+            "VECLIB_MAXIMUM_THREADS": "4"
+          },
+          "log": "tiny-encode-only-openblas-2.log",
+          "log_sha256": "0a03382c5636244e1d21d17b830ad0131d656ccedecebe2304831fc18807c712",
+          "driver_binary_sha256": "29a27e30bbe773604962d00fe8a3d965f83dc4817bc2b9c127f94fe810650dae"
+        }
+      ],
+      "median_encode_ms": 28.651501000000003,
+      "range_encode_ms": [
+        25.077002,
+        34.669003
+      ]
+    }
+  },
+  "warmups_per_context": 2,
+  "measured_runs_per_context": 5,
+  "median_ms": {
+    "encode_ms": 32.098501,
+    "convert_ms": 0.302,
+    "pack_ms": 0.024,
+    "clear_ms": 0.1375,
+    "dispatch_ms": 14.2125,
+    "read_ms": 1.3495,
+    "widen_ms": 0.387,
+    "ane_total_ms": 16.424999999999997
+  },
+  "encode_range_ms": [
+    31.919001,
+    33.503002
+  ]
+}

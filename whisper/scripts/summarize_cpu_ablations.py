@@ -46,9 +46,12 @@ def medians(rows):
     if "ane_api_ms" in rows[0]:
         result["ane_api_ms"] = {key: statistics.median(row["ane_api_ms"][key] for row in rows)
             for key in rows[0]["ane_api_ms"]}
-    result["cross_kv_matrix_ms"] = {key: statistics.median(
-        sum(matrix[key + "_us"] for matrix in row["cross_kv_matrices"]) / 1000 for row in rows)
-        for key in ("allocate", "convert", "thread_setup", "gemm", "total")}
+    if "cross_kv_matrices" in rows[0]:
+        result["cross_kv_matrix_ms"] = {key: statistics.median(
+            sum(matrix[key + "_us"] for matrix in row["cross_kv_matrices"]) / 1000 for row in rows)
+            for key in ("allocate", "convert", "thread_setup", "gemm", "total")}
+    elif any("cross_kv_matrices" in row for row in rows):
+        raise ValueError("inconsistent cross-K/V profiling across measurements")
     return result
 
 

@@ -76,11 +76,6 @@ bool whisper_asahi_enabled() {
     return true;
 }
 
-void whisper_asahi_profile_stage(const char * name, int64_t start_us) {
-    if (std::getenv("WHISPER_ASAHI_PROFILE"))
-        std::fprintf(stderr, "ASAHI_PROFILE stage: %s=%.3f ms\n", name, (ggml_time_us()-start_us)/1000.);
-}
-
 WhisperAsahi::WhisperAsahi() : impl(new Impl) {
     impl->device = ane_device_open();
     if (!impl->device) GGML_ABORT("Asahi ANE requested but device initialization failed");
@@ -188,36 +183,4 @@ void WhisperAsahi::finish_encoder(int layers, int positions) {
     }
     impl->projections = 0;
     impl->previous_submissions = total;
-}
-
-static FILE * trace_file(const char * name, const char * mode) {
-    const char * directory = std::getenv("WHISPER_ASAHI_TRACE");
-    if (!directory || !*directory) return nullptr;
-    FILE * file = std::fopen((std::string(directory) + "/" + name).c_str(), mode);
-    if (!file) GGML_ABORT("could not open requested Asahi trace");
-    return file;
-}
-
-static void write_checked(FILE * file, const void * data, size_t bytes) {
-    if (std::fwrite(data, 1, bytes, file) != bytes) GGML_ABORT("Asahi trace write failed");
-}
-
-void whisper_asahi_trace_tensor(const char * name, const ggml_tensor * tensor) {
-    FILE * file = trace_file(name, "wb");
-    if (!file) return;
-    GGML_ASSERT(tensor->type == GGML_TYPE_F32 && ggml_is_contiguous(tensor));
-    std::vector<float> values(ggml_nelements(tensor));
-    ggml_backend_tensor_get(tensor, values.data(), 0, ggml_nbytes(tensor));
-    write_checked(file, values.data(), values.size()*sizeof(float));
-    if (std::fclose(file)) GGML_ABORT("Asahi trace close failed");
-}
-
-void whisper_asahi_trace_logits(const float * logits, int vocabulary, const int32_t * tokens, int count) {
-    FILE * file = trace_file("logits.bin", "ab");
-    if (!file) return;
-    const int32_t header[] = {count, vocabulary};
-    write_checked(file, header, sizeof(header));
-    write_checked(file, tokens, count*sizeof(int32_t));
-    write_checked(file, logits, vocabulary*sizeof(float));
-    if (std::fclose(file)) GGML_ABORT("Asahi trace close failed");
 }

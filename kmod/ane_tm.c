@@ -3,7 +3,54 @@
 
 #include <linux/iopoll.h>
 #include <linux/device.h>
+#include <linux/ktime.h>
+#include <linux/moduleparam.h>
 #include "ane_tm.h"
+
+static bool profile_submit;
+module_param(profile_submit, bool, 0644);
+MODULE_PARM_DESC(profile_submit, "Expose submission stage wall times and drained IRQ event counts");
+
+static unsigned int poll_sleep_us = 1;
+
+static int poll_sleep_us_set(const char *value, const struct kernel_param *param)
+{
+	unsigned int interval;
+	int err = kstrtouint(value, 0, &interval);
+
+	if (err)
+		return err;
+	if (interval > 1000)
+		return -ERANGE;
+	WRITE_ONCE(*(unsigned int *)param->arg, interval);
+	return 0;
+}
+
+static const struct kernel_param_ops poll_sleep_us_ops = {
+	.set = poll_sleep_us_set,
+	.get = param_get_uint,
+};
+module_param_cb(poll_sleep_us, &poll_sleep_us_ops, &poll_sleep_us, 0644);
+MODULE_PARM_DESC(poll_sleep_us, "Completion poll sleep in microseconds (0 busy polls, 1 default, max 1000)");
+
+static DEFINE_MUTEX(profile_lock);
+static char profile_last[384] = "no submissions profiled\n";
+
+static int profile_last_get(char *buffer, const struct kernel_param *param)
+{
+	int length;
+
+	mutex_lock(&profile_lock);
+	length = scnprintf(buffer, sizeof(profile_last), "%s", profile_last);
+	mutex_unlock(&profile_lock);
+	return length;
+}
+
+static const struct kernel_param_ops profile_last_ops = {
+	.get = profile_last_get,
+};
+module_param_cb(profile_last, &profile_last_ops, NULL, 0444);
+MODULE_PARM_DESC(profile_last, "Last profiled submission: stage nanoseconds, IRQ counts and result");
 
 #define ANE_TQ_COUNT 8
 static const int TQ_PRTY_TABLE[ANE_TQ_COUNT] = { 0x1, 0x2, 0x3,	 0x4,
@@ -77,6 +124,11 @@ void ane_tm_disable(struct ane_device *ane)
 int ane_tm_enqueue(struct ane_device *ane, struct ane_request *req)
 {
 	int qid = req->qid;
+	u64 start = 0;
+
+	req->profile_submit = READ_ONCE(profile_submit);
+	if (req->profile_submit)
+		start = ktime_get_ns();
 
 	tq_write32(ane, TQ_STATUS(qid), 0x1);
 
@@ -87,6 +139,8 @@ int ane_tm_enqueue(struct ane_device *ane, struct ane_request *req)
 	tq_write32(ane, TQ_SIZE1(qid), ((req->td_size >> 2) - 1) << 0x10);
 	tq_write32(ane, TQ_ADDR1(qid), req->btsp_iova);
 	tq_write32(ane, TQ_NID1(qid), (req->nid & 0xff) << 8 | 1);
+	if (req->profile_submit)
+		req->enqueue_ns = ktime_get_ns() - start;
 
 	return 0;
 }
@@ -99,53 +153,80 @@ static void ane_tm_push_tq(struct ane_device *ane, struct ane_request *req)
 	tm_write32(ane, TM_PUSH, TQ_PRTY_TABLE[qid] | (qid & 7) << 8); // magic
 }
 
-static int ane_tm_get_status(struct ane_device *ane)
+static int ane_tm_get_status(struct ane_device *ane, unsigned int sleep_us)
 {
 	int err;
 	u32 status;
 
 	err = readl_poll_timeout(ane->engine + ANE_TM_BASE + TM_STATUS, status,
-				 (status & TM_IS_IDLE), 1, 1000000);
+				 (status & TM_IS_IDLE), sleep_us, 1000000);
 	if (err)
 		dev_err(ane->dev, "tm execution failed w/ %d\n", err);
 
 	return err;
 }
 
-static void ane_tm_handle_irq(struct ane_device *ane)
+static void ane_tm_handle_irq(struct ane_device *ane, u32 *counts)
 {
 	int line;
+	u32 n;
 
 	line = 0;
-	for (u32 n = 0; n < tm_read32(ane, TM_IRQ_EVTC(line)); n++) {
+	for (n = 0; n < tm_read32(ane, TM_IRQ_EVTC(line)); n++) {
 		tm_read32(ane, TM_IRQ_INFO(line));
 		tm_read32(ane, TM_IRQ_UNK1(line));
 		tm_read32(ane, TM_IRQ_TMST(line));
 		tm_read32(ane, TM_IRQ_UNK2(line));
 	}
+	if (counts)
+		counts[line] = n;
 
 	tm_write32(ane, TM_IRQ_ACK, tm_read32(ane, TM_IRQ_ACK) | 2);
 
 	line = 1;
-	for (u32 n = 0; n < tm_read32(ane, TM_IRQ_EVTC(line)); n++) {
+	for (n = 0; n < tm_read32(ane, TM_IRQ_EVTC(line)); n++) {
 		tm_read32(ane, TM_IRQ_INFO(line));
 		tm_read32(ane, TM_IRQ_UNK1(line));
 		tm_read32(ane, TM_IRQ_TMST(line));
 		tm_read32(ane, TM_IRQ_UNK2(line));
 	}
+	if (counts)
+		counts[line] = n;
 }
 
 int ane_tm_execute(struct ane_device *ane, struct ane_request *req)
 {
 	int err;
+	u32 counts[2] = {};
+	unsigned int sleep_us = READ_ONCE(poll_sleep_us);
+	u64 start = 0, pushed = 0, idle = 0, drained = 0, released;
+
+	if (req->profile_submit)
+		start = ktime_get_ns();
 
 	ane_tm_push_tq(ane, req);
+	if (req->profile_submit)
+		pushed = ktime_get_ns();
 
-	err = ane_tm_get_status(ane);
+	err = ane_tm_get_status(ane, sleep_us);
+	if (req->profile_submit)
+		idle = ktime_get_ns();
 
-	ane_tm_handle_irq(ane);
+	ane_tm_handle_irq(ane, req->profile_submit ? counts : NULL);
+	if (req->profile_submit)
+		drained = ktime_get_ns();
 
 	tq_write32(ane, TQ_STATUS(req->qid), 0x0);
+	if (req->profile_submit) {
+		released = ktime_get_ns();
+		mutex_lock(&profile_lock);
+		scnprintf(profile_last, sizeof(profile_last),
+			  "tasks=%u poll_sleep_us=%u enqueue_ns=%llu push_ns=%llu wait_ns=%llu irq_ns=%llu release_ns=%llu irq0=%u irq1=%u result=%d\n",
+			  req->td_count, sleep_us, req->enqueue_ns, pushed - start,
+			  idle - pushed, drained - idle, released - drained,
+			  counts[0], counts[1], err);
+		mutex_unlock(&profile_lock);
+	}
 
 	return err;
 }

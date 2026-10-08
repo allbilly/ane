@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import struct
+import zlib
 
 import numpy as np
 
@@ -109,7 +110,39 @@ def reconstruct(checkpoint, root=ROOT):
                 "paired coefficients differ from captured checkpoint: "+name)
         results[name] = dict(meta=meta,commands=commands,constants=constants,
                             coefficients=coefficients,bootstrap=bootstrap)
+        # Same grouped BLOBFILE that the shared native Mac/Linux adapter checks
+        # against whisper.cpp's F16 weights before accepting a projection.
+        grouped = np.concatenate((weight[:, :k//2], weight[:, k//2:]), axis=0).astype("<f2").tobytes()
+        header = bytearray(128)
+        struct.pack_into("<II", header, 0, 1, 2)
+        struct.pack_into("<IIQQ", header, 64, 0xdeadbeef, 1, len(grouped), 128)
+        results[name]["weights"] = bytes(header) + grouped
     return manifest,results
+
+
+def native_descriptor(program):
+    meta = program["meta"]
+    layout = [meta["td_count"], meta["td_size"], len(program["commands"]),
+              len(program["coefficients"]), len(program["constants"]), meta["input_features"],
+              meta["output_features"], 12032, meta["input_features"]*12032, 2*meta["output_features"]*12032]
+    checksums = [zlib.crc32(program[payload]) for payload in
+                 ("commands", "constants", "coefficients", "bootstrap", "weights")]
+    return "ANE_WHISPER_PAIRED_V1 " + " ".join(map(str, layout + checksums)) + "\n"
+
+
+def validate_payloads(output, checkpoint, root=ROOT):
+    """Bind native payload files to the pinned weights and captured templates."""
+    output = Path(output)
+    manifest, programs = reconstruct(checkpoint, root)
+    require(json.loads((output/"manifest.json").read_text()) == manifest, "paired payload manifest changed")
+    for name, program in programs.items():
+        path = output/name
+        for payload in ("commands", "constants", "coefficients", "bootstrap", "weights"):
+            require((path/(payload+".bin")).read_bytes() == program[payload],
+                    "paired native payload differs from checkpoint/template: " + name + "/" + payload)
+        require((path/"native-layout.txt").read_text() == native_descriptor(program),
+                "paired native descriptor changed: " + name)
+    return manifest
 
 
 def write_payloads(output, manifest, programs):
@@ -119,13 +152,14 @@ def write_payloads(output, manifest, programs):
     for name,program in programs.items():
         path=output/name
         path.mkdir()
-        for payload in ("commands","constants","coefficients","bootstrap"):
+        for payload in ("commands","constants","coefficients","bootstrap","weights"):
             (path/(payload+".bin")).write_bytes(program[payload])
         meta=program["meta"]
         layout=[meta["td_count"],meta["td_size"],len(program["commands"]),
                 len(program["coefficients"]),len(program["constants"]),meta["input_features"],
                 meta["output_features"],12032,meta["input_features"]*12032,2*meta["output_features"]*12032]
         (path/"layout.txt").write_text(" ".join(map(str,layout))+"\n")
+        (path/"native-layout.txt").write_text(native_descriptor(program))
     (output/"manifest.json").write_text(json.dumps(manifest,indent=2)+"\n")
 
 

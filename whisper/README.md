@@ -26,10 +26,19 @@ research proof of concept with separate dependencies. ANEForge's macOS runtime
 does not run on Linux.
 
 The [repository README](../README.md) includes the PR fast-encoder speed table
-with measured Mac Accelerate/OpenBLAS timings and conditional Asahi projections
-of **≈29 / 63 / 335 ms** for tiny/base/small. These are encoder + CPU
-cross-attention K/V estimates; Linux execution and strict full-decoder accuracy
-remain unverified. See [the timing method and receipts](docs/benchmark-macos.md#cpu-cross-kv-library-substitution).
+with measured Mac Accelerate/OpenBLAS timings and measured Asahi times of
+**32.13 / 72.70 / 282.32 ms** for tiny/base/small. These include the ANE encoder
+and CPU cross-attention K/V. Each model's zero-mel hardware output matches the
+Mac hash exactly; speech and strict full-decoder accuracy remain unverified.
+See [the replay method and Asahi receipts](docs/pr3905-packing.md#native-whispercpp-integration).
+
+The separate [native tiny.en paired control](docs/asahi-paired-export.md#native-whispercpp-on-asahi)
+passes all 80 full decoder vectors and byte-identical repeatability on Asahi.
+Its warm JFK encoder/decoder/whole medians are **624.32 / 78.79 / 723.42 ms**,
+versus **216.57 / 72.95 / 307.35 ms** for the matched CPU build. The
+[README table](../README.md) compares the saved macOS paired result; Linux
+readback remains the main measured cost, so this is an accurate control rather
+than speed parity.
 
 ## Run on this Asahi machine
 

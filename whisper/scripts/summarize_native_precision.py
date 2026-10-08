@@ -48,11 +48,12 @@ def add_profiles(clips, stderr, paired):
 def collect(validation):
     raw = json.loads((validation/"summary.json").read_text())
     if (raw["status"] != "PASS" or not raw["timings_accepted"] or raw["numerical_failures"] or
-            raw["host_backend"] != "macos" or raw["encoder_backend"] != "paired" or
+            raw["host_backend"] not in ("macos", "asahi") or raw["encoder_backend"] != "paired" or
             raw["encoder_cpu_gate_nrmse"] != .005 or raw["full_logit_gate_nrmse"] != .005 or
             raw["hf_encoder_gate_cosine"] != .999 or
             {c["audio"]:c["decoder_calls"] for c in raw["correctness"]} != EXPECTED or
-            (raw["warmups_per_context"],raw["runs_per_context"],raw["rounds"]) != (2,10,2)):
+            raw["warmups_per_context"] != 2 or raw["rounds"] != 2 or
+            raw["runs_per_context"] not in ((10,) if raw["host_backend"] == "macos" else (5,10))):
         raise ValueError("requires a completed native paired run with unchanged gates and warmup policy")
     for clip in raw["correctness"]:
         count = EXPECTED[clip["audio"]]
@@ -70,6 +71,13 @@ def collect(validation):
             raise ValueError("encoder boundary or native token history gate failed")
         if any(clip[key]["cosine"] < .999 for key in ("encoder_vs_hf","cpu_encoder_vs_hf")):
             raise ValueError("HF encoder cosine gate failed")
+        if raw["host_backend"] == "asahi":
+            if not clip.get("repeat_bitwise_equal") or set(clip.get("repeat_sha256", {})) != {"mel.f32", "encoder.f32", "logits.bin"}:
+                raise ValueError("native Asahi paired repeatability evidence missing")
+            for filename, checksum in clip["repeat_sha256"].items():
+                for suffix in ("ane", "ane-repeat"):
+                    if digest(validation/f"{clip['audio']}-{suffix}"/filename) != checksum:
+                        raise ValueError("native paired repeat changed: " + filename)
     for path, checksum in raw["artifacts"].items():
         if digest(validation/path) != checksum:
             raise ValueError("native validation artifact changed: " + path)
@@ -80,11 +88,17 @@ def collect(validation):
         method=raw["method"],limitations=raw["limitations"],correctness=raw["correctness"],
         model_sha256=raw["model_sha256"],hf_checkpoint_sha256=raw["hf_checkpoint_sha256"],
         precision_programs=raw["precision_programs"],precision_manifest_sha256=raw["precision_manifest_sha256"],
-        library_sha256=raw["library_sha256"],runtime_sha256=raw["runtime_sha256"],
+        library_sha256=raw["library_sha256"],
         binary_sha256=raw["binary_sha256"],driver_sha256=raw["driver_sha256"],
         source_sha256=raw["source_sha256"],artifacts=raw["artifacts"],
         encoder_attention=raw.get("encoder_attention", "flash"),
         configurations={"native_paired":{kind:{} for kind in raw["backends"]}})
+    for key in ("runtime_sha256", "build_cache_sha256", "compile_commands_sha256", "thread_environment",
+                "collector_sha256_at_start", "resolved_blas_dependencies", "blas_enabled", "cpu_affinity"):
+        if key in raw:
+            result[key] = raw[key]
+    result.update(warmups_per_context=raw["warmups_per_context"], runs_per_context=raw["runs_per_context"],
+                  rounds=raw["rounds"], encoder_backend="paired", cross_kv_layout=raw.get("cross_kv_layout", "separate"))
     for kind, original in raw["backends"].items():
         paired = kind == "ane_precision_cpu"
         clips = {audio:dict(runs=[],warmups=[]) for audio in EXPECTED}
@@ -92,11 +106,11 @@ def collect(validation):
             log = (validation/f"{kind}-{round_index}.log").read_text()
             stdout,stderr = log.split("\n\n",1)
             process = subprocess.CompletedProcess([],0,stdout,stderr)
-            parsed = parse_audio_runs(process,3 if paired else 0,raw["correctness"],1779,"macos")
+            parsed = parse_audio_runs(process,3 if paired else 0,raw["correctness"],1779,raw["host_backend"])
             add_profiles(parsed,stderr,paired)
             add_attention_profiles(parsed,stderr,raw.get("encoder_attention") == "blas")
             for audio, rows in parsed.items():
-                if len(rows) != 12:
+                if len(rows) != raw["warmups_per_context"]+raw["runs_per_context"]:
                     raise ValueError("native warm count changed")
                 for row in rows:
                     row["round"] = round_index
@@ -106,7 +120,7 @@ def collect(validation):
                         raise ValueError("reparsed native measurement differs from the validation receipt")
                     clips[audio][phase].append(row)
         for clip in clips.values():
-            if len(clip["runs"]) != 20 or len(clip["warmups"]) != 4:
+            if len(clip["runs"]) != 2*raw["runs_per_context"] or len(clip["warmups"]) != 4:
                 raise ValueError("native round measurements incomplete")
             clip["median"] = medians(clip["runs"])
             if raw.get("encoder_attention") == "blas":
@@ -117,6 +131,10 @@ def collect(validation):
                 clip["median"]["precision_api_ms"] = {key:statistics.median(row["precision_api_ms"][key] for row in clip["runs"])
                                                        for key in ("pack","dispatch","combine")}
                 clip["median"]["transformer_remaining_ms"] = statistics.median(row["transformer_remaining_ms"] for row in clip["runs"])
+                if raw["host_backend"] == "asahi":
+                    keys = clip["runs"][0]["paired_profile_ms"]
+                    clip["median"]["paired_transport_ms"] = {
+                        key:statistics.median(row["paired_profile_ms"][key] for row in clip["runs"]) for key in keys}
             clip["round_medians"] = {str(i):medians([r for r in clip["runs"] if r["round"] == i]) for i in (1,2)}
         result["configurations"]["native_paired"][kind] = clips
     result["collector_source_sha256"] = digest(Path(__file__))

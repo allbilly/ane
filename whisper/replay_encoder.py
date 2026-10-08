@@ -7,15 +7,17 @@ from pathlib import Path
 import platform
 import struct
 import sys
-import time
 
 import numpy as np
 
-from whisper.encoder_kernel import reconstruct, require, ROOT, pack_port, port_view, port_shape
+from whisper.encoder_kernel import require, ROOT, pack_port, port_view, port_shape
+from whisper.encoder_runtime import EncoderRuntime
 
 
-class Encoder:
+class Encoder(EncoderRuntime):
     """One driver submission runs all convolutions, attention and encoder layers."""
+    backend = "asahi"
+
     def __init__(self, checkpoint, device=None, kernels=ROOT):
         # Resolve the existing guarded DRM ABI only on its supported host.
         require(platform.system() == "Linux", "encoder replay requires native M1 Asahi Linux")
@@ -23,21 +25,12 @@ class Encoder:
         from replay import Buffer, Submit, SUBMIT, device_path, ioctl
         from hwx import parse_tasks
         path = device_path(device)
-        self.meta, payloads = reconstruct(checkpoint, kernels)
-        require(self.meta["target"] == "apple,t8103" and self.meta["td_count"] in (1779, 1783), "unsupported encoder target")
-        ports = self.meta["layout"]["ports"]
-        self.ports = {}
-        for role, kind, count in (("mel", "input", 80 * 3000), ("positions", "input", 384 * 1500),
-                                  ("output", "output", 1500 * 384)):
-            matches = [p for p in ports if p["role"] == kind and int(np.prod(port_shape(p))) == count]
-            require(len(matches) == 1, "ambiguous encoder port: " + role)
-            self.ports[role] = matches[0]
+        super().__init__(checkpoint, kernels)
+        payloads = self.payloads
         commands = payloads["commands"]
         parse_tasks(commands, self.meta["td_size"], self.meta["td_count"])
         self.fd, self.buffers, self.bootstrap = os.open(path, os.O_RDWR | os.O_CLOEXEC), {}, None
         self.ioctl, self.submit_opcode = ioctl, SUBMIT
-        self.submissions, self.dispatch_seconds = 0, 0.
-        self.last_timing_ms = None
         try:
             self.buffers[0] = Buffer(self.fd, len(commands) + len(payloads["coefficients"]) + 1)
             self.buffers[0].write(commands + payloads["coefficients"])
@@ -63,10 +56,7 @@ class Encoder:
             self.close()
             raise
 
-    def __call__(self, mel):
-        began = time.perf_counter()
-        mel = np.asarray(mel, dtype="<f2")
-        require(mel.shape == (80, 3000) and bool(np.isfinite(mel).all()), "expected finite FP16 mel [80,3000]")
+    def prepare(self, mel):
         port = self.ports["mel"]
         buffer = self.buffers[port["replay_bank"]]
         buffer.write(pack_port(mel, port, buffer.size))
@@ -77,18 +67,13 @@ class Encoder:
         output_port = self.ports["output"]
         output_buffer = self.buffers[output_port["replay_bank"]]
         port_view(output_buffer.map, output_port)[...] = np.nan
-        start = time.perf_counter()
+
+    def execute(self):
         self.ioctl(self.fd, self.submit_opcode, self.request)
-        completed = time.perf_counter()
-        self.dispatch_seconds += completed - start
-        self.submissions += 1
-        output = port_view(output_buffer.map, output_port).reshape(1500, 384).copy()
-        require(bool(np.isfinite(output).all()), "encoder produced nonfinite/unwritten output")
-        finished = time.perf_counter()
-        self.last_timing_ms = dict(prepare_ms=(start - began) * 1000,
-            dispatch_ms=(completed - start) * 1000, readback_ms=(finished - completed) * 1000,
-            total_ms=(finished - began) * 1000)
-        return output
+
+    def read_output(self):
+        port = self.ports["output"]
+        return port_view(self.buffers[port["replay_bank"]].map, port)
 
     def close(self):
         try:
