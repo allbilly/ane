@@ -1,0 +1,10 @@
+[  5%] Built target whisper.coreml
+[ 17%] Built target ggml-base
+[ 19%] Built target ggml-blas
+[ 74%] Built target ggml-metal
+[ 92%] Built target ggml-cpu
+[ 95%] Built target ggml
+[ 98%] Built target whisper
+[100%] Building CXX object examples/bench/CMakeFiles/whisper-bench.dir/bench.cpp.o
+[100%] Linking CXX executable ../../bin/whisper-bench
+[100%] Built target whisper-bench

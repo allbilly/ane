@@ -42,6 +42,27 @@ on CPU. The [macOS table](whisper/docs/benchmark-macos.md) measures five routes;
 its full-encoder ANE + CPU decoder took **68.37 ms**. The graph and CPU backends
 differ, and the Linux hybrid is currently slower.
 
+**PR ANEForge fast encoder speed reference on M1 (2026-10-08).** These runs
+use multilingual tiny/base/small, the full 1,500-position audio context and four
+threads. Encoder time includes input staging, the full ANE encoder and CPU
+cross-attention K/V; compilation and decoding are excluded.
+
+| Model | macOS: ANE + Accelerate BLAS **measured** | macOS: ANE + OpenBLAS NEON **measured** | Asahi: ANE + OpenBLAS **projected** |
+|---|---:|---:|---:|
+| tiny | 17.17 ms | 28.65 ms | **≈29 ms** |
+| base | 36.69 ms | 63.30 ms | **≈63 ms** |
+| small | 142.51 ms | 334.71 ms | **≈335 ms** |
+
+The Asahi projections use the Mac OpenBLAS medians rounded to whole milliseconds,
+assuming Linux ANE and CPU performance match that surrogate. Linux driver
+overhead is unmeasured; small's Mac OpenBLAS samples ranged **297–406 ms**.
+Strict full-decoder accuracy has not been validated for these speed-reference
+runs. See [measured runs](whisper/results/pr3905-m1-20261008/host-encode-only.json),
+[benchmark details](whisper/docs/benchmark-macos.md#cpu-cross-kv-library-substitution)
+and [checkpoint repacking/native replay](whisper/docs/pr3905-packing.md).
+Large weights and HWX dumps remain ignored; Asahi rebuilds them from external
+safetensors or lossless F16/F32 GGUF using the compact packing recipes.
+
 [GPT-2 training on Asahi](gpt2/training/README-asahi.md) replays the captured
 forward and backward kernels through the same driver. A full 124M parameter
 run completed ten Adam updates on this machine; its fixed-batch loss fell

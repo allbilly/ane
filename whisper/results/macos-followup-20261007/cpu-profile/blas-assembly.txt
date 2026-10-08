@@ -1,0 +1,162 @@
+(lldb) target create "whisper/build/macos-matched/bin/benchmark-whisper"
+Current executable set to '/Users/yeren/ane/whisper/build/macos-matched/bin/benchmark-whisper' (arm64).
+(lldb) image lookup -n cblas_sgemm$NEWLAPACK$ILP64
+1 match found in /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib:
+        Address: libBLAS.dylib[0x000000018186ac68] (libBLAS.dylib.__TEXT.__text + 6672872)
+        Summary: libBLAS.dylib`cblas_sgemm$NEWLAPACK$ILP64
+(lldb) image list -u -h -f libBLAS.dylib libggml-cpu.0.dylib libwhisper.1.dylib
+[  0] 31104D4F-4A7E-3FA7-9E18-55937B2011F2 0x000000018120d000 /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib
+[  1] E660CD1C-6E6B-3049-AD0D-538D79E45C4D 0x0000000000000000 /Users/yeren/ane/whisper/build/macos-matched/bin/libggml-cpu.0.dylib
+[  2] 5FBFC05A-8173-36BF-8E08-6E3F07CD9FD0 0x0000000000000000 /Users/yeren/ane/whisper/build/macos-matched/bin/libwhisper.1.dylib
+(lldb) disassemble -b -s 0x181676d38 -c 150
+libBLAS.dylib`___lldb_unnamed_symbol_181676d38:
+libBLAS.dylib[0x181676d38] <+0>:   0xd503237f   pacibsp 
+libBLAS.dylib[0x181676d3c] <+4>:   0xa9bd57f6   stp    x22, x21, [sp, #-0x30]!
+libBLAS.dylib[0x181676d40] <+8>:   0xa9014ff4   stp    x20, x19, [sp, #0x10]
+libBLAS.dylib[0x181676d44] <+12>:  0xa9027bfd   stp    x29, x30, [sp, #0x20]
+libBLAS.dylib[0x181676d48] <+16>:  0x910083fd   add    x29, sp, #0x20
+libBLAS.dylib[0x181676d4c] <+20>:  0xaa0303f4   mov    x20, x3
+libBLAS.dylib[0x181676d50] <+24>:  0xa941cfb5   ldp    x21, x19, [x29, #0x18]
+libBLAS.dylib[0x181676d54] <+28>:  0xf9400ba8   ldr    x8, [x29, #0x10]
+libBLAS.dylib[0x181676d58] <+32>:  0xf100445f   cmp    x2, #0x11
+libBLAS.dylib[0x181676d5c] <+36>:  0x54000763   b.lo   0x181676e48               ; <+272>
+libBLAS.dylib[0x181676d60] <+40>:  0xf100469f   cmp    x20, #0x11
+libBLAS.dylib[0x181676d64] <+44>:  0x54000723   b.lo   0x181676e48               ; <+272>
+libBLAS.dylib[0x181676d68] <+48>:  0xd2e80009   mov    x9, #0x4000000000000000   ; =4611686018427387904 
+libBLAS.dylib[0x181676d6c] <+52>:  0xd2e8000a   mov    x10, #0x4000000000000000  ; =4611686018427387904 
+libBLAS.dylib[0x181676d70] <+56>:  0xb340dcaa   bfxil  x10, x5, #0, #56
+libBLAS.dylib[0x181676d74] <+60>:  0x0020100a   <unknown> 
+libBLAS.dylib[0x181676d78] <+64>:  0xb340dce9   bfxil  x9, x7, #0, #56
+libBLAS.dylib[0x181676d7c] <+68>:  0x00201029   <unknown> 
+libBLAS.dylib[0x181676d80] <+72>:  0x52a10009   mov    w9, #0x8000000            ; =134217728 
+libBLAS.dylib[0x181676d84] <+76>:  0x52a1022a   mov    w10, #0x8110000           ; =135331840 
+libBLAS.dylib[0x181676d88] <+80>:  0x00201189   <unknown> 
+libBLAS.dylib[0x181676d8c] <+84>:  0x0020118a   <unknown> 
+libBLAS.dylib[0x181676d90] <+88>:  0x52800809   mov    w9, #0x40                 ; =64 
+libBLAS.dylib[0x181676d94] <+92>:  0x72a10409   movk   w9, #0x820, lsl #16
+libBLAS.dylib[0x181676d98] <+96>:  0x52a0022a   mov    w10, #0x110000            ; =1114112 
+libBLAS.dylib[0x181676d9c] <+100>: 0xaa0a012a   orr    x10, x9, x10
+libBLAS.dylib[0x181676da0] <+104>: 0x00201189   <unknown> 
+libBLAS.dylib[0x181676da4] <+108>: 0x0020118a   <unknown> 
+libBLAS.dylib[0x181676da8] <+112>: 0xf100089f   cmp    x4, #0x2
+libBLAS.dylib[0x181676dac] <+116>: 0x5400030b   b.lt   0x181676e0c               ; <+212>
+libBLAS.dylib[0x181676db0] <+120>: 0x52800809   mov    w9, #0x40                 ; =64 
+libBLAS.dylib[0x181676db4] <+124>: 0x72a00409   movk   w9, #0x20, lsl #16
+libBLAS.dylib[0x181676db8] <+128>: 0xd100048a   sub    x10, x4, #0x1
+libBLAS.dylib[0x181676dbc] <+132>: 0x5280002b   mov    w11, #0x1                 ; =1 
+libBLAS.dylib[0x181676dc0] <+136>: 0x52a0022c   mov    w12, #0x110000            ; =1114112 
+libBLAS.dylib[0x181676dc4] <+140>: 0x9b067d6d   mul    x13, x11, x6
+libBLAS.dylib[0x181676dc8] <+144>: 0x8b0d08ae   add    x14, x5, x13, lsl #2
+libBLAS.dylib[0x181676dcc] <+148>: 0xd2e8000d   mov    x13, #0x4000000000000000  ; =4611686018427387904 
+libBLAS.dylib[0x181676dd0] <+152>: 0xb340ddcd   bfxil  x13, x14, #0, #56
+libBLAS.dylib[0x181676dd4] <+156>: 0x9b087d6e   mul    x14, x11, x8
+libBLAS.dylib[0x181676dd8] <+160>: 0x0020100d   <unknown> 
+libBLAS.dylib[0x181676ddc] <+164>: 0x8b0e08ed   add    x13, x7, x14, lsl #2
+libBLAS.dylib[0x181676de0] <+168>: 0xd2e8000e   mov    x14, #0x4000000000000000  ; =4611686018427387904 
+libBLAS.dylib[0x181676de4] <+172>: 0xb340ddae   bfxil  x14, x13, #0, #56
+libBLAS.dylib[0x181676de8] <+176>: 0x0020102e   <unknown> 
+libBLAS.dylib[0x181676dec] <+180>: 0x0020119f   <unknown> 
+libBLAS.dylib[0x181676df0] <+184>: 0x0020118c   <unknown> 
+libBLAS.dylib[0x181676df4] <+188>: 0x9144412d   add    x13, x9, #0x110, lsl #12  ; =0x110000 
+libBLAS.dylib[0x181676df8] <+192>: 0x00201189   <unknown> 
+libBLAS.dylib[0x181676dfc] <+196>: 0x0020118d   <unknown> 
+libBLAS.dylib[0x181676e00] <+200>: 0x9100056b   add    x11, x11, #0x1
+libBLAS.dylib[0x181676e04] <+204>: 0xf100054a   subs   x10, x10, #0x1
+libBLAS.dylib[0x181676e08] <+208>: 0x54fffde1   b.ne   0x181676dc4               ; <+140>
+libBLAS.dylib[0x181676e0c] <+212>: 0xaa1403e0   mov    x0, x20
+libBLAS.dylib[0x181676e10] <+216>: 0xaa1503e1   mov    x1, x21
+libBLAS.dylib[0x181676e14] <+220>: 0xaa1303e2   mov    x2, x19
+libBLAS.dylib[0x181676e18] <+224>: 0x97fab2e5   bl     0x1815239ac               ; ___lldb_unnamed_symbol_1815239ac
+libBLAS.dylib[0x181676e1c] <+228>: 0xd1004280   sub    x0, x20, #0x10
+libBLAS.dylib[0x181676e20] <+232>: 0x8b131aa1   add    x1, x21, x19, lsl #6
+libBLAS.dylib[0x181676e24] <+236>: 0xaa1303e2   mov    x2, x19
+libBLAS.dylib[0x181676e28] <+240>: 0xa9427bfd   ldp    x29, x30, [sp, #0x20]
+libBLAS.dylib[0x181676e2c] <+244>: 0xa9414ff4   ldp    x20, x19, [sp, #0x10]
+libBLAS.dylib[0x181676e30] <+248>: 0xa8c357f6   ldp    x22, x21, [sp], #0x30
+libBLAS.dylib[0x181676e34] <+252>: 0xd50323ff   autibsp 
+libBLAS.dylib[0x181676e38] <+256>: 0xca1e07d0   eor    x16, x30, x30, lsl #1
+libBLAS.dylib[0x181676e3c] <+260>: 0xb6f00050   tbz    x16, #0x3e, 0x181676e44   ; <+268>
+libBLAS.dylib[0x181676e40] <+264>: 0xd4388e20   brk    #0xc471
+libBLAS.dylib[0x181676e44] <+268>: 0x17fab503   b      0x181524250               ; ___lldb_unnamed_symbol_181524250
+libBLAS.dylib[0x181676e48] <+272>: 0xf100445f   cmp    x2, #0x11
+libBLAS.dylib[0x181676e4c] <+276>: 0x54000763   b.lo   0x181676f38               ; <+512>
+libBLAS.dylib[0x181676e50] <+280>: 0xd2e80009   mov    x9, #0x4000000000000000   ; =4611686018427387904 
+libBLAS.dylib[0x181676e54] <+284>: 0xb340dca9   bfxil  x9, x5, #0, #56
+libBLAS.dylib[0x181676e58] <+288>: 0x00201009   <unknown> 
+libBLAS.dylib[0x181676e5c] <+292>: 0x927ae4eb   and    x11, x7, #0xffffffffffffffc0
+libBLAS.dylib[0x181676e60] <+296>: 0x8b1408ea   add    x10, x7, x20, lsl #2
+libBLAS.dylib[0x181676e64] <+300>: 0x927ae549   and    x9, x10, #0xffffffffffffffc0
+libBLAS.dylib[0x181676e68] <+304>: 0x927ac4ec   and    x12, x7, #0xffffffffffffc0
+libBLAS.dylib[0x181676e6c] <+308>: 0x0020102c   <unknown> 
+libBLAS.dylib[0x181676e70] <+312>: 0xeb0b013f   cmp    x9, x11
+libBLAS.dylib[0x181676e74] <+316>: 0x540000c0   b.eq   0x181676e8c               ; <+340>
+libBLAS.dylib[0x181676e78] <+320>: 0xeb09015f   cmp    x10, x9
+libBLAS.dylib[0x181676e7c] <+324>: 0x54000089   b.ls   0x181676e8c               ; <+340>
+libBLAS.dylib[0x181676e80] <+328>: 0x927ac529   and    x9, x9, #0xffffffffffffc0
+libBLAS.dylib[0x181676e84] <+332>: 0xb2480129   orr    x9, x9, #0x100000000000000
+libBLAS.dylib[0x181676e88] <+336>: 0x00201029   <unknown> 
+libBLAS.dylib[0x181676e8c] <+340>: 0x52a10009   mov    w9, #0x8000000            ; =134217728 
+libBLAS.dylib[0x181676e90] <+344>: 0x52a1022a   mov    w10, #0x8110000           ; =135331840 
+libBLAS.dylib[0x181676e94] <+348>: 0x00201189   <unknown> 
+libBLAS.dylib[0x181676e98] <+352>: 0x0020118a   <unknown> 
+libBLAS.dylib[0x181676e9c] <+356>: 0xf100089f   cmp    x4, #0x2
+libBLAS.dylib[0x181676ea0] <+360>: 0x5400036b   b.lt   0x181676f0c               ; <+468>
+libBLAS.dylib[0x181676ea4] <+364>: 0xd1000489   sub    x9, x4, #0x1
+libBLAS.dylib[0x181676ea8] <+368>: 0x5280002a   mov    w10, #0x1                 ; =1 
+libBLAS.dylib[0x181676eac] <+372>: 0x52a0022b   mov    w11, #0x110000            ; =1114112 
+libBLAS.dylib[0x181676eb0] <+376>: 0x9b067d4c   mul    x12, x10, x6
+libBLAS.dylib[0x181676eb4] <+380>: 0x8b0c08ad   add    x13, x5, x12, lsl #2
+libBLAS.dylib[0x181676eb8] <+384>: 0xd2e8000c   mov    x12, #0x4000000000000000  ; =4611686018427387904 
+libBLAS.dylib[0x181676ebc] <+388>: 0xb340ddac   bfxil  x12, x13, #0, #56
+libBLAS.dylib[0x181676ec0] <+392>: 0x0020100c   <unknown> 
+libBLAS.dylib[0x181676ec4] <+396>: 0x9b087d4c   mul    x12, x10, x8
+libBLAS.dylib[0x181676ec8] <+400>: 0x8b0c08ed   add    x13, x7, x12, lsl #2
+libBLAS.dylib[0x181676ecc] <+404>: 0x8b1409ae   add    x14, x13, x20, lsl #2
+libBLAS.dylib[0x181676ed0] <+408>: 0x927ae5af   and    x15, x13, #0xffffffffffffffc0
+libBLAS.dylib[0x181676ed4] <+412>: 0x927ae5cc   and    x12, x14, #0xffffffffffffffc0
+libBLAS.dylib[0x181676ed8] <+416>: 0x927ac5ad   and    x13, x13, #0xffffffffffffc0
+libBLAS.dylib[0x181676edc] <+420>: 0x0020102d   <unknown> 
+libBLAS.dylib[0x181676ee0] <+424>: 0xeb0f019f   cmp    x12, x15
+libBLAS.dylib[0x181676ee4] <+428>: 0xfa4c11c0   ccmp   x14, x12, #0x0, ne
+libBLAS.dylib[0x181676ee8] <+432>: 0x54000089   b.ls   0x181676ef8               ; <+448>
+libBLAS.dylib[0x181676eec] <+436>: 0x927ac58c   and    x12, x12, #0xffffffffffffc0
+libBLAS.dylib[0x181676ef0] <+440>: 0xb248018c   orr    x12, x12, #0x100000000000000
+libBLAS.dylib[0x181676ef4] <+444>: 0x0020102c   <unknown> 
+libBLAS.dylib[0x181676ef8] <+448>: 0x0020119f   <unknown> 
+libBLAS.dylib[0x181676efc] <+452>: 0x0020118b   <unknown> 
+libBLAS.dylib[0x181676f00] <+456>: 0x9100054a   add    x10, x10, #0x1
+libBLAS.dylib[0x181676f04] <+460>: 0xf1000529   subs   x9, x9, #0x1
+libBLAS.dylib[0x181676f08] <+464>: 0x54fffd41   b.ne   0x181676eb0               ; <+376>
+libBLAS.dylib[0x181676f0c] <+468>: 0xaa1403e0   mov    x0, x20
+libBLAS.dylib[0x181676f10] <+472>: 0xaa1503e1   mov    x1, x21
+libBLAS.dylib[0x181676f14] <+476>: 0xaa1303e2   mov    x2, x19
+libBLAS.dylib[0x181676f18] <+480>: 0xa9427bfd   ldp    x29, x30, [sp, #0x20]
+libBLAS.dylib[0x181676f1c] <+484>: 0xa9414ff4   ldp    x20, x19, [sp, #0x10]
+libBLAS.dylib[0x181676f20] <+488>: 0xa8c357f6   ldp    x22, x21, [sp], #0x30
+libBLAS.dylib[0x181676f24] <+492>: 0xd50323ff   autibsp 
+libBLAS.dylib[0x181676f28] <+496>: 0xca1e07d0   eor    x16, x30, x30, lsl #1
+libBLAS.dylib[0x181676f2c] <+500>: 0xb6f00050   tbz    x16, #0x3e, 0x181676f34   ; <+508>
+libBLAS.dylib[0x181676f30] <+504>: 0xd4388e20   brk    #0xc471
+libBLAS.dylib[0x181676f34] <+508>: 0x17fab29e   b      0x1815239ac               ; ___lldb_unnamed_symbol_1815239ac
+libBLAS.dylib[0x181676f38] <+512>: 0x927ae4aa   and    x10, x5, #0xffffffffffffffc0
+libBLAS.dylib[0x181676f3c] <+516>: 0x8b0208ab   add    x11, x5, x2, lsl #2
+libBLAS.dylib[0x181676f40] <+520>: 0x927ae569   and    x9, x11, #0xffffffffffffffc0
+libBLAS.dylib[0x181676f44] <+524>: 0x927ac4ac   and    x12, x5, #0xffffffffffffc0
+libBLAS.dylib[0x181676f48] <+528>: 0x0020100c   <unknown> 
+libBLAS.dylib[0x181676f4c] <+532>: 0xeb0a013f   cmp    x9, x10
+libBLAS.dylib[0x181676f50] <+536>: 0xfa491160   ccmp   x11, x9, #0x0, ne
+libBLAS.dylib[0x181676f54] <+540>: 0x1a9f97ea   cset   w10, hi
+libBLAS.dylib[0x181676f58] <+544>: 0xf100469f   cmp    x20, #0x11
+libBLAS.dylib[0x181676f5c] <+548>: 0x54000723   b.lo   0x181677040               ; <+776>
+libBLAS.dylib[0x181676f60] <+552>: 0x3400008a   cbz    w10, 0x181676f70          ; <+568>
+libBLAS.dylib[0x181676f64] <+556>: 0x927ac529   and    x9, x9, #0xffffffffffffc0
+libBLAS.dylib[0x181676f68] <+560>: 0xb2480129   orr    x9, x9, #0x100000000000000
+libBLAS.dylib[0x181676f6c] <+564>: 0x00201009   <unknown> 
+libBLAS.dylib[0x181676f70] <+568>: 0xd2e80009   mov    x9, #0x4000000000000000   ; =4611686018427387904 
+libBLAS.dylib[0x181676f74] <+572>: 0xb340dce9   bfxil  x9, x7, #0, #56
+libBLAS.dylib[0x181676f78] <+576>: 0x00201029   <unknown> 
+libBLAS.dylib[0x181676f7c] <+580>: 0x52a10009   mov    w9, #0x8000000            ; =134217728 
+libBLAS.dylib[0x181676f80] <+584>: 0x5280080a   mov    w10, #0x40                ; =64 
+libBLAS.dylib[0x181676f84] <+588>: 0x72a1040a   movk   w10, #0x820, lsl #16
+libBLAS.dylib[0x181676f88] <+592>: 0x00201189   <unknown> 
+libBLAS.dylib[0x181676f8c] <+596>: 0x0020118a   <unknown> 

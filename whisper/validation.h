@@ -52,6 +52,16 @@ inline bool whisper_profile_matrix(const ggml_tensor * tensor) {
            std::string(tensor->name).rfind("whisper.cross_kv.", 0) == 0;
 }
 
+inline bool whisper_encoder_blas_attention_enabled() {
+    const char * value = std::getenv("WHISPER_ENCODER_BLAS_ATTENTION");
+    return value && std::string(value) == "1";
+}
+
+inline bool whisper_profile_attention_matrix(const ggml_tensor * tensor) {
+    return std::getenv("WHISPER_PROFILE_ENCODER_ATTENTION") &&
+           std::string(tensor->name).rfind("whisper.encoder_attention.", 0) == 0;
+}
+
 inline void whisper_profile_matrix_input(const ggml_tensor * tensor) {
     const char * path = std::getenv("WHISPER_PROFILE_INPUT");
     static bool saved = false;
@@ -74,22 +84,24 @@ inline void whisper_profile_matrix_result(const ggml_tensor * dst, const char * 
     Dl_info info{};
     dladdr(routine, &info);
     // Matrix inputs and node names come from the pinned tiny.en checkpoint.
-    std::fprintf(stderr, "MATRIX_PROFILE\t{\"name\":\"%s\",\"weight\":\"%s\",\"backend\":\"%s\","
+    const char * tag = std::string(dst->name).rfind("whisper.encoder_attention.", 0) == 0
+        ? "ATTENTION_MATRIX_PROFILE" : "MATRIX_PROFILE";
+    std::fprintf(stderr, "%s\t{\"name\":\"%s\",\"weight\":\"%s\",\"backend\":\"%s\","
         "\"routine\":\"cblas_sgemm\",\"library\":\"%s\",\"symbol\":\"%s\",\"address\":\"%p\","
-        "\"m\":%lld,\"n\":%lld,\"k\":%lld,\"order\":\"row_major\",\"transpose_a\":false,\"transpose_b\":true,"
+        "\"m\":%lld,\"n\":%lld,\"k\":%lld,\"batch\":%lld,\"order\":\"row_major\",\"transpose_a\":false,\"transpose_b\":true,"
         "\"lda\":%lld,\"ldb\":%lld,\"ldc\":%lld,\"weight_type\":\"%s\",\"input_type\":\"%s\","
         "\"output_type\":\"%s\",\"gemm_type\":\"f32\",\"weight_strides\":[%zu,%zu,%zu,%zu],"
         "\"input_strides\":[%zu,%zu,%zu,%zu],\"output_strides\":[%zu,%zu,%zu,%zu],"
         "\"requested_threads\":%d,\"blas_threads\":%d,\"conversion\":\"%s\","
         "\"allocate_us\":%lld,\"convert_us\":%lld,\"thread_setup_us\":%lld,\"gemm_us\":%lld,\"total_us\":%lld}\n",
-        dst->name, weight->name, backend, info.dli_fname ? info.dli_fname : "unknown",
+        tag, dst->name, weight->name, backend, info.dli_fname ? info.dli_fname : "unknown",
         info.dli_sname ? info.dli_sname : "unknown", routine,
-        (long long)input->ne[1], (long long)weight->ne[1], (long long)input->ne[0],
+        (long long)input->ne[1], (long long)weight->ne[1], (long long)input->ne[0], (long long)(dst->ne[2]*dst->ne[3]),
         (long long)input->ne[0], (long long)weight->ne[0], (long long)weight->ne[1],
         ggml_type_name(weight->type), ggml_type_name(input->type), ggml_type_name(dst->type),
         weight->nb[0], weight->nb[1], weight->nb[2], weight->nb[3],
         input->nb[0], input->nb[1], input->nb[2], input->nb[3],
         dst->nb[0], dst->nb[1], dst->nb[2], dst->nb[3],
-        requested_threads, blas_threads, conversion,
+        requested_threads, blas_threads, weight->type == GGML_TYPE_F32 ? "none (FP32 operands)" : conversion,
         (long long)allocate_us, (long long)convert_us, (long long)thread_setup_us, (long long)gemm_us, (long long)total_us);
 }

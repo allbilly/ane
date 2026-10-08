@@ -1,0 +1,106 @@
+{
+  "utc": "2026-10-07T13:24:26.862386+00:00",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "command": [
+    "/Users/yeren/ane/whisper/build/macos-matched/bin/benchmark-whisper",
+    "/Users/yeren/ane/whisper/models/ggml-tiny.en.bin",
+    "/Users/yeren/ane/whisper/build/macos-matched-results-20261007/jfk.f32",
+    "0",
+    "2",
+    "200"
+  ],
+  "requested_workers": 4,
+  "scope": "Separate CPU wall-clock stack sampling of the warmed ANE + CPU path; sample shares are not end-to-end wall-time or CPU-cycle shares. The original ANE graph still fails the full-logit gate.",
+  "identities": {
+    "os": {
+      "command": [
+        "sw_vers"
+      ],
+      "returncode": 0,
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434\n",
+      "stderr": ""
+    },
+    "compiler": {
+      "command": [
+        "clang",
+        "--version"
+      ],
+      "returncode": 0,
+      "stdout": "Homebrew clang version 23.1.2\nTarget: arm64-apple-darwin27.0.0\nThread model: posix\nInstalledDir: /opt/homebrew/Cellar/llvm/23.1.2/bin\nConfiguration file: /opt/homebrew/Cellar/llvm/23.1.2/etc/clang/arm64-apple-darwin27.cfg\n",
+      "stderr": ""
+    },
+    "cpu": {
+      "command": [
+        "sysctl",
+        "-n",
+        "machdep.cpu.brand_string"
+      ],
+      "returncode": 0,
+      "stdout": "Apple M1\n",
+      "stderr": ""
+    },
+    "thermal_before": {
+      "command": [
+        "pmset",
+        "-g",
+        "therm"
+      ],
+      "returncode": 0,
+      "stdout": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded\n",
+      "stderr": ""
+    },
+    "power_counters": {
+      "command": [
+        "/usr/bin/powermetrics",
+        "-n",
+        "1",
+        "-i",
+        "100",
+        "--samplers",
+        "cpu_power,ane_power,thermal"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "powermetrics must be invoked as the superuser\n"
+    },
+    "thermal_after": {
+      "command": [
+        "pmset",
+        "-g",
+        "therm"
+      ],
+      "returncode": 0,
+      "stdout": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded\n",
+      "stderr": ""
+    }
+  },
+  "unavailable": {
+    "cpu_ane_clocks": "powermetrics requires administrator access",
+    "power": "powermetrics requires administrator access",
+    "hardware_device_timestamps": "not exposed by the E5RT adapter",
+    "exact_core_placement": "sample identifies threads, not their physical performance/efficiency core placement",
+    "actual_blas_threads": "Accelerate exposes no thread query used by this runner"
+  },
+  "hashes": {
+    "model": "776f39cd70d01a7df3c6098f87f121b62d1fb634d1272b5f36bb6f369fc34372",
+    "runtime": "017fbc08675e8773e73f5c0c44f6e6b040c14257342fdf4c0f19914044008587",
+    "driver": "6d58c43c8b892b44354d98e366f82b1e86d544efc0932a1d19624c768bfc9e9f"
+  },
+  "sampling": {
+    "command": [
+      "/usr/bin/sample",
+      "4654",
+      "10",
+      "1",
+      "-mayDie",
+      "-fullPaths",
+      "-file",
+      "/Users/yeren/ane/whisper/build/macos-handoff-20261007/cpu-profile/sample.txt"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "Sampling process 4654 for 10 seconds with 1 millisecond of run time between samples\nSampling completed, processing symbols...\nSample analysis of process 4654 written to file /Users/yeren/ane/whisper/build/macos-handoff-20261007/cpu-profile/sample.txt\n"
+  },
+  "driver_returncode": 0,
+  "status": "sampled"
+}

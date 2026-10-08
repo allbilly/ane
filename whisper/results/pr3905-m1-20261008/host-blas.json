@@ -1,0 +1,523 @@
+{
+  "status": "PASS_RUNTIME_AND_TIMING",
+  "chip": "Apple M1",
+  "models": [
+    "tiny",
+    "base",
+    "small"
+  ],
+  "method": "Stock unmodified whisper-bench -ng -t 4 -fa; full 1500 positions, zero mel, same trained fused ANEForge MIL as the PR reference. Both CPU builds use Metal OFF and ggml Accelerate/vDSP OFF. Apple BLAS baseline versus OpenBLAS; three serial repetitions, vendor order reversed in repetition two. Two built-in encoder warmups and decoder heating per process, one timed encode per process.",
+  "scope": "Mac host-library surrogate for Asahi; E5RT Mac ANE driver remains in use. This does not measure Linux execution or prove Linux parity. Strict full-logit accuracy unqualified.",
+  "source_commit": "60c0be6ac8fa71b1a2ae2dd938a31a34a508e774",
+  "input": "same synthetic zero mel and static pos.f16 as PR bench/direct dispatch",
+  "builds": {
+    "apple": {
+      "flags": {
+        "GGML_ACCELERATE": false,
+        "GGML_METAL": false,
+        "GGML_BLAS_VENDOR": "Apple"
+      },
+      "library_linkage": {
+        "libggml-blas.dylib": "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/libggml-blas.dylib:\n\t@rpath/libggml-blas.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t@rpath/libggml-base.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t/System/Library/Frameworks/Accelerate.framework/Versions/A/Accelerate (compatibility version 1.0.0, current version 4.0.0)\n\t/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 2200.27.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)\n",
+        "libggml-cpu.dylib": "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/libggml-cpu.dylib:\n\t@rpath/libggml-cpu.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t@rpath/libggml-base.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 2200.27.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)\n",
+        "libwhisper.dylib": "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/libwhisper.dylib:\n\t@rpath/libwhisper.1.dylib (compatibility version 1.0.0, current version 0.0.0)\n\t@rpath/libggml.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t@rpath/libggml-cpu.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t@rpath/libggml-blas.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t@rpath/libggml-base.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 2200.27.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)\n"
+      },
+      "cache_sha256": "1fcd32368c100faf822349e08c13643c0e39224b28cb68ff8a4087431e0cda75",
+      "binary_sha256": "5c7521b7f7c41a2c640011bd278ab0f93bf3519c3a6d0231a2d515f9df052467",
+      "libraries_sha256": {
+        "libggml-blas.dylib": "c7c412024ab77f0a981453333e1d3c8f24a6d1fe780c084491ad084f62bf6c52",
+        "libggml-cpu.dylib": "440737253ecd1e1d71df383f5c9b2b218fe19062aa2ddf5eeb75fefd8add9255",
+        "libwhisper.dylib": "90fe30a7b8cf0d935fbbfa4a354d8e88dc49f38179b3258efaaa4a05e33b2318"
+      }
+    },
+    "openblas": {
+      "flags": {
+        "GGML_ACCELERATE": false,
+        "GGML_METAL": false,
+        "GGML_BLAS_VENDOR": "OpenBLAS"
+      },
+      "library_linkage": {
+        "libggml-blas.dylib": "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/libggml-blas.dylib:\n\t@rpath/libggml-blas.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t@rpath/libggml-base.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t/opt/homebrew/opt/openblas/lib/libopenblas.0.dylib (compatibility version 0.0.0, current version 0.0.0)\n\t/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 2200.27.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)\n",
+        "libggml-cpu.dylib": "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/libggml-cpu.dylib:\n\t@rpath/libggml-cpu.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t@rpath/libggml-base.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 2200.27.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)\n",
+        "libwhisper.dylib": "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/libwhisper.dylib:\n\t@rpath/libwhisper.1.dylib (compatibility version 1.0.0, current version 0.0.0)\n\t@rpath/libggml.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t@rpath/libggml-cpu.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t@rpath/libggml-blas.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t@rpath/libggml-base.0.dylib (compatibility version 0.0.0, current version 0.25.1)\n\t/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 2200.27.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)\n"
+      },
+      "cache_sha256": "c957b73fcdd5c3dcbb5851bd3dc5c54d08de0d7400226e37792687dc826f4af7",
+      "binary_sha256": "63420ea9f5624a720debb45d2925349eeb3ae31aff6cbad228388838ea4ebb40",
+      "libraries_sha256": {
+        "libggml-blas.dylib": "d43cf448f80bc3fb67763df914eaec1c93adee132fbe5c38612b16c6722066cc",
+        "libggml-cpu.dylib": "61bd8b999379f32b3ff293b642e112746e850d8ad426182e61674448979b2b48",
+        "libwhisper.dylib": "202b3352a7a4a31f215cf0ff28c9acd7f2b76eeb417382bbcc26527470912cdd"
+      }
+    }
+  },
+  "backends": {
+    "tiny": {
+      "apple": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 19.3,
+            "log": "tiny-cpu-apple-1.log",
+            "log_sha256": "ef15513314943b989e7d6e1d26fe8ca7fedd0259482ca9ffe7b4faae17b211f9",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 18.95,
+            "log": "tiny-cpu-apple-2.log",
+            "log_sha256": "7ade8ed641158151efdefdc2afbb1e8a08b113ba689c0fef46a11a1109307d53",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 18.6,
+            "log": "tiny-cpu-apple-3.log",
+            "log_sha256": "7dc644fcbf186a4faedb85aca8c81d20a22b7cf6e9aef1032fb650d777a2e0f8",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          }
+        ],
+        "median_encode_ms": 18.95,
+        "range_encode_ms": [
+          18.6,
+          19.3
+        ]
+      },
+      "openblas": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 34.19,
+            "log": "tiny-cpu-openblas-1.log",
+            "log_sha256": "b9f72f0d62acbba1360ccd8b70ee2ce1294ff1f0b46a39fa0d999ee13d62b0f3",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 29.01,
+            "log": "tiny-cpu-openblas-2.log",
+            "log_sha256": "950800ea072970739644dbcc5808899a762ed77b89adc9e02306e6e29d7e4d26",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 32.39,
+            "log": "tiny-cpu-openblas-3.log",
+            "log_sha256": "abe03d3fa9b7be922f08fd76f953e70c22df588d7200a6aa82b2412fc1e68f02",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          }
+        ],
+        "median_encode_ms": 32.39,
+        "range_encode_ms": [
+          29.01,
+          34.19
+        ]
+      }
+    },
+    "base": {
+      "apple": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 43.58,
+            "log": "base-cpu-apple-1.log",
+            "log_sha256": "3cd2b0a9e61acd95c8310f141b8bd8fe8b5df23798cb520c8995be4a894b0854",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/base",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 44.49,
+            "log": "base-cpu-apple-2.log",
+            "log_sha256": "44122fdf780b83253a4525a62c1eaa58dcc7b5d9256f97d8db2f7ae206ad9fa4",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/base",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 43.86,
+            "log": "base-cpu-apple-3.log",
+            "log_sha256": "f674c1908ea641ab21d520a93556d62c50bd2c83ff79ecbb755feda5b38bc09c",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/base",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          }
+        ],
+        "median_encode_ms": 43.86,
+        "range_encode_ms": [
+          43.58,
+          44.49
+        ]
+      },
+      "openblas": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 80.87,
+            "log": "base-cpu-openblas-1.log",
+            "log_sha256": "1ae3fa962874651462f8db156dde8257ccac365512de625ac69d122cf8c000d7",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/base",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 77.56,
+            "log": "base-cpu-openblas-2.log",
+            "log_sha256": "cea15a2017af56c2e0f470a461a63026374491e8278e05f436ae125b825f7bd5",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/base",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 94.53,
+            "log": "base-cpu-openblas-3.log",
+            "log_sha256": "315d1c2fa3f21d3e8202e02b28296595fd117a03f60d636aa62e922b74a2ed61",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/base",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          }
+        ],
+        "median_encode_ms": 80.87,
+        "range_encode_ms": [
+          77.56,
+          94.53
+        ]
+      }
+    },
+    "small": {
+      "apple": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 161.44,
+            "log": "small-cpu-apple-1.log",
+            "log_sha256": "6b330236836a5fbb0b7fe44045eb34c69e6c68a9b66a4b9e1ecaa22b8ffc82d1",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/small",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 250.88,
+            "log": "small-cpu-apple-2.log",
+            "log_sha256": "14516825dbdb40e64de39218285aab9cff0ac507bd0bf8b71f4cc55fabbb9c79",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/small",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 253.18,
+            "log": "small-cpu-apple-3.log",
+            "log_sha256": "71e3d34efa77201976b7d691eabf83844436f426996d29ddca650d4dc3edce11",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-apple-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/small",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          }
+        ],
+        "median_encode_ms": 250.88,
+        "range_encode_ms": [
+          161.44,
+          253.18
+        ]
+      },
+      "openblas": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 407.04,
+            "log": "small-cpu-openblas-1.log",
+            "log_sha256": "50e45b0bce9eb92c0b5fb0ab9cdc580a500eb59fc3e0a890ebe273e4fd9b69a2",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/small",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 627.78,
+            "log": "small-cpu-openblas-2.log",
+            "log_sha256": "fbe31388d7749011c5268c6d5aca4acf35df8a97c2df6c5dcece91a04ed89da1",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/small",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 596.8,
+            "log": "small-cpu-openblas-3.log",
+            "log_sha256": "bbb1515e46bcc63460859dc1d690502a69e1123b4e23fde418f08404c30cd58a",
+            "command": [
+              "/Users/yeren/ane/whisper/build/pr3905-openblas-cpu/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa",
+              "-ng"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/small",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib",
+              "OPENBLAS_NUM_THREADS": "4",
+              "OMP_NUM_THREADS": "4",
+              "VECLIB_MAXIMUM_THREADS": "4"
+            }
+          }
+        ],
+        "median_encode_ms": 596.8,
+        "range_encode_ms": [
+          407.04,
+          627.78
+        ]
+      }
+    }
+  },
+  "openblas": {
+    "openblas_get_config": "OpenBLAS 0.3.34 DYNAMIC_ARCH NO_AFFINITY USE_OPENMP neoversen1 MAX_THREADS=56",
+    "openblas_get_corename": "neoversen1",
+    "library_sha256": "07bc71aac2823e9202ea4088429a4f5d05146aded15e8aa44600e285eb700415"
+  },
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "4",
+    "OMP_NUM_THREADS": "4",
+    "VECLIB_MAXIMUM_THREADS": "4"
+  },
+  "diagnostic_only": true,
+  "limits": "Extensive decoder heating before the timed encode; small varied substantially. Assembly inspection overlapped base repetition 3 and small repetition 1; those stock pairs are retained as diagnostic evidence, not used for the isolated host comparison."
+}

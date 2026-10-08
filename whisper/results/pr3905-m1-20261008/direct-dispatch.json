@@ -1,0 +1,121 @@
+{
+  "method": "E5RT native execute only, same trained MIL/weights and synthetic zero mel as stock whisper-bench. Three warmups, then 20 serial measured executions per persistent program. Input feed and output read, graph compilation and all cross-K/V work are outside timing. The Python wrapper calls the same checked C entry point as the upstream C++ standalone runner; Python loop/timer overhead remains.",
+  "warmups": 3,
+  "measured_calls": 20,
+  "models": {
+    "tiny": {
+      "median_ms": 10.8935835,
+      "mean_ms": 10.8901938,
+      "range_ms": [
+        10.799208,
+        11.029209
+      ],
+      "runs_ms": [
+        10.862167,
+        11.029209,
+        10.856833,
+        10.81525,
+        10.987083,
+        10.896833,
+        10.850625,
+        10.912583,
+        10.833959,
+        10.931542,
+        10.874167,
+        10.914042,
+        10.890334,
+        10.945333,
+        10.950875,
+        10.897,
+        10.812583,
+        10.924916,
+        10.819334,
+        10.799208
+      ],
+      "mel_elements": 240000,
+      "mel_fp16_zero_sha256": "baf1862a3e57a773bc10ba4920cffaa69d698720cf8c6ae105ae307533ba5a29",
+      "pos_elements": 576000,
+      "output_elements": 576000,
+      "output_fp16_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+      "output_finite": true,
+      "repeated_output_identical": true,
+      "mil_sha256": "e7320a59f2988a48add91afe6eda18beec615006cae1e613ff68041f6b2c91ed"
+    },
+    "base": {
+      "median_ms": 23.292354000000003,
+      "mean_ms": 23.2919645,
+      "range_ms": [
+        23.21075,
+        23.389292
+      ],
+      "runs_ms": [
+        23.297167,
+        23.252625,
+        23.31275,
+        23.241917,
+        23.301875,
+        23.21075,
+        23.250208,
+        23.382708,
+        23.311666,
+        23.287541,
+        23.218334,
+        23.231625,
+        23.344833,
+        23.310375,
+        23.247583,
+        23.272459,
+        23.266583,
+        23.344083,
+        23.389292,
+        23.364916
+      ],
+      "mel_elements": 240000,
+      "mel_fp16_zero_sha256": "baf1862a3e57a773bc10ba4920cffaa69d698720cf8c6ae105ae307533ba5a29",
+      "pos_elements": 768000,
+      "output_elements": 768000,
+      "output_fp16_sha256": "d4e427c9dee2219036c78a38ab161d0d922e9343dc0aa6867456571bdd0f2a80",
+      "output_finite": true,
+      "repeated_output_identical": true,
+      "mil_sha256": "47dde15e321dd57b6e2183508f35b464bc79705ce1b83f7d34327de4e2e23e12"
+    },
+    "small": {
+      "median_ms": 79.408896,
+      "mean_ms": 79.67058535,
+      "range_ms": [
+        79.127833,
+        81.035792
+      ],
+      "runs_ms": [
+        79.619125,
+        80.229083,
+        81.035792,
+        80.325167,
+        79.346833,
+        79.509375,
+        79.23425,
+        79.198458,
+        79.176125,
+        79.127833,
+        79.357167,
+        80.657708,
+        79.690417,
+        80.874958,
+        79.62725,
+        79.2475,
+        79.460625,
+        79.198833,
+        79.189458,
+        79.30575
+      ],
+      "mel_elements": 240000,
+      "mel_fp16_zero_sha256": "baf1862a3e57a773bc10ba4920cffaa69d698720cf8c6ae105ae307533ba5a29",
+      "pos_elements": 1152000,
+      "output_elements": 1152000,
+      "output_fp16_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+      "output_finite": true,
+      "repeated_output_identical": true,
+      "mil_sha256": "df4be42fe1f3fb37f279af5ab0016184369b925fb59dfae5fc46636854532237"
+    }
+  }
+}

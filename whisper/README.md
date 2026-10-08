@@ -11,6 +11,7 @@ This directory lives at `~/ane/whisper` as part of the parent `ane` repository.
 | [macOS setup](docs/macos.md) | Download models, export the ANE encoder, build whisper.cpp, transcribe, verify, and use Python encoder + decoder |
 | [Native Asahi setup](docs/asahi-native.md) | Tested Linux CPU and ANE encoder projections using the existing matrix stream, without a new macOS dump |
 | [Complete encoder kernels](docs/compact-encoder.md) | Original 1,779-task fast graph, native-stride packing, retained dense baseline and full-logit limits |
+| [PR encoder packing and native replay](docs/pr3905-packing.md) | Compact tiny/base/small packages, safetensors/GGUF repacking, guarded replay and native whisper.cpp setup |
 | [Asahi measurements](docs/benchmark-asahi.md) | Real hardware validation, warm encoder/prompt/decode timings and macOS comparison |
 | [Historical Asahi PR](docs/asahi-linux.md) | Separate libane/anecc stack, `.anec` conversion and old PR prerequisites |
 | [Decoder options](docs/decoder.md) | ANEForge Python versus the draft stateful Core ML decoder branch |
@@ -23,6 +24,12 @@ The macOS encoder backend is included in current whisper.cpp through merged
 The Asahi [PR #1021](https://github.com/ggml-org/whisper.cpp/pull/1021) remains a
 research proof of concept with separate dependencies. ANEForge's macOS runtime
 does not run on Linux.
+
+The [repository README](../README.md) includes the PR fast-encoder speed table
+with measured Mac Accelerate/OpenBLAS timings and conditional Asahi projections
+of **≈29 / 63 / 335 ms** for tiny/base/small. These are encoder + CPU
+cross-attention K/V estimates; Linux execution and strict full-decoder accuracy
+remain unverified. See [the timing method and receipts](docs/benchmark-macos.md#cpu-cross-kv-library-substitution).
 
 ## Run on this Asahi machine
 

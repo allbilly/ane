@@ -26,12 +26,21 @@ EXPECTED = words("And so my fellow Americans ask not what your country can do fo
 
 
 def check_runtime(log, backend, expected_encodes, require_dispatch=False):
-    use_gpu, use_ane = BACKENDS[backend]
+    paired = backend == "precision_cpu"
+    use_gpu, use_ane = (False, True) if paired else BACKENDS[backend]
     if use_gpu and not re.search(r"whisper_backend_init_gpu: using (?:MTL\d+|Metal) backend", log):
         raise ValueError(f"{backend}: Metal readiness evidence missing")
     if not use_gpu and not re.search(r"whisper_init_with_params_no_state: use gpu\s*=\s*0", log):
         raise ValueError(f"{backend}: CPU configuration evidence missing")
-    if use_ane and ("aneforge: encoder ready" not in log or re.search(
+    if paired:
+        if "MACOS_PRECISION ready:" not in log or "aneforge: encoder ready" in log:
+            raise ValueError("paired projections readiness or isolation evidence missing")
+        projections = re.findall(r"MACOS_PRECISION encoder: projections=(\d+) submissions=(\d+)", log)
+        if projections != [("24", "24")]*expected_encodes:
+            raise ValueError("paired transcription did not execute all 24 ANE projections")
+    elif "MACOS_PRECISION ready:" in log or "MACOS_PRECISION encoder:" in log:
+        raise ValueError("baseline unexpectedly used paired ANE projections")
+    if use_ane and not paired and ("aneforge: encoder ready" not in log or re.search(
         r"aneforge: (?:compile failed|mel size|dlopen|missing|pos.f16 read failed)", log
     )):
         raise ValueError(f"{backend}: ANE initialization failed")
@@ -39,15 +48,18 @@ def check_runtime(log, backend, expected_encodes, require_dispatch=False):
         raise ValueError(f"{backend}: baseline unexpectedly initialized ANE")
     if require_dispatch:
         dispatches = re.findall(r"MACOS_ANE encoder: submissions=(\d+)", log)
-        if dispatches != (["1"]*expected_encodes if use_ane else []):
+        if dispatches != (["1"]*expected_encodes if use_ane and not paired else []):
             raise ValueError(f"{backend}: missing actual E5RT execution evidence")
 
 
-def parse_runs(result, backend, audio_seconds, expected_words=None, require_dispatch=False):
+def parse_runs(result, backend, audio_seconds, expected_words=None, require_dispatch=False,
+               matrix_layout="separate"):
     return parse_benchmark_runs(result, audio_seconds,
         EXPECTED if expected_words is None else expected_words,
         check_runtime=lambda log, count: check_runtime(log, backend, count, require_dispatch),
-        encoder_marker="MACOS_ANE encoder:" if require_dispatch and BACKENDS[backend][1] else None)
+        encoder_marker=("MACOS_PRECISION encoder:" if backend == "precision_cpu" else
+                        "MACOS_ANE encoder:" if require_dispatch and BACKENDS[backend][1] else None),
+        matrix_layout=matrix_layout)
 
 
 def main():

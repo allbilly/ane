@@ -1,0 +1,2503 @@
+_sgemm_kernel_NEOVERSEN1:
+  276de0:	ff c3 02 d1	sub	sp, sp, #0xb0
+  276de4:	e8 27 00 6d	stp	d8, d9, [sp]
+  276de8:	ea 2f 01 6d	stp	d10, d11, [sp, #0x10]
+  276dec:	ec 37 02 6d	stp	d12, d13, [sp, #0x20]
+  276df0:	ee 3f 03 6d	stp	d14, d15, [sp, #0x30]
+  276df4:	f0 47 04 6d	stp	d16, d17, [sp, #0x40]
+  276df8:	f2 4f 05 a9	stp	x18, x19, [sp, #0x50]
+  276dfc:	f4 57 06 a9	stp	x20, x21, [sp, #0x60]
+  276e00:	f6 5f 07 a9	stp	x22, x23, [sp, #0x70]
+  276e04:	f8 67 08 a9	stp	x24, x25, [sp, #0x80]
+  276e08:	fa 6f 09 a9	stp	x26, x27, [sp, #0x90]
+  276e0c:	fc 53 00 f9	str	x28, [sp, #0xa0]
+  276e10:	80 00 80 f9	prfm	pldl1keep, [x4]
+  276e14:	60 00 80 f9	prfm	pldl1keep, [x3]
+  276e18:	11 00 26 1e	fmov	w17, s0
+  276e1c:	c6 f4 7e d3	lsl	x6, x6, #2
+  276e20:	eb 03 04 aa	mov	x11, x4
+  276e24:	ea 03 01 aa	mov	x10, x1
+  276e28:	4a fd 42 93	asr	x10, x10, #2
+  276e2c:	5f 01 00 f1	cmp	x10, #0x0
+  276e30:	0d a0 00 54	b.le	.Lsgemm_kernel_L2_BEGIN
+.Lsgemm_kernel_L4_BEGIN:
+  276e34:	ec 03 05 aa	mov	x12, x5
+  276e38:	8d 01 06 8b	add	x13, x12, x6
+  276e3c:	ae 01 06 8b	add	x14, x13, x6
+  276e40:	cf 01 06 8b	add	x15, x14, x6
+  276e44:	e5 01 06 8b	add	x5, x15, x6
+  276e48:	f0 03 03 aa	mov	x16, x3
+.Lsgemm_kernel_L4_M16_BEGIN:
+  276e4c:	e9 03 00 aa	mov	x9, x0
+  276e50:	29 fd 44 93	asr	x9, x9, #4
+  276e54:	3f 01 00 f1	cmp	x9, #0x0
+  276e58:	8d 65 00 54	b.le	.Lsgemm_kernel_L4_M8_BEGIN
+  276e5c:	1f 20 03 d5	nop
+.Lsgemm_kernel_L4_M16_20:
+  276e60:	eb 03 04 aa	mov	x11, x4
+  276e64:	48 fc 43 93	asr	x8, x2, #3
+  276e68:	1f 09 00 f1	cmp	x8, #0x2
+  276e6c:	ab 42 00 54	b.lt	.Lsgemm_kernel_L4_M16_32
+  276e70:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  276e74:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  276e78:	10 90 88 4f	fmul.4s	v16, v0, v8[0]
+  276e7c:	14 90 89 4f	fmul.4s	v20, v0, v9[0]
+  276e80:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  276e84:	18 90 8a 4f	fmul.4s	v24, v0, v10[0]
+  276e88:	1c 90 8b 4f	fmul.4s	v28, v0, v11[0]
+  276e8c:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  276e90:	31 90 88 4f	fmul.4s	v17, v1, v8[0]
+  276e94:	35 90 89 4f	fmul.4s	v21, v1, v9[0]
+  276e98:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  276e9c:	39 90 8a 4f	fmul.4s	v25, v1, v10[0]
+  276ea0:	3d 90 8b 4f	fmul.4s	v29, v1, v11[0]
+  276ea4:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  276ea8:	52 90 88 4f	fmul.4s	v18, v2, v8[0]
+  276eac:	56 90 89 4f	fmul.4s	v22, v2, v9[0]
+  276eb0:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  276eb4:	73 90 88 4f	fmul.4s	v19, v3, v8[0]
+  276eb8:	77 90 89 4f	fmul.4s	v23, v3, v9[0]
+  276ebc:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  276ec0:	5a 90 8a 4f	fmul.4s	v26, v2, v10[0]
+  276ec4:	5e 90 8b 4f	fmul.4s	v30, v2, v11[0]
+  276ec8:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  276ecc:	7b 90 8a 4f	fmul.4s	v27, v3, v10[0]
+  276ed0:	7f 90 8b 4f	fmul.4s	v31, v3, v11[0]
+  276ed4:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  276ed8:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  276edc:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  276ee0:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  276ee4:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  276ee8:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  276eec:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  276ef0:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  276ef4:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  276ef8:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  276efc:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  276f00:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  276f04:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  276f08:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  276f0c:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  276f10:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  276f14:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  276f18:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  276f1c:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  276f20:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  276f24:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  276f28:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  276f2c:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  276f30:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  276f34:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  276f38:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  276f3c:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  276f40:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  276f44:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  276f48:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  276f4c:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  276f50:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  276f54:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  276f58:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  276f5c:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  276f60:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  276f64:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  276f68:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  276f6c:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  276f70:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  276f74:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  276f78:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  276f7c:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  276f80:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  276f84:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  276f88:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  276f8c:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  276f90:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  276f94:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  276f98:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  276f9c:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  276fa0:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  276fa4:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  276fa8:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  276fac:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  276fb0:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  276fb4:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  276fb8:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  276fbc:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  276fc0:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  276fc4:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  276fc8:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  276fcc:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  276fd0:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  276fd4:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  276fd8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  276fdc:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  276fe0:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  276fe4:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  276fe8:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  276fec:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  276ff0:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  276ff4:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  276ff8:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  276ffc:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  277000:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277004:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277008:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  27700c:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  277010:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  277014:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  277018:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  27701c:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  277020:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  277024:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  277028:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  27702c:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  277030:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  277034:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  277038:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  27703c:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  277040:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  277044:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  277048:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  27704c:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277050:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  277054:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  277058:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  27705c:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  277060:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277064:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  277068:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  27706c:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  277070:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  277074:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  277078:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  27707c:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  277080:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  277084:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277088:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  27708c:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  277090:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  277094:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  277098:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  27709c:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  2770a0:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  2770a4:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  2770a8:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  2770ac:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  2770b0:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  2770b4:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  2770b8:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  2770bc:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  2770c0:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  2770c4:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  2770c8:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  2770cc:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  2770d0:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  2770d4:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  2770d8:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  2770dc:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  2770e0:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  2770e4:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  2770e8:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  2770ec:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  2770f0:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  2770f4:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  2770f8:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  2770fc:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  277100:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  277104:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277108:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  27710c:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277110:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  277114:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  277118:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  27711c:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  277120:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  277124:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  277128:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  27712c:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  277130:	08 09 00 f1	subs	x8, x8, #0x2
+  277134:	6d 16 00 54	b.le	.Lsgemm_kernel_L4_M16_22a
+  277138:	1f 20 03 d5	nop
+  27713c:	1f 20 03 d5	nop
+.Lsgemm_kernel_L4_M16_22:
+  277140:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277144:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  277148:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  27714c:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  277150:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  277154:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  277158:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  27715c:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277160:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  277164:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  277168:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  27716c:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277170:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  277174:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  277178:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  27717c:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  277180:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  277184:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  277188:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  27718c:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  277190:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  277194:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  277198:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  27719c:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  2771a0:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  2771a4:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  2771a8:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  2771ac:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  2771b0:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  2771b4:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  2771b8:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  2771bc:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  2771c0:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  2771c4:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  2771c8:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  2771cc:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  2771d0:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  2771d4:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  2771d8:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  2771dc:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  2771e0:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  2771e4:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  2771e8:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  2771ec:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  2771f0:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  2771f4:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  2771f8:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  2771fc:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  277200:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  277204:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  277208:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  27720c:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  277210:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  277214:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277218:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  27721c:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  277220:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  277224:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  277228:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  27722c:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  277230:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  277234:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  277238:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  27723c:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  277240:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  277244:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  277248:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  27724c:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  277250:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  277254:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  277258:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  27725c:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  277260:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277264:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  277268:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  27726c:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277270:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  277274:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277278:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  27727c:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  277280:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  277284:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  277288:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  27728c:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  277290:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  277294:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  277298:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  27729c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  2772a0:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  2772a4:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  2772a8:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  2772ac:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  2772b0:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  2772b4:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  2772b8:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  2772bc:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  2772c0:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  2772c4:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  2772c8:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  2772cc:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  2772d0:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  2772d4:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  2772d8:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  2772dc:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  2772e0:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  2772e4:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  2772e8:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  2772ec:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  2772f0:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  2772f4:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  2772f8:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  2772fc:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  277300:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  277304:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  277308:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  27730c:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277310:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  277314:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  277318:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  27731c:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  277320:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277324:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  277328:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  27732c:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  277330:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  277334:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  277338:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  27733c:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  277340:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  277344:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277348:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  27734c:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  277350:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  277354:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  277358:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  27735c:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  277360:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277364:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  277368:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  27736c:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277370:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277374:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  277378:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  27737c:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  277380:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  277384:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  277388:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  27738c:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  277390:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  277394:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  277398:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  27739c:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  2773a0:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  2773a4:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  2773a8:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  2773ac:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  2773b0:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  2773b4:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  2773b8:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  2773bc:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  2773c0:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  2773c4:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  2773c8:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  2773cc:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  2773d0:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  2773d4:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  2773d8:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  2773dc:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  2773e0:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  2773e4:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  2773e8:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  2773ec:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  2773f0:	08 05 00 f1	subs	x8, x8, #0x1
+  2773f4:	6c ea ff 54	b.gt	.Lsgemm_kernel_L4_M16_22
+  2773f8:	1f 20 03 d5	nop
+  2773fc:	1f 20 03 d5	nop
+.Lsgemm_kernel_L4_M16_22a:
+  277400:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277404:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  277408:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  27740c:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  277410:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  277414:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  277418:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  27741c:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277420:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  277424:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  277428:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  27742c:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277430:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  277434:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  277438:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  27743c:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  277440:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  277444:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  277448:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  27744c:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  277450:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  277454:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  277458:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  27745c:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  277460:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  277464:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  277468:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  27746c:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  277470:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  277474:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277478:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  27747c:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  277480:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277484:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  277488:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  27748c:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  277490:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  277494:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  277498:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  27749c:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  2774a0:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  2774a4:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  2774a8:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  2774ac:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  2774b0:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  2774b4:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  2774b8:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  2774bc:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  2774c0:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  2774c4:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  2774c8:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  2774cc:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  2774d0:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  2774d4:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  2774d8:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  2774dc:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  2774e0:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  2774e4:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  2774e8:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  2774ec:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  2774f0:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  2774f4:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  2774f8:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  2774fc:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  277500:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  277504:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  277508:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  27750c:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  277510:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  277514:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  277518:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  27751c:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  277520:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277524:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  277528:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  27752c:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277530:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  277534:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277538:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  27753c:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  277540:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  277544:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  277548:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  27754c:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  277550:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  277554:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  277558:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  27755c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  277560:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  277564:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  277568:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  27756c:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  277570:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  277574:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277578:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  27757c:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  277580:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277584:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277588:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  27758c:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  277590:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  277594:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  277598:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  27759c:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  2775a0:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  2775a4:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  2775a8:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  2775ac:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  2775b0:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  2775b4:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  2775b8:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  2775bc:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  2775c0:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  2775c4:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  2775c8:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  2775cc:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  2775d0:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  2775d4:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  2775d8:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  2775dc:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  2775e0:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  2775e4:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  2775e8:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  2775ec:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  2775f0:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  2775f4:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  2775f8:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  2775fc:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  277600:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  277604:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277608:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  27760c:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  277610:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  277614:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  277618:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  27761c:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  277620:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277624:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  277628:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  27762c:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277630:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277634:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  277638:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  27763c:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  277640:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  277644:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  277648:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  27764c:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  277650:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  277654:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  277658:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  27765c:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  277660:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  277664:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  277668:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  27766c:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  277670:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  277674:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277678:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  27767c:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  277680:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  277684:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  277688:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  27768c:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  277690:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  277694:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  277698:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  27769c:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  2776a0:	c7 00 00 14	b	.Lsgemm_kernel_L4_M16_44
+  2776a4:	1f 20 03 d5	nop
+  2776a8:	1f 20 03 d5	nop
+  2776ac:	1f 20 03 d5	nop
+  2776b0:	1f 20 03 d5	nop
+  2776b4:	1f 20 03 d5	nop
+  2776b8:	1f 20 03 d5	nop
+  2776bc:	1f 20 03 d5	nop
+.Lsgemm_kernel_L4_M16_32:
+  2776c0:	1f 01 40 f2	tst	x8, #0x1
+  2776c4:	cd 15 00 54	b.le	.Lsgemm_kernel_L4_M16_40
+  2776c8:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  2776cc:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  2776d0:	10 90 88 4f	fmul.4s	v16, v0, v8[0]
+  2776d4:	14 90 89 4f	fmul.4s	v20, v0, v9[0]
+  2776d8:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  2776dc:	18 90 8a 4f	fmul.4s	v24, v0, v10[0]
+  2776e0:	1c 90 8b 4f	fmul.4s	v28, v0, v11[0]
+  2776e4:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  2776e8:	31 90 88 4f	fmul.4s	v17, v1, v8[0]
+  2776ec:	35 90 89 4f	fmul.4s	v21, v1, v9[0]
+  2776f0:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  2776f4:	39 90 8a 4f	fmul.4s	v25, v1, v10[0]
+  2776f8:	3d 90 8b 4f	fmul.4s	v29, v1, v11[0]
+  2776fc:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277700:	52 90 88 4f	fmul.4s	v18, v2, v8[0]
+  277704:	56 90 89 4f	fmul.4s	v22, v2, v9[0]
+  277708:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  27770c:	73 90 88 4f	fmul.4s	v19, v3, v8[0]
+  277710:	77 90 89 4f	fmul.4s	v23, v3, v9[0]
+  277714:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  277718:	5a 90 8a 4f	fmul.4s	v26, v2, v10[0]
+  27771c:	5e 90 8b 4f	fmul.4s	v30, v2, v11[0]
+  277720:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  277724:	7b 90 8a 4f	fmul.4s	v27, v3, v10[0]
+  277728:	7f 90 8b 4f	fmul.4s	v31, v3, v11[0]
+  27772c:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  277730:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  277734:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  277738:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  27773c:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  277740:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  277744:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  277748:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  27774c:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277750:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  277754:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  277758:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  27775c:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  277760:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277764:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  277768:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  27776c:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  277770:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  277774:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  277778:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  27777c:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  277780:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  277784:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277788:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  27778c:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  277790:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  277794:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  277798:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  27779c:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  2777a0:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  2777a4:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  2777a8:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  2777ac:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  2777b0:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  2777b4:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  2777b8:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  2777bc:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  2777c0:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  2777c4:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  2777c8:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  2777cc:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  2777d0:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  2777d4:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  2777d8:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  2777dc:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  2777e0:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  2777e4:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  2777e8:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  2777ec:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  2777f0:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  2777f4:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  2777f8:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  2777fc:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  277800:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  277804:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277808:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  27780c:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277810:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  277814:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  277818:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  27781c:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  277820:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  277824:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  277828:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  27782c:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  277830:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277834:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  277838:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  27783c:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  277840:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  277844:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  277848:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  27784c:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277850:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  277854:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  277858:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  27785c:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277860:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  277864:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  277868:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  27786c:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  277870:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  277874:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  277878:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  27787c:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  277880:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  277884:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  277888:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  27788c:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  277890:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  277894:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  277898:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  27789c:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  2778a0:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  2778a4:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  2778a8:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  2778ac:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  2778b0:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  2778b4:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  2778b8:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  2778bc:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  2778c0:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  2778c4:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  2778c8:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  2778cc:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  2778d0:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  2778d4:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  2778d8:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  2778dc:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  2778e0:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  2778e4:	04 16 c1 ac	ldp	q4, q5, [x16], #0x20
+  2778e8:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  2778ec:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  2778f0:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  2778f4:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  2778f8:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  2778fc:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  277900:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  277904:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277908:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  27790c:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  277910:	00 22 85 f9	prfm	pldl1keep, [x16, #0xa40]
+  277914:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  277918:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  27791c:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  277920:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  277924:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  277928:	06 1e c1 ac	ldp	q6, q7, [x16], #0x20
+  27792c:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  277930:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  277934:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  277938:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  27793c:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  277940:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  277944:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  277948:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  27794c:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277950:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  277954:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  277958:	d2 10 8c 4f	fmla.4s	v18, v6, v12[0]
+  27795c:	d6 10 8d 4f	fmla.4s	v22, v6, v13[0]
+  277960:	da 10 8e 4f	fmla.4s	v26, v6, v14[0]
+  277964:	de 10 8f 4f	fmla.4s	v30, v6, v15[0]
+  277968:	f3 10 8c 4f	fmla.4s	v19, v7, v12[0]
+  27796c:	f7 10 8d 4f	fmla.4s	v23, v7, v13[0]
+  277970:	fb 10 8e 4f	fmla.4s	v27, v7, v14[0]
+  277974:	ff 10 8f 4f	fmla.4s	v31, v7, v15[0]
+  277978:	11 00 00 14	b	.Lsgemm_kernel_L4_M16_44
+.Lsgemm_kernel_L4_M16_40:
+  27797c:	f0 03 27 1e	fmov	s16, wzr
+  277980:	f1 03 27 1e	fmov	s17, wzr
+  277984:	12 42 20 1e	fmov	s18, s16
+  277988:	33 42 20 1e	fmov	s19, s17
+  27798c:	f4 03 27 1e	fmov	s20, wzr
+  277990:	15 42 20 1e	fmov	s21, s16
+  277994:	36 42 20 1e	fmov	s22, s17
+  277998:	57 42 20 1e	fmov	s23, s18
+  27799c:	f8 03 27 1e	fmov	s24, wzr
+  2779a0:	19 42 20 1e	fmov	s25, s16
+  2779a4:	3a 42 20 1e	fmov	s26, s17
+  2779a8:	5b 42 20 1e	fmov	s27, s18
+  2779ac:	fc 03 27 1e	fmov	s28, wzr
+  2779b0:	1d 42 20 1e	fmov	s29, s16
+  2779b4:	3e 42 20 1e	fmov	s30, s17
+  2779b8:	5f 42 20 1e	fmov	s31, s18
+.Lsgemm_kernel_L4_M16_44:
+  2779bc:	48 08 40 f2	ands	x8, x2, #0x7
+  2779c0:	0d 04 00 54	b.le	.Lsgemm_kernel_L4_M16_100
+  2779c4:	1f 20 03 d5	nop
+  2779c8:	1f 20 03 d5	nop
+  2779cc:	1f 20 03 d5	nop
+  2779d0:	1f 20 03 d5	nop
+  2779d4:	1f 20 03 d5	nop
+  2779d8:	1f 20 03 d5	nop
+  2779dc:	1f 20 03 d5	nop
+.Lsgemm_kernel_L4_M16_46:
+  2779e0:	00 06 c1 ac	ldp	q0, q1, [x16], #0x20
+  2779e4:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  2779e8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  2779ec:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  2779f0:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  2779f4:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  2779f8:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  2779fc:	02 0e c1 ac	ldp	q2, q3, [x16], #0x20
+  277a00:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  277a04:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  277a08:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  277a0c:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  277a10:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  277a14:	56 10 89 4f	fmla.4s	v22, v2, v9[0]
+  277a18:	00 02 85 f9	prfm	pldl1keep, [x16, #0xa00]
+  277a1c:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  277a20:	77 10 89 4f	fmla.4s	v23, v3, v9[0]
+  277a24:	5a 10 8a 4f	fmla.4s	v26, v2, v10[0]
+  277a28:	5e 10 8b 4f	fmla.4s	v30, v2, v11[0]
+  277a2c:	60 71 80 f9	prfm	pldl1keep, [x11, #0xe0]
+  277a30:	7b 10 8a 4f	fmla.4s	v27, v3, v10[0]
+  277a34:	7f 10 8b 4f	fmla.4s	v31, v3, v11[0]
+  277a38:	08 05 00 f1	subs	x8, x8, #0x1
+  277a3c:	21 fd ff 54	b.ne	.Lsgemm_kernel_L4_M16_46
+.Lsgemm_kernel_L4_M16_100:
+  277a40:	00 02 80 f9	prfm	pldl1keep, [x16]
+  277a44:	00 22 80 f9	prfm	pldl1keep, [x16, #0x40]
+  277a48:	80 00 80 f9	prfm	pldl1keep, [x4]
+  277a4c:	2a 02 27 1e	fmov	s10, w17
+  277a50:	82 51 80 f9	prfm	pldl2keep, [x12, #0xa0]
+  277a54:	80 05 40 ad	ldp	q0, q1, [x12]
+  277a58:	00 12 8a 4f	fmla.4s	v0, v16, v10[0]
+  277a5c:	21 12 8a 4f	fmla.4s	v1, v17, v10[0]
+  277a60:	80 05 00 ad	stp	q0, q1, [x12]
+  277a64:	8c 81 00 91	add	x12, x12, #0x20
+  277a68:	82 0d 40 ad	ldp	q2, q3, [x12]
+  277a6c:	42 12 8a 4f	fmla.4s	v2, v18, v10[0]
+  277a70:	63 12 8a 4f	fmla.4s	v3, v19, v10[0]
+  277a74:	82 0d 00 ad	stp	q2, q3, [x12]
+  277a78:	8c 81 00 91	add	x12, x12, #0x20
+  277a7c:	a2 51 80 f9	prfm	pldl2keep, [x13, #0xa0]
+  277a80:	a4 15 40 ad	ldp	q4, q5, [x13]
+  277a84:	84 12 8a 4f	fmla.4s	v4, v20, v10[0]
+  277a88:	a5 12 8a 4f	fmla.4s	v5, v21, v10[0]
+  277a8c:	a4 15 00 ad	stp	q4, q5, [x13]
+  277a90:	ad 81 00 91	add	x13, x13, #0x20
+  277a94:	a6 1d 40 ad	ldp	q6, q7, [x13]
+  277a98:	c6 12 8a 4f	fmla.4s	v6, v22, v10[0]
+  277a9c:	e7 12 8a 4f	fmla.4s	v7, v23, v10[0]
+  277aa0:	a6 1d 00 ad	stp	q6, q7, [x13]
+  277aa4:	ad 81 00 91	add	x13, x13, #0x20
+  277aa8:	c2 51 80 f9	prfm	pldl2keep, [x14, #0xa0]
+  277aac:	c0 05 40 ad	ldp	q0, q1, [x14]
+  277ab0:	00 13 8a 4f	fmla.4s	v0, v24, v10[0]
+  277ab4:	21 13 8a 4f	fmla.4s	v1, v25, v10[0]
+  277ab8:	c0 05 00 ad	stp	q0, q1, [x14]
+  277abc:	ce 81 00 91	add	x14, x14, #0x20
+  277ac0:	c2 0d 40 ad	ldp	q2, q3, [x14]
+  277ac4:	42 13 8a 4f	fmla.4s	v2, v26, v10[0]
+  277ac8:	63 13 8a 4f	fmla.4s	v3, v27, v10[0]
+  277acc:	c2 0d 00 ad	stp	q2, q3, [x14]
+  277ad0:	ce 81 00 91	add	x14, x14, #0x20
+  277ad4:	e2 51 80 f9	prfm	pldl2keep, [x15, #0xa0]
+  277ad8:	e4 15 40 ad	ldp	q4, q5, [x15]
+  277adc:	84 13 8a 4f	fmla.4s	v4, v28, v10[0]
+  277ae0:	a5 13 8a 4f	fmla.4s	v5, v29, v10[0]
+  277ae4:	e4 15 00 ad	stp	q4, q5, [x15]
+  277ae8:	ef 81 00 91	add	x15, x15, #0x20
+  277aec:	e6 1d 40 ad	ldp	q6, q7, [x15]
+  277af0:	c6 13 8a 4f	fmla.4s	v6, v30, v10[0]
+  277af4:	e7 13 8a 4f	fmla.4s	v7, v31, v10[0]
+  277af8:	e6 1d 00 ad	stp	q6, q7, [x15]
+  277afc:	ef 81 00 91	add	x15, x15, #0x20
+.Lsgemm_kernel_L4_M16_END:
+  277b00:	29 05 00 f1	subs	x9, x9, #0x1
+  277b04:	e1 9a ff 54	b.ne	.Lsgemm_kernel_L4_M16_20
+.Lsgemm_kernel_L4_M8_BEGIN:
+  277b08:	e9 03 00 aa	mov	x9, x0
+  277b0c:	3f 0d 40 f2	tst	x9, #0xf
+  277b10:	ad 38 00 54	b.le	.Lsgemm_kernel_L4_END
+  277b14:	3f 01 7d f2	tst	x9, #0x8
+  277b18:	ed 13 00 54	b.le	.Lsgemm_kernel_L4_M4_BEGIN
+.Lsgemm_kernel_L4_M8_20:
+  277b1c:	eb 03 04 aa	mov	x11, x4
+  277b20:	48 fc 41 93	asr	x8, x2, #1
+  277b24:	1f 09 00 f1	cmp	x8, #0x2
+  277b28:	ab 0a 00 54	b.lt	.Lsgemm_kernel_L4_M8_32
+  277b2c:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277b30:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277b34:	00 06 c1 3c	ldr	q0, [x16], #0x10
+  277b38:	01 06 c1 3c	ldr	q1, [x16], #0x10
+  277b3c:	10 90 88 4f	fmul.4s	v16, v0, v8[0]
+  277b40:	31 90 88 4f	fmul.4s	v17, v1, v8[0]
+  277b44:	14 90 89 4f	fmul.4s	v20, v0, v9[0]
+  277b48:	35 90 89 4f	fmul.4s	v21, v1, v9[0]
+  277b4c:	18 90 8a 4f	fmul.4s	v24, v0, v10[0]
+  277b50:	39 90 8a 4f	fmul.4s	v25, v1, v10[0]
+  277b54:	1c 90 8b 4f	fmul.4s	v28, v0, v11[0]
+  277b58:	3d 90 8b 4f	fmul.4s	v29, v1, v11[0]
+  277b5c:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277b60:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277b64:	04 06 c1 3c	ldr	q4, [x16], #0x10
+  277b68:	05 06 c1 3c	ldr	q5, [x16], #0x10
+  277b6c:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  277b70:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  277b74:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  277b78:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  277b7c:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  277b80:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277b84:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  277b88:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  277b8c:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277b90:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277b94:	00 06 c1 3c	ldr	q0, [x16], #0x10
+  277b98:	01 06 c1 3c	ldr	q1, [x16], #0x10
+  277b9c:	08 09 00 f1	subs	x8, x8, #0x2
+  277ba0:	4d 04 00 54	b.le	.Lsgemm_kernel_L4_M8_22a
+  277ba4:	1f 20 03 d5	nop
+  277ba8:	1f 20 03 d5	nop
+  277bac:	1f 20 03 d5	nop
+  277bb0:	1f 20 03 d5	nop
+  277bb4:	1f 20 03 d5	nop
+  277bb8:	1f 20 03 d5	nop
+  277bbc:	1f 20 03 d5	nop
+.Lsgemm_kernel_L4_M8_22:
+  277bc0:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277bc4:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  277bc8:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  277bcc:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  277bd0:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277bd4:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  277bd8:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  277bdc:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  277be0:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277be4:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277be8:	04 06 c1 3c	ldr	q4, [x16], #0x10
+  277bec:	05 06 c1 3c	ldr	q5, [x16], #0x10
+  277bf0:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  277bf4:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  277bf8:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  277bfc:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  277c00:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  277c04:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277c08:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  277c0c:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  277c10:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277c14:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277c18:	00 06 c1 3c	ldr	q0, [x16], #0x10
+  277c1c:	01 06 c1 3c	ldr	q1, [x16], #0x10
+  277c20:	08 05 00 f1	subs	x8, x8, #0x1
+  277c24:	ec fc ff 54	b.gt	.Lsgemm_kernel_L4_M8_22
+.Lsgemm_kernel_L4_M8_22a:
+  277c28:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277c2c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  277c30:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  277c34:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  277c38:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277c3c:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  277c40:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  277c44:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+  277c48:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277c4c:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277c50:	04 06 c1 3c	ldr	q4, [x16], #0x10
+  277c54:	05 06 c1 3c	ldr	q5, [x16], #0x10
+  277c58:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  277c5c:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  277c60:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  277c64:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  277c68:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  277c6c:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277c70:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  277c74:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  277c78:	24 00 00 14	b	.Lsgemm_kernel_L4_M8_44
+.Lsgemm_kernel_L4_M8_32:
+  277c7c:	1f 01 40 f2	tst	x8, #0x1
+  277c80:	4d 03 00 54	b.le	.Lsgemm_kernel_L4_M8_40
+  277c84:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277c88:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277c8c:	00 06 c1 3c	ldr	q0, [x16], #0x10
+  277c90:	01 06 c1 3c	ldr	q1, [x16], #0x10
+  277c94:	10 90 88 4f	fmul.4s	v16, v0, v8[0]
+  277c98:	31 90 88 4f	fmul.4s	v17, v1, v8[0]
+  277c9c:	14 90 89 4f	fmul.4s	v20, v0, v9[0]
+  277ca0:	35 90 89 4f	fmul.4s	v21, v1, v9[0]
+  277ca4:	18 90 8a 4f	fmul.4s	v24, v0, v10[0]
+  277ca8:	39 90 8a 4f	fmul.4s	v25, v1, v10[0]
+  277cac:	1c 90 8b 4f	fmul.4s	v28, v0, v11[0]
+  277cb0:	3d 90 8b 4f	fmul.4s	v29, v1, v11[0]
+  277cb4:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277cb8:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277cbc:	04 06 c1 3c	ldr	q4, [x16], #0x10
+  277cc0:	05 06 c1 3c	ldr	q5, [x16], #0x10
+  277cc4:	90 10 8c 4f	fmla.4s	v16, v4, v12[0]
+  277cc8:	b1 10 8c 4f	fmla.4s	v17, v5, v12[0]
+  277ccc:	94 10 8d 4f	fmla.4s	v20, v4, v13[0]
+  277cd0:	b5 10 8d 4f	fmla.4s	v21, v5, v13[0]
+  277cd4:	98 10 8e 4f	fmla.4s	v24, v4, v14[0]
+  277cd8:	b9 10 8e 4f	fmla.4s	v25, v5, v14[0]
+  277cdc:	9c 10 8f 4f	fmla.4s	v28, v4, v15[0]
+  277ce0:	bd 10 8f 4f	fmla.4s	v29, v5, v15[0]
+  277ce4:	09 00 00 14	b	.Lsgemm_kernel_L4_M8_44
+.Lsgemm_kernel_L4_M8_40:
+  277ce8:	f0 03 27 1e	fmov	s16, wzr
+  277cec:	f1 03 27 1e	fmov	s17, wzr
+  277cf0:	f4 03 27 1e	fmov	s20, wzr
+  277cf4:	15 42 20 1e	fmov	s21, s16
+  277cf8:	f8 03 27 1e	fmov	s24, wzr
+  277cfc:	19 42 20 1e	fmov	s25, s16
+  277d00:	fc 03 27 1e	fmov	s28, wzr
+  277d04:	1d 42 20 1e	fmov	s29, s16
+.Lsgemm_kernel_L4_M8_44:
+  277d08:	48 00 40 f2	ands	x8, x2, #0x1
+  277d0c:	ad 01 00 54	b.le	.Lsgemm_kernel_L4_M8_100
+.Lsgemm_kernel_L4_M8_46:
+  277d10:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277d14:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277d18:	00 06 c1 3c	ldr	q0, [x16], #0x10
+  277d1c:	01 06 c1 3c	ldr	q1, [x16], #0x10
+  277d20:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277d24:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  277d28:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  277d2c:	35 10 89 4f	fmla.4s	v21, v1, v9[0]
+  277d30:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277d34:	39 10 8a 4f	fmla.4s	v25, v1, v10[0]
+  277d38:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  277d3c:	3d 10 8b 4f	fmla.4s	v29, v1, v11[0]
+.Lsgemm_kernel_L4_M8_100:
+  277d40:	2a 02 27 1e	fmov	s10, w17
+  277d44:	80 05 40 ad	ldp	q0, q1, [x12]
+  277d48:	00 12 8a 4f	fmla.4s	v0, v16, v10[0]
+  277d4c:	21 12 8a 4f	fmla.4s	v1, v17, v10[0]
+  277d50:	80 05 00 ad	stp	q0, q1, [x12]
+  277d54:	8c 81 00 91	add	x12, x12, #0x20
+  277d58:	a2 0d 40 ad	ldp	q2, q3, [x13]
+  277d5c:	82 12 8a 4f	fmla.4s	v2, v20, v10[0]
+  277d60:	a3 12 8a 4f	fmla.4s	v3, v21, v10[0]
+  277d64:	a2 0d 00 ad	stp	q2, q3, [x13]
+  277d68:	ad 81 00 91	add	x13, x13, #0x20
+  277d6c:	c4 15 40 ad	ldp	q4, q5, [x14]
+  277d70:	04 13 8a 4f	fmla.4s	v4, v24, v10[0]
+  277d74:	25 13 8a 4f	fmla.4s	v5, v25, v10[0]
+  277d78:	c4 15 00 ad	stp	q4, q5, [x14]
+  277d7c:	ce 81 00 91	add	x14, x14, #0x20
+  277d80:	e6 1d 40 ad	ldp	q6, q7, [x15]
+  277d84:	86 13 8a 4f	fmla.4s	v6, v28, v10[0]
+  277d88:	a7 13 8a 4f	fmla.4s	v7, v29, v10[0]
+  277d8c:	e6 1d 00 ad	stp	q6, q7, [x15]
+  277d90:	ef 81 00 91	add	x15, x15, #0x20
+.Lsgemm_kernel_L4_M8_END:
+.Lsgemm_kernel_L4_M4_BEGIN:
+  277d94:	e9 03 00 aa	mov	x9, x0
+  277d98:	3f 09 40 f2	tst	x9, #0x7
+  277d9c:	4d 24 00 54	b.le	.Lsgemm_kernel_L4_END
+  277da0:	3f 01 7e f2	tst	x9, #0x4
+  277da4:	4d 0d 00 54	b.le	.Lsgemm_kernel_L4_M2_BEGIN
+.Lsgemm_kernel_L4_M4_20:
+  277da8:	eb 03 04 aa	mov	x11, x4
+  277dac:	48 fc 41 93	asr	x8, x2, #1
+  277db0:	1f 09 00 f1	cmp	x8, #0x2
+  277db4:	eb 06 00 54	b.lt	.Lsgemm_kernel_L4_M4_32
+  277db8:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277dbc:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277dc0:	00 06 c1 3c	ldr	q0, [x16], #0x10
+  277dc4:	10 90 88 4f	fmul.4s	v16, v0, v8[0]
+  277dc8:	14 90 89 4f	fmul.4s	v20, v0, v9[0]
+  277dcc:	18 90 8a 4f	fmul.4s	v24, v0, v10[0]
+  277dd0:	1c 90 8b 4f	fmul.4s	v28, v0, v11[0]
+  277dd4:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277dd8:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277ddc:	01 06 c1 3c	ldr	q1, [x16], #0x10
+  277de0:	30 10 8c 4f	fmla.4s	v16, v1, v12[0]
+  277de4:	34 10 8d 4f	fmla.4s	v20, v1, v13[0]
+  277de8:	38 10 8e 4f	fmla.4s	v24, v1, v14[0]
+  277dec:	3c 10 8f 4f	fmla.4s	v28, v1, v15[0]
+  277df0:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277df4:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277df8:	00 06 c1 3c	ldr	q0, [x16], #0x10
+  277dfc:	08 09 00 f1	subs	x8, x8, #0x2
+  277e00:	0d 03 00 54	b.le	.Lsgemm_kernel_L4_M4_22a
+  277e04:	1f 20 03 d5	nop
+  277e08:	1f 20 03 d5	nop
+  277e0c:	1f 20 03 d5	nop
+  277e10:	1f 20 03 d5	nop
+  277e14:	1f 20 03 d5	nop
+  277e18:	1f 20 03 d5	nop
+  277e1c:	1f 20 03 d5	nop
+.Lsgemm_kernel_L4_M4_22:
+  277e20:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277e24:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  277e28:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277e2c:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  277e30:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277e34:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277e38:	01 06 c1 3c	ldr	q1, [x16], #0x10
+  277e3c:	30 10 8c 4f	fmla.4s	v16, v1, v12[0]
+  277e40:	34 10 8d 4f	fmla.4s	v20, v1, v13[0]
+  277e44:	38 10 8e 4f	fmla.4s	v24, v1, v14[0]
+  277e48:	3c 10 8f 4f	fmla.4s	v28, v1, v15[0]
+  277e4c:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277e50:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277e54:	00 06 c1 3c	ldr	q0, [x16], #0x10
+  277e58:	08 05 00 f1	subs	x8, x8, #0x1
+  277e5c:	2c fe ff 54	b.gt	.Lsgemm_kernel_L4_M4_22
+.Lsgemm_kernel_L4_M4_22a:
+  277e60:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277e64:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  277e68:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277e6c:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+  277e70:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277e74:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277e78:	01 06 c1 3c	ldr	q1, [x16], #0x10
+  277e7c:	30 10 8c 4f	fmla.4s	v16, v1, v12[0]
+  277e80:	34 10 8d 4f	fmla.4s	v20, v1, v13[0]
+  277e84:	38 10 8e 4f	fmla.4s	v24, v1, v14[0]
+  277e88:	3c 10 8f 4f	fmla.4s	v28, v1, v15[0]
+  277e8c:	16 00 00 14	b	.Lsgemm_kernel_L4_M4_44
+.Lsgemm_kernel_L4_M4_32:
+  277e90:	1f 01 40 f2	tst	x8, #0x1
+  277e94:	0d 02 00 54	b.le	.Lsgemm_kernel_L4_M4_40
+  277e98:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277e9c:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277ea0:	00 06 c1 3c	ldr	q0, [x16], #0x10
+  277ea4:	10 90 88 4f	fmul.4s	v16, v0, v8[0]
+  277ea8:	14 90 89 4f	fmul.4s	v20, v0, v9[0]
+  277eac:	18 90 8a 4f	fmul.4s	v24, v0, v10[0]
+  277eb0:	1c 90 8b 4f	fmul.4s	v28, v0, v11[0]
+  277eb4:	6c 35 c1 2c	ldp	s12, s13, [x11], #0x8
+  277eb8:	6e 3d c1 2c	ldp	s14, s15, [x11], #0x8
+  277ebc:	01 06 c1 3c	ldr	q1, [x16], #0x10
+  277ec0:	30 10 8c 4f	fmla.4s	v16, v1, v12[0]
+  277ec4:	34 10 8d 4f	fmla.4s	v20, v1, v13[0]
+  277ec8:	38 10 8e 4f	fmla.4s	v24, v1, v14[0]
+  277ecc:	3c 10 8f 4f	fmla.4s	v28, v1, v15[0]
+  277ed0:	05 00 00 14	b	.Lsgemm_kernel_L4_M4_44
+.Lsgemm_kernel_L4_M4_40:
+  277ed4:	f0 03 27 1e	fmov	s16, wzr
+  277ed8:	f4 03 27 1e	fmov	s20, wzr
+  277edc:	f8 03 27 1e	fmov	s24, wzr
+  277ee0:	fc 03 27 1e	fmov	s28, wzr
+.Lsgemm_kernel_L4_M4_44:
+  277ee4:	48 00 40 f2	ands	x8, x2, #0x1
+  277ee8:	0d 01 00 54	b.le	.Lsgemm_kernel_L4_M4_100
+.Lsgemm_kernel_L4_M4_46:
+  277eec:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277ef0:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277ef4:	00 06 c1 3c	ldr	q0, [x16], #0x10
+  277ef8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  277efc:	14 10 89 4f	fmla.4s	v20, v0, v9[0]
+  277f00:	18 10 8a 4f	fmla.4s	v24, v0, v10[0]
+  277f04:	1c 10 8b 4f	fmla.4s	v28, v0, v11[0]
+.Lsgemm_kernel_L4_M4_100:
+  277f08:	2a 02 27 1e	fmov	s10, w17
+  277f0c:	80 01 c0 3d	ldr	q0, [x12]
+  277f10:	00 12 8a 4f	fmla.4s	v0, v16, v10[0]
+  277f14:	80 01 80 3d	str	q0, [x12]
+  277f18:	8c 41 00 91	add	x12, x12, #0x10
+  277f1c:	a1 01 c0 3d	ldr	q1, [x13]
+  277f20:	81 12 8a 4f	fmla.4s	v1, v20, v10[0]
+  277f24:	a1 01 80 3d	str	q1, [x13]
+  277f28:	ad 41 00 91	add	x13, x13, #0x10
+  277f2c:	c2 01 c0 3d	ldr	q2, [x14]
+  277f30:	02 13 8a 4f	fmla.4s	v2, v24, v10[0]
+  277f34:	c2 01 80 3d	str	q2, [x14]
+  277f38:	ce 41 00 91	add	x14, x14, #0x10
+  277f3c:	e3 01 c0 3d	ldr	q3, [x15]
+  277f40:	83 13 8a 4f	fmla.4s	v3, v28, v10[0]
+  277f44:	e3 01 80 3d	str	q3, [x15]
+  277f48:	ef 41 00 91	add	x15, x15, #0x10
+.Lsgemm_kernel_L4_M4_END:
+.Lsgemm_kernel_L4_M2_BEGIN:
+  277f4c:	e9 03 00 aa	mov	x9, x0
+  277f50:	3f 05 40 f2	tst	x9, #0x3
+  277f54:	8d 16 00 54	b.le	.Lsgemm_kernel_L4_END
+  277f58:	3f 01 7f f2	tst	x9, #0x2
+  277f5c:	ed 0b 00 54	b.le	.Lsgemm_kernel_L4_M1_BEGIN
+.Lsgemm_kernel_L4_M2_20:
+  277f60:	f0 03 27 1e	fmov	s16, wzr
+  277f64:	14 42 20 1e	fmov	s20, s16
+  277f68:	98 42 20 1e	fmov	s24, s20
+  277f6c:	1c 42 20 1e	fmov	s28, s16
+  277f70:	eb 03 04 aa	mov	x11, x4
+  277f74:	48 fc 43 93	asr	x8, x2, #3
+  277f78:	1f 01 00 f1	cmp	x8, #0x0
+  277f7c:	6d 07 00 54	b.le	.Lsgemm_kernel_L4_M2_40
+.Lsgemm_kernel_L4_M2_22:
+  277f80:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277f84:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277f88:	00 86 40 fc	ldr	d0, [x16], #0x8
+  277f8c:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  277f90:	14 10 89 0f	fmla.2s	v20, v0, v9[0]
+  277f94:	18 10 8a 0f	fmla.2s	v24, v0, v10[0]
+  277f98:	1c 10 8b 0f	fmla.2s	v28, v0, v11[0]
+  277f9c:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277fa0:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277fa4:	00 86 40 fc	ldr	d0, [x16], #0x8
+  277fa8:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  277fac:	14 10 89 0f	fmla.2s	v20, v0, v9[0]
+  277fb0:	18 10 8a 0f	fmla.2s	v24, v0, v10[0]
+  277fb4:	1c 10 8b 0f	fmla.2s	v28, v0, v11[0]
+  277fb8:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277fbc:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277fc0:	00 86 40 fc	ldr	d0, [x16], #0x8
+  277fc4:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  277fc8:	14 10 89 0f	fmla.2s	v20, v0, v9[0]
+  277fcc:	18 10 8a 0f	fmla.2s	v24, v0, v10[0]
+  277fd0:	1c 10 8b 0f	fmla.2s	v28, v0, v11[0]
+  277fd4:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277fd8:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277fdc:	00 86 40 fc	ldr	d0, [x16], #0x8
+  277fe0:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  277fe4:	14 10 89 0f	fmla.2s	v20, v0, v9[0]
+  277fe8:	18 10 8a 0f	fmla.2s	v24, v0, v10[0]
+  277fec:	1c 10 8b 0f	fmla.2s	v28, v0, v11[0]
+  277ff0:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  277ff4:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  277ff8:	00 86 40 fc	ldr	d0, [x16], #0x8
+  277ffc:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278000:	14 10 89 0f	fmla.2s	v20, v0, v9[0]
+  278004:	18 10 8a 0f	fmla.2s	v24, v0, v10[0]
+  278008:	1c 10 8b 0f	fmla.2s	v28, v0, v11[0]
+  27800c:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  278010:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  278014:	00 86 40 fc	ldr	d0, [x16], #0x8
+  278018:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  27801c:	14 10 89 0f	fmla.2s	v20, v0, v9[0]
+  278020:	18 10 8a 0f	fmla.2s	v24, v0, v10[0]
+  278024:	1c 10 8b 0f	fmla.2s	v28, v0, v11[0]
+  278028:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  27802c:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  278030:	00 86 40 fc	ldr	d0, [x16], #0x8
+  278034:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278038:	14 10 89 0f	fmla.2s	v20, v0, v9[0]
+  27803c:	18 10 8a 0f	fmla.2s	v24, v0, v10[0]
+  278040:	1c 10 8b 0f	fmla.2s	v28, v0, v11[0]
+  278044:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  278048:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  27804c:	00 86 40 fc	ldr	d0, [x16], #0x8
+  278050:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278054:	14 10 89 0f	fmla.2s	v20, v0, v9[0]
+  278058:	18 10 8a 0f	fmla.2s	v24, v0, v10[0]
+  27805c:	1c 10 8b 0f	fmla.2s	v28, v0, v11[0]
+  278060:	08 05 00 f1	subs	x8, x8, #0x1
+  278064:	ec f8 ff 54	b.gt	.Lsgemm_kernel_L4_M2_22
+.Lsgemm_kernel_L4_M2_40:
+  278068:	48 08 40 f2	ands	x8, x2, #0x7
+  27806c:	4d 01 00 54	b.le	.Lsgemm_kernel_L4_M2_100
+.Lsgemm_kernel_L4_M2_42:
+  278070:	68 25 c1 2c	ldp	s8, s9, [x11], #0x8
+  278074:	6a 2d c1 2c	ldp	s10, s11, [x11], #0x8
+  278078:	00 86 40 fc	ldr	d0, [x16], #0x8
+  27807c:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278080:	14 10 89 0f	fmla.2s	v20, v0, v9[0]
+  278084:	18 10 8a 0f	fmla.2s	v24, v0, v10[0]
+  278088:	1c 10 8b 0f	fmla.2s	v28, v0, v11[0]
+  27808c:	08 05 00 f1	subs	x8, x8, #0x1
+  278090:	0c ff ff 54	b.gt	.Lsgemm_kernel_L4_M2_42
+.Lsgemm_kernel_L4_M2_100:
+  278094:	2a 02 27 1e	fmov	s10, w17
+  278098:	80 01 40 fd	ldr	d0, [x12]
+  27809c:	00 12 8a 0f	fmla.2s	v0, v16, v10[0]
+  2780a0:	80 01 00 fd	str	d0, [x12]
+  2780a4:	8c 21 00 91	add	x12, x12, #0x8
+  2780a8:	a1 01 40 fd	ldr	d1, [x13]
+  2780ac:	81 12 8a 0f	fmla.2s	v1, v20, v10[0]
+  2780b0:	a1 01 00 fd	str	d1, [x13]
+  2780b4:	ad 21 00 91	add	x13, x13, #0x8
+  2780b8:	c0 01 40 fd	ldr	d0, [x14]
+  2780bc:	00 13 8a 0f	fmla.2s	v0, v24, v10[0]
+  2780c0:	c0 01 00 fd	str	d0, [x14]
+  2780c4:	ce 21 00 91	add	x14, x14, #0x8
+  2780c8:	e1 01 40 fd	ldr	d1, [x15]
+  2780cc:	81 13 8a 0f	fmla.2s	v1, v28, v10[0]
+  2780d0:	e1 01 00 fd	str	d1, [x15]
+  2780d4:	ef 21 00 91	add	x15, x15, #0x8
+.Lsgemm_kernel_L4_M2_END:
+.Lsgemm_kernel_L4_M1_BEGIN:
+  2780d8:	3f 01 40 f2	tst	x9, #0x1
+  2780dc:	4d 0a 00 54	b.le	.Lsgemm_kernel_L4_END
+.Lsgemm_kernel_L4_M1_20:
+  2780e0:	f0 03 27 1e	fmov	s16, wzr
+  2780e4:	14 42 20 1e	fmov	s20, s16
+  2780e8:	eb 03 04 aa	mov	x11, x4
+  2780ec:	48 fc 43 93	asr	x8, x2, #3
+  2780f0:	1f 01 00 f1	cmp	x8, #0x0
+  2780f4:	6d 06 00 54	b.le	.Lsgemm_kernel_L4_M1_40
+.Lsgemm_kernel_L4_M1_22:
+  2780f8:	00 02 40 bd	ldr	s0, [x16]
+  2780fc:	10 12 00 91	add	x16, x16, #0x4
+  278100:	68 a9 40 0c	ld1.2s	{ v8, v9 }, [x11]
+  278104:	6b 41 00 91	add	x11, x11, #0x10
+  278108:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  27810c:	34 11 80 0f	fmla.2s	v20, v9, v0[0]
+  278110:	00 02 40 bd	ldr	s0, [x16]
+  278114:	10 12 00 91	add	x16, x16, #0x4
+  278118:	68 a9 40 0c	ld1.2s	{ v8, v9 }, [x11]
+  27811c:	6b 41 00 91	add	x11, x11, #0x10
+  278120:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  278124:	34 11 80 0f	fmla.2s	v20, v9, v0[0]
+  278128:	00 02 40 bd	ldr	s0, [x16]
+  27812c:	10 12 00 91	add	x16, x16, #0x4
+  278130:	68 a9 40 0c	ld1.2s	{ v8, v9 }, [x11]
+  278134:	6b 41 00 91	add	x11, x11, #0x10
+  278138:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  27813c:	34 11 80 0f	fmla.2s	v20, v9, v0[0]
+  278140:	00 02 40 bd	ldr	s0, [x16]
+  278144:	10 12 00 91	add	x16, x16, #0x4
+  278148:	68 a9 40 0c	ld1.2s	{ v8, v9 }, [x11]
+  27814c:	6b 41 00 91	add	x11, x11, #0x10
+  278150:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  278154:	34 11 80 0f	fmla.2s	v20, v9, v0[0]
+  278158:	00 02 40 bd	ldr	s0, [x16]
+  27815c:	10 12 00 91	add	x16, x16, #0x4
+  278160:	68 a9 40 0c	ld1.2s	{ v8, v9 }, [x11]
+  278164:	6b 41 00 91	add	x11, x11, #0x10
+  278168:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  27816c:	34 11 80 0f	fmla.2s	v20, v9, v0[0]
+  278170:	00 02 40 bd	ldr	s0, [x16]
+  278174:	10 12 00 91	add	x16, x16, #0x4
+  278178:	68 a9 40 0c	ld1.2s	{ v8, v9 }, [x11]
+  27817c:	6b 41 00 91	add	x11, x11, #0x10
+  278180:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  278184:	34 11 80 0f	fmla.2s	v20, v9, v0[0]
+  278188:	00 02 40 bd	ldr	s0, [x16]
+  27818c:	10 12 00 91	add	x16, x16, #0x4
+  278190:	68 a9 40 0c	ld1.2s	{ v8, v9 }, [x11]
+  278194:	6b 41 00 91	add	x11, x11, #0x10
+  278198:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  27819c:	34 11 80 0f	fmla.2s	v20, v9, v0[0]
+  2781a0:	00 02 40 bd	ldr	s0, [x16]
+  2781a4:	10 12 00 91	add	x16, x16, #0x4
+  2781a8:	68 a9 40 0c	ld1.2s	{ v8, v9 }, [x11]
+  2781ac:	6b 41 00 91	add	x11, x11, #0x10
+  2781b0:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  2781b4:	34 11 80 0f	fmla.2s	v20, v9, v0[0]
+  2781b8:	08 05 00 f1	subs	x8, x8, #0x1
+  2781bc:	ec f9 ff 54	b.gt	.Lsgemm_kernel_L4_M1_22
+.Lsgemm_kernel_L4_M1_40:
+  2781c0:	48 08 40 f2	ands	x8, x2, #0x7
+  2781c4:	2d 01 00 54	b.le	.Lsgemm_kernel_L4_M1_100
+.Lsgemm_kernel_L4_M1_42:
+  2781c8:	00 02 40 bd	ldr	s0, [x16]
+  2781cc:	10 12 00 91	add	x16, x16, #0x4
+  2781d0:	68 a9 40 0c	ld1.2s	{ v8, v9 }, [x11]
+  2781d4:	6b 41 00 91	add	x11, x11, #0x10
+  2781d8:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  2781dc:	34 11 80 0f	fmla.2s	v20, v9, v0[0]
+  2781e0:	08 05 00 f1	subs	x8, x8, #0x1
+  2781e4:	2c ff ff 54	b.gt	.Lsgemm_kernel_L4_M1_42
+.Lsgemm_kernel_L4_M1_100:
+  2781e8:	2a 02 27 1e	fmov	s10, w17
+  2781ec:	88 81 40 0d	ld1.s	{ v8 }[0], [x12]
+  2781f0:	a8 91 40 0d	ld1.s	{ v8 }[1], [x13]
+  2781f4:	08 12 8a 0f	fmla.2s	v8, v16, v10[0]
+  2781f8:	88 81 00 0d	st1.s	{ v8 }[0], [x12]
+  2781fc:	a8 91 00 0d	st1.s	{ v8 }[1], [x13]
+  278200:	8c 11 00 91	add	x12, x12, #0x4
+  278204:	ad 11 00 91	add	x13, x13, #0x4
+  278208:	cc 81 40 0d	ld1.s	{ v12 }[0], [x14]
+  27820c:	ec 91 40 0d	ld1.s	{ v12 }[1], [x15]
+  278210:	8c 12 8a 0f	fmla.2s	v12, v20, v10[0]
+  278214:	cc 81 00 0d	st1.s	{ v12 }[0], [x14]
+  278218:	ec 91 00 0d	st1.s	{ v12 }[1], [x15]
+  27821c:	ce 11 00 91	add	x14, x14, #0x4
+  278220:	ef 11 00 91	add	x15, x15, #0x4
+.Lsgemm_kernel_L4_END:
+  278224:	84 10 02 8b	add	x4, x4, x2, lsl #4
+  278228:	4a 05 00 f1	subs	x10, x10, #0x1
+  27822c:	4c 60 ff 54	b.gt	.Lsgemm_kernel_L4_BEGIN
+.Lsgemm_kernel_L2_BEGIN:
+  278230:	ea 03 01 aa	mov	x10, x1
+  278234:	5f 05 40 f2	tst	x10, #0x3
+  278238:	ad 84 00 54	b.le	.Lsgemm_kernel_L1_END
+  27823c:	5f 01 7f f2	tst	x10, #0x2
+  278240:	8d 49 00 54	b.le	.Lsgemm_kernel_L1_BEGIN
+  278244:	ec 03 05 aa	mov	x12, x5
+  278248:	a5 04 06 8b	add	x5, x5, x6, lsl #1
+  27824c:	f0 03 03 aa	mov	x16, x3
+.Lsgemm_kernel_L2_M16_BEGIN:
+  278250:	e9 03 00 aa	mov	x9, x0
+  278254:	29 fd 44 93	asr	x9, x9, #4
+  278258:	3f 01 00 f1	cmp	x9, #0x0
+  27825c:	4d 19 00 54	b.le	.Lsgemm_kernel_L2_M8_BEGIN
+.Lsgemm_kernel_L2_M16_20:
+  278260:	f0 03 27 1e	fmov	s16, wzr
+  278264:	f1 03 27 1e	fmov	s17, wzr
+  278268:	f2 03 27 1e	fmov	s18, wzr
+  27826c:	13 42 20 1e	fmov	s19, s16
+  278270:	f4 03 27 1e	fmov	s20, wzr
+  278274:	15 42 20 1e	fmov	s21, s16
+  278278:	f6 03 27 1e	fmov	s22, wzr
+  27827c:	17 42 20 1e	fmov	s23, s16
+  278280:	eb 03 04 aa	mov	x11, x4
+  278284:	48 fc 43 93	asr	x8, x2, #3
+  278288:	1f 01 00 f1	cmp	x8, #0x0
+  27828c:	ed 12 00 54	b.le	.Lsgemm_kernel_L2_M16_40
+  278290:	1f 20 03 d5	nop
+  278294:	1f 20 03 d5	nop
+  278298:	1f 20 03 d5	nop
+  27829c:	1f 20 03 d5	nop
+.Lsgemm_kernel_L2_M16_22:
+  2782a0:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2782a4:	6b 21 00 91	add	x11, x11, #0x8
+  2782a8:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  2782ac:	10 42 00 91	add	x16, x16, #0x10
+  2782b0:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  2782b4:	10 42 00 91	add	x16, x16, #0x10
+  2782b8:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  2782bc:	10 42 00 91	add	x16, x16, #0x10
+  2782c0:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  2782c4:	10 42 00 91	add	x16, x16, #0x10
+  2782c8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  2782cc:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  2782d0:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  2782d4:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  2782d8:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  2782dc:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  2782e0:	56 10 a8 4f	fmla.4s	v22, v2, v8[1]
+  2782e4:	77 10 a8 4f	fmla.4s	v23, v3, v8[1]
+  2782e8:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2782ec:	6b 21 00 91	add	x11, x11, #0x8
+  2782f0:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  2782f4:	10 42 00 91	add	x16, x16, #0x10
+  2782f8:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  2782fc:	10 42 00 91	add	x16, x16, #0x10
+  278300:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  278304:	10 42 00 91	add	x16, x16, #0x10
+  278308:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  27830c:	10 42 00 91	add	x16, x16, #0x10
+  278310:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278314:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278318:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  27831c:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278320:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  278324:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  278328:	56 10 a8 4f	fmla.4s	v22, v2, v8[1]
+  27832c:	77 10 a8 4f	fmla.4s	v23, v3, v8[1]
+  278330:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278334:	6b 21 00 91	add	x11, x11, #0x8
+  278338:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  27833c:	10 42 00 91	add	x16, x16, #0x10
+  278340:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278344:	10 42 00 91	add	x16, x16, #0x10
+  278348:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  27834c:	10 42 00 91	add	x16, x16, #0x10
+  278350:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  278354:	10 42 00 91	add	x16, x16, #0x10
+  278358:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  27835c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278360:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  278364:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278368:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  27836c:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  278370:	56 10 a8 4f	fmla.4s	v22, v2, v8[1]
+  278374:	77 10 a8 4f	fmla.4s	v23, v3, v8[1]
+  278378:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  27837c:	6b 21 00 91	add	x11, x11, #0x8
+  278380:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278384:	10 42 00 91	add	x16, x16, #0x10
+  278388:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  27838c:	10 42 00 91	add	x16, x16, #0x10
+  278390:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  278394:	10 42 00 91	add	x16, x16, #0x10
+  278398:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  27839c:	10 42 00 91	add	x16, x16, #0x10
+  2783a0:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  2783a4:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  2783a8:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  2783ac:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  2783b0:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  2783b4:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  2783b8:	56 10 a8 4f	fmla.4s	v22, v2, v8[1]
+  2783bc:	77 10 a8 4f	fmla.4s	v23, v3, v8[1]
+  2783c0:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2783c4:	6b 21 00 91	add	x11, x11, #0x8
+  2783c8:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  2783cc:	10 42 00 91	add	x16, x16, #0x10
+  2783d0:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  2783d4:	10 42 00 91	add	x16, x16, #0x10
+  2783d8:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  2783dc:	10 42 00 91	add	x16, x16, #0x10
+  2783e0:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  2783e4:	10 42 00 91	add	x16, x16, #0x10
+  2783e8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  2783ec:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  2783f0:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  2783f4:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  2783f8:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  2783fc:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  278400:	56 10 a8 4f	fmla.4s	v22, v2, v8[1]
+  278404:	77 10 a8 4f	fmla.4s	v23, v3, v8[1]
+  278408:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  27840c:	6b 21 00 91	add	x11, x11, #0x8
+  278410:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278414:	10 42 00 91	add	x16, x16, #0x10
+  278418:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  27841c:	10 42 00 91	add	x16, x16, #0x10
+  278420:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  278424:	10 42 00 91	add	x16, x16, #0x10
+  278428:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  27842c:	10 42 00 91	add	x16, x16, #0x10
+  278430:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278434:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278438:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  27843c:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278440:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  278444:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  278448:	56 10 a8 4f	fmla.4s	v22, v2, v8[1]
+  27844c:	77 10 a8 4f	fmla.4s	v23, v3, v8[1]
+  278450:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278454:	6b 21 00 91	add	x11, x11, #0x8
+  278458:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  27845c:	10 42 00 91	add	x16, x16, #0x10
+  278460:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278464:	10 42 00 91	add	x16, x16, #0x10
+  278468:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  27846c:	10 42 00 91	add	x16, x16, #0x10
+  278470:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  278474:	10 42 00 91	add	x16, x16, #0x10
+  278478:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  27847c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278480:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  278484:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278488:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  27848c:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  278490:	56 10 a8 4f	fmla.4s	v22, v2, v8[1]
+  278494:	77 10 a8 4f	fmla.4s	v23, v3, v8[1]
+  278498:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  27849c:	6b 21 00 91	add	x11, x11, #0x8
+  2784a0:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  2784a4:	10 42 00 91	add	x16, x16, #0x10
+  2784a8:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  2784ac:	10 42 00 91	add	x16, x16, #0x10
+  2784b0:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  2784b4:	10 42 00 91	add	x16, x16, #0x10
+  2784b8:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  2784bc:	10 42 00 91	add	x16, x16, #0x10
+  2784c0:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  2784c4:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  2784c8:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  2784cc:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  2784d0:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  2784d4:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  2784d8:	56 10 a8 4f	fmla.4s	v22, v2, v8[1]
+  2784dc:	77 10 a8 4f	fmla.4s	v23, v3, v8[1]
+  2784e0:	08 05 00 f1	subs	x8, x8, #0x1
+  2784e4:	ec ed ff 54	b.gt	.Lsgemm_kernel_L2_M16_22
+.Lsgemm_kernel_L2_M16_40:
+  2784e8:	48 08 40 f2	ands	x8, x2, #0x7
+  2784ec:	ad 02 00 54	b.le	.Lsgemm_kernel_L2_M16_100
+.Lsgemm_kernel_L2_M16_42:
+  2784f0:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2784f4:	6b 21 00 91	add	x11, x11, #0x8
+  2784f8:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  2784fc:	10 42 00 91	add	x16, x16, #0x10
+  278500:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278504:	10 42 00 91	add	x16, x16, #0x10
+  278508:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  27850c:	10 42 00 91	add	x16, x16, #0x10
+  278510:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  278514:	10 42 00 91	add	x16, x16, #0x10
+  278518:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  27851c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278520:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  278524:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278528:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  27852c:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  278530:	56 10 a8 4f	fmla.4s	v22, v2, v8[1]
+  278534:	77 10 a8 4f	fmla.4s	v23, v3, v8[1]
+  278538:	08 05 00 f1	subs	x8, x8, #0x1
+  27853c:	ac fd ff 54	b.gt	.Lsgemm_kernel_L2_M16_42
+.Lsgemm_kernel_L2_M16_100:
+  278540:	2a 02 27 1e	fmov	s10, w17
+  278544:	8d 01 06 8b	add	x13, x12, x6
+  278548:	80 29 40 4c	ld1.4s	{ v0, v1, v2, v3 }, [x12]
+  27854c:	00 12 8a 4f	fmla.4s	v0, v16, v10[0]
+  278550:	21 12 8a 4f	fmla.4s	v1, v17, v10[0]
+  278554:	42 12 8a 4f	fmla.4s	v2, v18, v10[0]
+  278558:	63 12 8a 4f	fmla.4s	v3, v19, v10[0]
+  27855c:	80 29 00 4c	st1.4s	{ v0, v1, v2, v3 }, [x12]
+  278560:	a4 29 40 4c	ld1.4s	{ v4, v5, v6, v7 }, [x13]
+  278564:	84 12 8a 4f	fmla.4s	v4, v20, v10[0]
+  278568:	a5 12 8a 4f	fmla.4s	v5, v21, v10[0]
+  27856c:	c6 12 8a 4f	fmla.4s	v6, v22, v10[0]
+  278570:	e7 12 8a 4f	fmla.4s	v7, v23, v10[0]
+  278574:	a4 29 00 4c	st1.4s	{ v4, v5, v6, v7 }, [x13]
+  278578:	8c 01 01 91	add	x12, x12, #0x40
+.Lsgemm_kernel_L2_M16_END:
+  27857c:	29 05 00 f1	subs	x9, x9, #0x1
+  278580:	0c e7 ff 54	b.gt	.Lsgemm_kernel_L2_M16_20
+.Lsgemm_kernel_L2_M8_BEGIN:
+  278584:	e9 03 00 aa	mov	x9, x0
+  278588:	3f 0d 40 f2	tst	x9, #0xf
+  27858c:	0d 2f 00 54	b.le	.Lsgemm_kernel_L2_END
+  278590:	3f 01 7d f2	tst	x9, #0x8
+  278594:	ed 0e 00 54	b.le	.Lsgemm_kernel_L2_M4_BEGIN
+.Lsgemm_kernel_L2_M8_20:
+  278598:	f0 03 27 1e	fmov	s16, wzr
+  27859c:	11 42 20 1e	fmov	s17, s16
+  2785a0:	34 42 20 1e	fmov	s20, s17
+  2785a4:	15 42 20 1e	fmov	s21, s16
+  2785a8:	eb 03 04 aa	mov	x11, x4
+  2785ac:	48 fc 43 93	asr	x8, x2, #3
+  2785b0:	1f 01 00 f1	cmp	x8, #0x0
+  2785b4:	ad 0a 00 54	b.le	.Lsgemm_kernel_L2_M8_40
+  2785b8:	1f 20 03 d5	nop
+  2785bc:	1f 20 03 d5	nop
+.Lsgemm_kernel_L2_M8_22:
+  2785c0:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2785c4:	6b 21 00 91	add	x11, x11, #0x8
+  2785c8:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  2785cc:	10 42 00 91	add	x16, x16, #0x10
+  2785d0:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  2785d4:	10 42 00 91	add	x16, x16, #0x10
+  2785d8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  2785dc:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  2785e0:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  2785e4:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  2785e8:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2785ec:	6b 21 00 91	add	x11, x11, #0x8
+  2785f0:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  2785f4:	10 42 00 91	add	x16, x16, #0x10
+  2785f8:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  2785fc:	10 42 00 91	add	x16, x16, #0x10
+  278600:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278604:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278608:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  27860c:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  278610:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278614:	6b 21 00 91	add	x11, x11, #0x8
+  278618:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  27861c:	10 42 00 91	add	x16, x16, #0x10
+  278620:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278624:	10 42 00 91	add	x16, x16, #0x10
+  278628:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  27862c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278630:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  278634:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  278638:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  27863c:	6b 21 00 91	add	x11, x11, #0x8
+  278640:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278644:	10 42 00 91	add	x16, x16, #0x10
+  278648:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  27864c:	10 42 00 91	add	x16, x16, #0x10
+  278650:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278654:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278658:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  27865c:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  278660:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278664:	6b 21 00 91	add	x11, x11, #0x8
+  278668:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  27866c:	10 42 00 91	add	x16, x16, #0x10
+  278670:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278674:	10 42 00 91	add	x16, x16, #0x10
+  278678:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  27867c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278680:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  278684:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  278688:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  27868c:	6b 21 00 91	add	x11, x11, #0x8
+  278690:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278694:	10 42 00 91	add	x16, x16, #0x10
+  278698:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  27869c:	10 42 00 91	add	x16, x16, #0x10
+  2786a0:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  2786a4:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  2786a8:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  2786ac:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  2786b0:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2786b4:	6b 21 00 91	add	x11, x11, #0x8
+  2786b8:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  2786bc:	10 42 00 91	add	x16, x16, #0x10
+  2786c0:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  2786c4:	10 42 00 91	add	x16, x16, #0x10
+  2786c8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  2786cc:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  2786d0:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  2786d4:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  2786d8:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2786dc:	6b 21 00 91	add	x11, x11, #0x8
+  2786e0:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  2786e4:	10 42 00 91	add	x16, x16, #0x10
+  2786e8:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  2786ec:	10 42 00 91	add	x16, x16, #0x10
+  2786f0:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  2786f4:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  2786f8:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  2786fc:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  278700:	08 05 00 f1	subs	x8, x8, #0x1
+  278704:	ec f5 ff 54	b.gt	.Lsgemm_kernel_L2_M8_22
+.Lsgemm_kernel_L2_M8_40:
+  278708:	48 08 40 f2	ands	x8, x2, #0x7
+  27870c:	ad 01 00 54	b.le	.Lsgemm_kernel_L2_M8_100
+.Lsgemm_kernel_L2_M8_42:
+  278710:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278714:	6b 21 00 91	add	x11, x11, #0x8
+  278718:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  27871c:	10 42 00 91	add	x16, x16, #0x10
+  278720:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278724:	10 42 00 91	add	x16, x16, #0x10
+  278728:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  27872c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278730:	14 10 a8 4f	fmla.4s	v20, v0, v8[1]
+  278734:	35 10 a8 4f	fmla.4s	v21, v1, v8[1]
+  278738:	08 05 00 f1	subs	x8, x8, #0x1
+  27873c:	ac fe ff 54	b.gt	.Lsgemm_kernel_L2_M8_42
+.Lsgemm_kernel_L2_M8_100:
+  278740:	2a 02 27 1e	fmov	s10, w17
+  278744:	8d 01 06 8b	add	x13, x12, x6
+  278748:	80 a9 40 4c	ld1.4s	{ v0, v1 }, [x12]
+  27874c:	00 12 8a 4f	fmla.4s	v0, v16, v10[0]
+  278750:	21 12 8a 4f	fmla.4s	v1, v17, v10[0]
+  278754:	80 a9 00 4c	st1.4s	{ v0, v1 }, [x12]
+  278758:	ae 01 06 8b	add	x14, x13, x6
+  27875c:	a4 a9 40 4c	ld1.4s	{ v4, v5 }, [x13]
+  278760:	84 12 8a 4f	fmla.4s	v4, v20, v10[0]
+  278764:	a5 12 8a 4f	fmla.4s	v5, v21, v10[0]
+  278768:	a4 a9 00 4c	st1.4s	{ v4, v5 }, [x13]
+  27876c:	8c 81 00 91	add	x12, x12, #0x20
+.Lsgemm_kernel_L2_M8_END:
+.Lsgemm_kernel_L2_M4_BEGIN:
+  278770:	e9 03 00 aa	mov	x9, x0
+  278774:	3f 09 40 f2	tst	x9, #0x7
+  278778:	ad 1f 00 54	b.le	.Lsgemm_kernel_L2_END
+  27877c:	3f 01 7e f2	tst	x9, #0x4
+  278780:	2d 0d 00 54	b.le	.Lsgemm_kernel_L2_M2_BEGIN
+.Lsgemm_kernel_L2_M4_20:
+  278784:	f0 03 27 1e	fmov	s16, wzr
+  278788:	11 42 20 1e	fmov	s17, s16
+  27878c:	34 42 20 1e	fmov	s20, s17
+  278790:	15 42 20 1e	fmov	s21, s16
+  278794:	eb 03 04 aa	mov	x11, x4
+  278798:	48 fc 43 93	asr	x8, x2, #3
+  27879c:	1f 01 00 f1	cmp	x8, #0x0
+  2787a0:	4d 09 00 54	b.le	.Lsgemm_kernel_L2_M4_40
+  2787a4:	1f 20 03 d5	nop
+  2787a8:	1f 20 03 d5	nop
+  2787ac:	1f 20 03 d5	nop
+  2787b0:	1f 20 03 d5	nop
+  2787b4:	1f 20 03 d5	nop
+  2787b8:	1f 20 03 d5	nop
+  2787bc:	1f 20 03 d5	nop
+.Lsgemm_kernel_L2_M4_22:
+  2787c0:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2787c4:	6b 21 00 91	add	x11, x11, #0x8
+  2787c8:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  2787cc:	10 42 00 91	add	x16, x16, #0x10
+  2787d0:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  2787d4:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  2787d8:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  2787dc:	35 10 a8 0f	fmla.2s	v21, v1, v8[1]
+  2787e0:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2787e4:	6b 21 00 91	add	x11, x11, #0x8
+  2787e8:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  2787ec:	10 42 00 91	add	x16, x16, #0x10
+  2787f0:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  2787f4:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  2787f8:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  2787fc:	35 10 a8 0f	fmla.2s	v21, v1, v8[1]
+  278800:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278804:	6b 21 00 91	add	x11, x11, #0x8
+  278808:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  27880c:	10 42 00 91	add	x16, x16, #0x10
+  278810:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278814:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  278818:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  27881c:	35 10 a8 0f	fmla.2s	v21, v1, v8[1]
+  278820:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278824:	6b 21 00 91	add	x11, x11, #0x8
+  278828:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  27882c:	10 42 00 91	add	x16, x16, #0x10
+  278830:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278834:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  278838:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  27883c:	35 10 a8 0f	fmla.2s	v21, v1, v8[1]
+  278840:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278844:	6b 21 00 91	add	x11, x11, #0x8
+  278848:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  27884c:	10 42 00 91	add	x16, x16, #0x10
+  278850:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278854:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  278858:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  27885c:	35 10 a8 0f	fmla.2s	v21, v1, v8[1]
+  278860:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278864:	6b 21 00 91	add	x11, x11, #0x8
+  278868:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  27886c:	10 42 00 91	add	x16, x16, #0x10
+  278870:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278874:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  278878:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  27887c:	35 10 a8 0f	fmla.2s	v21, v1, v8[1]
+  278880:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278884:	6b 21 00 91	add	x11, x11, #0x8
+  278888:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  27888c:	10 42 00 91	add	x16, x16, #0x10
+  278890:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278894:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  278898:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  27889c:	35 10 a8 0f	fmla.2s	v21, v1, v8[1]
+  2788a0:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2788a4:	6b 21 00 91	add	x11, x11, #0x8
+  2788a8:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  2788ac:	10 42 00 91	add	x16, x16, #0x10
+  2788b0:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  2788b4:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  2788b8:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  2788bc:	35 10 a8 0f	fmla.2s	v21, v1, v8[1]
+  2788c0:	08 05 00 f1	subs	x8, x8, #0x1
+  2788c4:	ec f7 ff 54	b.gt	.Lsgemm_kernel_L2_M4_22
+.Lsgemm_kernel_L2_M4_40:
+  2788c8:	48 08 40 f2	ands	x8, x2, #0x7
+  2788cc:	6d 01 00 54	b.le	.Lsgemm_kernel_L2_M4_100
+.Lsgemm_kernel_L2_M4_42:
+  2788d0:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2788d4:	6b 21 00 91	add	x11, x11, #0x8
+  2788d8:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  2788dc:	10 42 00 91	add	x16, x16, #0x10
+  2788e0:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  2788e4:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  2788e8:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  2788ec:	35 10 a8 0f	fmla.2s	v21, v1, v8[1]
+  2788f0:	08 05 00 f1	subs	x8, x8, #0x1
+  2788f4:	ec fe ff 54	b.gt	.Lsgemm_kernel_L2_M4_42
+.Lsgemm_kernel_L2_M4_100:
+  2788f8:	2a 02 27 1e	fmov	s10, w17
+  2788fc:	88 a9 40 0c	ld1.2s	{ v8, v9 }, [x12]
+  278900:	08 12 8a 0f	fmla.2s	v8, v16, v10[0]
+  278904:	29 12 8a 0f	fmla.2s	v9, v17, v10[0]
+  278908:	88 a9 00 0c	st1.2s	{ v8, v9 }, [x12]
+  27890c:	8d 01 06 8b	add	x13, x12, x6
+  278910:	ac a9 40 0c	ld1.2s	{ v12, v13 }, [x13]
+  278914:	8c 12 8a 0f	fmla.2s	v12, v20, v10[0]
+  278918:	ad 12 8a 0f	fmla.2s	v13, v21, v10[0]
+  27891c:	ac a9 00 0c	st1.2s	{ v12, v13 }, [x13]
+  278920:	8c 41 00 91	add	x12, x12, #0x10
+.Lsgemm_kernel_L2_M4_END:
+.Lsgemm_kernel_L2_M2_BEGIN:
+  278924:	e9 03 00 aa	mov	x9, x0
+  278928:	3f 05 40 f2	tst	x9, #0x3
+  27892c:	0d 12 00 54	b.le	.Lsgemm_kernel_L2_END
+  278930:	3f 01 7f f2	tst	x9, #0x2
+  278934:	8d 09 00 54	b.le	.Lsgemm_kernel_L2_M1_BEGIN
+.Lsgemm_kernel_L2_M2_20:
+  278938:	f0 03 27 1e	fmov	s16, wzr
+  27893c:	14 42 20 1e	fmov	s20, s16
+  278940:	eb 03 04 aa	mov	x11, x4
+  278944:	48 fc 43 93	asr	x8, x2, #3
+  278948:	1f 01 00 f1	cmp	x8, #0x0
+  27894c:	6d 06 00 54	b.le	.Lsgemm_kernel_L2_M2_40
+.Lsgemm_kernel_L2_M2_22:
+  278950:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278954:	6b 21 00 91	add	x11, x11, #0x8
+  278958:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  27895c:	10 22 00 91	add	x16, x16, #0x8
+  278960:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278964:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  278968:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  27896c:	6b 21 00 91	add	x11, x11, #0x8
+  278970:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  278974:	10 22 00 91	add	x16, x16, #0x8
+  278978:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  27897c:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  278980:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278984:	6b 21 00 91	add	x11, x11, #0x8
+  278988:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  27898c:	10 22 00 91	add	x16, x16, #0x8
+  278990:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278994:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  278998:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  27899c:	6b 21 00 91	add	x11, x11, #0x8
+  2789a0:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  2789a4:	10 22 00 91	add	x16, x16, #0x8
+  2789a8:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  2789ac:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  2789b0:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2789b4:	6b 21 00 91	add	x11, x11, #0x8
+  2789b8:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  2789bc:	10 22 00 91	add	x16, x16, #0x8
+  2789c0:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  2789c4:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  2789c8:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2789cc:	6b 21 00 91	add	x11, x11, #0x8
+  2789d0:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  2789d4:	10 22 00 91	add	x16, x16, #0x8
+  2789d8:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  2789dc:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  2789e0:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2789e4:	6b 21 00 91	add	x11, x11, #0x8
+  2789e8:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  2789ec:	10 22 00 91	add	x16, x16, #0x8
+  2789f0:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  2789f4:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  2789f8:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  2789fc:	6b 21 00 91	add	x11, x11, #0x8
+  278a00:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  278a04:	10 22 00 91	add	x16, x16, #0x8
+  278a08:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278a0c:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  278a10:	08 05 00 f1	subs	x8, x8, #0x1
+  278a14:	ec f9 ff 54	b.gt	.Lsgemm_kernel_L2_M2_22
+.Lsgemm_kernel_L2_M2_40:
+  278a18:	48 08 40 f2	ands	x8, x2, #0x7
+  278a1c:	2d 01 00 54	b.le	.Lsgemm_kernel_L2_M2_100
+.Lsgemm_kernel_L2_M2_42:
+  278a20:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278a24:	6b 21 00 91	add	x11, x11, #0x8
+  278a28:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  278a2c:	10 22 00 91	add	x16, x16, #0x8
+  278a30:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278a34:	14 10 a8 0f	fmla.2s	v20, v0, v8[1]
+  278a38:	08 05 00 f1	subs	x8, x8, #0x1
+  278a3c:	2c ff ff 54	b.gt	.Lsgemm_kernel_L2_M2_42
+.Lsgemm_kernel_L2_M2_100:
+  278a40:	2a 02 27 1e	fmov	s10, w17
+  278a44:	88 79 40 0c	ld1.2s	{ v8 }, [x12]
+  278a48:	08 12 8a 0f	fmla.2s	v8, v16, v10[0]
+  278a4c:	88 79 00 0c	st1.2s	{ v8 }, [x12]
+  278a50:	8d 01 06 8b	add	x13, x12, x6
+  278a54:	ac 79 40 0c	ld1.2s	{ v12 }, [x13]
+  278a58:	8c 12 8a 0f	fmla.2s	v12, v20, v10[0]
+  278a5c:	ac 79 00 0c	st1.2s	{ v12 }, [x13]
+  278a60:	8c 21 00 91	add	x12, x12, #0x8
+.Lsgemm_kernel_L2_M2_END:
+.Lsgemm_kernel_L2_M1_BEGIN:
+  278a64:	3f 01 40 f2	tst	x9, #0x1
+  278a68:	2d 08 00 54	b.le	.Lsgemm_kernel_L2_END
+.Lsgemm_kernel_L2_M1_20:
+  278a6c:	f0 03 27 1e	fmov	s16, wzr
+  278a70:	eb 03 04 aa	mov	x11, x4
+  278a74:	48 fc 43 93	asr	x8, x2, #3
+  278a78:	1f 01 00 f1	cmp	x8, #0x0
+  278a7c:	6d 05 00 54	b.le	.Lsgemm_kernel_L2_M1_40
+.Lsgemm_kernel_L2_M1_22:
+  278a80:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278a84:	6b 21 00 91	add	x11, x11, #0x8
+  278a88:	00 02 40 bd	ldr	s0, [x16]
+  278a8c:	10 12 00 91	add	x16, x16, #0x4
+  278a90:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  278a94:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278a98:	6b 21 00 91	add	x11, x11, #0x8
+  278a9c:	00 02 40 bd	ldr	s0, [x16]
+  278aa0:	10 12 00 91	add	x16, x16, #0x4
+  278aa4:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  278aa8:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278aac:	6b 21 00 91	add	x11, x11, #0x8
+  278ab0:	00 02 40 bd	ldr	s0, [x16]
+  278ab4:	10 12 00 91	add	x16, x16, #0x4
+  278ab8:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  278abc:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278ac0:	6b 21 00 91	add	x11, x11, #0x8
+  278ac4:	00 02 40 bd	ldr	s0, [x16]
+  278ac8:	10 12 00 91	add	x16, x16, #0x4
+  278acc:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  278ad0:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278ad4:	6b 21 00 91	add	x11, x11, #0x8
+  278ad8:	00 02 40 bd	ldr	s0, [x16]
+  278adc:	10 12 00 91	add	x16, x16, #0x4
+  278ae0:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  278ae4:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278ae8:	6b 21 00 91	add	x11, x11, #0x8
+  278aec:	00 02 40 bd	ldr	s0, [x16]
+  278af0:	10 12 00 91	add	x16, x16, #0x4
+  278af4:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  278af8:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278afc:	6b 21 00 91	add	x11, x11, #0x8
+  278b00:	00 02 40 bd	ldr	s0, [x16]
+  278b04:	10 12 00 91	add	x16, x16, #0x4
+  278b08:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  278b0c:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278b10:	6b 21 00 91	add	x11, x11, #0x8
+  278b14:	00 02 40 bd	ldr	s0, [x16]
+  278b18:	10 12 00 91	add	x16, x16, #0x4
+  278b1c:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  278b20:	08 05 00 f1	subs	x8, x8, #0x1
+  278b24:	ec fa ff 54	b.gt	.Lsgemm_kernel_L2_M1_22
+.Lsgemm_kernel_L2_M1_40:
+  278b28:	48 08 40 f2	ands	x8, x2, #0x7
+  278b2c:	0d 01 00 54	b.le	.Lsgemm_kernel_L2_M1_100
+.Lsgemm_kernel_L2_M1_42:
+  278b30:	68 79 40 0c	ld1.2s	{ v8 }, [x11]
+  278b34:	6b 21 00 91	add	x11, x11, #0x8
+  278b38:	00 02 40 bd	ldr	s0, [x16]
+  278b3c:	10 12 00 91	add	x16, x16, #0x4
+  278b40:	10 11 80 0f	fmla.2s	v16, v8, v0[0]
+  278b44:	08 05 00 f1	subs	x8, x8, #0x1
+  278b48:	4c ff ff 54	b.gt	.Lsgemm_kernel_L2_M1_42
+.Lsgemm_kernel_L2_M1_100:
+  278b4c:	2a 02 27 1e	fmov	s10, w17
+  278b50:	8d 01 06 8b	add	x13, x12, x6
+  278b54:	88 81 40 0d	ld1.s	{ v8 }[0], [x12]
+  278b58:	a8 91 40 0d	ld1.s	{ v8 }[1], [x13]
+  278b5c:	08 12 8a 0f	fmla.2s	v8, v16, v10[0]
+  278b60:	88 81 00 0d	st1.s	{ v8 }[0], [x12]
+  278b64:	a8 91 00 0d	st1.s	{ v8 }[1], [x13]
+  278b68:	8c 11 00 91	add	x12, x12, #0x4
+.Lsgemm_kernel_L2_END:
+  278b6c:	84 0c 02 8b	add	x4, x4, x2, lsl #3
+.Lsgemm_kernel_L1_BEGIN:
+  278b70:	ea 03 01 aa	mov	x10, x1
+  278b74:	5f 01 40 f2	tst	x10, #0x1
+  278b78:	ad 3a 00 54	b.le	.Lsgemm_kernel_L1_END
+  278b7c:	ec 03 05 aa	mov	x12, x5
+  278b80:	a5 00 06 8b	add	x5, x5, x6
+  278b84:	f0 03 03 aa	mov	x16, x3
+.Lsgemm_kernel_L1_M16_BEGIN:
+  278b88:	e9 03 00 aa	mov	x9, x0
+  278b8c:	29 fd 44 93	asr	x9, x9, #4
+  278b90:	3f 01 00 f1	cmp	x9, #0x0
+  278b94:	2d 13 00 54	b.le	.Lsgemm_kernel_L1_M8_BEGIN
+.Lsgemm_kernel_L1_M16_20:
+  278b98:	f0 03 27 1e	fmov	s16, wzr
+  278b9c:	f1 03 27 1e	fmov	s17, wzr
+  278ba0:	f2 03 27 1e	fmov	s18, wzr
+  278ba4:	13 42 20 1e	fmov	s19, s16
+  278ba8:	eb 03 04 aa	mov	x11, x4
+  278bac:	48 fc 43 93	asr	x8, x2, #3
+  278bb0:	1f 01 00 f1	cmp	x8, #0x0
+  278bb4:	ad 0e 00 54	b.le	.Lsgemm_kernel_L1_M16_40
+  278bb8:	1f 20 03 d5	nop
+  278bbc:	1f 20 03 d5	nop
+.Lsgemm_kernel_L1_M16_22:
+  278bc0:	68 01 40 bd	ldr	s8, [x11]
+  278bc4:	6b 11 00 91	add	x11, x11, #0x4
+  278bc8:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278bcc:	10 42 00 91	add	x16, x16, #0x10
+  278bd0:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278bd4:	10 42 00 91	add	x16, x16, #0x10
+  278bd8:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  278bdc:	10 42 00 91	add	x16, x16, #0x10
+  278be0:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  278be4:	10 42 00 91	add	x16, x16, #0x10
+  278be8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278bec:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278bf0:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  278bf4:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278bf8:	68 01 40 bd	ldr	s8, [x11]
+  278bfc:	6b 11 00 91	add	x11, x11, #0x4
+  278c00:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278c04:	10 42 00 91	add	x16, x16, #0x10
+  278c08:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278c0c:	10 42 00 91	add	x16, x16, #0x10
+  278c10:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  278c14:	10 42 00 91	add	x16, x16, #0x10
+  278c18:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  278c1c:	10 42 00 91	add	x16, x16, #0x10
+  278c20:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278c24:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278c28:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  278c2c:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278c30:	68 01 40 bd	ldr	s8, [x11]
+  278c34:	6b 11 00 91	add	x11, x11, #0x4
+  278c38:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278c3c:	10 42 00 91	add	x16, x16, #0x10
+  278c40:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278c44:	10 42 00 91	add	x16, x16, #0x10
+  278c48:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  278c4c:	10 42 00 91	add	x16, x16, #0x10
+  278c50:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  278c54:	10 42 00 91	add	x16, x16, #0x10
+  278c58:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278c5c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278c60:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  278c64:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278c68:	68 01 40 bd	ldr	s8, [x11]
+  278c6c:	6b 11 00 91	add	x11, x11, #0x4
+  278c70:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278c74:	10 42 00 91	add	x16, x16, #0x10
+  278c78:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278c7c:	10 42 00 91	add	x16, x16, #0x10
+  278c80:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  278c84:	10 42 00 91	add	x16, x16, #0x10
+  278c88:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  278c8c:	10 42 00 91	add	x16, x16, #0x10
+  278c90:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278c94:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278c98:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  278c9c:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278ca0:	68 01 40 bd	ldr	s8, [x11]
+  278ca4:	6b 11 00 91	add	x11, x11, #0x4
+  278ca8:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278cac:	10 42 00 91	add	x16, x16, #0x10
+  278cb0:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278cb4:	10 42 00 91	add	x16, x16, #0x10
+  278cb8:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  278cbc:	10 42 00 91	add	x16, x16, #0x10
+  278cc0:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  278cc4:	10 42 00 91	add	x16, x16, #0x10
+  278cc8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278ccc:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278cd0:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  278cd4:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278cd8:	68 01 40 bd	ldr	s8, [x11]
+  278cdc:	6b 11 00 91	add	x11, x11, #0x4
+  278ce0:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278ce4:	10 42 00 91	add	x16, x16, #0x10
+  278ce8:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278cec:	10 42 00 91	add	x16, x16, #0x10
+  278cf0:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  278cf4:	10 42 00 91	add	x16, x16, #0x10
+  278cf8:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  278cfc:	10 42 00 91	add	x16, x16, #0x10
+  278d00:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278d04:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278d08:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  278d0c:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278d10:	68 01 40 bd	ldr	s8, [x11]
+  278d14:	6b 11 00 91	add	x11, x11, #0x4
+  278d18:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278d1c:	10 42 00 91	add	x16, x16, #0x10
+  278d20:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278d24:	10 42 00 91	add	x16, x16, #0x10
+  278d28:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  278d2c:	10 42 00 91	add	x16, x16, #0x10
+  278d30:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  278d34:	10 42 00 91	add	x16, x16, #0x10
+  278d38:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278d3c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278d40:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  278d44:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278d48:	68 01 40 bd	ldr	s8, [x11]
+  278d4c:	6b 11 00 91	add	x11, x11, #0x4
+  278d50:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278d54:	10 42 00 91	add	x16, x16, #0x10
+  278d58:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278d5c:	10 42 00 91	add	x16, x16, #0x10
+  278d60:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  278d64:	10 42 00 91	add	x16, x16, #0x10
+  278d68:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  278d6c:	10 42 00 91	add	x16, x16, #0x10
+  278d70:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278d74:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278d78:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  278d7c:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278d80:	08 05 00 f1	subs	x8, x8, #0x1
+  278d84:	ec f1 ff 54	b.gt	.Lsgemm_kernel_L1_M16_22
+.Lsgemm_kernel_L1_M16_40:
+  278d88:	48 08 40 f2	ands	x8, x2, #0x7
+  278d8c:	2d 02 00 54	b.le	.Lsgemm_kernel_L1_M16_100
+.Lsgemm_kernel_L1_M16_42:
+  278d90:	68 01 40 bd	ldr	s8, [x11]
+  278d94:	6b 11 00 91	add	x11, x11, #0x4
+  278d98:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278d9c:	10 42 00 91	add	x16, x16, #0x10
+  278da0:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278da4:	10 42 00 91	add	x16, x16, #0x10
+  278da8:	02 7a 40 4c	ld1.4s	{ v2 }, [x16]
+  278dac:	10 42 00 91	add	x16, x16, #0x10
+  278db0:	03 7a 40 4c	ld1.4s	{ v3 }, [x16]
+  278db4:	10 42 00 91	add	x16, x16, #0x10
+  278db8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278dbc:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278dc0:	52 10 88 4f	fmla.4s	v18, v2, v8[0]
+  278dc4:	73 10 88 4f	fmla.4s	v19, v3, v8[0]
+  278dc8:	08 05 00 f1	subs	x8, x8, #0x1
+  278dcc:	2c fe ff 54	b.gt	.Lsgemm_kernel_L1_M16_42
+.Lsgemm_kernel_L1_M16_100:
+  278dd0:	2a 02 27 1e	fmov	s10, w17
+  278dd4:	80 29 40 4c	ld1.4s	{ v0, v1, v2, v3 }, [x12]
+  278dd8:	00 12 8a 4f	fmla.4s	v0, v16, v10[0]
+  278ddc:	21 12 8a 4f	fmla.4s	v1, v17, v10[0]
+  278de0:	42 12 8a 4f	fmla.4s	v2, v18, v10[0]
+  278de4:	63 12 8a 4f	fmla.4s	v3, v19, v10[0]
+  278de8:	80 29 00 4c	st1.4s	{ v0, v1, v2, v3 }, [x12]
+  278dec:	8c 01 01 91	add	x12, x12, #0x40
+.Lsgemm_kernel_L1_M16_END:
+  278df0:	29 05 00 f1	subs	x9, x9, #0x1
+  278df4:	2c ed ff 54	b.gt	.Lsgemm_kernel_L1_M16_20
+.Lsgemm_kernel_L1_M8_BEGIN:
+  278df8:	e9 03 00 aa	mov	x9, x0
+  278dfc:	3f 0d 40 f2	tst	x9, #0xf
+  278e00:	6d 26 00 54	b.le	.Lsgemm_kernel_L1_END
+  278e04:	3f 01 7d f2	tst	x9, #0x8
+  278e08:	4d 0c 00 54	b.le	.Lsgemm_kernel_L1_M4_BEGIN
+.Lsgemm_kernel_L1_M8_20:
+  278e0c:	f0 03 27 1e	fmov	s16, wzr
+  278e10:	f1 03 27 1e	fmov	s17, wzr
+  278e14:	eb 03 04 aa	mov	x11, x4
+  278e18:	48 fc 43 93	asr	x8, x2, #3
+  278e1c:	1f 01 00 f1	cmp	x8, #0x0
+  278e20:	4d 09 00 54	b.le	.Lsgemm_kernel_L1_M8_40
+  278e24:	1f 20 03 d5	nop
+  278e28:	1f 20 03 d5	nop
+  278e2c:	1f 20 03 d5	nop
+  278e30:	1f 20 03 d5	nop
+  278e34:	1f 20 03 d5	nop
+  278e38:	1f 20 03 d5	nop
+  278e3c:	1f 20 03 d5	nop
+.Lsgemm_kernel_L1_M8_22:
+  278e40:	68 01 40 bd	ldr	s8, [x11]
+  278e44:	6b 11 00 91	add	x11, x11, #0x4
+  278e48:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278e4c:	10 42 00 91	add	x16, x16, #0x10
+  278e50:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278e54:	10 42 00 91	add	x16, x16, #0x10
+  278e58:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278e5c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278e60:	68 01 40 bd	ldr	s8, [x11]
+  278e64:	6b 11 00 91	add	x11, x11, #0x4
+  278e68:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278e6c:	10 42 00 91	add	x16, x16, #0x10
+  278e70:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278e74:	10 42 00 91	add	x16, x16, #0x10
+  278e78:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278e7c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278e80:	68 01 40 bd	ldr	s8, [x11]
+  278e84:	6b 11 00 91	add	x11, x11, #0x4
+  278e88:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278e8c:	10 42 00 91	add	x16, x16, #0x10
+  278e90:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278e94:	10 42 00 91	add	x16, x16, #0x10
+  278e98:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278e9c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278ea0:	68 01 40 bd	ldr	s8, [x11]
+  278ea4:	6b 11 00 91	add	x11, x11, #0x4
+  278ea8:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278eac:	10 42 00 91	add	x16, x16, #0x10
+  278eb0:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278eb4:	10 42 00 91	add	x16, x16, #0x10
+  278eb8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278ebc:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278ec0:	68 01 40 bd	ldr	s8, [x11]
+  278ec4:	6b 11 00 91	add	x11, x11, #0x4
+  278ec8:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278ecc:	10 42 00 91	add	x16, x16, #0x10
+  278ed0:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278ed4:	10 42 00 91	add	x16, x16, #0x10
+  278ed8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278edc:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278ee0:	68 01 40 bd	ldr	s8, [x11]
+  278ee4:	6b 11 00 91	add	x11, x11, #0x4
+  278ee8:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278eec:	10 42 00 91	add	x16, x16, #0x10
+  278ef0:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278ef4:	10 42 00 91	add	x16, x16, #0x10
+  278ef8:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278efc:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278f00:	68 01 40 bd	ldr	s8, [x11]
+  278f04:	6b 11 00 91	add	x11, x11, #0x4
+  278f08:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278f0c:	10 42 00 91	add	x16, x16, #0x10
+  278f10:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278f14:	10 42 00 91	add	x16, x16, #0x10
+  278f18:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278f1c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278f20:	68 01 40 bd	ldr	s8, [x11]
+  278f24:	6b 11 00 91	add	x11, x11, #0x4
+  278f28:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278f2c:	10 42 00 91	add	x16, x16, #0x10
+  278f30:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278f34:	10 42 00 91	add	x16, x16, #0x10
+  278f38:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278f3c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278f40:	08 05 00 f1	subs	x8, x8, #0x1
+  278f44:	ec f7 ff 54	b.gt	.Lsgemm_kernel_L1_M8_22
+.Lsgemm_kernel_L1_M8_40:
+  278f48:	48 08 40 f2	ands	x8, x2, #0x7
+  278f4c:	6d 01 00 54	b.le	.Lsgemm_kernel_L1_M8_100
+.Lsgemm_kernel_L1_M8_42:
+  278f50:	68 01 40 bd	ldr	s8, [x11]
+  278f54:	6b 11 00 91	add	x11, x11, #0x4
+  278f58:	00 7a 40 4c	ld1.4s	{ v0 }, [x16]
+  278f5c:	10 42 00 91	add	x16, x16, #0x10
+  278f60:	01 7a 40 4c	ld1.4s	{ v1 }, [x16]
+  278f64:	10 42 00 91	add	x16, x16, #0x10
+  278f68:	10 10 88 4f	fmla.4s	v16, v0, v8[0]
+  278f6c:	31 10 88 4f	fmla.4s	v17, v1, v8[0]
+  278f70:	08 05 00 f1	subs	x8, x8, #0x1
+  278f74:	ec fe ff 54	b.gt	.Lsgemm_kernel_L1_M8_42
+.Lsgemm_kernel_L1_M8_100:
+  278f78:	2a 02 27 1e	fmov	s10, w17
+  278f7c:	80 a9 40 4c	ld1.4s	{ v0, v1 }, [x12]
+  278f80:	00 12 8a 4f	fmla.4s	v0, v16, v10[0]
+  278f84:	21 12 8a 4f	fmla.4s	v1, v17, v10[0]
+  278f88:	80 a9 00 4c	st1.4s	{ v0, v1 }, [x12]
+  278f8c:	8c 81 00 91	add	x12, x12, #0x20
+.Lsgemm_kernel_L1_M8_END:
+.Lsgemm_kernel_L1_M4_BEGIN:
+  278f90:	e9 03 00 aa	mov	x9, x0
+  278f94:	3f 09 40 f2	tst	x9, #0x7
+  278f98:	ad 19 00 54	b.le	.Lsgemm_kernel_L1_END
+  278f9c:	3f 01 7e f2	tst	x9, #0x4
+  278fa0:	4d 09 00 54	b.le	.Lsgemm_kernel_L1_M2_BEGIN
+.Lsgemm_kernel_L1_M4_20:
+  278fa4:	f0 03 27 1e	fmov	s16, wzr
+  278fa8:	11 42 20 1e	fmov	s17, s16
+  278fac:	eb 03 04 aa	mov	x11, x4
+  278fb0:	48 fc 43 93	asr	x8, x2, #3
+  278fb4:	1f 01 00 f1	cmp	x8, #0x0
+  278fb8:	8d 06 00 54	b.le	.Lsgemm_kernel_L1_M4_40
+  278fbc:	1f 20 03 d5	nop
+.Lsgemm_kernel_L1_M4_22:
+  278fc0:	68 01 40 bd	ldr	s8, [x11]
+  278fc4:	6b 11 00 91	add	x11, x11, #0x4
+  278fc8:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  278fcc:	10 42 00 91	add	x16, x16, #0x10
+  278fd0:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278fd4:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  278fd8:	68 01 40 bd	ldr	s8, [x11]
+  278fdc:	6b 11 00 91	add	x11, x11, #0x4
+  278fe0:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  278fe4:	10 42 00 91	add	x16, x16, #0x10
+  278fe8:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  278fec:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  278ff0:	68 01 40 bd	ldr	s8, [x11]
+  278ff4:	6b 11 00 91	add	x11, x11, #0x4
+  278ff8:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  278ffc:	10 42 00 91	add	x16, x16, #0x10
+  279000:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  279004:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  279008:	68 01 40 bd	ldr	s8, [x11]
+  27900c:	6b 11 00 91	add	x11, x11, #0x4
+  279010:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  279014:	10 42 00 91	add	x16, x16, #0x10
+  279018:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  27901c:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  279020:	68 01 40 bd	ldr	s8, [x11]
+  279024:	6b 11 00 91	add	x11, x11, #0x4
+  279028:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  27902c:	10 42 00 91	add	x16, x16, #0x10
+  279030:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  279034:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  279038:	68 01 40 bd	ldr	s8, [x11]
+  27903c:	6b 11 00 91	add	x11, x11, #0x4
+  279040:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  279044:	10 42 00 91	add	x16, x16, #0x10
+  279048:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  27904c:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  279050:	68 01 40 bd	ldr	s8, [x11]
+  279054:	6b 11 00 91	add	x11, x11, #0x4
+  279058:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  27905c:	10 42 00 91	add	x16, x16, #0x10
+  279060:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  279064:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  279068:	68 01 40 bd	ldr	s8, [x11]
+  27906c:	6b 11 00 91	add	x11, x11, #0x4
+  279070:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  279074:	10 42 00 91	add	x16, x16, #0x10
+  279078:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  27907c:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  279080:	08 05 00 f1	subs	x8, x8, #0x1
+  279084:	ec f9 ff 54	b.gt	.Lsgemm_kernel_L1_M4_22
+.Lsgemm_kernel_L1_M4_40:
+  279088:	48 08 40 f2	ands	x8, x2, #0x7
+  27908c:	2d 01 00 54	b.le	.Lsgemm_kernel_L1_M4_100
+.Lsgemm_kernel_L1_M4_42:
+  279090:	68 01 40 bd	ldr	s8, [x11]
+  279094:	6b 11 00 91	add	x11, x11, #0x4
+  279098:	00 aa 40 0c	ld1.2s	{ v0, v1 }, [x16]
+  27909c:	10 42 00 91	add	x16, x16, #0x10
+  2790a0:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  2790a4:	31 10 88 0f	fmla.2s	v17, v1, v8[0]
+  2790a8:	08 05 00 f1	subs	x8, x8, #0x1
+  2790ac:	2c ff ff 54	b.gt	.Lsgemm_kernel_L1_M4_42
+.Lsgemm_kernel_L1_M4_100:
+  2790b0:	2a 02 27 1e	fmov	s10, w17
+  2790b4:	88 a9 40 0c	ld1.2s	{ v8, v9 }, [x12]
+  2790b8:	08 12 8a 0f	fmla.2s	v8, v16, v10[0]
+  2790bc:	29 12 8a 0f	fmla.2s	v9, v17, v10[0]
+  2790c0:	88 a9 00 0c	st1.2s	{ v8, v9 }, [x12]
+  2790c4:	8c 41 00 91	add	x12, x12, #0x10
+.Lsgemm_kernel_L1_M4_END:
+.Lsgemm_kernel_L1_M2_BEGIN:
+  2790c8:	e9 03 00 aa	mov	x9, x0
+  2790cc:	3f 05 40 f2	tst	x9, #0x3
+  2790d0:	ed 0f 00 54	b.le	.Lsgemm_kernel_L1_END
+  2790d4:	3f 01 7f f2	tst	x9, #0x2
+  2790d8:	cd 07 00 54	b.le	.Lsgemm_kernel_L1_M1_BEGIN
+.Lsgemm_kernel_L1_M2_20:
+  2790dc:	f0 03 27 1e	fmov	s16, wzr
+  2790e0:	eb 03 04 aa	mov	x11, x4
+  2790e4:	48 fc 43 93	asr	x8, x2, #3
+  2790e8:	1f 01 00 f1	cmp	x8, #0x0
+  2790ec:	6d 05 00 54	b.le	.Lsgemm_kernel_L1_M2_40
+.Lsgemm_kernel_L1_M2_22:
+  2790f0:	68 01 40 bd	ldr	s8, [x11]
+  2790f4:	6b 11 00 91	add	x11, x11, #0x4
+  2790f8:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  2790fc:	10 22 00 91	add	x16, x16, #0x8
+  279100:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  279104:	68 01 40 bd	ldr	s8, [x11]
+  279108:	6b 11 00 91	add	x11, x11, #0x4
+  27910c:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  279110:	10 22 00 91	add	x16, x16, #0x8
+  279114:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  279118:	68 01 40 bd	ldr	s8, [x11]
+  27911c:	6b 11 00 91	add	x11, x11, #0x4
+  279120:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  279124:	10 22 00 91	add	x16, x16, #0x8
+  279128:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  27912c:	68 01 40 bd	ldr	s8, [x11]
+  279130:	6b 11 00 91	add	x11, x11, #0x4
+  279134:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  279138:	10 22 00 91	add	x16, x16, #0x8
+  27913c:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  279140:	68 01 40 bd	ldr	s8, [x11]
+  279144:	6b 11 00 91	add	x11, x11, #0x4
+  279148:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  27914c:	10 22 00 91	add	x16, x16, #0x8
+  279150:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  279154:	68 01 40 bd	ldr	s8, [x11]
+  279158:	6b 11 00 91	add	x11, x11, #0x4
+  27915c:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  279160:	10 22 00 91	add	x16, x16, #0x8
+  279164:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  279168:	68 01 40 bd	ldr	s8, [x11]
+  27916c:	6b 11 00 91	add	x11, x11, #0x4
+  279170:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  279174:	10 22 00 91	add	x16, x16, #0x8
+  279178:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  27917c:	68 01 40 bd	ldr	s8, [x11]
+  279180:	6b 11 00 91	add	x11, x11, #0x4
+  279184:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  279188:	10 22 00 91	add	x16, x16, #0x8
+  27918c:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  279190:	08 05 00 f1	subs	x8, x8, #0x1
+  279194:	ec fa ff 54	b.gt	.Lsgemm_kernel_L1_M2_22
+.Lsgemm_kernel_L1_M2_40:
+  279198:	48 08 40 f2	ands	x8, x2, #0x7
+  27919c:	0d 01 00 54	b.le	.Lsgemm_kernel_L1_M2_100
+.Lsgemm_kernel_L1_M2_42:
+  2791a0:	68 01 40 bd	ldr	s8, [x11]
+  2791a4:	6b 11 00 91	add	x11, x11, #0x4
+  2791a8:	00 7a 40 0c	ld1.2s	{ v0 }, [x16]
+  2791ac:	10 22 00 91	add	x16, x16, #0x8
+  2791b0:	10 10 88 0f	fmla.2s	v16, v0, v8[0]
+  2791b4:	08 05 00 f1	subs	x8, x8, #0x1
+  2791b8:	4c ff ff 54	b.gt	.Lsgemm_kernel_L1_M2_42
+.Lsgemm_kernel_L1_M2_100:
+  2791bc:	2a 02 27 1e	fmov	s10, w17
+  2791c0:	88 79 40 0c	ld1.2s	{ v8 }, [x12]
+  2791c4:	08 12 8a 0f	fmla.2s	v8, v16, v10[0]
+  2791c8:	88 79 00 0c	st1.2s	{ v8 }, [x12]
+  2791cc:	8c 21 00 91	add	x12, x12, #0x8
+.Lsgemm_kernel_L1_M2_END:
+.Lsgemm_kernel_L1_M1_BEGIN:
+  2791d0:	3f 01 40 f2	tst	x9, #0x1
+  2791d4:	cd 07 00 54	b.le	.Lsgemm_kernel_L1_END
+.Lsgemm_kernel_L1_M1_20:
+  2791d8:	f0 03 27 1e	fmov	s16, wzr
+  2791dc:	eb 03 04 aa	mov	x11, x4
+  2791e0:	48 fc 43 93	asr	x8, x2, #3
+  2791e4:	1f 01 00 f1	cmp	x8, #0x0
+  2791e8:	6d 05 00 54	b.le	.Lsgemm_kernel_L1_M1_40
+.Lsgemm_kernel_L1_M1_22:
+  2791ec:	68 01 40 bd	ldr	s8, [x11]
+  2791f0:	6b 11 00 91	add	x11, x11, #0x4
+  2791f4:	00 02 40 bd	ldr	s0, [x16]
+  2791f8:	10 12 00 91	add	x16, x16, #0x4
+  2791fc:	10 40 08 1f	fmadd	s16, s0, s8, s16
+  279200:	68 01 40 bd	ldr	s8, [x11]
+  279204:	6b 11 00 91	add	x11, x11, #0x4
+  279208:	00 02 40 bd	ldr	s0, [x16]
+  27920c:	10 12 00 91	add	x16, x16, #0x4
+  279210:	10 40 08 1f	fmadd	s16, s0, s8, s16
+  279214:	68 01 40 bd	ldr	s8, [x11]
+  279218:	6b 11 00 91	add	x11, x11, #0x4
+  27921c:	00 02 40 bd	ldr	s0, [x16]
+  279220:	10 12 00 91	add	x16, x16, #0x4
+  279224:	10 40 08 1f	fmadd	s16, s0, s8, s16
+  279228:	68 01 40 bd	ldr	s8, [x11]
+  27922c:	6b 11 00 91	add	x11, x11, #0x4
+  279230:	00 02 40 bd	ldr	s0, [x16]
+  279234:	10 12 00 91	add	x16, x16, #0x4
+  279238:	10 40 08 1f	fmadd	s16, s0, s8, s16
+  27923c:	68 01 40 bd	ldr	s8, [x11]
+  279240:	6b 11 00 91	add	x11, x11, #0x4
+  279244:	00 02 40 bd	ldr	s0, [x16]
+  279248:	10 12 00 91	add	x16, x16, #0x4
+  27924c:	10 40 08 1f	fmadd	s16, s0, s8, s16
+  279250:	68 01 40 bd	ldr	s8, [x11]
+  279254:	6b 11 00 91	add	x11, x11, #0x4
+  279258:	00 02 40 bd	ldr	s0, [x16]
+  27925c:	10 12 00 91	add	x16, x16, #0x4
+  279260:	10 40 08 1f	fmadd	s16, s0, s8, s16
+  279264:	68 01 40 bd	ldr	s8, [x11]
+  279268:	6b 11 00 91	add	x11, x11, #0x4
+  27926c:	00 02 40 bd	ldr	s0, [x16]
+  279270:	10 12 00 91	add	x16, x16, #0x4
+  279274:	10 40 08 1f	fmadd	s16, s0, s8, s16
+  279278:	68 01 40 bd	ldr	s8, [x11]
+  27927c:	6b 11 00 91	add	x11, x11, #0x4
+  279280:	00 02 40 bd	ldr	s0, [x16]
+  279284:	10 12 00 91	add	x16, x16, #0x4
+  279288:	10 40 08 1f	fmadd	s16, s0, s8, s16
+  27928c:	08 05 00 f1	subs	x8, x8, #0x1
+  279290:	ec fa ff 54	b.gt	.Lsgemm_kernel_L1_M1_22
+.Lsgemm_kernel_L1_M1_40:
+  279294:	48 08 40 f2	ands	x8, x2, #0x7
+  279298:	0d 01 00 54	b.le	.Lsgemm_kernel_L1_M1_100
+.Lsgemm_kernel_L1_M1_42:
+  27929c:	68 01 40 bd	ldr	s8, [x11]
+  2792a0:	6b 11 00 91	add	x11, x11, #0x4
+  2792a4:	00 02 40 bd	ldr	s0, [x16]
+  2792a8:	10 12 00 91	add	x16, x16, #0x4
+  2792ac:	10 40 08 1f	fmadd	s16, s0, s8, s16
+  2792b0:	08 05 00 f1	subs	x8, x8, #0x1
+  2792b4:	4c ff ff 54	b.gt	.Lsgemm_kernel_L1_M1_42
+.Lsgemm_kernel_L1_M1_100:
+  2792b8:	2a 02 27 1e	fmov	s10, w17
+  2792bc:	88 01 40 bd	ldr	s8, [x12]
+  2792c0:	08 12 8a 5f	fmla.s	s8, s16, v10[0]
+  2792c4:	88 01 00 bd	str	s8, [x12]
+  2792c8:	8c 11 00 91	add	x12, x12, #0x4
+.Lsgemm_kernel_L999:
+.Lsgemm_kernel_L1_END:
+  2792cc:	00 00 80 d2	mov	x0, #0x0
+  2792d0:	e8 27 40 6d	ldp	d8, d9, [sp]
+  2792d4:	ea 2f 41 6d	ldp	d10, d11, [sp, #0x10]
+  2792d8:	ec 37 42 6d	ldp	d12, d13, [sp, #0x20]
+  2792dc:	ee 3f 43 6d	ldp	d14, d15, [sp, #0x30]
+  2792e0:	f0 47 44 6d	ldp	d16, d17, [sp, #0x40]
+  2792e4:	f2 4f 45 a9	ldp	x18, x19, [sp, #0x50]
+  2792e8:	f4 57 46 a9	ldp	x20, x21, [sp, #0x60]
+  2792ec:	f6 5f 47 a9	ldp	x22, x23, [sp, #0x70]
+  2792f0:	f8 67 48 a9	ldp	x24, x25, [sp, #0x80]
+  2792f4:	fa 6f 49 a9	ldp	x26, x27, [sp, #0x90]
+  2792f8:	fc 53 40 f9	ldr	x28, [sp, #0xa0]
+  2792fc:	ff c3 02 91	add	sp, sp, #0xb0
+  279300:	c0 03 5f d6	ret
+  279304:	00 00 00 00	udf	#0x0
+  279308:	00 00 00 00	udf	#0x0
+  27930c:	00 00 00 00	udf	#0x0
+  279310:	00 00 00 00	udf	#0x0
+  279314:	00 00 00 00	udf	#0x0
+  279318:	00 00 00 00	udf	#0x0
+  27931c:	00 00 00 00	udf	#0x0

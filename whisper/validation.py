@@ -65,17 +65,22 @@ def logits_records(path):
     return records
 
 
-def matrix_profiles(log, required=False):
+def matrix_profiles(log, required=False, layout="separate"):
+    if layout not in ("separate", "fused"):
+        raise ValueError("unknown cross-K/V matrix layout")
     records = [json.loads(line.split("\t", 1)[1]) for line in log.splitlines()
                if line.startswith("MATRIX_PROFILE\t")]
     if not records and not required:
         return []
-    expected = {f"whisper.cross_kv.{i}.{kind}" for i in range(4) for kind in ("k", "v")}
-    if len(records) != 8 or {r["name"] for r in records} != expected:
-        raise ValueError("cross-K/V profile requires all eight matrix products")
+    expected = ({"whisper.cross_kv.fused"} if layout == "fused" else
+                {f"whisper.cross_kv.{i}.{kind}" for i in range(4) for kind in ("k", "v")})
+    if len(records) != len(expected) or {r["name"] for r in records} != expected:
+        raise ValueError("cross-K/V profile does not match the requested " + layout + " layout")
     for row in records:
-        if (row["m"], row["n"], row["k"]) != (1500, 384, 384):
+        if (row["m"], row["n"], row["k"]) != (1500, 3072 if layout == "fused" else 384, 384):
             raise ValueError("unexpected tiny.en cross-K/V matrix dimensions")
+        if layout == "fused" and (row["weight_type"] != "f32" or row["weight"] != "whisper.cross_kv.cached_weights"):
+            raise ValueError("fused cross-K/V is not using its cached FP32 weights")
         if row["order"] != "row_major" or row["transpose_a"] or not row["transpose_b"]:
             raise ValueError("unexpected cross-K/V operand packing")
         if any(row[k] != "f32" for k in ("input_type", "output_type", "gemm_type")):
@@ -88,7 +93,8 @@ def matrix_profiles(log, required=False):
     return records
 
 
-def parse_runs(result, audio_seconds, expected_words, check_runtime=None, encoder_marker=None):
+def parse_runs(result, audio_seconds, expected_words, check_runtime=None, encoder_marker=None,
+               matrix_layout="separate"):
     """Parse the common benchmark_whisper.cpp protocol; adapters verify dispatch."""
     if not math.isfinite(audio_seconds) or audio_seconds <= 0:
         raise ValueError("invalid benchmark audio duration")
@@ -132,7 +138,7 @@ def parse_runs(result, audio_seconds, expected_words, check_runtime=None, encode
             raise ValueError("missing positive decode call count")
         if encoder_marker and block[3].count(encoder_marker) != 1:
             raise ValueError("timed transcription did not execute the ANE encoder exactly once")
-        matrices = matrix_profiles(block[3])
+        matrices = matrix_profiles(block[3], layout=matrix_layout)
         if matrices:
             record["cross_kv_matrices"] = matrices
         record["decoder_ms"] = record["decode_ms"] + record["batchd_ms"] + record["prompt_ms"]

@@ -1,0 +1,131 @@
+{
+  "format": "whisper-tiny-en-paired-h13g/v1",
+  "checkpoint_sha256": "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad",
+  "programs": [
+    {
+      "name": "layer0-q_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "b55849ef93ddde6598ed66ec8bbf765ad08024f31941ab450c75a409377010ac"
+    },
+    {
+      "name": "layer0-k_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "b993bdcb04e50ea78b435b369ef16ff799c65c54fc74165e9493e5bd2d2ff859"
+    },
+    {
+      "name": "layer0-v_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "ebb8816a1ca0e415f46c8a20632cb9cc7e66e51af33c4104f038cdecfbf20cbf"
+    },
+    {
+      "name": "layer0-out_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "f9d57c2b7f3e65b4188b155fff20ffb34483513ce5518a0fadbffce50aa51a72"
+    },
+    {
+      "name": "layer0-fc1",
+      "kernel": "384-1536",
+      "coefficients_sha256": "914f3699e230f61c1146266c62aabc8a1d2712a440087b71c1923e4a06f51a1e"
+    },
+    {
+      "name": "layer0-fc2",
+      "kernel": "1536-384",
+      "coefficients_sha256": "f170bb024bf9697a7b5a4da317f924f55d7cf61d8c89423b8aa7c545093d41c1"
+    },
+    {
+      "name": "layer1-q_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "82b0fb1e079059ec42b7b0f44b5a3751e51a919d7c4452d27b0cbe448f0002e2"
+    },
+    {
+      "name": "layer1-k_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "0cd37fe6e0a2bcfbdf8607bc8b08ffc5677deb15ea131c21ac18951b5fdd28ca"
+    },
+    {
+      "name": "layer1-v_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "f6013d3e40a815ce510b3bd6ada444a8d56b5b417cce09659c02a1051846d9be"
+    },
+    {
+      "name": "layer1-out_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "fddaf5b6e10b962106b52d4e0da56c056919460bd35480d107236ecbc84b6e56"
+    },
+    {
+      "name": "layer1-fc1",
+      "kernel": "384-1536",
+      "coefficients_sha256": "3442dc3ce20f77b3bd25f2263fe4409dd37d77ef68712323f4d93a5e562fb703"
+    },
+    {
+      "name": "layer1-fc2",
+      "kernel": "1536-384",
+      "coefficients_sha256": "0de303f70c372a54583ea1d85c7151435304a649e7720c25db8f19269560b77c"
+    },
+    {
+      "name": "layer2-q_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "232452734643c85f4648570ab3090e6b1b2d80e3ca3e760e89248292f38706a5"
+    },
+    {
+      "name": "layer2-k_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "ad9fd60c0f049e6a4a3bab76a8a8a4fdd0d661b99fcb9fd1b85d5877060cde94"
+    },
+    {
+      "name": "layer2-v_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "6ae347ce8f30f472197382af76d0cea76d31965efe926be3c006c7fab862b487"
+    },
+    {
+      "name": "layer2-out_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "5c132746589a081a4053ed7602a0fe7ff68637d0127c3e72dba5acca09d9f38b"
+    },
+    {
+      "name": "layer2-fc1",
+      "kernel": "384-1536",
+      "coefficients_sha256": "89a519fd2a850c65b85567874c97cc471555db5d91f427d291d86d5efca91288"
+    },
+    {
+      "name": "layer2-fc2",
+      "kernel": "1536-384",
+      "coefficients_sha256": "2ce5bed2493d486e19fd4ba2584ea628c635e449124c08aff1b1e7ac76d5fbf6"
+    },
+    {
+      "name": "layer3-q_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "23fcf17bf1d68adaed62291cfa922f2b6e2fc3fff7dba4d51f771ff74f092eff"
+    },
+    {
+      "name": "layer3-k_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "af82cd41c5f40814925da7748a705eca9182914f879f08582b92c6785266b476"
+    },
+    {
+      "name": "layer3-v_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "ecf3396a412e5ad01d7e30f99d012844ce2715d437399d148e59c26c13850c53"
+    },
+    {
+      "name": "layer3-out_proj",
+      "kernel": "384-384",
+      "coefficients_sha256": "105e0151f7adbb964e7a044f5e8c5392e7de6ca8cff8303df8ffa926161dab65"
+    },
+    {
+      "name": "layer3-fc1",
+      "kernel": "384-1536",
+      "coefficients_sha256": "758f893faea65b970584dcadf995b74bba90f85ccac6a75f4b211e06e34742cf"
+    },
+    {
+      "name": "layer3-fc2",
+      "kernel": "1536-384",
+      "coefficients_sha256": "d239857cd7a8489f80037c4c76a79e8be611b6bcc551c29c75808555d0347795"
+    }
+  ],
+  "kernel_meta_sha256": {
+    "384-384": "b5eb61befe2799f89a4fef601ef73b21daba3520c2bef3f3499ed1980ed481ef",
+    "384-1536": "142c1a140c3861fc06b409710b93bb630fd9a647f481abaeaaa7e0f080c59bf8",
+    "1536-384": "69963db8a55a2b51ae7b805f22d8611eeacda4e1a59df0bfd0768930e2909994"
+  }
+}

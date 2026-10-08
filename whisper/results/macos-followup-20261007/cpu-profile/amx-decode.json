@@ -1,0 +1,173 @@
+{
+  "encoding_source": "https://github.com/corsix/amx/blob/main/aarch64.h",
+  "library_uuid": "31104D4F-4A7E-3FA7-9E18-55937B2011F2",
+  "sampled_runtime_address": "0x19974edf8",
+  "runtime_image_base": "0x1992e5000",
+  "file_image_base": "0x18120d000",
+  "sampled_image_offset": "0x469df8",
+  "file_address": "0x181676df8",
+  "instructions": [
+    {
+      "address": "0x181676d74",
+      "opcode": "0x0020100a",
+      "amx_op": "LDX",
+      "register": 10
+    },
+    {
+      "address": "0x181676d7c",
+      "opcode": "0x00201029",
+      "amx_op": "LDY",
+      "register": 9
+    },
+    {
+      "address": "0x181676d88",
+      "opcode": "0x00201189",
+      "amx_op": "FMA32",
+      "register": 9
+    },
+    {
+      "address": "0x181676d8c",
+      "opcode": "0x0020118a",
+      "amx_op": "FMA32",
+      "register": 10
+    },
+    {
+      "address": "0x181676da0",
+      "opcode": "0x00201189",
+      "amx_op": "FMA32",
+      "register": 9
+    },
+    {
+      "address": "0x181676da4",
+      "opcode": "0x0020118a",
+      "amx_op": "FMA32",
+      "register": 10
+    },
+    {
+      "address": "0x181676dd8",
+      "opcode": "0x0020100d",
+      "amx_op": "LDX",
+      "register": 13
+    },
+    {
+      "address": "0x181676de8",
+      "opcode": "0x0020102e",
+      "amx_op": "LDY",
+      "register": 14
+    },
+    {
+      "address": "0x181676dec",
+      "opcode": "0x0020119f",
+      "amx_op": "FMA32",
+      "register": 31
+    },
+    {
+      "address": "0x181676df0",
+      "opcode": "0x0020118c",
+      "amx_op": "FMA32",
+      "register": 12
+    },
+    {
+      "address": "0x181676df8",
+      "opcode": "0x00201189",
+      "amx_op": "FMA32",
+      "register": 9
+    },
+    {
+      "address": "0x181676dfc",
+      "opcode": "0x0020118d",
+      "amx_op": "FMA32",
+      "register": 13
+    },
+    {
+      "address": "0x181676e58",
+      "opcode": "0x00201009",
+      "amx_op": "LDX",
+      "register": 9
+    },
+    {
+      "address": "0x181676e6c",
+      "opcode": "0x0020102c",
+      "amx_op": "LDY",
+      "register": 12
+    },
+    {
+      "address": "0x181676e88",
+      "opcode": "0x00201029",
+      "amx_op": "LDY",
+      "register": 9
+    },
+    {
+      "address": "0x181676e94",
+      "opcode": "0x00201189",
+      "amx_op": "FMA32",
+      "register": 9
+    },
+    {
+      "address": "0x181676e98",
+      "opcode": "0x0020118a",
+      "amx_op": "FMA32",
+      "register": 10
+    },
+    {
+      "address": "0x181676ec0",
+      "opcode": "0x0020100c",
+      "amx_op": "LDX",
+      "register": 12
+    },
+    {
+      "address": "0x181676edc",
+      "opcode": "0x0020102d",
+      "amx_op": "LDY",
+      "register": 13
+    },
+    {
+      "address": "0x181676ef4",
+      "opcode": "0x0020102c",
+      "amx_op": "LDY",
+      "register": 12
+    },
+    {
+      "address": "0x181676ef8",
+      "opcode": "0x0020119f",
+      "amx_op": "FMA32",
+      "register": 31
+    },
+    {
+      "address": "0x181676efc",
+      "opcode": "0x0020118b",
+      "amx_op": "FMA32",
+      "register": 11
+    },
+    {
+      "address": "0x181676f48",
+      "opcode": "0x0020100c",
+      "amx_op": "LDX",
+      "register": 12
+    },
+    {
+      "address": "0x181676f6c",
+      "opcode": "0x00201009",
+      "amx_op": "LDX",
+      "register": 9
+    },
+    {
+      "address": "0x181676f78",
+      "opcode": "0x00201029",
+      "amx_op": "LDY",
+      "register": 9
+    },
+    {
+      "address": "0x181676f88",
+      "opcode": "0x00201189",
+      "amx_op": "FMA32",
+      "register": 9
+    },
+    {
+      "address": "0x181676f8c",
+      "opcode": "0x0020118a",
+      "amx_op": "FMA32",
+      "register": 10
+    }
+  ]
+}

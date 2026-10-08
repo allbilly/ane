@@ -1,0 +1,219 @@
+{
+  "status": "PASS_HOST_NATIVE_TRANSFER",
+  "hardware_execution": "unverified",
+  "models": {
+    "tiny": {
+      "status": "PASS_HOST_NATIVE_TRANSFER",
+      "cases": [
+        "zero-mel",
+        "jfk",
+        "jfk-first-5s",
+        "jfk-repeat"
+      ],
+      "td_count": 1779,
+      "coefficient_banks": 1,
+      "descriptor": "ANE_WHISPER_PR_V1\n384 4 1779 504 1277952 6 5\n0 16728065\n2 26112\n3 8093696\n4 1163264\n5 491520\n6 1163264\n5 0 80 1 3000 6016 6016\n4 0 384 1 1500 3008 3008\n6 0 1 1500 384 1152000 768\nbootstrap.bin 504 578512143 -2 0\ncoefficients-1.bin 15450112 1484340864 0 1277952\ncommands.bin 1277952 3052821800 0 0\nconstants.bin 26112 3899104024 2 0\npositions.bin 1152000 4237355898 -1 0\n",
+      "stdout": "PASS_HOST_NATIVE_TRANSFER state=384 tasks=1779 cases=4 coefficient_banks=1 hardware_execution=unverified\n",
+      "stderr": "ASAHI_PR_ANE init failed: native PR replay requires base-M1 Asahi Linux; no device access attempted\n",
+      "hwx_sha256": "405a659494c647b85ea01813b330c97aadad5216d3bc80f0c1a2a1235a95ec42"
+    },
+    "base": {
+      "status": "PASS_HOST_NATIVE_TRANSFER",
+      "cases": [
+        "zero-mel",
+        "jfk",
+        "jfk-first-5s",
+        "jfk-repeat"
+      ],
+      "td_count": 3434,
+      "coefficient_banks": 1,
+      "descriptor": "ANE_WHISPER_PR_V1\n512 6 3434 504 2473984 6 5\n0 42434561\n2 51200\n3 9617408\n4 1540096\n5 491520\n6 1540096\n5 0 80 1 3000 6016 6016\n4 0 512 1 1500 3008 3008\n6 0 1 1500 512 1536000 1024\nbootstrap.bin 504 578512143 -2 0\ncoefficients-1.bin 39960576 2091133698 0 2473984\ncommands.bin 2473984 279823431 0 0\nconstants.bin 51200 1389820118 2 0\npositions.bin 1536000 1917450306 -1 0\n",
+      "stdout": "PASS_HOST_NATIVE_TRANSFER state=512 tasks=3434 cases=4 coefficient_banks=1 hardware_execution=unverified\n",
+      "stderr": "ASAHI_PR_ANE init failed: native PR replay requires base-M1 Asahi Linux; no device access attempted\n",
+      "hwx_sha256": "2106568eeecefcab3569d22b8ff3eed6d555a23dd6044c911c9f4998ee5af82d"
+    },
+    "small": {
+      "status": "PASS_HOST_NATIVE_TRANSFER",
+      "cases": [
+        "zero-mel",
+        "jfk",
+        "jfk-first-5s",
+        "jfk-repeat"
+      ],
+      "td_count": 10015,
+      "coefficient_banks": 2,
+      "descriptor": "ANE_WHISPER_PR_V1\n768 12 10015 504 7258112 7 6\n0 141459457\n2 144384\n3 13828096\n4 2310144\n5 491520\n6 2310144\n8 40599552\n5 0 80 1 3000 6016 6016\n4 0 768 1 1500 3008 3008\n6 0 1 1500 768 2304000 1536\nbootstrap.bin 504 1909090413 -2 0\ncoefficients-1.bin 134201344 1882012487 0 7258112\ncoefficients-8.bin 40599552 3057954271 8 0\ncommands.bin 7258112 1498318223 0 0\nconstants.bin 144384 825349598 2 0\npositions.bin 2304000 2801500390 -1 0\n",
+      "stdout": "PASS_HOST_NATIVE_TRANSFER state=768 tasks=10015 cases=4 coefficient_banks=2 hardware_execution=unverified\n",
+      "stderr": "ASAHI_PR_ANE init failed: native PR replay requires base-M1 Asahi Linux; no device access attempted\n",
+      "hwx_sha256": "f281f0d9d618a119e2f6e44826f91978d4ddf5eccd5d89e6f21fa06c5f2b4d08"
+    }
+  },
+  "scope": "real regenerated payloads and captured arrays, in-memory fake submission transport",
+  "compile": {
+    "command": [
+      "/usr/bin/c++",
+      "-std=c++11",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I/Users/yeren/ane",
+      "-I/Users/yeren/ane/whisper/vendor/whisper.cpp/src",
+      "/Users/yeren/ane/experimental/test_pr_native_encoder.cpp",
+      "-o",
+      "<temporary binary>"
+    ],
+    "stderr": "",
+    "compiler_version": "Apple clang version 21.0.0 (clang-2100.3.34.2)"
+  },
+  "source_sha256": {
+    "whisper/asahi_full_encoder.cpp": "4f937019fd0d73156a6e4a0f94c5329ddc992a753f34c967761c0902e762244c",
+    "experimental/test_pr_native_encoder.cpp": "5f00e8773a443562b878e89d9579954f308a1d17fb035534ea0b5eafb9476db2",
+    "whisper/pr_encoder_replay.py": "9663025a5ec5024a274c208387aba01d94e22c1173888cca2a83e9bbe1d40a11",
+    "whisper/asahi_full_encoder.h": "d1fc269a0185ca42a12dcee1bb7bfabf61d5adb71e4dbfb1be14d325a09862b1",
+    "whisper/scripts/prepare_pr_asahi.py": "177564aab8c28b8a4b4716faadff531515e49ea4ac010bacfa65d94879c103ea",
+    "experimental/verify_pr_native_encoder.py": "b549ae6baf71fefd4e2b075e2af90873ad830a841851555de6d05200ede1ffa6"
+  },
+  "integration": {
+    "configure": {
+      "command": [
+        "/opt/homebrew/Cellar/cmake/4.4.4/bin/cmake",
+        "-S",
+        "/Users/yeren/ane/whisper/vendor/whisper-asahi-pr3905",
+        "-B",
+        "/Users/yeren/ane/whisper/build/pr3905-native-integration",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_C_COMPILER=/usr/bin/cc",
+        "-DCMAKE_CXX_COMPILER=/usr/bin/c++",
+        "-DWHISPER_BUILD_TESTS=OFF",
+        "-DGGML_METAL=OFF",
+        "-DGGML_ACCELERATE=OFF",
+        "-DGGML_BLAS=OFF",
+        "-DGGML_OPENMP=OFF",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DANE_ROOT=/Users/yeren/ane"
+      ],
+      "exit_code": 0
+    },
+    "build": {
+      "command": [
+        "/opt/homebrew/Cellar/cmake/4.4.4/bin/cmake",
+        "--build",
+        "/Users/yeren/ane/whisper/build/pr3905-native-integration",
+        "--target",
+        "whisper-cli",
+        "whisper-bench",
+        "-j4"
+      ],
+      "exit_code": 0
+    },
+    "status": "PASS_MAC_NATIVE_GUARD_BUILD",
+    "cmake_version": "cmake version 4.4.4",
+    "linux_build": "unverified",
+    "cpu-smoke": {
+      "command": [
+        "/Users/yeren/ane/whisper/build/pr3905-native-integration/bin/whisper-cli",
+        "-m",
+        "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+        "-f",
+        "/Users/yeren/ane/whisper/vendor/whisper.cpp/samples/jfk.wav",
+        "-l",
+        "en",
+        "-t",
+        "4",
+        "-ng",
+        "-nt"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "native_requested": false
+    },
+    "mac-guard": {
+      "command": [
+        "/Users/yeren/ane/whisper/build/pr3905-native-integration/bin/whisper-cli",
+        "-m",
+        "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+        "-f",
+        "/Users/yeren/ane/whisper/vendor/whisper.cpp/samples/jfk.wav",
+        "-l",
+        "en",
+        "-t",
+        "4",
+        "-ng",
+        "-nt"
+      ],
+      "exit_code": 3,
+      "status": "PASS",
+      "native_requested": true
+    },
+    "prepare_cli_native_descriptor": "PASS",
+    "foreign_edit_rejection": "PASS",
+    "idempotent_preparation": "PASS"
+  },
+  "python_regression_tests": {
+    "count": 24,
+    "status": "PASS",
+    "command": "whisper/.venv/bin/python -m unittest experimental.test_pr_encoder_replay experimental.test_pr_encoder_packing experimental.test_compact_whisper"
+  },
+  "host_variants": {
+    "serial": {
+      "status": "PASS_HOST_NATIVE_TRANSFER",
+      "asserted_read_workers": 1,
+      "compile": {
+        "command": [
+          "/usr/bin/c++",
+          "-std=c++11",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-I/Users/yeren/ane",
+          "-I/Users/yeren/ane/whisper/vendor/whisper.cpp/src",
+          "/Users/yeren/ane/experimental/test_pr_native_encoder.cpp",
+          "-o",
+          "<temporary binary>"
+        ],
+        "stderr": "",
+        "compiler_version": "Apple clang version 21.0.0 (clang-2100.3.34.2)"
+      },
+      "output": {
+        "tiny": "PASS_HOST_NATIVE_TRANSFER state=384 tasks=1779 cases=4 coefficient_banks=1 hardware_execution=unverified\n",
+        "base": "PASS_HOST_NATIVE_TRANSFER state=512 tasks=3434 cases=4 coefficient_banks=1 hardware_execution=unverified\n",
+        "small": "PASS_HOST_NATIVE_TRANSFER state=768 tasks=10015 cases=4 coefficient_banks=2 hardware_execution=unverified\n"
+      }
+    },
+    "openmp": {
+      "status": "PASS_HOST_NATIVE_TRANSFER",
+      "asserted_read_workers": 4,
+      "compile": {
+        "command": [
+          "/usr/bin/c++",
+          "-std=c++11",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-I/Users/yeren/ane",
+          "-I/Users/yeren/ane/whisper/vendor/whisper.cpp/src",
+          "/Users/yeren/ane/experimental/test_pr_native_encoder.cpp",
+          "-o",
+          "<temporary binary>",
+          "-Xclang",
+          "-fopenmp",
+          "-I/opt/homebrew/opt/libomp/include",
+          "-L/opt/homebrew/opt/libomp/lib",
+          "-Wl,-rpath,/opt/homebrew/opt/libomp/lib",
+          "-lomp"
+        ],
+        "stderr": "",
+        "compiler_version": "Apple clang version 21.0.0 (clang-2100.3.34.2)"
+      },
+      "output": {
+        "tiny": "PASS_HOST_NATIVE_TRANSFER state=384 tasks=1779 cases=4 coefficient_banks=1 hardware_execution=unverified\n",
+        "base": "PASS_HOST_NATIVE_TRANSFER state=512 tasks=3434 cases=4 coefficient_banks=1 hardware_execution=unverified\n",
+        "small": "PASS_HOST_NATIVE_TRANSFER state=768 tasks=10015 cases=4 coefficient_banks=2 hardware_execution=unverified\n"
+      },
+      "openmp_runtime_sha256": "cb679440b0af57131274b6c0bcc11b8c18ef7ad45e2a6625ef57e90379fc2ae4"
+    }
+  }
+}

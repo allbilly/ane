@@ -1,5 +1,9 @@
 # Complete tiny.en encoder kernels
 
+For the newer multilingual tiny/base/small PR 3905 exports, see
+[weight-free packages and safetensors/GGUF repacking](pr3905-packing.md).
+The sections below describe the older pinned tiny.en packages and loader.
+
 The default [fast kernel package](../kernels/tiny-en-encoder-fast/meta.json) contains
 the original **1,779-task** H13G encoder for base M1 / T8103. Its source MIL matches
 the earlier fast macOS benchmark, without extra input reshape nodes. The
@@ -16,11 +20,12 @@ captured ANE output and passed the independent HF encoder cosine gate of
 0.999. The new repacker reproduces the relocated command stream, constants,
 compiled coefficients, source MIL weight blob and position input **byte for
 byte**. [Proof and fixture hashes](../kernels/tiny-en-encoder-fast/proof.json)
-retain that evidence. Native Linux execution now matches the earlier Linux dense
+retain that evidence. The recorded native Linux result matches the earlier Linux dense
 wrapper bit for bit on all three clips, with one submission and four-worker
 readback. Exact cross-host output verification remains open because the Linux
-frontend regenerates different FP16 mel hashes. See the
-[Asahi receipt](../results/asahi-fast-20261007.json).
+frontend regenerates different FP16 mel hashes. The named Linux receipt,
+`whisper/results/asahi-fast-20261007.json`, is absent from this Mac checkout;
+its return and fresh Linux verification remain pending.
 
 **The fast graph fails the full-logit NRMSE < 0.005 gate on macOS too.**
 All 80 raw argmaxes match HF, but the same HF CPU decoder fed the original ANE
@@ -137,10 +142,17 @@ and is independently validated; its performance claims remain separate.
 
 ## Native transcription and CPU cross-K/V
 
-`asahi_full_encoder.cpp` supplies whisper.cpp's existing external-encoder API.
-Repacking also writes `layout.txt` with task count, buffer sizes and native input
-strides; the runner needs no JSON parser or runtime Python. It supports both
-captured packages and retains the four-worker readback.
+The older Linux measurements below used a native full-encoder adapter whose
+source is absent from this Mac checkout. The current
+`whisper/asahi_full_encoder.cpp` supplies the external-encoder API for the new
+multilingual tiny/base/small PR packages; use
+[its preparation and build commands](pr3905-packing.md#native-whispercpp-integration).
+It expects `native-layout.txt` and does not consume the older tiny.en layout
+described below. The earlier repacker writes `layout.txt` with task count,
+buffer sizes and native input strides. Its historical runner needed no JSON
+parser or runtime Python, supported both tiny.en captures and retained the
+four-worker readback. That source and build integration must be recovered
+before the historical commands below are runnable from this checkout.
 
 Prepare/build the isolated worktree as described in [asahi-native.md](asahi-native.md).
 For the faster CPU cross-K/V path, use Fedora's **OpenMP** OpenBLAS variant:
@@ -198,16 +210,21 @@ git -C whisper/vendor/whisper.cpp worktree add --detach \
   ../whisper-macos-matched 60c0be6ac8fa71b1a2ae2dd938a31a34a508e774
 whisper/.venv/bin/python -m whisper.scripts.prepare_native \
   --backend macos --source whisper/vendor/whisper-macos-matched
-whisper/.venv/bin/cmake -S whisper/vendor/whisper-macos-matched \
+WHISPER_CMAKE=whisper/.venv/bin/cmake
+if [ ! -x "$WHISPER_CMAKE" ]; then
+  WHISPER_CMAKE=$(whisper/.venv/bin/python -c 'import cmake; print(cmake.CMAKE_BIN_DIR + "/cmake")')
+fi
+"$WHISPER_CMAKE" -S whisper/vendor/whisper-macos-matched \
   -B whisper/build/macos-matched -DCMAKE_BUILD_TYPE=Release \
   -DANE_ROOT="$PWD" -DWHISPER_BUILD_TESTS=OFF -DGGML_METAL=OFF \
   -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=Apple -DGGML_LLAMAFILE=ON
-whisper/.venv/bin/cmake --build whisper/build/macos-matched --target whisper-cli -j4
+"$WHISPER_CMAKE" --build whisper/build/macos-matched --target whisper-cli -j4
 whisper/.venv/bin/python -m whisper.encoder_kernel \
   --checkpoint whisper/models/hf-tiny.en/model.safetensors \
   --output whisper/build/matched-encoder
 whisper/.venv/bin/python -m whisper.scripts.benchmark_native \
   --backend macos --build whisper/build/macos-matched \
+  --model whisper/models/ggml-tiny.en.bin \
   --payloads whisper/build/matched-encoder --dylib ANEFORGE_DISPATCH_DYLIB \
   --warmups 2 --runs 10 --rounds 2 --profile-stages --profile-matmul \
   --diagnostic-timings \
@@ -230,10 +247,25 @@ clock counters are requested in `todo.md`. `--profile-matmul` records all eight
 cross-K/V products, with allocation, FP16-to-FP32 conversion, thread setup and
 GEMM timings, dimensions/strides/transposes, the BLAS entry-point provider, and
 one representative activation input per context. Actual Apple BLAS thread count
-is reported as unknown when no query is available; a CPU sampling profile is
-still needed to identify the internal hot routine and establish NEON/AMX use.
+is reported as unknown when no query is available. The
+[Mac sampling follow-up](macos-followup.md) identifies the selected AMX BLAS
+kernel; [decoder profiling](decoder-profile.md) separately maps NEON vocabulary
+and attention/probability routines on all three clips.
 The shared instrumentation has been verified on Asahi without changing any of
 the 18 native mel, encoder or full-logit captures.
+
+The shared Mac run and CPU library ablations are now retained in
+[the Mac follow-up](macos-followup.md). OpenBLAS reproduces the recorded Asahi
+cross-K/V stage; the matched CPU reference passes all 80 vectors, while the
+original ANE graph's numerical failure stays explicit. An opt-in
+[cross-K/V fusion experiment](cross-kv-fusion.md) preserves the native outputs
+but has not established a whole-transcription speedup. The
+[native paired correction](native-precision.md) passes all 80 logit vectors on
+Mac. A [batched encoder attention follow-up](encoder-attention.md) preserves
+the full gate and improves paired whole time by about 16% in a same-binary
+comparison; paired ANE remains slower than CPU. Existing exact Whisper
+and Qwen arrays are staged locally; Linux replay and cross-host comparisons
+remain pending.
 
 Asahi verification after this refactor: all three CPU and ANE mel/encoder/full
 logit captures are byte identical to the preceding run; all 80 full vectors

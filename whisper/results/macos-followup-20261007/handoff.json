@@ -1,0 +1,201 @@
+{
+  "status": "verified_existing_captures",
+  "whisper": {
+    "checkpoint_sha256": "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad",
+    "fixtures": [
+      {
+        "audio": "jfk",
+        "source": "qwen35/local-results/whisper-fast-recapture-20261007-complete/jfk.npz",
+        "file": "jfk.npz",
+        "bytes": 6198103,
+        "sha256": "1de19c443cc969e78895258c60596d70e8fb89a03e8e70ba2d612ff0e0c82be0",
+        "arrays": {
+          "input00": {
+            "shape": [
+              1,
+              80,
+              1,
+              3000
+            ],
+            "strides": [
+              480000,
+              6000,
+              6000,
+              2
+            ],
+            "dtype": "<f2",
+            "sha256": "6b901b7dcbbf287d544281f33075f293e110e2045be417e227ff1dc51d1547da"
+          },
+          "input01": {
+            "shape": [
+              1,
+              384,
+              1,
+              1500
+            ],
+            "strides": [
+              1152000,
+              3000,
+              3000,
+              2
+            ],
+            "dtype": "<f2",
+            "sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+          },
+          "output": {
+            "shape": [
+              1500,
+              384
+            ],
+            "strides": [
+              768,
+              2
+            ],
+            "dtype": "<f2",
+            "sha256": "40288494a79f9ecce2dd7921081b6e7b8550150ff7902ef39497ce4cb9eb59df"
+          }
+        }
+      },
+      {
+        "audio": "jfk-first-5s",
+        "source": "qwen35/local-results/whisper-fast-recapture-20261007-complete/jfk-first-5s.npz",
+        "file": "jfk-first-5s.npz",
+        "bytes": 6125406,
+        "sha256": "feed31b461469329034396ea27d39453706a2c18b9514d2c1603708d599a410c",
+        "arrays": {
+          "input00": {
+            "shape": [
+              1,
+              80,
+              1,
+              3000
+            ],
+            "strides": [
+              480000,
+              6000,
+              6000,
+              2
+            ],
+            "dtype": "<f2",
+            "sha256": "63a32c860aafe2aca626b651c0528f0b51593dd758fcbe723bfcc737282f22e4"
+          },
+          "input01": {
+            "shape": [
+              1,
+              384,
+              1,
+              1500
+            ],
+            "strides": [
+              1152000,
+              3000,
+              3000,
+              2
+            ],
+            "dtype": "<f2",
+            "sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+          },
+          "output": {
+            "shape": [
+              1500,
+              384
+            ],
+            "strides": [
+              768,
+              2
+            ],
+            "dtype": "<f2",
+            "sha256": "f02406a35e32aea2623c957116752461711b2a153dcad9f3e98187738842331e"
+          }
+        }
+      },
+      {
+        "audio": "jfk-repeat",
+        "source": "qwen35/local-results/whisper-fast-recapture-20261007-complete/jfk-repeat.npz",
+        "file": "jfk-repeat.npz",
+        "bytes": 6196700,
+        "sha256": "6e2544073e185f6ef5f0c6a136dd632dba221063486d0591b1a6ff435ba51aa8",
+        "arrays": {
+          "input00": {
+            "shape": [
+              1,
+              80,
+              1,
+              3000
+            ],
+            "strides": [
+              480000,
+              6000,
+              6000,
+              2
+            ],
+            "dtype": "<f2",
+            "sha256": "aaa5138e387d0430b6755ef1310c0d52adcd66998796647845e1e89ce4bba949"
+          },
+          "input01": {
+            "shape": [
+              1,
+              384,
+              1,
+              1500
+            ],
+            "strides": [
+              1152000,
+              3000,
+              3000,
+              2
+            ],
+            "dtype": "<f2",
+            "sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+          },
+          "output": {
+            "shape": [
+              1500,
+              384
+            ],
+            "strides": [
+              768,
+              2
+            ],
+            "dtype": "<f2",
+            "sha256": "69d91f5eca44ea8016315724f06a62bd630e6bbbd6c490ce4b4682f2bf331651"
+          }
+        }
+      }
+    ],
+    "packing": "NPZ arrays contain contiguous logical FP16 values. Native mel channels use 6016-byte strides; position channels use 3008-byte strides; output rows use 768-byte strides. The checkpoint repacker supplies zero padding.",
+    "replay_command": "python -m whisper.scripts.benchmark_encoder --hf-model whisper/models/hf-tiny.en --backend asahi --fixtures HANDOFF/whisper-fixtures --compare-baseline --output whisper/build/exact-mac-fixture-replay.json"
+  },
+  "qwen": {
+    "model_revision": "c12202e4c764e559960827761566aaa1fd15a87a",
+    "model_sha256": "fa595349afb112763731f5d548a7af4baff7b6088c99f1f2cada29c89442870c",
+    "uzu_revision": "4d880766f5a4137b63d56c3924e7a2e403b0ccc6",
+    "oracle_sha256": "5202e9c40e3909f0b3fc500a67ad1a188346140f0d0e1143e597dc37c43a9275",
+    "prefixes": 23,
+    "layers": 24,
+    "vocabulary": 248320,
+    "same_host_bitwise_equal": true,
+    "files": [
+      {
+        "source": "qwen35/local-results/macos-followup-20261005T175748Z/vendor-rerun/uzu-macos-all.npz",
+        "file": "uzu-macos-all.npz",
+        "bytes": 11456730,
+        "sha256": "9995b79c770f2ad1f8ecb5f65091d5e314de75a54fd83465b8f949a4e56d265e"
+      },
+      {
+        "source": "qwen35/local-results/macos-followup-20261005T175748Z/vendor-rerun/native-macos-all.npz",
+        "file": "native-macos-all.npz",
+        "bytes": 11456730,
+        "sha256": "9995b79c770f2ad1f8ecb5f65091d5e314de75a54fd83465b8f949a4e56d265e"
+      },
+      {
+        "source": "qwen35/local-results/macos-followup-20261005T175748Z/vendor-rerun/report.json",
+        "file": "report.json",
+        "bytes": 164049,
+        "sha256": "9876fd49095974808b854b36402d1243d54d284001fd9df5ddde6f0c4fe58082"
+      }
+    ],
+    "comparison_command": "python -m qwen35.tools.compare_prefix_captures HANDOFF/qwen-oracles/uzu-macos-all.npz qwen35/local-results/asahi-todo-20261007/vendor-all-prefix/uzu-asahi-all.npz --output qwen35/local-results/cross-host.json"
+  },
+  "cross_host_verification": "pending Asahi hardware and its all-prefix arrays; not accessible from this Mac"
+}

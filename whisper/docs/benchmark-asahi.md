@@ -7,8 +7,8 @@ byte-identical to the model in the macOS benchmark. No new macOS compiler or
 kernel dump was used; the existing `qwen35` matrix stream supplies ANE execution.
 
 Whisper transcribes correctly here using CPU and the new native ANE projection
-route. **The current ANE projection route is slower than CPU and macOS's full
-ANE encoder.** Linux offloads the encoder's 24 dense projections and keeps
+route. **The measured ANE projection route is slower than its CPU reference.**
+Linux offloads the encoder's 24 dense projections and keeps
 convolutions, attention, normalizations, activations, cross-K/V preparation and
 the entire decoder on CPU. It does not replay the complete macOS encoder graph.
 
@@ -23,18 +23,19 @@ calls produced the expected transcript words.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Asahi CPU / CPU, corrected reference | 305.54 | 4.80 | 3.80 | 95.82 | **417.49** | **0.0380** |
 | Asahi ANE projections / CPU | 345.80 | 5.21 | 4.00 | 101.30 | **468.18** | **0.0426** |
-| macOS CPU / CPU, upstream | 107.47 | 2.18 | 1.49 | 38.02 | 159.76 | 0.0145 |
-| macOS full ANE encoder / CPU | 16.03 | 2.19 | 1.53 | 38.84 | 68.37 | 0.0062 |
 
-The macOS rows come from the retained [M1 warm benchmark](benchmark-macos.md).
-macOS uses Accelerate; this Linux build uses native ggml CPU without an external
-BLAS library, with its existing tiled matrix implementation enabled. The Linux
-reference also uses FP32 activations/K/V and the corrections described below.
-These rows measure the available implementations, rather than isolate the OS.
+Only accuracy-passing paths are included. The historical
+[M1 warm benchmark](benchmark-macos.md) did not establish this full-vector gate;
+its original fast ANE graph subsequently failed and its timings are excluded
+from this comparison. Current accuracy-qualified Mac and Asahi encoder results
+are listed in [Mac follow-up](macos-followup.md#accuracy-qualified-encoder-comparison).
+This Linux build uses native ggml CPU without an external BLAS library, with
+its existing tiled matrix implementation enabled. Both Linux paths use FP32
+activations/K/V and the corrections described below.
 
 The Asahi ANE hybrid takes 1.12 times the corrected CPU reference's whole
 latency. It transcribes the 11-second clip in 0.47 seconds, about 23.5
-times faster than real time. It is not on par with the retained macOS ANE route.
+times faster than real time. This experiment does not establish macOS parity.
 The current stream accepts 32 audio positions per submission, requiring
 **1,128 hardware submissions per encoder**. A full exported graph or larger
 batches could reduce dispatch and host overhead; that improvement is unmeasured.

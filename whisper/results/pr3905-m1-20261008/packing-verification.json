@@ -1,0 +1,92 @@
+{
+  "status": "PASS_BYTE_EXACT_REPACK",
+  "models": {
+    "tiny": {
+      "safetensors": {
+        "status": "PASS_BYTE_EXACT_REPACK",
+        "checkpoint_sha256": "18e8f966a26bc63a41de0c176356ec2a3e60f210b9e071670dbb9295f647d95d",
+        "hwx_sha256": "405a659494c647b85ea01813b330c97aadad5216d3bc80f0c1a2a1235a95ec42",
+        "positions_sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238",
+        "encoder_tensors": 67
+      },
+      "GGUF_F16": {
+        "status": "PASS_BYTE_EXACT_REPACK",
+        "checkpoint_sha256": "b29b38e00c0f086cc96998978718720c1bf244ea68f7568f48184e637900dc34",
+        "hwx_sha256": "405a659494c647b85ea01813b330c97aadad5216d3bc80f0c1a2a1235a95ec42",
+        "positions_sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238",
+        "encoder_tensors": 67
+      },
+      "GGML_F16": {
+        "status": "PASS_BYTE_EXACT_REPACK",
+        "checkpoint_sha256": "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21",
+        "hwx_sha256": "405a659494c647b85ea01813b330c97aadad5216d3bc80f0c1a2a1235a95ec42",
+        "positions_sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238",
+        "encoder_tensors": 67
+      },
+      "wrong_safetensors": "REJECTED_ENCODER_VALUE_MISMATCH"
+    },
+    "base": {
+      "safetensors": {
+        "status": "PASS_BYTE_EXACT_REPACK",
+        "checkpoint_sha256": "a456ce5c4b41e44fea10f6e4cd2b953e36a4135ef2657a406c733d2643273d83",
+        "hwx_sha256": "2106568eeecefcab3569d22b8ff3eed6d555a23dd6044c911c9f4998ee5af82d",
+        "positions_sha256": "9f47c17da903831a0ac200785875961a464997d0ed9a0f2e16f9dc2768f02902",
+        "encoder_tensors": 97
+      },
+      "GGUF_F16": {
+        "status": "PASS_BYTE_EXACT_REPACK",
+        "checkpoint_sha256": "877c0f9a93200b86b39cad452f5cd2f5e498d96f4a43fd3093546627a9b50164",
+        "hwx_sha256": "2106568eeecefcab3569d22b8ff3eed6d555a23dd6044c911c9f4998ee5af82d",
+        "positions_sha256": "9f47c17da903831a0ac200785875961a464997d0ed9a0f2e16f9dc2768f02902",
+        "encoder_tensors": 97
+      },
+      "GGML_F16": {
+        "status": "PASS_BYTE_EXACT_REPACK",
+        "checkpoint_sha256": "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe",
+        "hwx_sha256": "2106568eeecefcab3569d22b8ff3eed6d555a23dd6044c911c9f4998ee5af82d",
+        "positions_sha256": "9f47c17da903831a0ac200785875961a464997d0ed9a0f2e16f9dc2768f02902",
+        "encoder_tensors": 97
+      },
+      "wrong_safetensors": "REJECTED_ENCODER_VALUE_MISMATCH"
+    },
+    "small": {
+      "safetensors": {
+        "status": "PASS_BYTE_EXACT_REPACK",
+        "checkpoint_sha256": "188fcfb8ace0f7913ae1b380d8b6dc6041c0b82701451f3a71ef62718c0a31ac",
+        "hwx_sha256": "f281f0d9d618a119e2f6e44826f91978d4ddf5eccd5d89e6f21fa06c5f2b4d08",
+        "positions_sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384",
+        "encoder_tensors": 187
+      },
+      "GGUF_F16": {
+        "status": "PASS_BYTE_EXACT_REPACK",
+        "checkpoint_sha256": "bfecbc340f2e2a7f2d36df2f3eafbb15a45d8b2e7d016a0052b2a87b2e60f497",
+        "hwx_sha256": "f281f0d9d618a119e2f6e44826f91978d4ddf5eccd5d89e6f21fa06c5f2b4d08",
+        "positions_sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384",
+        "encoder_tensors": 187
+      },
+      "GGML_F16": {
+        "status": "PASS_BYTE_EXACT_REPACK",
+        "checkpoint_sha256": "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b",
+        "hwx_sha256": "f281f0d9d618a119e2f6e44826f91978d4ddf5eccd5d89e6f21fa06c5f2b4d08",
+        "positions_sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384",
+        "encoder_tensors": 187
+      },
+      "wrong_safetensors": "REJECTED_ENCODER_VALUE_MISMATCH"
+    }
+  },
+  "format_fixture_scope": "External F16 safetensors/GGUF containers made from the exact benchmark encoder tensors; full HF downloads and independently sourced GGUF files were not tested.",
+  "linux_hardware_validation": "pending",
+  "tiny_F32_and_CLI": {
+    "status": "PASS_BYTE_EXACT_REPACK",
+    "safetensors_sha256": "6b8380cfefc3bd7da87dadf41bcb2a284fc33ec3a73c343b6ab54f85d27ef7e5",
+    "gguf_sha256": "3f6eabe4929e2df7b4b419ff7b56cd8e86a48abe083de9e38428810bed7886c4",
+    "cli_status": {
+      "status": "PASS_BYTE_EXACT_REPACK",
+      "model": "tiny",
+      "hwx_sha256": "405a659494c647b85ea01813b330c97aadad5216d3bc80f0c1a2a1235a95ec42",
+      "bytes": 16826368,
+      "linux_hardware_validation": "pending"
+    },
+    "layout_written": true
+  }
+}

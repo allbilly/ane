@@ -1,0 +1,618 @@
+{
+  "format": "whisper-pr3905-replay-fixtures/v1",
+  "gate": {
+    "relative_l2": 0.005,
+    "allclose_rtol": 0.01,
+    "allclose_atol": 0.03
+  },
+  "models": {
+    "tiny": {
+      "hwx_sha256": "405a659494c647b85ea01813b330c97aadad5216d3bc80f0c1a2a1235a95ec42",
+      "mil_sha256": "e7320a59f2988a48add91afe6eda18beec615006cae1e613ff68041f6b2c91ed",
+      "weights_sha256": "c496452e00169b19d9cf24c071e78e703d32bb8158db837b28d61b42014c29b4",
+      "cases": [
+        {
+          "name": "zero-mel",
+          "file": "zero-mel.npz",
+          "bytes": 1785624,
+          "sha256": "1fb4e029f5f480758aaca71ec63cde72f2834e20ea0c73d62f2a68a851762db2",
+          "arrays": {
+            "mel": {
+              "shape": [
+                80,
+                3000
+              ],
+              "strides": [
+                6000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "baf1862a3e57a773bc10ba4920cffaa69d698720cf8c6ae105ae307533ba5a29"
+            },
+            "positions": {
+              "shape": [
+                384,
+                1500
+              ],
+              "strides": [
+                3000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+            },
+            "output": {
+              "shape": [
+                1500,
+                384
+              ],
+              "strides": [
+                768,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb"
+            }
+          },
+          "mel_source": "synthetic zeros, same as stock whisper-bench"
+        },
+        {
+          "name": "jfk",
+          "file": "jfk.npz",
+          "bytes": 1922817,
+          "sha256": "8a62061fa0256968d50209adb226653f8184068a2412449793bbd77555b4d402",
+          "arrays": {
+            "mel": {
+              "shape": [
+                80,
+                3000
+              ],
+              "strides": [
+                6000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "6b901b7dcbbf287d544281f33075f293e110e2045be417e227ff1dc51d1547da"
+            },
+            "positions": {
+              "shape": [
+                384,
+                1500
+              ],
+              "strides": [
+                3000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+            },
+            "output": {
+              "shape": [
+                1500,
+                384
+              ],
+              "strides": [
+                768,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "01733e2d3c4cb4c2c297e7e9e1aceb4f160babf7894b0bd9d2064d293af64795"
+            }
+          },
+          "mel_source": {
+            "file": "jfk.npz",
+            "file_sha256": "1de19c443cc969e78895258c60596d70e8fb89a03e8e70ba2d612ff0e0c82be0",
+            "mel_sha256": "6b901b7dcbbf287d544281f33075f293e110e2045be417e227ff1dc51d1547da"
+          }
+        },
+        {
+          "name": "jfk-first-5s",
+          "file": "jfk-first-5s.npz",
+          "bytes": 1849224,
+          "sha256": "bf9bf0d21eec37e8cba8e8daa6c639419f418c979eac451d0e5b749f01411eb1",
+          "arrays": {
+            "mel": {
+              "shape": [
+                80,
+                3000
+              ],
+              "strides": [
+                6000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "63a32c860aafe2aca626b651c0528f0b51593dd758fcbe723bfcc737282f22e4"
+            },
+            "positions": {
+              "shape": [
+                384,
+                1500
+              ],
+              "strides": [
+                3000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+            },
+            "output": {
+              "shape": [
+                1500,
+                384
+              ],
+              "strides": [
+                768,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "fe34c66dc572b444cd8c8d7775de5a3b007839d61ce0d62acdee70705cc62aac"
+            }
+          },
+          "mel_source": {
+            "file": "jfk-first-5s.npz",
+            "file_sha256": "feed31b461469329034396ea27d39453706a2c18b9514d2c1603708d599a410c",
+            "mel_sha256": "63a32c860aafe2aca626b651c0528f0b51593dd758fcbe723bfcc737282f22e4"
+          }
+        },
+        {
+          "name": "jfk-repeat",
+          "file": "jfk-repeat.npz",
+          "bytes": 1923992,
+          "sha256": "56607610e9a5f2760548b2f13b315c9bd3110742382fcea35760b1dade3bb91c",
+          "arrays": {
+            "mel": {
+              "shape": [
+                80,
+                3000
+              ],
+              "strides": [
+                6000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "aaa5138e387d0430b6755ef1310c0d52adcd66998796647845e1e89ce4bba949"
+            },
+            "positions": {
+              "shape": [
+                384,
+                1500
+              ],
+              "strides": [
+                3000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+            },
+            "output": {
+              "shape": [
+                1500,
+                384
+              ],
+              "strides": [
+                768,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "c462efc6d10b925a904b3db0b0f5cdd099392440bcd7480354de8a02c557a6c9"
+            }
+          },
+          "mel_source": {
+            "file": "jfk-repeat.npz",
+            "file_sha256": "6e2544073e185f6ef5f0c6a136dd632dba221063486d0591b1a6ff435ba51aa8",
+            "mel_sha256": "aaa5138e387d0430b6755ef1310c0d52adcd66998796647845e1e89ce4bba949"
+          }
+        }
+      ],
+      "zero_mel_matches_timed_output": true,
+      "zero_mel_repeat_bitwise_equal": true
+    },
+    "base": {
+      "hwx_sha256": "2106568eeecefcab3569d22b8ff3eed6d555a23dd6044c911c9f4998ee5af82d",
+      "mil_sha256": "47dde15e321dd57b6e2183508f35b464bc79705ce1b83f7d34327de4e2e23e12",
+      "weights_sha256": "1913fee30572e99d53fdffbf7cffcb9adf1b60a68b550d0254d9f2ce36847bab",
+      "cases": [
+        {
+          "name": "zero-mel",
+          "file": "zero-mel.npz",
+          "bytes": 2357002,
+          "sha256": "c303251ae1a12f7f0b653d9bd07dba51a25055956653901b9bada2f4adc9435a",
+          "arrays": {
+            "mel": {
+              "shape": [
+                80,
+                3000
+              ],
+              "strides": [
+                6000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "baf1862a3e57a773bc10ba4920cffaa69d698720cf8c6ae105ae307533ba5a29"
+            },
+            "positions": {
+              "shape": [
+                512,
+                1500
+              ],
+              "strides": [
+                3000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "9f47c17da903831a0ac200785875961a464997d0ed9a0f2e16f9dc2768f02902"
+            },
+            "output": {
+              "shape": [
+                1500,
+                512
+              ],
+              "strides": [
+                1024,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "d4e427c9dee2219036c78a38ab161d0d922e9343dc0aa6867456571bdd0f2a80"
+            }
+          },
+          "mel_source": "synthetic zeros, same as stock whisper-bench"
+        },
+        {
+          "name": "jfk",
+          "file": "jfk.npz",
+          "bytes": 2498251,
+          "sha256": "4dda96fcfb72a587a9d33608693410bd0d923a7050d8a5250360f7c9a57f7fd8",
+          "arrays": {
+            "mel": {
+              "shape": [
+                80,
+                3000
+              ],
+              "strides": [
+                6000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "6b901b7dcbbf287d544281f33075f293e110e2045be417e227ff1dc51d1547da"
+            },
+            "positions": {
+              "shape": [
+                512,
+                1500
+              ],
+              "strides": [
+                3000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "9f47c17da903831a0ac200785875961a464997d0ed9a0f2e16f9dc2768f02902"
+            },
+            "output": {
+              "shape": [
+                1500,
+                512
+              ],
+              "strides": [
+                1024,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "dcf9ca14f7efdf53292a36b908dea793cc1501173ae2d42a1c9c674abe074bf2"
+            }
+          },
+          "mel_source": {
+            "file": "jfk.npz",
+            "file_sha256": "1de19c443cc969e78895258c60596d70e8fb89a03e8e70ba2d612ff0e0c82be0",
+            "mel_sha256": "6b901b7dcbbf287d544281f33075f293e110e2045be417e227ff1dc51d1547da"
+          }
+        },
+        {
+          "name": "jfk-first-5s",
+          "file": "jfk-first-5s.npz",
+          "bytes": 2425852,
+          "sha256": "8a33956b5404af50b4f49d494928dc979a58c42ae4cae46fcf0a52b381192db6",
+          "arrays": {
+            "mel": {
+              "shape": [
+                80,
+                3000
+              ],
+              "strides": [
+                6000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "63a32c860aafe2aca626b651c0528f0b51593dd758fcbe723bfcc737282f22e4"
+            },
+            "positions": {
+              "shape": [
+                512,
+                1500
+              ],
+              "strides": [
+                3000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "9f47c17da903831a0ac200785875961a464997d0ed9a0f2e16f9dc2768f02902"
+            },
+            "output": {
+              "shape": [
+                1500,
+                512
+              ],
+              "strides": [
+                1024,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "b8e8be6cb8987e074d137295584dece447746fc55c0a4f9e7be01d7b742bbfa5"
+            }
+          },
+          "mel_source": {
+            "file": "jfk-first-5s.npz",
+            "file_sha256": "feed31b461469329034396ea27d39453706a2c18b9514d2c1603708d599a410c",
+            "mel_sha256": "63a32c860aafe2aca626b651c0528f0b51593dd758fcbe723bfcc737282f22e4"
+          }
+        },
+        {
+          "name": "jfk-repeat",
+          "file": "jfk-repeat.npz",
+          "bytes": 2498555,
+          "sha256": "5c9af8e3f182dc726ec8fcdf285e8c2e48ba7cad20c9b7583c5c7d75b17c56f5",
+          "arrays": {
+            "mel": {
+              "shape": [
+                80,
+                3000
+              ],
+              "strides": [
+                6000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "aaa5138e387d0430b6755ef1310c0d52adcd66998796647845e1e89ce4bba949"
+            },
+            "positions": {
+              "shape": [
+                512,
+                1500
+              ],
+              "strides": [
+                3000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "9f47c17da903831a0ac200785875961a464997d0ed9a0f2e16f9dc2768f02902"
+            },
+            "output": {
+              "shape": [
+                1500,
+                512
+              ],
+              "strides": [
+                1024,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "769a2346276f7daba1d844720ad8254d8d30013ddebab09c70a871a0c62622a5"
+            }
+          },
+          "mel_source": {
+            "file": "jfk-repeat.npz",
+            "file_sha256": "6e2544073e185f6ef5f0c6a136dd632dba221063486d0591b1a6ff435ba51aa8",
+            "mel_sha256": "aaa5138e387d0430b6755ef1310c0d52adcd66998796647845e1e89ce4bba949"
+          }
+        }
+      ],
+      "zero_mel_matches_timed_output": true,
+      "zero_mel_repeat_bitwise_equal": true
+    },
+    "small": {
+      "hwx_sha256": "f281f0d9d618a119e2f6e44826f91978d4ddf5eccd5d89e6f21fa06c5f2b4d08",
+      "mil_sha256": "df4be42fe1f3fb37f279af5ab0016184369b925fb59dfae5fc46636854532237",
+      "weights_sha256": "fb39ffbc5d0e78bab48551b73ce73447e5558c84794b68b0066ba854be9f6159",
+      "cases": [
+        {
+          "name": "zero-mel",
+          "file": "zero-mel.npz",
+          "bytes": 3484731,
+          "sha256": "8619fa39417c0128132d866f5d1c7dbd24b171cceeb03f3949f746ee1ca1eb1e",
+          "arrays": {
+            "mel": {
+              "shape": [
+                80,
+                3000
+              ],
+              "strides": [
+                6000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "baf1862a3e57a773bc10ba4920cffaa69d698720cf8c6ae105ae307533ba5a29"
+            },
+            "positions": {
+              "shape": [
+                768,
+                1500
+              ],
+              "strides": [
+                3000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384"
+            },
+            "output": {
+              "shape": [
+                1500,
+                768
+              ],
+              "strides": [
+                1536,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013"
+            }
+          },
+          "mel_source": "synthetic zeros, same as stock whisper-bench"
+        },
+        {
+          "name": "jfk",
+          "file": "jfk.npz",
+          "bytes": 3615856,
+          "sha256": "2344ea7668f55f0d264139792e420f6a3b1d4dbcd25443405e686e0f1b2423e7",
+          "arrays": {
+            "mel": {
+              "shape": [
+                80,
+                3000
+              ],
+              "strides": [
+                6000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "6b901b7dcbbf287d544281f33075f293e110e2045be417e227ff1dc51d1547da"
+            },
+            "positions": {
+              "shape": [
+                768,
+                1500
+              ],
+              "strides": [
+                3000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384"
+            },
+            "output": {
+              "shape": [
+                1500,
+                768
+              ],
+              "strides": [
+                1536,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "c3e3eba1f7b3d7ab501950a0b3dbdd9afebf7f345f034ec15ad99447e16c6048"
+            }
+          },
+          "mel_source": {
+            "file": "jfk.npz",
+            "file_sha256": "1de19c443cc969e78895258c60596d70e8fb89a03e8e70ba2d612ff0e0c82be0",
+            "mel_sha256": "6b901b7dcbbf287d544281f33075f293e110e2045be417e227ff1dc51d1547da"
+          }
+        },
+        {
+          "name": "jfk-first-5s",
+          "file": "jfk-first-5s.npz",
+          "bytes": 3542054,
+          "sha256": "65d6585d57b69b6127a65f38f3ca40026b76df5447e571b55334401a19ae2309",
+          "arrays": {
+            "mel": {
+              "shape": [
+                80,
+                3000
+              ],
+              "strides": [
+                6000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "63a32c860aafe2aca626b651c0528f0b51593dd758fcbe723bfcc737282f22e4"
+            },
+            "positions": {
+              "shape": [
+                768,
+                1500
+              ],
+              "strides": [
+                3000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384"
+            },
+            "output": {
+              "shape": [
+                1500,
+                768
+              ],
+              "strides": [
+                1536,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "88ff5cab1760ea6c399c338056d8d4f61ddd1ac5b81d39b9f8850603ee303576"
+            }
+          },
+          "mel_source": {
+            "file": "jfk-first-5s.npz",
+            "file_sha256": "feed31b461469329034396ea27d39453706a2c18b9514d2c1603708d599a410c",
+            "mel_sha256": "63a32c860aafe2aca626b651c0528f0b51593dd758fcbe723bfcc737282f22e4"
+          }
+        },
+        {
+          "name": "jfk-repeat",
+          "file": "jfk-repeat.npz",
+          "bytes": 3616755,
+          "sha256": "080c2e86a16d792ac28accd15a9497ad5422458e6c307b56a62d0db37cd37c5c",
+          "arrays": {
+            "mel": {
+              "shape": [
+                80,
+                3000
+              ],
+              "strides": [
+                6000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "aaa5138e387d0430b6755ef1310c0d52adcd66998796647845e1e89ce4bba949"
+            },
+            "positions": {
+              "shape": [
+                768,
+                1500
+              ],
+              "strides": [
+                3000,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384"
+            },
+            "output": {
+              "shape": [
+                1500,
+                768
+              ],
+              "strides": [
+                1536,
+                2
+              ],
+              "dtype": "<f2",
+              "sha256": "2b6875b823ff2b260c44caca1c31730277769ee22ae9b34a94013bdb9efafa50"
+            }
+          },
+          "mel_source": {
+            "file": "jfk-repeat.npz",
+            "file_sha256": "6e2544073e185f6ef5f0c6a136dd632dba221063486d0591b1a6ff435ba51aa8",
+            "mel_sha256": "aaa5138e387d0430b6755ef1310c0d52adcd66998796647845e1e89ce4bba949"
+          }
+        }
+      ],
+      "zero_mel_matches_timed_output": true,
+      "zero_mel_repeat_bitwise_equal": true
+    }
+  },
+  "source_handoff_sha256": "73fcb5428eebc7169f03e99837628ad91a39ebe2a99da75fda030c940d0b3a77",
+  "source_direct_dispatch_sha256": "88a2956c4720864bff1cd8723a9e9aa20889dc54bdc7cb6388d89a5a4decc5d4",
+  "runtime_sha256": "017fbc08675e8773e73f5c0c44f6e6b040c14257342fdf4c0f19914044008587",
+  "scope": "Mac E5RT outputs of exact timed PR fast graphs; encoder-only replay gate, not strict decoder accuracy",
+  "hardware_replay": "pending Asahi; offline HWX and E5RT compile the same source separately"
+}

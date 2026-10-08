@@ -1,0 +1,2353 @@
+(lldb) target create /Users/yeren/ane/whisper/build/macos-decoder-profile/bin/benchmark-whisper
+Current executable set to '/Users/yeren/ane/whisper/build/macos-decoder-profile/bin/benchmark-whisper' (arm64).
+(lldb) image list -u -h -f libggml-cpu.0.dylib libwhisper.1.dylib libsystem_m.dylib
+[  0] 031D09F5-180E-3E79-8B6E-609B530FB3F4 0x0000000000000000 /Users/yeren/ane/whisper/build/macos-decoder-profile/bin/libggml-cpu.0.dylib
+[  1] 0564E61D-926D-3B48-939C-1F36907D45A3 0x0000000000000000 /Users/yeren/ane/whisper/build/macos-decoder-profile/bin/libwhisper.1.dylib
+[  2] A3FB340F-3ED5-30F4-8B64-9D5860F64D35 0x00000001913fa000 /usr/lib/system/libsystem_m.dylib
+(lldb) image lookup -n whisper_profile_vocabulary_token
+1 match found in /Users/yeren/ane/whisper/build/macos-decoder-profile/bin/libggml-cpu.0.dylib:
+        Address: libggml-cpu.0.dylib[0x00000000000073e4] (libggml-cpu.0.dylib.__TEXT.__text + 22612)
+        Summary: libggml-cpu.0.dylib`whisper_profile_vocabulary_token
+(lldb) disassemble -b -n whisper_profile_vocabulary_token
+libggml-cpu.0.dylib`whisper_profile_vocabulary_token:
+libggml-cpu.0.dylib[0x73e4] <+0>:  0xa9be4ff4   stp    x20, x19, [sp, #-0x20]!
+libggml-cpu.0.dylib[0x73e8] <+4>:  0xa9017bfd   stp    x29, x30, [sp, #0x10]
+libggml-cpu.0.dylib[0x73ec] <+8>:  0x910043fd   add    x29, sp, #0x10
+libggml-cpu.0.dylib[0x73f0] <+12>: 0xaa0103f3   mov    x19, x1
+libggml-cpu.0.dylib[0x73f4] <+16>: 0xaa0003f4   mov    x20, x0
+libggml-cpu.0.dylib[0x73f8] <+20>: 0x9400031e   bl     0x8070                    ; whisper_profile_vocabulary_metadata
+libggml-cpu.0.dylib[0x73fc] <+24>: 0xaa1403e0   mov    x0, x20
+libggml-cpu.0.dylib[0x7400] <+28>: 0xaa1303e1   mov    x1, x19
+libggml-cpu.0.dylib[0x7404] <+32>: 0x97fff121   bl     0x3888                    ; ggml_compute_forward_mul_mat
+libggml-cpu.0.dylib[0x7408] <+36>: 0xd503201f   nop    
+libggml-cpu.0.dylib[0x740c] <+40>: 0xa9417bfd   ldp    x29, x30, [sp, #0x10]
+libggml-cpu.0.dylib[0x7410] <+44>: 0xa8c24ff4   ldp    x20, x19, [sp], #0x20
+libggml-cpu.0.dylib[0x7414] <+48>: 0xd65f03c0   ret    
+(lldb) image lookup -n whisper_profile_vocabulary_prompt
+1 match found in /Users/yeren/ane/whisper/build/macos-decoder-profile/bin/libggml-cpu.0.dylib:
+        Address: libggml-cpu.0.dylib[0x0000000000007418] (libggml-cpu.0.dylib.__TEXT.__text + 22664)
+        Summary: libggml-cpu.0.dylib`whisper_profile_vocabulary_prompt
+(lldb) disassemble -b -n whisper_profile_vocabulary_prompt
+libggml-cpu.0.dylib`whisper_profile_vocabulary_prompt:
+libggml-cpu.0.dylib[0x7418] <+0>:  0xa9be4ff4   stp    x20, x19, [sp, #-0x20]!
+libggml-cpu.0.dylib[0x741c] <+4>:  0xa9017bfd   stp    x29, x30, [sp, #0x10]
+libggml-cpu.0.dylib[0x7420] <+8>:  0x910043fd   add    x29, sp, #0x10
+libggml-cpu.0.dylib[0x7424] <+12>: 0xaa0103f3   mov    x19, x1
+libggml-cpu.0.dylib[0x7428] <+16>: 0xaa0003f4   mov    x20, x0
+libggml-cpu.0.dylib[0x742c] <+20>: 0x94000311   bl     0x8070                    ; whisper_profile_vocabulary_metadata
+libggml-cpu.0.dylib[0x7430] <+24>: 0xaa1403e0   mov    x0, x20
+libggml-cpu.0.dylib[0x7434] <+28>: 0xaa1303e1   mov    x1, x19
+libggml-cpu.0.dylib[0x7438] <+32>: 0x97fff114   bl     0x3888                    ; ggml_compute_forward_mul_mat
+libggml-cpu.0.dylib[0x743c] <+36>: 0xa9417bfd   ldp    x29, x30, [sp, #0x10]
+libggml-cpu.0.dylib[0x7440] <+40>: 0xa8c24ff4   ldp    x20, x19, [sp], #0x20
+libggml-cpu.0.dylib[0x7444] <+44>: 0xd65f03c0   ret    
+(lldb) image lookup -n whisper_compute_logprobs
+1 match found in /Users/yeren/ane/whisper/build/macos-decoder-profile/bin/libwhisper.1.dylib:
+        Address: libwhisper.1.dylib[0x0000000000015430] (libwhisper.1.dylib.__TEXT.__text + 78000)
+        Summary: libwhisper.1.dylib`whisper_compute_logprobs(std::__1::vector<float, std::__1::allocator<float>> const&, int, std::__1::vector<float, std::__1::allocator<float>>&)
+(lldb) disassemble -b -n whisper_compute_logprobs
+libwhisper.1.dylib`whisper_compute_logprobs:
+libwhisper.1.dylib[0x15430] <+0>:   0x6dba2beb   stp    d11, d10, [sp, #-0x60]!
+libwhisper.1.dylib[0x15434] <+4>:   0x6d0123e9   stp    d9, d8, [sp, #0x10]
+libwhisper.1.dylib[0x15438] <+8>:   0xa9025ff8   stp    x24, x23, [sp, #0x20]
+libwhisper.1.dylib[0x1543c] <+12>:  0xa90357f6   stp    x22, x21, [sp, #0x30]
+libwhisper.1.dylib[0x15440] <+16>:  0xa9044ff4   stp    x20, x19, [sp, #0x40]
+libwhisper.1.dylib[0x15444] <+20>:  0xa9057bfd   stp    x29, x30, [sp, #0x50]
+libwhisper.1.dylib[0x15448] <+24>:  0x910143fd   add    x29, sp, #0x50
+libwhisper.1.dylib[0x1544c] <+28>:  0xaa0303f3   mov    x19, x3
+libwhisper.1.dylib[0x15450] <+32>:  0xaa0203f5   mov    x21, x2
+libwhisper.1.dylib[0x15454] <+36>:  0xaa0003f4   mov    x20, x0
+libwhisper.1.dylib[0x15458] <+40>:  0xaa0003e8   mov    x8, x0
+libwhisper.1.dylib[0x1545c] <+44>:  0xeb01001f   cmp    x0, x1
+libwhisper.1.dylib[0x15460] <+48>:  0x540001e0   b.eq   0x1549c                   ; <+108>
+libwhisper.1.dylib[0x15464] <+52>:  0x91001289   add    x9, x20, #0x4
+libwhisper.1.dylib[0x15468] <+56>:  0xaa1403e8   mov    x8, x20
+libwhisper.1.dylib[0x1546c] <+60>:  0xeb01013f   cmp    x9, x1
+libwhisper.1.dylib[0x15470] <+64>:  0x54000160   b.eq   0x1549c                   ; <+108>
+libwhisper.1.dylib[0x15474] <+68>:  0xbd400280   ldr    s0, [x20]
+libwhisper.1.dylib[0x15478] <+72>:  0xaa1403e8   mov    x8, x20
+libwhisper.1.dylib[0x1547c] <+76>:  0xaa0903ea   mov    x10, x9
+libwhisper.1.dylib[0x15480] <+80>:  0xbc404541   ldr    s1, [x10], #0x4
+libwhisper.1.dylib[0x15484] <+84>:  0x1e212000   fcmp   s0, s1
+libwhisper.1.dylib[0x15488] <+88>:  0x1e204c20   fcsel  s0, s1, s0, mi
+libwhisper.1.dylib[0x1548c] <+92>:  0x9a884128   csel   x8, x9, x8, mi
+libwhisper.1.dylib[0x15490] <+96>:  0xaa0a03e9   mov    x9, x10
+libwhisper.1.dylib[0x15494] <+100>: 0xeb01015f   cmp    x10, x1
+libwhisper.1.dylib[0x15498] <+104>: 0x54ffff41   b.ne   0x15480                   ; <+80>
+libwhisper.1.dylib[0x1549c] <+108>: 0x710006bf   cmp    w21, #0x1
+libwhisper.1.dylib[0x154a0] <+112>: 0x54000ccb   b.lt   0x15638                   ; <+520>
+libwhisper.1.dylib[0x154a4] <+116>: 0xbd400109   ldr    s9, [x8]
+libwhisper.1.dylib[0x154a8] <+120>: 0x2a1503f6   mov    w22, w21
+libwhisper.1.dylib[0x154ac] <+124>: 0x6f00e408   movi.2d v8, #0000000000000000
+libwhisper.1.dylib[0x154b0] <+128>: 0x52bff008   mov    w8, #-0x800000            ; =-8388608 
+libwhisper.1.dylib[0x154b4] <+132>: 0x1e27010a   fmov   s10, w8
+libwhisper.1.dylib[0x154b8] <+136>: 0xaa1603f7   mov    x23, x22
+libwhisper.1.dylib[0x154bc] <+140>: 0xaa1403f8   mov    x24, x20
+libwhisper.1.dylib[0x154c0] <+144>: 0x14000003   b      0x154cc                   ; <+156>
+libwhisper.1.dylib[0x154c4] <+148>: 0xf10006f7   subs   x23, x23, #0x1
+libwhisper.1.dylib[0x154c8] <+152>: 0x54000120   b.eq   0x154ec                   ; <+188>
+libwhisper.1.dylib[0x154cc] <+156>: 0xbc404700   ldr    s0, [x24], #0x4
+libwhisper.1.dylib[0x154d0] <+160>: 0x1e2a2000   fcmp   s0, s10
+libwhisper.1.dylib[0x154d4] <+164>: 0x54ffff80   b.eq   0x154c4                   ; <+148>
+libwhisper.1.dylib[0x154d8] <+168>: 0x54ffff66   b.vs   0x154c4                   ; <+148>
+libwhisper.1.dylib[0x154dc] <+172>: 0x1e293800   fsub   s0, s0, s9
+libwhisper.1.dylib[0x154e0] <+176>: 0x9400aa40   bl     0x3fde0                   ; symbol stub for: expf
+libwhisper.1.dylib[0x154e4] <+180>: 0x1e202908   fadd   s8, s8, s0
+libwhisper.1.dylib[0x154e8] <+184>: 0x17fffff7   b      0x154c4                   ; <+148>
+libwhisper.1.dylib[0x154ec] <+188>: 0x4ea81d00   mov.16b v0, v8
+libwhisper.1.dylib[0x154f0] <+192>: 0x9400ab8c   bl     0x40320                   ; symbol stub for: logf
+libwhisper.1.dylib[0x154f4] <+196>: 0xd2800008   mov    x8, #0x0                  ; =0 
+libwhisper.1.dylib[0x154f8] <+200>: 0x1e202920   fadd   s0, s9, s0
+libwhisper.1.dylib[0x154fc] <+204>: 0x710012bf   cmp    w21, #0x4
+libwhisper.1.dylib[0x15500] <+208>: 0x54000803   b.lo   0x15600                   ; <+464>
+libwhisper.1.dylib[0x15504] <+212>: 0xcb140269   sub    x9, x19, x20
+libwhisper.1.dylib[0x15508] <+216>: 0xf100fd3f   cmp    x9, #0x3f
+libwhisper.1.dylib[0x1550c] <+220>: 0x540007a9   b.ls   0x15600                   ; <+464>
+libwhisper.1.dylib[0x15510] <+224>: 0x710042bf   cmp    w21, #0x10
+libwhisper.1.dylib[0x15514] <+228>: 0x54000062   b.hs   0x15520                   ; <+240>
+libwhisper.1.dylib[0x15518] <+232>: 0xd2800008   mov    x8, #0x0                  ; =0 
+libwhisper.1.dylib[0x1551c] <+236>: 0x14000026   b      0x155b4                   ; <+388>
+libwhisper.1.dylib[0x15520] <+240>: 0x927c6ac8   and    x8, x22, #0x7ffffff0
+libwhisper.1.dylib[0x15524] <+244>: 0x4e040401   dup.4s v1, v0[0]
+libwhisper.1.dylib[0x15528] <+248>: 0x91008289   add    x9, x20, #0x20
+libwhisper.1.dylib[0x1552c] <+252>: 0x9100826a   add    x10, x19, #0x20
+libwhisper.1.dylib[0x15530] <+256>: 0x6f03d7e2   mvni.4s v2, #0x7f, msl #16
+libwhisper.1.dylib[0x15534] <+260>: 0xaa0803eb   mov    x11, x8
+libwhisper.1.dylib[0x15538] <+264>: 0xad7f1123   ldp    q3, q4, [x9, #-0x20]
+libwhisper.1.dylib[0x1553c] <+268>: 0xacc21925   ldp    q5, q6, [x9], #0x40
+libwhisper.1.dylib[0x15540] <+272>: 0x6ea2e467   fcmgt.4s v7, v3, v2
+libwhisper.1.dylib[0x15544] <+276>: 0x6ea3e450   fcmgt.4s v16, v2, v3
+libwhisper.1.dylib[0x15548] <+280>: 0x4ea71e07   orr.16b v7, v16, v7
+libwhisper.1.dylib[0x1554c] <+284>: 0x6ea2e490   fcmgt.4s v16, v4, v2
+libwhisper.1.dylib[0x15550] <+288>: 0x6ea4e451   fcmgt.4s v17, v2, v4
+libwhisper.1.dylib[0x15554] <+292>: 0x4eb01e30   orr.16b v16, v17, v16
+libwhisper.1.dylib[0x15558] <+296>: 0x6ea2e4b1   fcmgt.4s v17, v5, v2
+libwhisper.1.dylib[0x1555c] <+300>: 0x6ea5e452   fcmgt.4s v18, v2, v5
+libwhisper.1.dylib[0x15560] <+304>: 0x4eb11e51   orr.16b v17, v18, v17
+libwhisper.1.dylib[0x15564] <+308>: 0x6ea2e4d2   fcmgt.4s v18, v6, v2
+libwhisper.1.dylib[0x15568] <+312>: 0x6ea6e453   fcmgt.4s v19, v2, v6
+libwhisper.1.dylib[0x1556c] <+316>: 0x4eb21e72   orr.16b v18, v19, v18
+libwhisper.1.dylib[0x15570] <+320>: 0x4ea1d463   fsub.4s v3, v3, v1
+libwhisper.1.dylib[0x15574] <+324>: 0x4ea1d484   fsub.4s v4, v4, v1
+libwhisper.1.dylib[0x15578] <+328>: 0x4ea1d4a5   fsub.4s v5, v5, v1
+libwhisper.1.dylib[0x1557c] <+332>: 0x4ea1d4c6   fsub.4s v6, v6, v1
+libwhisper.1.dylib[0x15580] <+336>: 0x6ee71c43   bif.16b v3, v2, v7
+libwhisper.1.dylib[0x15584] <+340>: 0x6ef01c44   bif.16b v4, v2, v16
+libwhisper.1.dylib[0x15588] <+344>: 0x6ef11c45   bif.16b v5, v2, v17
+libwhisper.1.dylib[0x1558c] <+348>: 0xad3f1143   stp    q3, q4, [x10, #-0x20]
+libwhisper.1.dylib[0x15590] <+352>: 0x4eb21e43   mov.16b v3, v18
+libwhisper.1.dylib[0x15594] <+356>: 0x6e621cc3   bsl.16b v3, v6, v2
+libwhisper.1.dylib[0x15598] <+360>: 0xac820d45   stp    q5, q3, [x10], #0x40
+libwhisper.1.dylib[0x1559c] <+364>: 0xf100416b   subs   x11, x11, #0x10
+libwhisper.1.dylib[0x155a0] <+368>: 0x54fffcc1   b.ne   0x15538                   ; <+264>
+libwhisper.1.dylib[0x155a4] <+372>: 0xeb16011f   cmp    x8, x22
+libwhisper.1.dylib[0x155a8] <+376>: 0x54000480   b.eq   0x15638                   ; <+520>
+libwhisper.1.dylib[0x155ac] <+380>: 0xf27e06df   tst    x22, #0xc
+libwhisper.1.dylib[0x155b0] <+384>: 0x54000280   b.eq   0x15600                   ; <+464>
+libwhisper.1.dylib[0x155b4] <+388>: 0xaa0803ea   mov    x10, x8
+libwhisper.1.dylib[0x155b8] <+392>: 0x4e040401   dup.4s v1, v0[0]
+libwhisper.1.dylib[0x155bc] <+396>: 0x927e72c8   and    x8, x22, #0x7ffffffc
+libwhisper.1.dylib[0x155c0] <+400>: 0xcb080149   sub    x9, x10, x8
+libwhisper.1.dylib[0x155c4] <+404>: 0xd37ef54b   lsl    x11, x10, #2
+libwhisper.1.dylib[0x155c8] <+408>: 0x8b0b026a   add    x10, x19, x11
+libwhisper.1.dylib[0x155cc] <+412>: 0x8b0b028b   add    x11, x20, x11
+libwhisper.1.dylib[0x155d0] <+416>: 0x6f03d7e2   mvni.4s v2, #0x7f, msl #16
+libwhisper.1.dylib[0x155d4] <+420>: 0x3cc10563   ldr    q3, [x11], #0x10
+libwhisper.1.dylib[0x155d8] <+424>: 0x6ea2e464   fcmgt.4s v4, v3, v2
+libwhisper.1.dylib[0x155dc] <+428>: 0x6ea3e445   fcmgt.4s v5, v2, v3
+libwhisper.1.dylib[0x155e0] <+432>: 0x4ea41ca4   orr.16b v4, v5, v4
+libwhisper.1.dylib[0x155e4] <+436>: 0x4ea1d463   fsub.4s v3, v3, v1
+libwhisper.1.dylib[0x155e8] <+440>: 0x6ee41c43   bif.16b v3, v2, v4
+libwhisper.1.dylib[0x155ec] <+444>: 0x3c810543   str    q3, [x10], #0x10
+libwhisper.1.dylib[0x155f0] <+448>: 0xb1001129   adds   x9, x9, #0x4
+libwhisper.1.dylib[0x155f4] <+452>: 0x54ffff01   b.ne   0x155d4                   ; <+420>
+libwhisper.1.dylib[0x155f8] <+456>: 0xeb16011f   cmp    x8, x22
+libwhisper.1.dylib[0x155fc] <+460>: 0x540001e0   b.eq   0x15638                   ; <+520>
+libwhisper.1.dylib[0x15600] <+464>: 0xd37ef50a   lsl    x10, x8, #2
+libwhisper.1.dylib[0x15604] <+468>: 0x8b0a0269   add    x9, x19, x10
+libwhisper.1.dylib[0x15608] <+472>: 0x8b0a028a   add    x10, x20, x10
+libwhisper.1.dylib[0x1560c] <+476>: 0xcb0802c8   sub    x8, x22, x8
+libwhisper.1.dylib[0x15610] <+480>: 0x52bff00b   mov    w11, #-0x800000           ; =-8388608 
+libwhisper.1.dylib[0x15614] <+484>: 0x1e270161   fmov   s1, w11
+libwhisper.1.dylib[0x15618] <+488>: 0xbc404542   ldr    s2, [x10], #0x4
+libwhisper.1.dylib[0x1561c] <+492>: 0x1e203843   fsub   s3, s2, s0
+libwhisper.1.dylib[0x15620] <+496>: 0x1e212040   fcmp   s2, s1
+libwhisper.1.dylib[0x15624] <+500>: 0x1e230c22   fcsel  s2, s1, s3, eq
+libwhisper.1.dylib[0x15628] <+504>: 0x1e226c22   fcsel  s2, s1, s2, vs
+libwhisper.1.dylib[0x1562c] <+508>: 0xbc004522   str    s2, [x9], #0x4
+libwhisper.1.dylib[0x15630] <+512>: 0xf1000508   subs   x8, x8, #0x1
+libwhisper.1.dylib[0x15634] <+516>: 0x54ffff21   b.ne   0x15618                   ; <+488>
+libwhisper.1.dylib[0x15638] <+520>: 0xa9457bfd   ldp    x29, x30, [sp, #0x50]
+libwhisper.1.dylib[0x1563c] <+524>: 0xa9444ff4   ldp    x20, x19, [sp, #0x40]
+libwhisper.1.dylib[0x15640] <+528>: 0xa94357f6   ldp    x22, x21, [sp, #0x30]
+libwhisper.1.dylib[0x15644] <+532>: 0xa9425ff8   ldp    x24, x23, [sp, #0x20]
+libwhisper.1.dylib[0x15648] <+536>: 0x6d4123e9   ldp    d9, d8, [sp, #0x10]
+libwhisper.1.dylib[0x1564c] <+540>: 0x6cc62beb   ldp    d11, d10, [sp], #0x60
+libwhisper.1.dylib[0x15650] <+544>: 0xd65f03c0   ret    
+(lldb) image lookup -n whisper_compute_probs
+1 match found in /Users/yeren/ane/whisper/build/macos-decoder-profile/bin/libwhisper.1.dylib:
+        Address: libwhisper.1.dylib[0x0000000000015654] (libwhisper.1.dylib.__TEXT.__text + 78548)
+        Summary: libwhisper.1.dylib`whisper_compute_probs(std::__1::vector<float, std::__1::allocator<float>> const&, int, std::__1::vector<float, std::__1::allocator<float>> const&, std::__1::vector<float, std::__1::allocator<float>>&)
+(lldb) disassemble -b -n whisper_compute_probs
+libwhisper.1.dylib`whisper_compute_probs:
+libwhisper.1.dylib[0x15654] <+0>:   0x7100043f   cmp    w1, #0x1
+libwhisper.1.dylib[0x15658] <+4>:   0x5400038b   b.lt   0x156c8                   ; <+116>
+libwhisper.1.dylib[0x1565c] <+8>:   0x6dbc23e9   stp    d9, d8, [sp, #-0x40]!
+libwhisper.1.dylib[0x15660] <+12>:  0xa90157f6   stp    x22, x21, [sp, #0x10]
+libwhisper.1.dylib[0x15664] <+16>:  0xa9024ff4   stp    x20, x19, [sp, #0x20]
+libwhisper.1.dylib[0x15668] <+20>:  0xa9037bfd   stp    x29, x30, [sp, #0x30]
+libwhisper.1.dylib[0x1566c] <+24>:  0x9100c3fd   add    x29, sp, #0x30
+libwhisper.1.dylib[0x15670] <+28>:  0xaa0303f3   mov    x19, x3
+libwhisper.1.dylib[0x15674] <+32>:  0xaa0203f4   mov    x20, x2
+libwhisper.1.dylib[0x15678] <+36>:  0xaa0003f5   mov    x21, x0
+libwhisper.1.dylib[0x1567c] <+40>:  0x2a0103f6   mov    w22, w1
+libwhisper.1.dylib[0x15680] <+44>:  0x52bff008   mov    w8, #-0x800000            ; =-8388608 
+libwhisper.1.dylib[0x15684] <+48>:  0x1e270108   fmov   s8, w8
+libwhisper.1.dylib[0x15688] <+52>:  0x14000005   b      0x1569c                   ; <+72>
+libwhisper.1.dylib[0x1568c] <+56>:  0xbc004660   str    s0, [x19], #0x4
+libwhisper.1.dylib[0x15690] <+60>:  0x91001294   add    x20, x20, #0x4
+libwhisper.1.dylib[0x15694] <+64>:  0xf10006d6   subs   x22, x22, #0x1
+libwhisper.1.dylib[0x15698] <+68>:  0x54000100   b.eq   0x156b8                   ; <+100>
+libwhisper.1.dylib[0x1569c] <+72>:  0xbc4046a1   ldr    s1, [x21], #0x4
+libwhisper.1.dylib[0x156a0] <+76>:  0x6f00e400   movi.2d v0, #0000000000000000
+libwhisper.1.dylib[0x156a4] <+80>:  0x1e282020   fcmp   s1, s8
+libwhisper.1.dylib[0x156a8] <+84>:  0x54ffff20   b.eq   0x1568c                   ; <+56>
+libwhisper.1.dylib[0x156ac] <+88>:  0xbd400280   ldr    s0, [x20]
+libwhisper.1.dylib[0x156b0] <+92>:  0x9400a9cc   bl     0x3fde0                   ; symbol stub for: expf
+libwhisper.1.dylib[0x156b4] <+96>:  0x17fffff6   b      0x1568c                   ; <+56>
+libwhisper.1.dylib[0x156b8] <+100>: 0xa9437bfd   ldp    x29, x30, [sp, #0x30]
+libwhisper.1.dylib[0x156bc] <+104>: 0xa9424ff4   ldp    x20, x19, [sp, #0x20]
+libwhisper.1.dylib[0x156c0] <+108>: 0xa94157f6   ldp    x22, x21, [sp, #0x10]
+libwhisper.1.dylib[0x156c4] <+112>: 0x6cc423e9   ldp    d9, d8, [sp], #0x40
+libwhisper.1.dylib[0x156c8] <+116>: 0xd65f03c0   ret    
+(lldb) image lookup -n ggml_compute_forward_flash_attn_ext_f16_one_chunk
+1 match found in /Users/yeren/ane/whisper/build/macos-decoder-profile/bin/libggml-cpu.0.dylib:
+        Address: libggml-cpu.0.dylib[0x000000000009b200] (libggml-cpu.0.dylib.__TEXT.__text + 628336)
+        Summary: libggml-cpu.0.dylib`ggml_compute_forward_flash_attn_ext_f16_one_chunk(ggml_compute_params const*, ggml_tensor*, int, int, long long, long long, float*, long long)
+(lldb) disassemble -b -n ggml_compute_forward_flash_attn_ext_f16_one_chunk
+libggml-cpu.0.dylib`ggml_compute_forward_flash_attn_ext_f16_one_chunk:
+libggml-cpu.0.dylib[0x9b200] <+0>:    0x6db63bef   stp    d15, d14, [sp, #-0xa0]!
+libggml-cpu.0.dylib[0x9b204] <+4>:    0x6d0133ed   stp    d13, d12, [sp, #0x10]
+libggml-cpu.0.dylib[0x9b208] <+8>:    0x6d022beb   stp    d11, d10, [sp, #0x20]
+libggml-cpu.0.dylib[0x9b20c] <+12>:   0x6d0323e9   stp    d9, d8, [sp, #0x30]
+libggml-cpu.0.dylib[0x9b210] <+16>:   0xa9046ffc   stp    x28, x27, [sp, #0x40]
+libggml-cpu.0.dylib[0x9b214] <+20>:   0xa90567fa   stp    x26, x25, [sp, #0x50]
+libggml-cpu.0.dylib[0x9b218] <+24>:   0xa9065ff8   stp    x24, x23, [sp, #0x60]
+libggml-cpu.0.dylib[0x9b21c] <+28>:   0xa90757f6   stp    x22, x21, [sp, #0x70]
+libggml-cpu.0.dylib[0x9b220] <+32>:   0xa9084ff4   stp    x20, x19, [sp, #0x80]
+libggml-cpu.0.dylib[0x9b224] <+36>:   0xa9097bfd   stp    x29, x30, [sp, #0x90]
+libggml-cpu.0.dylib[0x9b228] <+40>:   0x910243fd   add    x29, sp, #0x90
+libggml-cpu.0.dylib[0x9b22c] <+44>:   0xd10d43ff   sub    sp, sp, #0x350
+libggml-cpu.0.dylib[0x9b230] <+48>:   0xf9008fe7   str    x7, [sp, #0x118]
+libggml-cpu.0.dylib[0x9b234] <+52>:   0xf81503a5   stur   x5, [x29, #-0xb0]
+libggml-cpu.0.dylib[0x9b238] <+56>:   0xb901cfe3   str    w3, [sp, #0x1cc]
+libggml-cpu.0.dylib[0x9b23c] <+60>:   0xf900dbe0   str    x0, [sp, #0x1b0]
+libggml-cpu.0.dylib[0x9b240] <+64>:   0xa949d829   ldp    x9, x22, [x1, #0x98]
+libggml-cpu.0.dylib[0x9b244] <+68>:   0xf940542a   ldr    x10, [x1, #0xa8]
+libggml-cpu.0.dylib[0x9b248] <+72>:   0xb4008989   cbz    x9, 0x9c378               ; <+4472>
+libggml-cpu.0.dylib[0x9b24c] <+76>:   0xa9412d28   ldp    x8, x11, [x9, #0x10]
+libggml-cpu.0.dylib[0x9b250] <+80>:   0xf81203a8   stur   x8, [x29, #-0xe0]
+libggml-cpu.0.dylib[0x9b254] <+84>:   0xa9423537   ldp    x23, x13, [x9, #0x20]
+libggml-cpu.0.dylib[0x9b258] <+88>:   0xa9432135   ldp    x21, x8, [x9, #0x30]
+libggml-cpu.0.dylib[0x9b25c] <+92>:   0xf900cfe8   str    x8, [sp, #0x198]
+libggml-cpu.0.dylib[0x9b260] <+96>:   0xf9402128   ldr    x8, [x9, #0x40]
+libggml-cpu.0.dylib[0x9b264] <+100>:  0xf900d3e8   str    x8, [sp, #0x1a0]
+libggml-cpu.0.dylib[0x9b268] <+104>:  0xf9402528   ldr    x8, [x9, #0x48]
+libggml-cpu.0.dylib[0x9b26c] <+108>:  0xf900cbe8   str    x8, [sp, #0x190]
+libggml-cpu.0.dylib[0x9b270] <+112>:  0xf900dfe4   str    x4, [sp, #0x1b8]
+libggml-cpu.0.dylib[0x9b274] <+116>:  0xb4008956   cbz    x22, 0x9c39c              ; <+4508>
+libggml-cpu.0.dylib[0x9b278] <+120>:  0xf9400adc   ldr    x28, [x22, #0x10]
+libggml-cpu.0.dylib[0x9b27c] <+124>:  0xa94246d0   ldp    x16, x17, [x22, #0x20]
+libggml-cpu.0.dylib[0x9b280] <+128>:  0xa94322db   ldp    x27, x8, [x22, #0x30]
+libggml-cpu.0.dylib[0x9b284] <+132>:  0xf81003a8   stur   x8, [x29, #-0x100]
+libggml-cpu.0.dylib[0x9b288] <+136>:  0xf94022c8   ldr    x8, [x22, #0x40]
+libggml-cpu.0.dylib[0x9b28c] <+140>:  0xf9007fe8   str    x8, [sp, #0xf8]
+libggml-cpu.0.dylib[0x9b290] <+144>:  0xf94026c8   ldr    x8, [x22, #0x48]
+libggml-cpu.0.dylib[0x9b294] <+148>:  0xf9007be8   str    x8, [sp, #0xf0]
+libggml-cpu.0.dylib[0x9b298] <+152>:  0xb400892a   cbz    x10, 0x9c3bc              ; <+4540>
+libggml-cpu.0.dylib[0x9b29c] <+156>:  0xf940094c   ldr    x12, [x10, #0x10]
+libggml-cpu.0.dylib[0x9b2a0] <+160>:  0xa9423d40   ldp    x0, x15, [x10, #0x20]
+libggml-cpu.0.dylib[0x9b2a4] <+164>:  0xa9432153   ldp    x19, x8, [x10, #0x30]
+libggml-cpu.0.dylib[0x9b2a8] <+168>:  0xf81583a8   stur   x8, [x29, #-0xa8]
+libggml-cpu.0.dylib[0x9b2ac] <+172>:  0xf9402148   ldr    x8, [x10, #0x40]
+libggml-cpu.0.dylib[0x9b2b0] <+176>:  0xf90077e8   str    x8, [sp, #0xe8]
+libggml-cpu.0.dylib[0x9b2b4] <+180>:  0xf9402548   ldr    x8, [x10, #0x48]
+libggml-cpu.0.dylib[0x9b2b8] <+184>:  0xf90073e8   str    x8, [sp, #0xe0]
+libggml-cpu.0.dylib[0x9b2bc] <+188>:  0xf9400828   ldr    x8, [x1, #0x10]
+libggml-cpu.0.dylib[0x9b2c0] <+192>:  0xeb0c011f   cmp    x8, x12
+libggml-cpu.0.dylib[0x9b2c4] <+196>:  0x54008901   b.ne   0x9c3e4                   ; <+4580>
+libggml-cpu.0.dylib[0x9b2c8] <+200>:  0xa930c7a0   stp    x0, x17, [x29, #-0xf8]
+libggml-cpu.0.dylib[0x9b2cc] <+204>:  0xf81183b0   stur   x16, [x29, #-0xe8]
+libggml-cpu.0.dylib[0x9b2d0] <+208>:  0xa93337af   stp    x15, x13, [x29, #-0xd0]
+libggml-cpu.0.dylib[0x9b2d4] <+212>:  0xa9340bac   stp    x12, x2, [x29, #-0xc0]
+libggml-cpu.0.dylib[0x9b2d8] <+216>:  0xf81283aa   stur   x10, [x29, #-0xd8]
+libggml-cpu.0.dylib[0x9b2dc] <+220>:  0xf900d7e6   str    x6, [sp, #0x1a8]
+libggml-cpu.0.dylib[0x9b2e0] <+224>:  0xf9401028   ldr    x8, [x1, #0x20]
+libggml-cpu.0.dylib[0x9b2e4] <+228>:  0xf900e3eb   str    x11, [sp, #0x1c0]
+libggml-cpu.0.dylib[0x9b2e8] <+232>:  0xeb0b011f   cmp    x8, x11
+libggml-cpu.0.dylib[0x9b2ec] <+236>:  0x540088e1   b.ne   0x9c408                   ; <+4616>
+libggml-cpu.0.dylib[0x9b2f0] <+240>:  0xa94b2034   ldp    x20, x8, [x1, #0xb0]
+libggml-cpu.0.dylib[0x9b2f4] <+244>:  0xf90083e8   str    x8, [sp, #0x100]
+libggml-cpu.0.dylib[0x9b2f8] <+248>:  0xf9400c2a   ldr    x10, [x1, #0x18]
+libggml-cpu.0.dylib[0x9b2fc] <+252>:  0xa943203a   ldp    x26, x8, [x1, #0x30]
+libggml-cpu.0.dylib[0x9b300] <+256>:  0xa905a3ea   stp    x10, x8, [sp, #0x58]
+libggml-cpu.0.dylib[0x9b304] <+260>:  0xa9446438   ldp    x24, x25, [x1, #0x40]
+libggml-cpu.0.dylib[0x9b308] <+264>:  0xf90037e1   str    x1, [sp, #0x68]
+libggml-cpu.0.dylib[0x9b30c] <+268>:  0xf900c7e9   str    x9, [sp, #0x188]
+libggml-cpu.0.dylib[0x9b310] <+272>:  0xb9400120   ldr    w0, [x9]
+libggml-cpu.0.dylib[0x9b314] <+276>:  0x94009840   bl     0xc1414                   ; symbol stub for: ggml_type_size
+libggml-cpu.0.dylib[0x9b318] <+280>:  0xeb0002bf   cmp    x21, x0
+libggml-cpu.0.dylib[0x9b31c] <+284>:  0x54008881   b.ne   0x9c42c                   ; <+4652>
+libggml-cpu.0.dylib[0x9b320] <+288>:  0xb94002c0   ldr    w0, [x22]
+libggml-cpu.0.dylib[0x9b324] <+292>:  0x9400983c   bl     0xc1414                   ; symbol stub for: ggml_type_size
+libggml-cpu.0.dylib[0x9b328] <+296>:  0xeb00037f   cmp    x27, x0
+libggml-cpu.0.dylib[0x9b32c] <+300>:  0x54008921   b.ne   0x9c450                   ; <+4688>
+libggml-cpu.0.dylib[0x9b330] <+304>:  0xf85283a8   ldur   x8, [x29, #-0xd8]
+libggml-cpu.0.dylib[0x9b334] <+308>:  0xb9400100   ldr    w0, [x8]
+libggml-cpu.0.dylib[0x9b338] <+312>:  0x94009837   bl     0xc1414                   ; symbol stub for: ggml_type_size
+libggml-cpu.0.dylib[0x9b33c] <+316>:  0xeb00027f   cmp    x19, x0
+libggml-cpu.0.dylib[0x9b340] <+320>:  0x540089a1   b.ne   0x9c474                   ; <+4724>
+libggml-cpu.0.dylib[0x9b344] <+324>:  0xf85203a8   ldur   x8, [x29, #-0xe0]
+libggml-cpu.0.dylib[0x9b348] <+328>:  0xeb1c011f   cmp    x8, x28
+libggml-cpu.0.dylib[0x9b34c] <+332>:  0xf94037e8   ldr    x8, [sp, #0x68]
+libggml-cpu.0.dylib[0x9b350] <+336>:  0x54008a41   b.ne   0x9c498                   ; <+4760>
+libggml-cpu.0.dylib[0x9b354] <+340>:  0xf100135f   cmp    x26, #0x4
+libggml-cpu.0.dylib[0x9b358] <+344>:  0x54008b21   b.ne   0x9c4bc                   ; <+4796>
+libggml-cpu.0.dylib[0x9b35c] <+348>:  0xf94033e9   ldr    x9, [sp, #0x60]
+libggml-cpu.0.dylib[0x9b360] <+352>:  0xf1000d3f   cmp    x9, #0x3
+libggml-cpu.0.dylib[0x9b364] <+356>:  0x54008be9   b.ls   0x9c4e0                   ; <+4832>
+libggml-cpu.0.dylib[0x9b368] <+360>:  0xeb18013f   cmp    x9, x24
+libggml-cpu.0.dylib[0x9b36c] <+364>:  0x54008cc8   b.hi   0x9c504                   ; <+4868>
+libggml-cpu.0.dylib[0x9b370] <+368>:  0xeb19031f   cmp    x24, x25
+libggml-cpu.0.dylib[0x9b374] <+372>:  0x54008da8   b.hi   0x9c528                   ; <+4904>
+libggml-cpu.0.dylib[0x9b378] <+376>:  0x2d4aa500   ldp    s0, s9, [x8, #0x54]
+libggml-cpu.0.dylib[0x9b37c] <+380>:  0xbd405d0c   ldr    s12, [x8, #0x5c]
+libggml-cpu.0.dylib[0x9b380] <+384>:  0x1e2c1801   fdiv   s1, s0, s12
+libggml-cpu.0.dylib[0x9b384] <+388>:  0x1e202188   fcmp   s12, #0.0
+libggml-cpu.0.dylib[0x9b388] <+392>:  0x1e201c2d   fcsel  s13, s1, s0, ne
+libggml-cpu.0.dylib[0x9b38c] <+396>:  0x1e6302e0   ucvtf  d0, w23
+libggml-cpu.0.dylib[0x9b390] <+400>:  0x9400982a   bl     0xc1438                   ; symbol stub for: log2
+libggml-cpu.0.dylib[0x9b394] <+404>:  0x1e710008   fcvtmu w8, d0
+libggml-cpu.0.dylib[0x9b398] <+408>:  0x52800029   mov    w9, #0x1                  ; =1 
+libggml-cpu.0.dylib[0x9b39c] <+412>:  0x1ac82128   lsl    w8, w9, w8
+libggml-cpu.0.dylib[0x9b3a0] <+416>:  0x1e214120   fneg   s0, s9
+libggml-cpu.0.dylib[0x9b3a4] <+420>:  0xb900dfe8   str    w8, [sp, #0xdc]
+libggml-cpu.0.dylib[0x9b3a8] <+424>:  0x1e230108   ucvtf  s8, w8
+libggml-cpu.0.dylib[0x9b3ac] <+428>:  0x1e281800   fdiv   s0, s0, s8
+libggml-cpu.0.dylib[0x9b3b0] <+432>:  0x94009786   bl     0xc11c8                   ; symbol stub for: exp2f
+libggml-cpu.0.dylib[0x9b3b4] <+436>:  0xbd003fe0   str    s0, [sp, #0x3c]
+libggml-cpu.0.dylib[0x9b3b8] <+440>:  0x1e3c1000   fmov   s0, #-0.50000000
+libggml-cpu.0.dylib[0x9b3bc] <+444>:  0xbd0187e9   str    s9, [sp, #0x184]
+libggml-cpu.0.dylib[0x9b3c0] <+448>:  0x1e200920   fmul   s0, s9, s0
+libggml-cpu.0.dylib[0x9b3c4] <+452>:  0x1e281800   fdiv   s0, s0, s8
+libggml-cpu.0.dylib[0x9b3c8] <+456>:  0x94009780   bl     0xc11c8                   ; symbol stub for: exp2f
+libggml-cpu.0.dylib[0x9b3cc] <+460>:  0xbd003be0   str    s0, [sp, #0x38]
+libggml-cpu.0.dylib[0x9b3d0] <+464>:  0xb94002c0   ldr    w0, [x22]
+libggml-cpu.0.dylib[0x9b3d4] <+468>:  0x97fd99ef   bl     0x1b90                    ; ggml_get_type_traits_cpu
+libggml-cpu.0.dylib[0x9b3d8] <+472>:  0xb9401000   ldr    w0, [x0, #0x10]
+libggml-cpu.0.dylib[0x9b3dc] <+476>:  0x97fd99ed   bl     0x1b90                    ; ggml_get_type_traits_cpu
+libggml-cpu.0.dylib[0x9b3e0] <+480>:  0xf9400013   ldr    x19, [x0]
+libggml-cpu.0.dylib[0x9b3e4] <+484>:  0xf9016ff6   str    x22, [sp, #0x2d8]
+libggml-cpu.0.dylib[0x9b3e8] <+488>:  0xb94002c0   ldr    w0, [x22]
+libggml-cpu.0.dylib[0x9b3ec] <+492>:  0x97fd99e9   bl     0x1b90                    ; ggml_get_type_traits_cpu
+libggml-cpu.0.dylib[0x9b3f0] <+496>:  0xf9400408   ldr    x8, [x0, #0x8]
+libggml-cpu.0.dylib[0x9b3f4] <+500>:  0xf9016be8   str    x8, [sp, #0x2d0]
+libggml-cpu.0.dylib[0x9b3f8] <+504>:  0xf85283b6   ldur   x22, [x29, #-0xd8]
+libggml-cpu.0.dylib[0x9b3fc] <+508>:  0xb94002c0   ldr    w0, [x22]
+libggml-cpu.0.dylib[0x9b400] <+512>:  0x940097bd   bl     0xc12f4                   ; symbol stub for: ggml_get_type_traits
+libggml-cpu.0.dylib[0x9b404] <+516>:  0xf940e3f8   ldr    x24, [sp, #0x1c0]
+libggml-cpu.0.dylib[0x9b408] <+520>:  0xf900bff3   str    x19, [sp, #0x178]
+libggml-cpu.0.dylib[0x9b40c] <+524>:  0xb4008a13   cbz    x19, 0x9c54c              ; <+4940>
+libggml-cpu.0.dylib[0x9b410] <+528>:  0xf9401409   ldr    x9, [x0, #0x28]
+libggml-cpu.0.dylib[0x9b414] <+532>:  0xb94002c8   ldr    w8, [x22]
+libggml-cpu.0.dylib[0x9b418] <+536>:  0xf85483b5   ldur   x21, [x29, #-0xb8]
+libggml-cpu.0.dylib[0x9b41c] <+540>:  0x34000048   cbz    w8, 0x9b424               ; <+548>
+libggml-cpu.0.dylib[0x9b420] <+544>:  0xb4008a89   cbz    x9, 0x9c570               ; <+4976>
+libggml-cpu.0.dylib[0x9b424] <+548>:  0xb941cfe8   ldr    w8, [sp, #0x1cc]
+libggml-cpu.0.dylib[0x9b428] <+552>:  0x6b0802bf   cmp    w21, w8
+libggml-cpu.0.dylib[0x9b42c] <+556>:  0xf85403ac   ldur   x12, [x29, #-0xc0]
+libggml-cpu.0.dylib[0x9b430] <+560>:  0x540078ca   b.ge   0x9c348                   ; <+4424>
+libggml-cpu.0.dylib[0x9b434] <+564>:  0xf85183a8   ldur   x8, [x29, #-0xe8]
+libggml-cpu.0.dylib[0x9b438] <+568>:  0x9ac80ee8   sdiv   x8, x23, x8
+libggml-cpu.0.dylib[0x9b43c] <+572>:  0xf9006be8   str    x8, [sp, #0xd0]
+libggml-cpu.0.dylib[0x9b440] <+576>:  0xf85383a0   ldur   x0, [x29, #-0xc8]
+libggml-cpu.0.dylib[0x9b444] <+580>:  0xf85103a8   ldur   x8, [x29, #-0xf0]
+libggml-cpu.0.dylib[0x9b448] <+584>:  0x9ac80c08   sdiv   x8, x0, x8
+libggml-cpu.0.dylib[0x9b44c] <+588>:  0xf90067e8   str    x8, [sp, #0xc8]
+libggml-cpu.0.dylib[0x9b450] <+592>:  0xf85083a8   ldur   x8, [x29, #-0xf8]
+libggml-cpu.0.dylib[0x9b454] <+596>:  0x9ac80ee8   sdiv   x8, x23, x8
+libggml-cpu.0.dylib[0x9b458] <+600>:  0xf90063e8   str    x8, [sp, #0xc0]
+libggml-cpu.0.dylib[0x9b45c] <+604>:  0x9b177f08   mul    x8, x24, x23
+libggml-cpu.0.dylib[0x9b460] <+608>:  0xf900afe8   str    x8, [sp, #0x158]
+libggml-cpu.0.dylib[0x9b464] <+612>:  0xd37ff98a   lsl    x10, x12, #1
+libggml-cpu.0.dylib[0x9b468] <+616>:  0xf85203a8   ldur   x8, [x29, #-0xe0]
+libggml-cpu.0.dylib[0x9b46c] <+620>:  0xf900f3ea   str    x10, [sp, #0x1e0]
+libggml-cpu.0.dylib[0x9b470] <+624>:  0x8b0a0108   add    x8, x8, x10
+libggml-cpu.0.dylib[0x9b474] <+628>:  0x91004108   add    x8, x8, #0x10
+libggml-cpu.0.dylib[0x9b478] <+632>:  0xf9014be9   str    x9, [sp, #0x290]
+libggml-cpu.0.dylib[0x9b47c] <+636>:  0xf940dbe9   ldr    x9, [sp, #0x1b0]
+libggml-cpu.0.dylib[0x9b480] <+640>:  0xb9800129   ldrsw  x9, [x9]
+libggml-cpu.0.dylib[0x9b484] <+644>:  0x9b097d0b   mul    x11, x8, x9
+libggml-cpu.0.dylib[0x9b488] <+648>:  0x93407d9c   sxtw   x28, w12
+libggml-cpu.0.dylib[0x9b48c] <+652>:  0x121c6d88   and    w8, w12, #0xfffffff0
+libggml-cpu.0.dylib[0x9b490] <+656>:  0x93407d0d   sxtw   x13, w8
+libggml-cpu.0.dylib[0x9b494] <+660>:  0xf81103ad   stur   x13, [x29, #-0xf0]
+libggml-cpu.0.dylib[0x9b498] <+664>:  0xf940dff0   ldr    x16, [sp, #0x1b8]
+libggml-cpu.0.dylib[0x9b49c] <+668>:  0xf100021f   cmp    x16, #0x0
+libggml-cpu.0.dylib[0x9b4a0] <+672>:  0xf94083e9   ldr    x9, [sp, #0x100]
+libggml-cpu.0.dylib[0x9b4a4] <+676>:  0xfa400924   ccmp   x9, #0x0, #0x4, eq
+libggml-cpu.0.dylib[0x9b4a8] <+680>:  0x1a9f07e9   cset   w9, ne
+libggml-cpu.0.dylib[0x9b4ac] <+684>:  0xb9014fe9   str    w9, [sp, #0x14c]
+libggml-cpu.0.dylib[0x9b4b0] <+688>:  0x93407eb5   sxtw   x21, w21
+libggml-cpu.0.dylib[0x9b4b4] <+692>:  0xb24001a9   orr    x9, x13, #0x1
+libggml-cpu.0.dylib[0x9b4b8] <+696>:  0xeb1c013f   cmp    x9, x28
+libggml-cpu.0.dylib[0x9b4bc] <+700>:  0x9a8dd789   csinc  x9, x28, x13, le
+libggml-cpu.0.dylib[0x9b4c0] <+704>:  0x92400d39   and    x25, x9, #0xf
+libggml-cpu.0.dylib[0x9b4c4] <+708>:  0xcb0d012e   sub    x14, x9, x13
+libggml-cpu.0.dylib[0x9b4c8] <+712>:  0xcb1901cf   sub    x15, x14, x25
+libggml-cpu.0.dylib[0x9b4cc] <+716>:  0x9240052a   and    x10, x9, #0x3
+libggml-cpu.0.dylib[0x9b4d0] <+720>:  0xf9009fea   str    x10, [sp, #0x138]
+libggml-cpu.0.dylib[0x9b4d4] <+724>:  0xcb0a01ca   sub    x10, x14, x10
+libggml-cpu.0.dylib[0x9b4d8] <+728>:  0x8b0d014a   add    x10, x10, x13
+libggml-cpu.0.dylib[0x9b4dc] <+732>:  0xf9009bea   str    x10, [sp, #0x130]
+libggml-cpu.0.dylib[0x9b4e0] <+736>:  0x9240092a   and    x10, x9, #0x7
+libggml-cpu.0.dylib[0x9b4e4] <+740>:  0xf9015fee   str    x14, [sp, #0x2b8]
+libggml-cpu.0.dylib[0x9b4e8] <+744>:  0xf900ffea   str    x10, [sp, #0x1f8]
+libggml-cpu.0.dylib[0x9b4ec] <+748>:  0xcb0a01ca   sub    x10, x14, x10
+libggml-cpu.0.dylib[0x9b4f0] <+752>:  0x8b0d014a   add    x10, x10, x13
+libggml-cpu.0.dylib[0x9b4f4] <+756>:  0xf900fbea   str    x10, [sp, #0x1f0]
+libggml-cpu.0.dylib[0x9b4f8] <+760>:  0xf85583aa   ldur   x10, [x29, #-0xa8]
+libggml-cpu.0.dylib[0x9b4fc] <+764>:  0x9b107d4e   mul    x14, x10, x16
+libggml-cpu.0.dylib[0x9b500] <+768>:  0x910081d0   add    x16, x14, #0x20
+libggml-cpu.0.dylib[0x9b504] <+772>:  0xf900abeb   str    x11, [sp, #0x150]
+libggml-cpu.0.dylib[0x9b508] <+776>:  0xd37ef571   lsl    x17, x11, #2
+libggml-cpu.0.dylib[0x9b50c] <+780>:  0xaa0d03ea   mov    x10, x13
+libggml-cpu.0.dylib[0x9b510] <+784>:  0xb3400d2a   bfxil  x10, x9, #0, #4
+libggml-cpu.0.dylib[0x9b514] <+788>:  0xcb09014a   sub    x10, x10, x9
+libggml-cpu.0.dylib[0x9b518] <+792>:  0xf90087ea   str    x10, [sp, #0x108]
+libggml-cpu.0.dylib[0x9b51c] <+796>:  0x937e7d0a   sbfiz  x10, x8, #2, #32
+libggml-cpu.0.dylib[0x9b520] <+800>:  0x8b0a020b   add    x11, x16, x10
+libggml-cpu.0.dylib[0x9b524] <+804>:  0xa90ac3eb   stp    x11, x16, [sp, #0xa8]
+libggml-cpu.0.dylib[0x9b528] <+808>:  0x8b0a022a   add    x10, x17, x10
+libggml-cpu.0.dylib[0x9b52c] <+812>:  0x9100814b   add    x11, x10, #0x20
+libggml-cpu.0.dylib[0x9b530] <+816>:  0xf90053eb   str    x11, [sp, #0xa0]
+libggml-cpu.0.dylib[0x9b534] <+820>:  0xaa0d03eb   mov    x11, x13
+libggml-cpu.0.dylib[0x9b538] <+824>:  0xb340052b   bfxil  x11, x9, #0, #2
+libggml-cpu.0.dylib[0x9b53c] <+828>:  0xcb09016b   sub    x11, x11, x9
+libggml-cpu.0.dylib[0x9b540] <+832>:  0xf90097eb   str    x11, [sp, #0x128]
+libggml-cpu.0.dylib[0x9b544] <+836>:  0x9100c14b   add    x11, x10, #0x30
+libggml-cpu.0.dylib[0x9b548] <+840>:  0xaa0d03ea   mov    x10, x13
+libggml-cpu.0.dylib[0x9b54c] <+844>:  0xb340092a   bfxil  x10, x9, #0, #3
+libggml-cpu.0.dylib[0x9b550] <+848>:  0xcb090149   sub    x9, x10, x9
+libggml-cpu.0.dylib[0x9b554] <+852>:  0xf900f7e9   str    x9, [sp, #0x1e8]
+libggml-cpu.0.dylib[0x9b558] <+856>:  0x8b28c5c8   add    x8, x14, w8, sxtw #1
+libggml-cpu.0.dylib[0x9b55c] <+860>:  0xa9092fe8   stp    x8, x11, [sp, #0x90]
+libggml-cpu.0.dylib[0x9b560] <+864>:  0x52aef008   mov    w8, #0x77800000           ; =2004877312 
+libggml-cpu.0.dylib[0x9b564] <+868>:  0x1e27010e   fmov   s14, w8
+libggml-cpu.0.dylib[0x9b568] <+872>:  0x52a11009   mov    w9, #0x8800000            ; =142606336 
+libggml-cpu.0.dylib[0x9b56c] <+876>:  0x1e27012f   fmov   s15, w9
+libggml-cpu.0.dylib[0x9b570] <+880>:  0xf85303aa   ldur   x10, [x29, #-0xd0]
+libggml-cpu.0.dylib[0x9b574] <+884>:  0x9aca0c0b   sdiv   x11, x0, x10
+libggml-cpu.0.dylib[0x9b578] <+888>:  0x52a0f00a   mov    w10, #0x7800000           ; =125829120 
+libggml-cpu.0.dylib[0x9b57c] <+892>:  0x4e040d01   dup.4s v1, w8
+libggml-cpu.0.dylib[0x9b580] <+896>:  0x4e040d20   dup.4s v0, w9
+libggml-cpu.0.dylib[0x9b584] <+900>:  0xad1387e0   stp    q0, q1, [sp, #0x270]
+libggml-cpu.0.dylib[0x9b588] <+904>:  0x6f03d7e0   mvni.4s v0, #0x7f, msl #16
+libggml-cpu.0.dylib[0x9b58c] <+908>:  0x6ea0f801   fneg.4s v1, v0
+libggml-cpu.0.dylib[0x9b590] <+912>:  0x4e040d40   dup.4s v0, w10
+libggml-cpu.0.dylib[0x9b594] <+916>:  0xad1287e0   stp    q0, q1, [sp, #0x250]
+libggml-cpu.0.dylib[0x9b598] <+920>:  0xd37ef588   lsl    x8, x12, #2
+libggml-cpu.0.dylib[0x9b59c] <+924>:  0x927c6993   and    x19, x12, #0x7ffffff0
+libggml-cpu.0.dylib[0x9b5a0] <+928>:  0x8b0d01e9   add    x9, x15, x13
+libggml-cpu.0.dylib[0x9b5a4] <+932>:  0xa904bfe9   stp    x9, x15, [sp, #0x48]
+libggml-cpu.0.dylib[0x9b5a8] <+936>:  0x927be589   and    x9, x12, #0x7fffffffffffffe0
+libggml-cpu.0.dylib[0x9b5ac] <+940>:  0xf90023e9   str    x9, [sp, #0x40]
+libggml-cpu.0.dylib[0x9b5b0] <+944>:  0x927e0989   and    x9, x12, #0x1c
+libggml-cpu.0.dylib[0x9b5b4] <+948>:  0xf9000be9   str    x9, [sp, #0x10]
+libggml-cpu.0.dylib[0x9b5b8] <+952>:  0x927ef189   and    x9, x12, #0x7ffffffffffffffc
+libggml-cpu.0.dylib[0x9b5bc] <+956>:  0x9100822a   add    x10, x17, #0x20
+libggml-cpu.0.dylib[0x9b5c0] <+960>:  0xa9082fea   stp    x10, x11, [sp, #0x80]
+libggml-cpu.0.dylib[0x9b5c4] <+964>:  0xf81383a8   stur   x8, [x29, #-0xc8]
+libggml-cpu.0.dylib[0x9b5c8] <+968>:  0x8b080228   add    x8, x17, x8
+libggml-cpu.0.dylib[0x9b5cc] <+972>:  0x9100410b   add    x11, x8, #0x10
+libggml-cpu.0.dylib[0x9b5d0] <+976>:  0xf9005fee   str    x14, [sp, #0xb8]
+libggml-cpu.0.dylib[0x9b5d4] <+980>:  0x910041ca   add    x10, x14, #0x10
+libggml-cpu.0.dylib[0x9b5d8] <+984>:  0xa9072fea   stp    x10, x11, [sp, #0x70]
+libggml-cpu.0.dylib[0x9b5dc] <+988>:  0xa916c7e8   stp    x8, x17, [sp, #0x168]
+libggml-cpu.0.dylib[0x9b5e0] <+992>:  0x9100810a   add    x10, x8, #0x20
+libggml-cpu.0.dylib[0x9b5e4] <+996>:  0x91010228   add    x8, x17, #0x40
+libggml-cpu.0.dylib[0x9b5e8] <+1000>: 0xa901abe8   stp    x8, x10, [sp, #0x18]
+libggml-cpu.0.dylib[0x9b5ec] <+1004>: 0xcb0903e8   neg    x8, x9
+libggml-cpu.0.dylib[0x9b5f0] <+1008>: 0xa902a7e8   stp    x8, x9, [sp, #0x28]
+libggml-cpu.0.dylib[0x9b5f4] <+1012>: 0x52ae201a   mov    w26, #0x71000000          ; =1895825408 
+libggml-cpu.0.dylib[0x9b5f8] <+1016>: 0xf900b3f4   str    x20, [sp, #0x160]
+libggml-cpu.0.dylib[0x9b5fc] <+1020>: 0xf9008bf9   str    x25, [sp, #0x110]
+libggml-cpu.0.dylib[0x9b600] <+1024>: 0x14000010   b      0x9b640                   ; <+1088>
+libggml-cpu.0.dylib[0x9b604] <+1028>: 0xf940d7e9   ldr    x9, [sp, #0x1a8]
+libggml-cpu.0.dylib[0x9b608] <+1032>: 0xf940b3f4   ldr    x20, [sp, #0x160]
+libggml-cpu.0.dylib[0x9b60c] <+1036>: 0xb4006629   cbz    x9, 0x9c2d0               ; <+4304>
+libggml-cpu.0.dylib[0x9b610] <+1040>: 0xf9408fe8   ldr    x8, [sp, #0x118]
+libggml-cpu.0.dylib[0x9b614] <+1044>: 0x9b157d08   mul    x8, x8, x21
+libggml-cpu.0.dylib[0x9b618] <+1048>: 0x8b080928   add    x8, x9, x8, lsl #2
+libggml-cpu.0.dylib[0x9b61c] <+1052>: 0x2d00210b   stp    s11, s8, [x8]
+libggml-cpu.0.dylib[0x9b620] <+1056>: 0x91002100   add    x0, x8, #0x8
+libggml-cpu.0.dylib[0x9b624] <+1060>: 0xaa0303e1   mov    x1, x3
+libggml-cpu.0.dylib[0x9b628] <+1064>: 0x9400978a   bl     0xc1450                   ; symbol stub for: memcpy
+libggml-cpu.0.dylib[0x9b62c] <+1068>: 0x910006b5   add    x21, x21, #0x1
+libggml-cpu.0.dylib[0x9b630] <+1072>: 0xb941cfe8   ldr    w8, [sp, #0x1cc]
+libggml-cpu.0.dylib[0x9b634] <+1076>: 0x6b15011f   cmp    w8, w21
+libggml-cpu.0.dylib[0x9b638] <+1080>: 0xf85403ac   ldur   x12, [x29, #-0xc0]
+libggml-cpu.0.dylib[0x9b63c] <+1084>: 0x54006860   b.eq   0x9c348                   ; <+4424>
+libggml-cpu.0.dylib[0x9b640] <+1088>: 0xf940afe9   ldr    x9, [sp, #0x158]
+libggml-cpu.0.dylib[0x9b644] <+1092>: 0x9ac90ea8   sdiv   x8, x21, x9
+libggml-cpu.0.dylib[0x9b648] <+1096>: 0x93407d1b   sxtw   x27, w8
+libggml-cpu.0.dylib[0x9b64c] <+1100>: 0xf9010bf5   str    x21, [sp, #0x210]
+libggml-cpu.0.dylib[0x9b650] <+1104>: 0x9b1bd535   msub   x21, x9, x27, x21
+libggml-cpu.0.dylib[0x9b654] <+1108>: 0xbd4187e0   ldr    s0, [sp, #0x184]
+libggml-cpu.0.dylib[0x9b658] <+1112>: 0x1e202008   fcmp   s0, #0.0
+libggml-cpu.0.dylib[0x9b65c] <+1116>: 0x1e2e100a   fmov   s10, #1.00000000
+libggml-cpu.0.dylib[0x9b660] <+1120>: 0x9ad80eb7   sdiv   x23, x21, x24
+libggml-cpu.0.dylib[0x9b664] <+1124>: 0x540001ed   b.le   0x9b6a0                   ; <+1184>
+libggml-cpu.0.dylib[0x9b668] <+1128>: 0xb940dfe8   ldr    w8, [sp, #0xdc]
+libggml-cpu.0.dylib[0x9b66c] <+1132>: 0x6b0802e8   subs   w8, w23, w8
+libggml-cpu.0.dylib[0x9b670] <+1136>: 0x540000a2   b.hs   0x9b684                   ; <+1156>
+libggml-cpu.0.dylib[0x9b674] <+1140>: 0x110006e8   add    w8, w23, #0x1
+libggml-cpu.0.dylib[0x9b678] <+1144>: 0x1e230101   ucvtf  s1, w8
+libggml-cpu.0.dylib[0x9b67c] <+1148>: 0xbd403fe0   ldr    s0, [sp, #0x3c]
+libggml-cpu.0.dylib[0x9b680] <+1152>: 0x14000005   b      0x9b694                   ; <+1172>
+libggml-cpu.0.dylib[0x9b684] <+1156>: 0x52800029   mov    w9, #0x1                  ; =1 
+libggml-cpu.0.dylib[0x9b688] <+1160>: 0x2a080528   orr    w8, w9, w8, lsl #1
+libggml-cpu.0.dylib[0x9b68c] <+1164>: 0x1e230101   ucvtf  s1, w8
+libggml-cpu.0.dylib[0x9b690] <+1168>: 0xbd403be0   ldr    s0, [sp, #0x38]
+libggml-cpu.0.dylib[0x9b694] <+1172>: 0x9400977b   bl     0xc1480                   ; symbol stub for: powf
+libggml-cpu.0.dylib[0x9b698] <+1176>: 0x4ea01c0a   mov.16b v10, v0
+libggml-cpu.0.dylib[0x9b69c] <+1180>: 0xf85403ac   ldur   x12, [x29, #-0xc0]
+libggml-cpu.0.dylib[0x9b6a0] <+1184>: 0xf940dbe8   ldr    x8, [sp, #0x1b0]
+libggml-cpu.0.dylib[0x9b6a4] <+1188>: 0xf9400909   ldr    x9, [x8, #0x10]
+libggml-cpu.0.dylib[0x9b6a8] <+1192>: 0xf940abe8   ldr    x8, [sp, #0x150]
+libggml-cpu.0.dylib[0x9b6ac] <+1196>: 0xf9010fe9   str    x9, [sp, #0x218]
+libggml-cpu.0.dylib[0x9b6b0] <+1200>: 0x8b080920   add    x0, x9, x8, lsl #2
+libggml-cpu.0.dylib[0x9b6b4] <+1204>: 0x8b0c0809   add    x9, x0, x12, lsl #2
+libggml-cpu.0.dylib[0x9b6b8] <+1208>: 0xb94002c8   ldr    w8, [x22]
+libggml-cpu.0.dylib[0x9b6bc] <+1212>: 0x7100051f   cmp    w8, #0x1
+libggml-cpu.0.dylib[0x9b6c0] <+1216>: 0xf81483a0   stur   x0, [x29, #-0xb8]
+libggml-cpu.0.dylib[0x9b6c4] <+1220>: 0xf9014fe9   str    x9, [sp, #0x298]
+libggml-cpu.0.dylib[0x9b6c8] <+1224>: 0x540002a1   b.ne   0x9b71c                   ; <+1308>
+libggml-cpu.0.dylib[0x9b6cc] <+1228>: 0xaa0903e0   mov    x0, x9
+libggml-cpu.0.dylib[0x9b6d0] <+1232>: 0xf940f3e1   ldr    x1, [sp, #0x1e0]
+libggml-cpu.0.dylib[0x9b6d4] <+1236>: 0x940096b4   bl     0xc11a4                   ; symbol stub for: bzero
+libggml-cpu.0.dylib[0x9b6d8] <+1240>: 0x93407ef6   sxtw   x22, w23
+libggml-cpu.0.dylib[0x9b6dc] <+1244>: 0x9b18d6e8   msub   x8, x23, x24, x21
+libggml-cpu.0.dylib[0x9b6e0] <+1248>: 0x93407d0d   sxtw   x13, w8
+libggml-cpu.0.dylib[0x9b6e4] <+1252>: 0xb4000294   cbz    x20, 0x9b734              ; <+1332>
+libggml-cpu.0.dylib[0x9b6e8] <+1256>: 0xf9407e88   ldr    x8, [x20, #0xf8]
+libggml-cpu.0.dylib[0x9b6ec] <+1260>: 0xa943aa89   ldp    x9, x10, [x20, #0x38]
+libggml-cpu.0.dylib[0x9b6f0] <+1264>: 0x9b0d2128   madd   x8, x9, x13, x8
+libggml-cpu.0.dylib[0x9b6f4] <+1268>: 0xa9422e89   ldp    x9, x11, [x20, #0x20]
+libggml-cpu.0.dylib[0x9b6f8] <+1272>: 0x9ac90ecc   sdiv   x12, x22, x9
+libggml-cpu.0.dylib[0x9b6fc] <+1276>: 0x9b09d989   msub   x9, x12, x9, x22
+libggml-cpu.0.dylib[0x9b700] <+1280>: 0x9b092148   madd   x8, x10, x9, x8
+libggml-cpu.0.dylib[0x9b704] <+1284>: 0x9acb0f69   sdiv   x9, x27, x11
+libggml-cpu.0.dylib[0x9b708] <+1288>: 0x9b0bed29   msub   x9, x9, x11, x27
+libggml-cpu.0.dylib[0x9b70c] <+1292>: 0xf940268a   ldr    x10, [x20, #0x48]
+libggml-cpu.0.dylib[0x9b710] <+1296>: 0x9b092148   madd   x8, x10, x9, x8
+libggml-cpu.0.dylib[0x9b714] <+1300>: 0xf81303a8   stur   x8, [x29, #-0xd0]
+libggml-cpu.0.dylib[0x9b718] <+1304>: 0x14000008   b      0x9b738                   ; <+1336>
+libggml-cpu.0.dylib[0x9b71c] <+1308>: 0xf85383a1   ldur   x1, [x29, #-0xc8]
+libggml-cpu.0.dylib[0x9b720] <+1312>: 0x940096a1   bl     0xc11a4                   ; symbol stub for: bzero
+libggml-cpu.0.dylib[0x9b724] <+1316>: 0x93407ef6   sxtw   x22, w23
+libggml-cpu.0.dylib[0x9b728] <+1320>: 0x9b18d6e8   msub   x8, x23, x24, x21
+libggml-cpu.0.dylib[0x9b72c] <+1324>: 0x93407d0d   sxtw   x13, w8
+libggml-cpu.0.dylib[0x9b730] <+1328>: 0xb5fffdd4   cbnz   x20, 0x9b6e8              ; <+1256>
+libggml-cpu.0.dylib[0x9b734] <+1332>: 0xf81303bf   stur   xzr, [x29, #-0xd0]
+libggml-cpu.0.dylib[0x9b738] <+1336>: 0xf85483a9   ldur   x9, [x29, #-0xb8]
+libggml-cpu.0.dylib[0x9b73c] <+1340>: 0xf90103f7   str    x23, [sp, #0x200]
+libggml-cpu.0.dylib[0x9b740] <+1344>: 0xf940f3e8   ldr    x8, [sp, #0x1e0]
+libggml-cpu.0.dylib[0x9b744] <+1348>: 0x8b080921   add    x1, x9, x8, lsl #2
+libggml-cpu.0.dylib[0x9b748] <+1352>: 0xf940c7e8   ldr    x8, [sp, #0x188]
+libggml-cpu.0.dylib[0x9b74c] <+1356>: 0xf9407d08   ldr    x8, [x8, #0xf8]
+libggml-cpu.0.dylib[0x9b750] <+1360>: 0xa959a7ea   ldp    x10, x9, [sp, #0x198]
+libggml-cpu.0.dylib[0x9b754] <+1364>: 0xf900ebed   str    x13, [sp, #0x1d0]
+libggml-cpu.0.dylib[0x9b758] <+1368>: 0x9b0a21a8   madd   x8, x13, x10, x8
+libggml-cpu.0.dylib[0x9b75c] <+1372>: 0x9b0922c8   madd   x8, x22, x9, x8
+libggml-cpu.0.dylib[0x9b760] <+1376>: 0xf940cbe9   ldr    x9, [sp, #0x190]
+libggml-cpu.0.dylib[0x9b764] <+1380>: 0x9b092360   madd   x0, x27, x9, x8
+libggml-cpu.0.dylib[0x9b768] <+1384>: 0xf81183a1   stur   x1, [x29, #-0xe8]
+libggml-cpu.0.dylib[0x9b76c] <+1388>: 0xf85203a2   ldur   x2, [x29, #-0xe0]
+libggml-cpu.0.dylib[0x9b770] <+1392>: 0xf940bfe8   ldr    x8, [sp, #0x178]
+libggml-cpu.0.dylib[0x9b774] <+1396>: 0xd63f0100   blr    x8
+libggml-cpu.0.dylib[0x9b778] <+1400>: 0xf85503a8   ldur   x8, [x29, #-0xb0]
+libggml-cpu.0.dylib[0x9b77c] <+1404>: 0xf940dff7   ldr    x23, [sp, #0x1b8]
+libggml-cpu.0.dylib[0x9b780] <+1408>: 0xeb0802ff   cmp    x23, x8
+libggml-cpu.0.dylib[0x9b784] <+1412>: 0xf90107fb   str    x27, [sp, #0x208]
+libggml-cpu.0.dylib[0x9b788] <+1416>: 0xf900eff6   str    x22, [sp, #0x1d8]
+libggml-cpu.0.dylib[0x9b78c] <+1420>: 0x54004baa   b.ge   0x9c100                   ; <+3840>
+libggml-cpu.0.dylib[0x9b790] <+1424>: 0xa94c2be8   ldp    x8, x10, [sp, #0xc0]
+libggml-cpu.0.dylib[0x9b794] <+1428>: 0x9ac80ec8   sdiv   x8, x22, x8
+libggml-cpu.0.dylib[0x9b798] <+1432>: 0xf9406be9   ldr    x9, [sp, #0xd0]
+libggml-cpu.0.dylib[0x9b79c] <+1436>: 0x9ac90ec9   sdiv   x9, x22, x9
+libggml-cpu.0.dylib[0x9b7a0] <+1440>: 0x9aca0f6a   sdiv   x10, x27, x10
+libggml-cpu.0.dylib[0x9b7a4] <+1444>: 0x93407d29   sxtw   x9, w9
+libggml-cpu.0.dylib[0x9b7a8] <+1448>: 0xf9407feb   ldr    x11, [sp, #0xf8]
+libggml-cpu.0.dylib[0x9b7ac] <+1452>: 0x9b0b7d29   mul    x9, x9, x11
+libggml-cpu.0.dylib[0x9b7b0] <+1456>: 0x93407d4a   sxtw   x10, w10
+libggml-cpu.0.dylib[0x9b7b4] <+1460>: 0xf9407beb   ldr    x11, [sp, #0xf0]
+libggml-cpu.0.dylib[0x9b7b8] <+1464>: 0x9b0b7d4a   mul    x10, x10, x11
+libggml-cpu.0.dylib[0x9b7bc] <+1468>: 0x93407d08   sxtw   x8, w8
+libggml-cpu.0.dylib[0x9b7c0] <+1472>: 0xf94077eb   ldr    x11, [sp, #0xe8]
+libggml-cpu.0.dylib[0x9b7c4] <+1476>: 0x9b0b7d08   mul    x8, x8, x11
+libggml-cpu.0.dylib[0x9b7c8] <+1480>: 0xf94047eb   ldr    x11, [sp, #0x88]
+libggml-cpu.0.dylib[0x9b7cc] <+1484>: 0x9acb0f6b   sdiv   x11, x27, x11
+libggml-cpu.0.dylib[0x9b7d0] <+1488>: 0x93407d6b   sxtw   x11, w11
+libggml-cpu.0.dylib[0x9b7d4] <+1492>: 0xf85103ac   ldur   x12, [x29, #-0xf0]
+libggml-cpu.0.dylib[0x9b7d8] <+1496>: 0xf9414fed   ldr    x13, [sp, #0x298]
+libggml-cpu.0.dylib[0x9b7dc] <+1500>: 0x8b0c05ac   add    x12, x13, x12, lsl #1
+libggml-cpu.0.dylib[0x9b7e0] <+1504>: 0xf90113ec   str    x12, [sp, #0x220]
+libggml-cpu.0.dylib[0x9b7e4] <+1508>: 0xf94073ec   ldr    x12, [sp, #0xe0]
+libggml-cpu.0.dylib[0x9b7e8] <+1512>: 0x9b0c7d6b   mul    x11, x11, x12
+libggml-cpu.0.dylib[0x9b7ec] <+1516>: 0xf9405bec   ldr    x12, [sp, #0xb0]
+libggml-cpu.0.dylib[0x9b7f0] <+1520>: 0x8b0b018c   add    x12, x12, x11
+libggml-cpu.0.dylib[0x9b7f4] <+1524>: 0x8b080195   add    x21, x12, x8
+libggml-cpu.0.dylib[0x9b7f8] <+1528>: 0xf94043ec   ldr    x12, [sp, #0x80]
+libggml-cpu.0.dylib[0x9b7fc] <+1532>: 0xf9410fed   ldr    x13, [sp, #0x218]
+libggml-cpu.0.dylib[0x9b800] <+1536>: 0x8b0c01ac   add    x12, x13, x12
+libggml-cpu.0.dylib[0x9b804] <+1540>: 0xf9011bec   str    x12, [sp, #0x230]
+libggml-cpu.0.dylib[0x9b808] <+1544>: 0xf94057ec   ldr    x12, [sp, #0xa8]
+libggml-cpu.0.dylib[0x9b80c] <+1548>: 0x8b0b018c   add    x12, x12, x11
+libggml-cpu.0.dylib[0x9b810] <+1552>: 0x8b080198   add    x24, x12, x8
+libggml-cpu.0.dylib[0x9b814] <+1556>: 0xf94053ec   ldr    x12, [sp, #0xa0]
+libggml-cpu.0.dylib[0x9b818] <+1560>: 0x8b0c01ac   add    x12, x13, x12
+libggml-cpu.0.dylib[0x9b81c] <+1564>: 0xf90093ec   str    x12, [sp, #0x120]
+libggml-cpu.0.dylib[0x9b820] <+1568>: 0xf940bbec   ldr    x12, [sp, #0x170]
+libggml-cpu.0.dylib[0x9b824] <+1572>: 0x8b0c01ac   add    x12, x13, x12
+libggml-cpu.0.dylib[0x9b828] <+1576>: 0xf90117ec   str    x12, [sp, #0x228]
+libggml-cpu.0.dylib[0x9b82c] <+1580>: 0xf9405fec   ldr    x12, [sp, #0xb8]
+libggml-cpu.0.dylib[0x9b830] <+1584>: 0x8b0b018c   add    x12, x12, x11
+libggml-cpu.0.dylib[0x9b834] <+1588>: 0x8b080196   add    x22, x12, x8
+libggml-cpu.0.dylib[0x9b838] <+1592>: 0xf9404fec   ldr    x12, [sp, #0x98]
+libggml-cpu.0.dylib[0x9b83c] <+1596>: 0x8b0c01ac   add    x12, x13, x12
+libggml-cpu.0.dylib[0x9b840] <+1600>: 0xf900a3ec   str    x12, [sp, #0x140]
+libggml-cpu.0.dylib[0x9b844] <+1604>: 0xf9403fec   ldr    x12, [sp, #0x78]
+libggml-cpu.0.dylib[0x9b848] <+1608>: 0x8b0c01ac   add    x12, x13, x12
+libggml-cpu.0.dylib[0x9b84c] <+1612>: 0xf90127ec   str    x12, [sp, #0x248]
+libggml-cpu.0.dylib[0x9b850] <+1616>: 0xf940b7ec   ldr    x12, [sp, #0x168]
+libggml-cpu.0.dylib[0x9b854] <+1620>: 0x8b0c01ac   add    x12, x13, x12
+libggml-cpu.0.dylib[0x9b858] <+1624>: 0xf9011fec   str    x12, [sp, #0x238]
+libggml-cpu.0.dylib[0x9b85c] <+1628>: 0x52bff00c   mov    w12, #-0x800000           ; =-8388608 
+libggml-cpu.0.dylib[0x9b860] <+1632>: 0x1e27018b   fmov   s11, w12
+libggml-cpu.0.dylib[0x9b864] <+1636>: 0xf9403bec   ldr    x12, [sp, #0x70]
+libggml-cpu.0.dylib[0x9b868] <+1640>: 0x8b0b018c   add    x12, x12, x11
+libggml-cpu.0.dylib[0x9b86c] <+1644>: 0x8b08019b   add    x27, x12, x8
+libggml-cpu.0.dylib[0x9b870] <+1648>: 0x8b0a0129   add    x9, x9, x10
+libggml-cpu.0.dylib[0x9b874] <+1652>: 0xf81083a9   stur   x9, [x29, #-0xf8]
+libggml-cpu.0.dylib[0x9b878] <+1656>: 0xf9404be9   ldr    x9, [sp, #0x90]
+libggml-cpu.0.dylib[0x9b87c] <+1660>: 0x8b0b0129   add    x9, x9, x11
+libggml-cpu.0.dylib[0x9b880] <+1664>: 0x8b080139   add    x25, x9, x8
+libggml-cpu.0.dylib[0x9b884] <+1668>: 0x6f00e408   movi.2d v8, #0000000000000000
+libggml-cpu.0.dylib[0x9b888] <+1672>: 0x8b0b0108   add    x8, x8, x11
+libggml-cpu.0.dylib[0x9b88c] <+1676>: 0xf90123e8   str    x8, [sp, #0x240]
+libggml-cpu.0.dylib[0x9b890] <+1680>: 0xa97393a2   ldp    x2, x4, [x29, #-0xc8]
+libggml-cpu.0.dylib[0x9b894] <+1684>: 0xf85483a3   ldur   x3, [x29, #-0xb8]
+libggml-cpu.0.dylib[0x9b898] <+1688>: 0xf85303a9   ldur   x9, [x29, #-0xd0]
+libggml-cpu.0.dylib[0x9b89c] <+1692>: 0x1400000f   b      0x9b8d8                   ; <+1752>
+libggml-cpu.0.dylib[0x9b8a0] <+1696>: 0x4eab1d69   mov.16b v9, v11
+libggml-cpu.0.dylib[0x9b8a4] <+1700>: 0xf85383a2   ldur   x2, [x29, #-0xc8]
+libggml-cpu.0.dylib[0x9b8a8] <+1704>: 0x1f1a6d08   fmadd  s8, s8, s26, s27
+libggml-cpu.0.dylib[0x9b8ac] <+1708>: 0x4ea91d2b   mov.16b v11, v9
+libggml-cpu.0.dylib[0x9b8b0] <+1712>: 0xf85303a9   ldur   x9, [x29, #-0xd0]
+libggml-cpu.0.dylib[0x9b8b4] <+1716>: 0x910006f7   add    x23, x23, #0x1
+libggml-cpu.0.dylib[0x9b8b8] <+1720>: 0xa9752ba8   ldp    x8, x10, [x29, #-0xb0]
+libggml-cpu.0.dylib[0x9b8bc] <+1724>: 0x8b0a02b5   add    x21, x21, x10
+libggml-cpu.0.dylib[0x9b8c0] <+1728>: 0x8b0a0318   add    x24, x24, x10
+libggml-cpu.0.dylib[0x9b8c4] <+1732>: 0x8b0a02d6   add    x22, x22, x10
+libggml-cpu.0.dylib[0x9b8c8] <+1736>: 0x8b0a037b   add    x27, x27, x10
+libggml-cpu.0.dylib[0x9b8cc] <+1740>: 0x8b0a0339   add    x25, x25, x10
+libggml-cpu.0.dylib[0x9b8d0] <+1744>: 0xeb0802ff   cmp    x23, x8
+libggml-cpu.0.dylib[0x9b8d4] <+1748>: 0x54004200   b.eq   0x9c114                   ; <+3860>
+libggml-cpu.0.dylib[0x9b8d8] <+1752>: 0x6f00e409   movi.2d v9, #0000000000000000
+libggml-cpu.0.dylib[0x9b8dc] <+1756>: 0xb4000109   cbz    x9, 0x9b8fc               ; <+1788>
+libggml-cpu.0.dylib[0x9b8e0] <+1760>: 0x7c777920   ldr    h0, [x9, x23, lsl #1]
+libggml-cpu.0.dylib[0x9b8e4] <+1764>: 0x1ee24000   fcvt   s0, h0
+libggml-cpu.0.dylib[0x9b8e8] <+1768>: 0x1e200949   fmul   s9, s10, s0
+libggml-cpu.0.dylib[0x9b8ec] <+1772>: 0x52bff008   mov    w8, #-0x800000            ; =-8388608 
+libggml-cpu.0.dylib[0x9b8f0] <+1776>: 0x1e270100   fmov   s0, w8
+libggml-cpu.0.dylib[0x9b8f4] <+1780>: 0x1e202120   fcmp   s9, s0
+libggml-cpu.0.dylib[0x9b8f8] <+1784>: 0x54fffde0   b.eq   0x9b8b4                   ; <+1716>
+libggml-cpu.0.dylib[0x9b8fc] <+1788>: 0xf9416fe8   ldr    x8, [sp, #0x2d8]
+libggml-cpu.0.dylib[0x9b900] <+1792>: 0xf9407d08   ldr    x8, [x8, #0xf8]
+libggml-cpu.0.dylib[0x9b904] <+1796>: 0xa97027aa   ldp    x10, x9, [x29, #-0x100]
+libggml-cpu.0.dylib[0x9b908] <+1800>: 0x9b0a22e8   madd   x8, x23, x10, x8
+libggml-cpu.0.dylib[0x9b90c] <+1804>: 0xd10283a1   sub    x1, x29, #0xa0
+libggml-cpu.0.dylib[0x9b910] <+1808>: 0x8b090103   add    x3, x8, x9
+libggml-cpu.0.dylib[0x9b914] <+1812>: 0xa97183a5   ldp    x5, x0, [x29, #-0xe8]
+libggml-cpu.0.dylib[0x9b918] <+1816>: 0xd2800002   mov    x2, #0x0                  ; =0 
+libggml-cpu.0.dylib[0x9b91c] <+1820>: 0xd2800004   mov    x4, #0x0                  ; =0 
+libggml-cpu.0.dylib[0x9b920] <+1824>: 0xd2800006   mov    x6, #0x0                  ; =0 
+libggml-cpu.0.dylib[0x9b924] <+1828>: 0x52800027   mov    w7, #0x1                  ; =1 
+libggml-cpu.0.dylib[0x9b928] <+1832>: 0xf9416be8   ldr    x8, [sp, #0x2d0]
+libggml-cpu.0.dylib[0x9b92c] <+1836>: 0xd63f0100   blr    x8
+libggml-cpu.0.dylib[0x9b930] <+1840>: 0xbc5603a0   ldur   s0, [x29, #-0xa0]
+libggml-cpu.0.dylib[0x9b934] <+1844>: 0x1e2009a0   fmul   s0, s13, s0
+libggml-cpu.0.dylib[0x9b938] <+1848>: 0x1e202188   fcmp   s12, #0.0
+libggml-cpu.0.dylib[0x9b93c] <+1852>: 0x54000060   b.eq   0x9b948                   ; <+1864>
+libggml-cpu.0.dylib[0x9b940] <+1856>: 0x94009742   bl     0xc1648                   ; symbol stub for: tanhf
+libggml-cpu.0.dylib[0x9b944] <+1860>: 0x1e200980   fmul   s0, s12, s0
+libggml-cpu.0.dylib[0x9b948] <+1864>: 0x1e202929   fadd   s9, s9, s0
+libggml-cpu.0.dylib[0x9b94c] <+1868>: 0xbc1603a9   stur   s9, [x29, #-0xa0]
+libggml-cpu.0.dylib[0x9b950] <+1872>: 0xf85283a8   ldur   x8, [x29, #-0xd8]
+libggml-cpu.0.dylib[0x9b954] <+1876>: 0xf9407d14   ldr    x20, [x8, #0xf8]
+libggml-cpu.0.dylib[0x9b958] <+1880>: 0xb9400108   ldr    w8, [x8]
+libggml-cpu.0.dylib[0x9b95c] <+1884>: 0x7100051f   cmp    w8, #0x1
+libggml-cpu.0.dylib[0x9b960] <+1888>: 0x540010c1   b.ne   0x9bb78                   ; <+2424>
+libggml-cpu.0.dylib[0x9b964] <+1892>: 0x1e2b2120   fcmp   s9, s11
+libggml-cpu.0.dylib[0x9b968] <+1896>: 0x5400176d   b.le   0x9bc54                   ; <+2644>
+libggml-cpu.0.dylib[0x9b96c] <+1900>: 0x1e293960   fsub   s0, s11, s9
+libggml-cpu.0.dylib[0x9b970] <+1904>: 0x94009619   bl     0xc11d4                   ; symbol stub for: expf
+libggml-cpu.0.dylib[0x9b974] <+1908>: 0x4ea01c1a   mov.16b v26, v0
+libggml-cpu.0.dylib[0x9b978] <+1912>: 0xf85403a4   ldur   x4, [x29, #-0xc0]
+libggml-cpu.0.dylib[0x9b97c] <+1916>: 0x7100409f   cmp    w4, #0x10
+libggml-cpu.0.dylib[0x9b980] <+1920>: 0x540002cb   b.lt   0x9b9d8                   ; <+2008>
+libggml-cpu.0.dylib[0x9b984] <+1924>: 0xd2800008   mov    x8, #0x0                  ; =0 
+libggml-cpu.0.dylib[0x9b988] <+1928>: 0xf94127e9   ldr    x9, [sp, #0x248]
+libggml-cpu.0.dylib[0x9b98c] <+1932>: 0x6d7f0520   ldp    d0, d1, [x9, #-0x10]
+libggml-cpu.0.dylib[0x9b990] <+1936>: 0x0e217800   fcvtl  v0.4s, v0.4h
+libggml-cpu.0.dylib[0x9b994] <+1940>: 0x4f9a9000   fmul.4s v0, v0, v26[0]
+libggml-cpu.0.dylib[0x9b998] <+1944>: 0x0e216800   fcvtn  v0.4h, v0.4s
+libggml-cpu.0.dylib[0x9b99c] <+1948>: 0x0e217821   fcvtl  v1.4s, v1.4h
+libggml-cpu.0.dylib[0x9b9a0] <+1952>: 0x4f9a9021   fmul.4s v1, v1, v26[0]
+libggml-cpu.0.dylib[0x9b9a4] <+1956>: 0x0e216821   fcvtn  v1.4h, v1.4s
+libggml-cpu.0.dylib[0x9b9a8] <+1960>: 0x6d3f0520   stp    d0, d1, [x9, #-0x10]
+libggml-cpu.0.dylib[0x9b9ac] <+1964>: 0x6d400520   ldp    d0, d1, [x9]
+libggml-cpu.0.dylib[0x9b9b0] <+1968>: 0x0e217800   fcvtl  v0.4s, v0.4h
+libggml-cpu.0.dylib[0x9b9b4] <+1972>: 0x4f9a9000   fmul.4s v0, v0, v26[0]
+libggml-cpu.0.dylib[0x9b9b8] <+1976>: 0x0e216800   fcvtn  v0.4h, v0.4s
+libggml-cpu.0.dylib[0x9b9bc] <+1980>: 0x0e217821   fcvtl  v1.4s, v1.4h
+libggml-cpu.0.dylib[0x9b9c0] <+1984>: 0x4f9a9021   fmul.4s v1, v1, v26[0]
+libggml-cpu.0.dylib[0x9b9c4] <+1988>: 0x0e216821   fcvtn  v1.4h, v1.4s
+libggml-cpu.0.dylib[0x9b9c8] <+1992>: 0x6c820520   stp    d0, d1, [x9], #0x20
+libggml-cpu.0.dylib[0x9b9cc] <+1996>: 0x91004108   add    x8, x8, #0x10
+libggml-cpu.0.dylib[0x9b9d0] <+2000>: 0xeb13011f   cmp    x8, x19
+libggml-cpu.0.dylib[0x9b9d4] <+2004>: 0x54fffdc3   b.lo   0x9b98c                   ; <+1932>
+libggml-cpu.0.dylib[0x9b9d8] <+2008>: 0x1e2e101b   fmov   s27, #1.00000000
+libggml-cpu.0.dylib[0x9b9dc] <+2012>: 0xf85103ae   ldur   x14, [x29, #-0xf0]
+libggml-cpu.0.dylib[0x9b9e0] <+2016>: 0x6b0401df   cmp    w14, w4
+libggml-cpu.0.dylib[0x9b9e4] <+2020>: 0x52aef00f   mov    w15, #0x77800000          ; =2004877312 
+libggml-cpu.0.dylib[0x9b9e8] <+2024>: 0x52a11010   mov    w16, #0x8800000           ; =142606336 
+libggml-cpu.0.dylib[0x9b9ec] <+2028>: 0x52a0f011   mov    w17, #0x7800000           ; =125829120 
+libggml-cpu.0.dylib[0x9b9f0] <+2032>: 0xad53c3f1   ldp    q17, q16, [sp, #0x270]
+libggml-cpu.0.dylib[0x9b9f4] <+2036>: 0x4f036632   movi.4s v18, #0x71, lsl #24
+libggml-cpu.0.dylib[0x9b9f8] <+2040>: 0xad52cff4   ldp    q20, q19, [sp, #0x250]
+libggml-cpu.0.dylib[0x9b9fc] <+2044>: 0x4f032795   movi.4s v21, #0x7c, lsl #8
+libggml-cpu.0.dylib[0x9ba00] <+2048>: 0x4f00c5f6   movi.4s v22, #0xf, msl #8
+libggml-cpu.0.dylib[0x9ba04] <+2052>: 0x4f042417   movi.4s v23, #0x80, lsl #8
+libggml-cpu.0.dylib[0x9ba08] <+2056>: 0x6f04e518   movi.2d v24, #0xff000000ff000000
+libggml-cpu.0.dylib[0x9ba0c] <+2060>: 0x4f0327d9   movi.4s v25, #0x7e, lsl #8
+libggml-cpu.0.dylib[0x9ba10] <+2064>: 0x52bfe000   mov    w0, #-0x1000000           ; =-16777216 
+libggml-cpu.0.dylib[0x9ba14] <+2068>: 0x528fc001   mov    w1, #0x7e00               ; =32256 
+libggml-cpu.0.dylib[0x9ba18] <+2072>: 0xf85483a3   ldur   x3, [x29, #-0xb8]
+libggml-cpu.0.dylib[0x9ba1c] <+2076>: 0x54000a60   b.eq   0x9bb68                   ; <+2408>
+libggml-cpu.0.dylib[0x9ba20] <+2080>: 0xaa0e03e8   mov    x8, x14
+libggml-cpu.0.dylib[0x9ba24] <+2084>: 0xf9415fe9   ldr    x9, [sp, #0x2b8]
+libggml-cpu.0.dylib[0x9ba28] <+2088>: 0xf100213f   cmp    x9, #0x8
+libggml-cpu.0.dylib[0x9ba2c] <+2092>: 0x54000643   b.lo   0x9baf4                   ; <+2292>
+libggml-cpu.0.dylib[0x9ba30] <+2096>: 0xf940f7e8   ldr    x8, [sp, #0x1e8]
+libggml-cpu.0.dylib[0x9ba34] <+2100>: 0xf94113e9   ldr    x9, [sp, #0x220]
+libggml-cpu.0.dylib[0x9ba38] <+2104>: 0x3dc00120   ldr    q0, [x9]
+libggml-cpu.0.dylib[0x9ba3c] <+2108>: 0x4e217801   fcvtl2 v1.4s, v0.8h
+libggml-cpu.0.dylib[0x9ba40] <+2112>: 0x0e217800   fcvtl  v0.4s, v0.4h
+libggml-cpu.0.dylib[0x9ba44] <+2116>: 0x4f9a9000   fmul.4s v0, v0, v26[0]
+libggml-cpu.0.dylib[0x9ba48] <+2120>: 0x4f9a9021   fmul.4s v1, v1, v26[0]
+libggml-cpu.0.dylib[0x9ba4c] <+2124>: 0x4ea0f822   fabs.4s v2, v1
+libggml-cpu.0.dylib[0x9ba50] <+2128>: 0x4ea0f803   fabs.4s v3, v0
+libggml-cpu.0.dylib[0x9ba54] <+2132>: 0x6e30dc63   fmul.4s v3, v3, v16
+libggml-cpu.0.dylib[0x9ba58] <+2136>: 0x6e30dc42   fmul.4s v2, v2, v16
+libggml-cpu.0.dylib[0x9ba5c] <+2140>: 0x6e31dc42   fmul.4s v2, v2, v17
+libggml-cpu.0.dylib[0x9ba60] <+2144>: 0x6e31dc63   fmul.4s v3, v3, v17
+libggml-cpu.0.dylib[0x9ba64] <+2148>: 0x4ea18424   add.4s v4, v1, v1
+libggml-cpu.0.dylib[0x9ba68] <+2152>: 0x4ea08405   add.4s v5, v0, v0
+libggml-cpu.0.dylib[0x9ba6c] <+2156>: 0x6eb264a6   umax.4s v6, v5, v18
+libggml-cpu.0.dylib[0x9ba70] <+2160>: 0x6eb26487   umax.4s v7, v4, v18
+libggml-cpu.0.dylib[0x9ba74] <+2164>: 0x6f3f04e7   ushr.4s v7, v7, #0x1
+libggml-cpu.0.dylib[0x9ba78] <+2168>: 0x6f3f04c6   ushr.4s v6, v6, #0x1
+libggml-cpu.0.dylib[0x9ba7c] <+2172>: 0x4e331cc6   and.16b v6, v6, v19
+libggml-cpu.0.dylib[0x9ba80] <+2176>: 0x4e331ce7   and.16b v7, v7, v19
+libggml-cpu.0.dylib[0x9ba84] <+2180>: 0x4eb484e7   add.4s v7, v7, v20
+libggml-cpu.0.dylib[0x9ba88] <+2184>: 0x4eb484c6   add.4s v6, v6, v20
+libggml-cpu.0.dylib[0x9ba8c] <+2188>: 0x4e26d463   fadd.4s v3, v3, v6
+libggml-cpu.0.dylib[0x9ba90] <+2192>: 0x4e27d442   fadd.4s v2, v2, v7
+libggml-cpu.0.dylib[0x9ba94] <+2196>: 0x6f330446   ushr.4s v6, v2, #0xd
+libggml-cpu.0.dylib[0x9ba98] <+2200>: 0x6f330467   ushr.4s v7, v3, #0xd
+libggml-cpu.0.dylib[0x9ba9c] <+2204>: 0x4e351ce7   and.16b v7, v7, v21
+libggml-cpu.0.dylib[0x9baa0] <+2208>: 0x4e351cc6   and.16b v6, v6, v21
+libggml-cpu.0.dylib[0x9baa4] <+2212>: 0x4e361c63   and.16b v3, v3, v22
+libggml-cpu.0.dylib[0x9baa8] <+2216>: 0x4e361c42   and.16b v2, v2, v22
+libggml-cpu.0.dylib[0x9baac] <+2220>: 0x4ea284c2   add.4s v2, v6, v2
+libggml-cpu.0.dylib[0x9bab0] <+2224>: 0x4ea384e3   add.4s v3, v7, v3
+libggml-cpu.0.dylib[0x9bab4] <+2228>: 0x6f300421   ushr.4s v1, v1, #0x10
+libggml-cpu.0.dylib[0x9bab8] <+2232>: 0x6f300400   ushr.4s v0, v0, #0x10
+libggml-cpu.0.dylib[0x9babc] <+2236>: 0x4e371c00   and.16b v0, v0, v23
+libggml-cpu.0.dylib[0x9bac0] <+2240>: 0x4e371c21   and.16b v1, v1, v23
+libggml-cpu.0.dylib[0x9bac4] <+2244>: 0x6eb83484   cmhi.4s v4, v4, v24
+libggml-cpu.0.dylib[0x9bac8] <+2248>: 0x6eb834a5   cmhi.4s v5, v5, v24
+libggml-cpu.0.dylib[0x9bacc] <+2252>: 0x6ea51f23   bit.16b v3, v25, v5
+libggml-cpu.0.dylib[0x9bad0] <+2256>: 0x6ea41f22   bit.16b v2, v25, v4
+libggml-cpu.0.dylib[0x9bad4] <+2260>: 0x4ea11c41   orr.16b v1, v2, v1
+libggml-cpu.0.dylib[0x9bad8] <+2264>: 0x4ea01c60   orr.16b v0, v3, v0
+libggml-cpu.0.dylib[0x9badc] <+2268>: 0x4e411800   uzp1.8h v0, v0, v1
+libggml-cpu.0.dylib[0x9bae0] <+2272>: 0x3c810520   str    q0, [x9], #0x10
+libggml-cpu.0.dylib[0x9bae4] <+2276>: 0xb1002108   adds   x8, x8, #0x8
+libggml-cpu.0.dylib[0x9bae8] <+2280>: 0x54fffa81   b.ne   0x9ba38                   ; <+2104>
+libggml-cpu.0.dylib[0x9baec] <+2284>: 0xa95f27e8   ldp    x8, x9, [sp, #0x1f0]
+libggml-cpu.0.dylib[0x9baf0] <+2288>: 0xb40003c9   cbz    x9, 0x9bb68               ; <+2408>
+libggml-cpu.0.dylib[0x9baf4] <+2292>: 0xf9411fe9   ldr    x9, [sp, #0x238]
+libggml-cpu.0.dylib[0x9baf8] <+2296>: 0x8b080529   add    x9, x9, x8, lsl #1
+libggml-cpu.0.dylib[0x9bafc] <+2300>: 0x7d400120   ldr    h0, [x9]
+libggml-cpu.0.dylib[0x9bb00] <+2304>: 0x1ee24000   fcvt   s0, h0
+libggml-cpu.0.dylib[0x9bb04] <+2308>: 0x1e200b40   fmul   s0, s26, s0
+libggml-cpu.0.dylib[0x9bb08] <+2312>: 0x1e20c001   fabs   s1, s0
+libggml-cpu.0.dylib[0x9bb0c] <+2316>: 0x1e2e0821   fmul   s1, s1, s14
+libggml-cpu.0.dylib[0x9bb10] <+2320>: 0x1e2f0821   fmul   s1, s1, s15
+libggml-cpu.0.dylib[0x9bb14] <+2324>: 0x1e26000a   fmov   w10, s0
+libggml-cpu.0.dylib[0x9bb18] <+2328>: 0x531f794b   lsl    w11, w10, #1
+libggml-cpu.0.dylib[0x9bb1c] <+2332>: 0x6b1a017f   cmp    w11, w26
+libggml-cpu.0.dylib[0x9bb20] <+2336>: 0x1a9a816c   csel   w12, w11, w26, hi
+libggml-cpu.0.dylib[0x9bb24] <+2340>: 0x53187d8c   lsr    w12, w12, #24
+libggml-cpu.0.dylib[0x9bb28] <+2344>: 0x0b0c5e2c   add    w12, w17, w12, lsl #23
+libggml-cpu.0.dylib[0x9bb2c] <+2348>: 0x1e270180   fmov   s0, w12
+libggml-cpu.0.dylib[0x9bb30] <+2352>: 0x1e202820   fadd   s0, s1, s0
+libggml-cpu.0.dylib[0x9bb34] <+2356>: 0x1e26000c   fmov   w12, s0
+libggml-cpu.0.dylib[0x9bb38] <+2360>: 0x530d7d8d   lsr    w13, w12, #13
+libggml-cpu.0.dylib[0x9bb3c] <+2364>: 0x121611ad   and    w13, w13, #0x7c00
+libggml-cpu.0.dylib[0x9bb40] <+2368>: 0x12002d8c   and    w12, w12, #0xfff
+libggml-cpu.0.dylib[0x9bb44] <+2372>: 0x0b0c01ac   add    w12, w13, w12
+libggml-cpu.0.dylib[0x9bb48] <+2376>: 0x531f7d4a   lsr    w10, w10, #31
+libggml-cpu.0.dylib[0x9bb4c] <+2380>: 0x6b00017f   cmp    w11, w0
+libggml-cpu.0.dylib[0x9bb50] <+2384>: 0x1a8c802b   csel   w11, w1, w12, hi
+libggml-cpu.0.dylib[0x9bb54] <+2388>: 0x2a0a3d6a   orr    w10, w11, w10, lsl #15
+libggml-cpu.0.dylib[0x9bb58] <+2392>: 0x7800252a   strh   w10, [x9], #0x2
+libggml-cpu.0.dylib[0x9bb5c] <+2396>: 0x91000508   add    x8, x8, #0x1
+libggml-cpu.0.dylib[0x9bb60] <+2400>: 0xeb1c011f   cmp    x8, x28
+libggml-cpu.0.dylib[0x9bb64] <+2404>: 0x54fffccb   b.lt   0x9bafc                   ; <+2300>
+libggml-cpu.0.dylib[0x9bb68] <+2408>: 0x4ea91d2b   mov.16b v11, v9
+libggml-cpu.0.dylib[0x9bb6c] <+2412>: 0x7100409f   cmp    w4, #0x10
+libggml-cpu.0.dylib[0x9bb70] <+2416>: 0x540009ca   b.ge   0x9bca8                   ; <+2728>
+libggml-cpu.0.dylib[0x9bb74] <+2420>: 0x1400006f   b      0x9bd30                   ; <+2864>
+libggml-cpu.0.dylib[0x9bb78] <+2424>: 0x1e2b2120   fcmp   s9, s11
+libggml-cpu.0.dylib[0x9bb7c] <+2428>: 0x5400196d   b.le   0x9bea8                   ; <+3240>
+libggml-cpu.0.dylib[0x9bb80] <+2432>: 0x1e293960   fsub   s0, s11, s9
+libggml-cpu.0.dylib[0x9bb84] <+2436>: 0x94009594   bl     0xc11d4                   ; symbol stub for: expf
+libggml-cpu.0.dylib[0x9bb88] <+2440>: 0x3d80b3e0   str    q0, [sp, #0x2c0]
+libggml-cpu.0.dylib[0x9bb8c] <+2444>: 0xbc1643a0   stur   s0, [x29, #-0x9c]
+libggml-cpu.0.dylib[0x9bb90] <+2448>: 0xd10273a2   sub    x2, x29, #0x9c
+libggml-cpu.0.dylib[0x9bb94] <+2452>: 0xf85483a0   ldur   x0, [x29, #-0xb8]
+libggml-cpu.0.dylib[0x9bb98] <+2456>: 0x52800021   mov    w1, #0x1                  ; =1 
+libggml-cpu.0.dylib[0x9bb9c] <+2460>: 0xaa0003e3   mov    x3, x0
+libggml-cpu.0.dylib[0x9bba0] <+2464>: 0x52800024   mov    w4, #0x1                  ; =1 
+libggml-cpu.0.dylib[0x9bba4] <+2468>: 0xaa1c03e5   mov    x5, x28
+libggml-cpu.0.dylib[0x9bba8] <+2472>: 0x940096bd   bl     0xc169c                   ; symbol stub for: vDSP_vsmul
+libggml-cpu.0.dylib[0x9bbac] <+2476>: 0x1e2e101b   fmov   s27, #1.00000000
+libggml-cpu.0.dylib[0x9bbb0] <+2480>: 0xf9414be9   ldr    x9, [sp, #0x290]
+libggml-cpu.0.dylib[0x9bbb4] <+2484>: 0xb50018a9   cbnz   x9, 0x9bec8               ; <+3272>
+libggml-cpu.0.dylib[0x9bbb8] <+2488>: 0xa9740fa4   ldp    x4, x3, [x29, #-0xc0]
+libggml-cpu.0.dylib[0x9bbbc] <+2492>: 0x7100409f   cmp    w4, #0x10
+libggml-cpu.0.dylib[0x9bbc0] <+2496>: 0x3dc0b3fa   ldr    q26, [sp, #0x2c0]
+libggml-cpu.0.dylib[0x9bbc4] <+2500>: 0x540002eb   b.lt   0x9bc20                   ; <+2592>
+libggml-cpu.0.dylib[0x9bbc8] <+2504>: 0xd2800008   mov    x8, #0x0                  ; =0 
+libggml-cpu.0.dylib[0x9bbcc] <+2508>: 0x8b150289   add    x9, x20, x21
+libggml-cpu.0.dylib[0x9bbd0] <+2512>: 0xf9411bea   ldr    x10, [sp, #0x230]
+libggml-cpu.0.dylib[0x9bbd4] <+2516>: 0x3cde0120   ldur   q0, [x9, #-0x20]
+libggml-cpu.0.dylib[0x9bbd8] <+2520>: 0xad7f0941   ldp    q1, q2, [x10, #-0x20]
+libggml-cpu.0.dylib[0x9bbdc] <+2524>: 0x4f9b1001   fmla.4s v1, v0, v27[0]
+libggml-cpu.0.dylib[0x9bbe0] <+2528>: 0x3c9e0141   stur   q1, [x10, #-0x20]
+libggml-cpu.0.dylib[0x9bbe4] <+2532>: 0x3cdf0120   ldur   q0, [x9, #-0x10]
+libggml-cpu.0.dylib[0x9bbe8] <+2536>: 0x4f9b1002   fmla.4s v2, v0, v27[0]
+libggml-cpu.0.dylib[0x9bbec] <+2540>: 0x3c9f0142   stur   q2, [x10, #-0x10]
+libggml-cpu.0.dylib[0x9bbf0] <+2544>: 0x3dc00120   ldr    q0, [x9]
+libggml-cpu.0.dylib[0x9bbf4] <+2548>: 0xad400941   ldp    q1, q2, [x10]
+libggml-cpu.0.dylib[0x9bbf8] <+2552>: 0x4f9b1001   fmla.4s v1, v0, v27[0]
+libggml-cpu.0.dylib[0x9bbfc] <+2556>: 0x3d800141   str    q1, [x10]
+libggml-cpu.0.dylib[0x9bc00] <+2560>: 0x3dc00520   ldr    q0, [x9, #0x10]
+libggml-cpu.0.dylib[0x9bc04] <+2564>: 0x4f9b1002   fmla.4s v2, v0, v27[0]
+libggml-cpu.0.dylib[0x9bc08] <+2568>: 0x3d800542   str    q2, [x10, #0x10]
+libggml-cpu.0.dylib[0x9bc0c] <+2572>: 0x91004108   add    x8, x8, #0x10
+libggml-cpu.0.dylib[0x9bc10] <+2576>: 0x91010129   add    x9, x9, #0x40
+libggml-cpu.0.dylib[0x9bc14] <+2580>: 0x9101014a   add    x10, x10, #0x40
+libggml-cpu.0.dylib[0x9bc18] <+2584>: 0xeb13011f   cmp    x8, x19
+libggml-cpu.0.dylib[0x9bc1c] <+2588>: 0x54fffdc3   b.lo   0x9bbd4                   ; <+2516>
+libggml-cpu.0.dylib[0x9bc20] <+2592>: 0xf85103ab   ldur   x11, [x29, #-0xf0]
+libggml-cpu.0.dylib[0x9bc24] <+2596>: 0x6b04017f   cmp    w11, w4
+libggml-cpu.0.dylib[0x9bc28] <+2600>: 0xf85383a2   ldur   x2, [x29, #-0xc8]
+libggml-cpu.0.dylib[0x9bc2c] <+2604>: 0x54ffe3e0   b.eq   0x9b8a8                   ; <+1704>
+libggml-cpu.0.dylib[0x9bc30] <+2608>: 0xaa0b03e8   mov    x8, x11
+libggml-cpu.0.dylib[0x9bc34] <+2612>: 0xf9415fe9   ldr    x9, [sp, #0x2b8]
+libggml-cpu.0.dylib[0x9bc38] <+2616>: 0xf100113f   cmp    x9, #0x4
+libggml-cpu.0.dylib[0x9bc3c] <+2620>: 0x54002503   b.lo   0x9c0dc                   ; <+3804>
+libggml-cpu.0.dylib[0x9bc40] <+2624>: 0xf9415fe8   ldr    x8, [sp, #0x2b8]
+libggml-cpu.0.dylib[0x9bc44] <+2628>: 0xf100411f   cmp    x8, #0x10
+libggml-cpu.0.dylib[0x9bc48] <+2632>: 0x54002022   b.hs   0x9c04c                   ; <+3660>
+libggml-cpu.0.dylib[0x9bc4c] <+2636>: 0xd2800009   mov    x9, #0x0                  ; =0 
+libggml-cpu.0.dylib[0x9bc50] <+2640>: 0x14000113   b      0x9c09c                   ; <+3740>
+libggml-cpu.0.dylib[0x9bc54] <+2644>: 0x1e2b3920   fsub   s0, s9, s11
+libggml-cpu.0.dylib[0x9bc58] <+2648>: 0x9400955f   bl     0xc11d4                   ; symbol stub for: expf
+libggml-cpu.0.dylib[0x9bc5c] <+2652>: 0x4ea01c1b   mov.16b v27, v0
+libggml-cpu.0.dylib[0x9bc60] <+2656>: 0x1e2e101a   fmov   s26, #1.00000000
+libggml-cpu.0.dylib[0x9bc64] <+2660>: 0xa9740fa4   ldp    x4, x3, [x29, #-0xc0]
+libggml-cpu.0.dylib[0x9bc68] <+2664>: 0xf85103ae   ldur   x14, [x29, #-0xf0]
+libggml-cpu.0.dylib[0x9bc6c] <+2668>: 0x52aef00f   mov    w15, #0x77800000          ; =2004877312 
+libggml-cpu.0.dylib[0x9bc70] <+2672>: 0x52a11010   mov    w16, #0x8800000           ; =142606336 
+libggml-cpu.0.dylib[0x9bc74] <+2676>: 0x52a0f011   mov    w17, #0x7800000           ; =125829120 
+libggml-cpu.0.dylib[0x9bc78] <+2680>: 0xad53c3f1   ldp    q17, q16, [sp, #0x270]
+libggml-cpu.0.dylib[0x9bc7c] <+2684>: 0x4f036632   movi.4s v18, #0x71, lsl #24
+libggml-cpu.0.dylib[0x9bc80] <+2688>: 0xad52cff4   ldp    q20, q19, [sp, #0x250]
+libggml-cpu.0.dylib[0x9bc84] <+2692>: 0x4f032795   movi.4s v21, #0x7c, lsl #8
+libggml-cpu.0.dylib[0x9bc88] <+2696>: 0x4f00c5f6   movi.4s v22, #0xf, msl #8
+libggml-cpu.0.dylib[0x9bc8c] <+2700>: 0x4f042417   movi.4s v23, #0x80, lsl #8
+libggml-cpu.0.dylib[0x9bc90] <+2704>: 0x6f04e518   movi.2d v24, #0xff000000ff000000
+libggml-cpu.0.dylib[0x9bc94] <+2708>: 0x4f0327d9   movi.4s v25, #0x7e, lsl #8
+libggml-cpu.0.dylib[0x9bc98] <+2712>: 0x52bfe000   mov    w0, #-0x1000000           ; =-16777216 
+libggml-cpu.0.dylib[0x9bc9c] <+2716>: 0x528fc001   mov    w1, #0x7e00               ; =32256 
+libggml-cpu.0.dylib[0x9bca0] <+2720>: 0x7100409f   cmp    w4, #0x10
+libggml-cpu.0.dylib[0x9bca4] <+2724>: 0x5400046b   b.lt   0x9bd30                   ; <+2864>
+libggml-cpu.0.dylib[0x9bca8] <+2728>: 0xd2800008   mov    x8, #0x0                  ; =0 
+libggml-cpu.0.dylib[0x9bcac] <+2732>: 0x8b1b0289   add    x9, x20, x27
+libggml-cpu.0.dylib[0x9bcb0] <+2736>: 0xf94127ea   ldr    x10, [sp, #0x248]
+libggml-cpu.0.dylib[0x9bcb4] <+2740>: 0xfc5f0120   ldur   d0, [x9, #-0x10]
+libggml-cpu.0.dylib[0x9bcb8] <+2744>: 0x0e217800   fcvtl  v0.4s, v0.4h
+libggml-cpu.0.dylib[0x9bcbc] <+2748>: 0x6d7f0941   ldp    d1, d2, [x10, #-0x10]
+libggml-cpu.0.dylib[0x9bcc0] <+2752>: 0x0e217821   fcvtl  v1.4s, v1.4h
+libggml-cpu.0.dylib[0x9bcc4] <+2756>: 0x4f9b1001   fmla.4s v1, v0, v27[0]
+libggml-cpu.0.dylib[0x9bcc8] <+2760>: 0x0e216820   fcvtn  v0.4h, v1.4s
+libggml-cpu.0.dylib[0x9bccc] <+2764>: 0xfc1f0140   stur   d0, [x10, #-0x10]
+libggml-cpu.0.dylib[0x9bcd0] <+2768>: 0xfc5f8120   ldur   d0, [x9, #-0x8]
+libggml-cpu.0.dylib[0x9bcd4] <+2772>: 0x0e217800   fcvtl  v0.4s, v0.4h
+libggml-cpu.0.dylib[0x9bcd8] <+2776>: 0x0e217841   fcvtl  v1.4s, v2.4h
+libggml-cpu.0.dylib[0x9bcdc] <+2780>: 0x4f9b1001   fmla.4s v1, v0, v27[0]
+libggml-cpu.0.dylib[0x9bce0] <+2784>: 0x0e216820   fcvtn  v0.4h, v1.4s
+libggml-cpu.0.dylib[0x9bce4] <+2788>: 0xfc1f8140   stur   d0, [x10, #-0x8]
+libggml-cpu.0.dylib[0x9bce8] <+2792>: 0xfd400120   ldr    d0, [x9]
+libggml-cpu.0.dylib[0x9bcec] <+2796>: 0x0e217800   fcvtl  v0.4s, v0.4h
+libggml-cpu.0.dylib[0x9bcf0] <+2800>: 0x6d400941   ldp    d1, d2, [x10]
+libggml-cpu.0.dylib[0x9bcf4] <+2804>: 0x0e217821   fcvtl  v1.4s, v1.4h
+libggml-cpu.0.dylib[0x9bcf8] <+2808>: 0x4f9b1001   fmla.4s v1, v0, v27[0]
+libggml-cpu.0.dylib[0x9bcfc] <+2812>: 0x0e216820   fcvtn  v0.4h, v1.4s
+libggml-cpu.0.dylib[0x9bd00] <+2816>: 0xfd000140   str    d0, [x10]
+libggml-cpu.0.dylib[0x9bd04] <+2820>: 0xfd400520   ldr    d0, [x9, #0x8]
+libggml-cpu.0.dylib[0x9bd08] <+2824>: 0x0e217800   fcvtl  v0.4s, v0.4h
+libggml-cpu.0.dylib[0x9bd0c] <+2828>: 0x0e217841   fcvtl  v1.4s, v2.4h
+libggml-cpu.0.dylib[0x9bd10] <+2832>: 0x4f9b1001   fmla.4s v1, v0, v27[0]
+libggml-cpu.0.dylib[0x9bd14] <+2836>: 0x0e216820   fcvtn  v0.4h, v1.4s
+libggml-cpu.0.dylib[0x9bd18] <+2840>: 0xfd000540   str    d0, [x10, #0x8]
+libggml-cpu.0.dylib[0x9bd1c] <+2844>: 0x91004108   add    x8, x8, #0x10
+libggml-cpu.0.dylib[0x9bd20] <+2848>: 0x91008129   add    x9, x9, #0x20
+libggml-cpu.0.dylib[0x9bd24] <+2852>: 0x9100814a   add    x10, x10, #0x20
+libggml-cpu.0.dylib[0x9bd28] <+2856>: 0xeb13011f   cmp    x8, x19
+libggml-cpu.0.dylib[0x9bd2c] <+2860>: 0x54fffc43   b.lo   0x9bcb4                   ; <+2740>
+libggml-cpu.0.dylib[0x9bd30] <+2864>: 0x6b0401df   cmp    w14, w4
+libggml-cpu.0.dylib[0x9bd34] <+2868>: 0x54ffdb60   b.eq   0x9b8a0                   ; <+1696>
+libggml-cpu.0.dylib[0x9bd38] <+2872>: 0xaa0e03e8   mov    x8, x14
+libggml-cpu.0.dylib[0x9bd3c] <+2876>: 0xf9415fe9   ldr    x9, [sp, #0x2b8]
+libggml-cpu.0.dylib[0x9bd40] <+2880>: 0xf100213f   cmp    x9, #0x8
+libggml-cpu.0.dylib[0x9bd44] <+2884>: 0x540006c3   b.lo   0x9be1c                   ; <+3100>
+libggml-cpu.0.dylib[0x9bd48] <+2888>: 0x8b190288   add    x8, x20, x25
+libggml-cpu.0.dylib[0x9bd4c] <+2892>: 0xf94113e9   ldr    x9, [sp, #0x220]
+libggml-cpu.0.dylib[0x9bd50] <+2896>: 0xf940f7ea   ldr    x10, [sp, #0x1e8]
+libggml-cpu.0.dylib[0x9bd54] <+2900>: 0x3dc00120   ldr    q0, [x9]
+libggml-cpu.0.dylib[0x9bd58] <+2904>: 0x4e217801   fcvtl2 v1.4s, v0.8h
+libggml-cpu.0.dylib[0x9bd5c] <+2908>: 0x0e217800   fcvtl  v0.4s, v0.4h
+libggml-cpu.0.dylib[0x9bd60] <+2912>: 0x3cc10502   ldr    q2, [x8], #0x10
+libggml-cpu.0.dylib[0x9bd64] <+2916>: 0x4e217843   fcvtl2 v3.4s, v2.8h
+libggml-cpu.0.dylib[0x9bd68] <+2920>: 0x0e217842   fcvtl  v2.4s, v2.4h
+libggml-cpu.0.dylib[0x9bd6c] <+2924>: 0x4f9b1040   fmla.4s v0, v2, v27[0]
+libggml-cpu.0.dylib[0x9bd70] <+2928>: 0x4f9b1061   fmla.4s v1, v3, v27[0]
+libggml-cpu.0.dylib[0x9bd74] <+2932>: 0x4ea0f822   fabs.4s v2, v1
+libggml-cpu.0.dylib[0x9bd78] <+2936>: 0x4ea0f803   fabs.4s v3, v0
+libggml-cpu.0.dylib[0x9bd7c] <+2940>: 0x6e30dc63   fmul.4s v3, v3, v16
+libggml-cpu.0.dylib[0x9bd80] <+2944>: 0x6e30dc42   fmul.4s v2, v2, v16
+libggml-cpu.0.dylib[0x9bd84] <+2948>: 0x6e31dc42   fmul.4s v2, v2, v17
+libggml-cpu.0.dylib[0x9bd88] <+2952>: 0x6e31dc63   fmul.4s v3, v3, v17
+libggml-cpu.0.dylib[0x9bd8c] <+2956>: 0x4ea18424   add.4s v4, v1, v1
+libggml-cpu.0.dylib[0x9bd90] <+2960>: 0x4ea08405   add.4s v5, v0, v0
+libggml-cpu.0.dylib[0x9bd94] <+2964>: 0x6eb264a6   umax.4s v6, v5, v18
+libggml-cpu.0.dylib[0x9bd98] <+2968>: 0x6eb26487   umax.4s v7, v4, v18
+libggml-cpu.0.dylib[0x9bd9c] <+2972>: 0x6f3f04e7   ushr.4s v7, v7, #0x1
+libggml-cpu.0.dylib[0x9bda0] <+2976>: 0x6f3f04c6   ushr.4s v6, v6, #0x1
+libggml-cpu.0.dylib[0x9bda4] <+2980>: 0x4e331cc6   and.16b v6, v6, v19
+libggml-cpu.0.dylib[0x9bda8] <+2984>: 0x4e331ce7   and.16b v7, v7, v19
+libggml-cpu.0.dylib[0x9bdac] <+2988>: 0x4eb484e7   add.4s v7, v7, v20
+libggml-cpu.0.dylib[0x9bdb0] <+2992>: 0x4eb484c6   add.4s v6, v6, v20
+libggml-cpu.0.dylib[0x9bdb4] <+2996>: 0x4e26d463   fadd.4s v3, v3, v6
+libggml-cpu.0.dylib[0x9bdb8] <+3000>: 0x4e27d442   fadd.4s v2, v2, v7
+libggml-cpu.0.dylib[0x9bdbc] <+3004>: 0x6f330446   ushr.4s v6, v2, #0xd
+libggml-cpu.0.dylib[0x9bdc0] <+3008>: 0x6f330467   ushr.4s v7, v3, #0xd
+libggml-cpu.0.dylib[0x9bdc4] <+3012>: 0x4e351ce7   and.16b v7, v7, v21
+libggml-cpu.0.dylib[0x9bdc8] <+3016>: 0x4e351cc6   and.16b v6, v6, v21
+libggml-cpu.0.dylib[0x9bdcc] <+3020>: 0x4e361c63   and.16b v3, v3, v22
+libggml-cpu.0.dylib[0x9bdd0] <+3024>: 0x4e361c42   and.16b v2, v2, v22
+libggml-cpu.0.dylib[0x9bdd4] <+3028>: 0x4ea284c2   add.4s v2, v6, v2
+libggml-cpu.0.dylib[0x9bdd8] <+3032>: 0x4ea384e3   add.4s v3, v7, v3
+libggml-cpu.0.dylib[0x9bddc] <+3036>: 0x6f300421   ushr.4s v1, v1, #0x10
+libggml-cpu.0.dylib[0x9bde0] <+3040>: 0x6f300400   ushr.4s v0, v0, #0x10
+libggml-cpu.0.dylib[0x9bde4] <+3044>: 0x4e371c00   and.16b v0, v0, v23
+libggml-cpu.0.dylib[0x9bde8] <+3048>: 0x4e371c21   and.16b v1, v1, v23
+libggml-cpu.0.dylib[0x9bdec] <+3052>: 0x6eb83484   cmhi.4s v4, v4, v24
+libggml-cpu.0.dylib[0x9bdf0] <+3056>: 0x6eb834a5   cmhi.4s v5, v5, v24
+libggml-cpu.0.dylib[0x9bdf4] <+3060>: 0x6ea51f23   bit.16b v3, v25, v5
+libggml-cpu.0.dylib[0x9bdf8] <+3064>: 0x6ea41f22   bit.16b v2, v25, v4
+libggml-cpu.0.dylib[0x9bdfc] <+3068>: 0x4ea11c41   orr.16b v1, v2, v1
+libggml-cpu.0.dylib[0x9be00] <+3072>: 0x4ea01c60   orr.16b v0, v3, v0
+libggml-cpu.0.dylib[0x9be04] <+3076>: 0x4e411800   uzp1.8h v0, v0, v1
+libggml-cpu.0.dylib[0x9be08] <+3080>: 0x3c810520   str    q0, [x9], #0x10
+libggml-cpu.0.dylib[0x9be0c] <+3084>: 0xb100214a   adds   x10, x10, #0x8
+libggml-cpu.0.dylib[0x9be10] <+3088>: 0x54fffa21   b.ne   0x9bd54                   ; <+2900>
+libggml-cpu.0.dylib[0x9be14] <+3092>: 0xa95f27e8   ldp    x8, x9, [sp, #0x1f0]
+libggml-cpu.0.dylib[0x9be18] <+3096>: 0xb4ffd449   cbz    x9, 0x9b8a0               ; <+1696>
+libggml-cpu.0.dylib[0x9be1c] <+3100>: 0x8b160289   add    x9, x20, x22
+libggml-cpu.0.dylib[0x9be20] <+3104>: 0xf9411fea   ldr    x10, [sp, #0x238]
+libggml-cpu.0.dylib[0x9be24] <+3108>: 0x8b08054a   add    x10, x10, x8, lsl #1
+libggml-cpu.0.dylib[0x9be28] <+3112>: 0x7d400140   ldr    h0, [x10]
+libggml-cpu.0.dylib[0x9be2c] <+3116>: 0x1ee24000   fcvt   s0, h0
+libggml-cpu.0.dylib[0x9be30] <+3120>: 0x7c687921   ldr    h1, [x9, x8, lsl #1]
+libggml-cpu.0.dylib[0x9be34] <+3124>: 0x1ee24021   fcvt   s1, h1
+libggml-cpu.0.dylib[0x9be38] <+3128>: 0x1f1b0020   fmadd  s0, s1, s27, s0
+libggml-cpu.0.dylib[0x9be3c] <+3132>: 0x1e20c001   fabs   s1, s0
+libggml-cpu.0.dylib[0x9be40] <+3136>: 0x1e2701e2   fmov   s2, w15
+libggml-cpu.0.dylib[0x9be44] <+3140>: 0x1e220821   fmul   s1, s1, s2
+libggml-cpu.0.dylib[0x9be48] <+3144>: 0x1e270202   fmov   s2, w16
+libggml-cpu.0.dylib[0x9be4c] <+3148>: 0x1e220821   fmul   s1, s1, s2
+libggml-cpu.0.dylib[0x9be50] <+3152>: 0x1e26000b   fmov   w11, s0
+libggml-cpu.0.dylib[0x9be54] <+3156>: 0x531f796c   lsl    w12, w11, #1
+libggml-cpu.0.dylib[0x9be58] <+3160>: 0x6b1a019f   cmp    w12, w26
+libggml-cpu.0.dylib[0x9be5c] <+3164>: 0x1a9a818d   csel   w13, w12, w26, hi
+libggml-cpu.0.dylib[0x9be60] <+3168>: 0x53187dad   lsr    w13, w13, #24
+libggml-cpu.0.dylib[0x9be64] <+3172>: 0x0b0d5e2d   add    w13, w17, w13, lsl #23
+libggml-cpu.0.dylib[0x9be68] <+3176>: 0x1e2701a0   fmov   s0, w13
+libggml-cpu.0.dylib[0x9be6c] <+3180>: 0x1e202820   fadd   s0, s1, s0
+libggml-cpu.0.dylib[0x9be70] <+3184>: 0x1e26000d   fmov   w13, s0
+libggml-cpu.0.dylib[0x9be74] <+3188>: 0x530d7dae   lsr    w14, w13, #13
+libggml-cpu.0.dylib[0x9be78] <+3192>: 0x121611ce   and    w14, w14, #0x7c00
+libggml-cpu.0.dylib[0x9be7c] <+3196>: 0x12002dad   and    w13, w13, #0xfff
+libggml-cpu.0.dylib[0x9be80] <+3200>: 0x0b0d01cd   add    w13, w14, w13
+libggml-cpu.0.dylib[0x9be84] <+3204>: 0x531f7d6b   lsr    w11, w11, #31
+libggml-cpu.0.dylib[0x9be88] <+3208>: 0x6b00019f   cmp    w12, w0
+libggml-cpu.0.dylib[0x9be8c] <+3212>: 0x1a8d802c   csel   w12, w1, w13, hi
+libggml-cpu.0.dylib[0x9be90] <+3216>: 0x2a0b3d8b   orr    w11, w12, w11, lsl #15
+libggml-cpu.0.dylib[0x9be94] <+3220>: 0x7800254b   strh   w11, [x10], #0x2
+libggml-cpu.0.dylib[0x9be98] <+3224>: 0x91000508   add    x8, x8, #0x1
+libggml-cpu.0.dylib[0x9be9c] <+3228>: 0xeb1c011f   cmp    x8, x28
+libggml-cpu.0.dylib[0x9bea0] <+3232>: 0x54fffc4b   b.lt   0x9be28                   ; <+3112>
+libggml-cpu.0.dylib[0x9bea4] <+3236>: 0x17fffe7f   b      0x9b8a0                   ; <+1696>
+libggml-cpu.0.dylib[0x9bea8] <+3240>: 0x1e2b3920   fsub   s0, s9, s11
+libggml-cpu.0.dylib[0x9beac] <+3244>: 0x940094ca   bl     0xc11d4                   ; symbol stub for: expf
+libggml-cpu.0.dylib[0x9beb0] <+3248>: 0x4ea01c1b   mov.16b v27, v0
+libggml-cpu.0.dylib[0x9beb4] <+3252>: 0x1e2e1000   fmov   s0, #1.00000000
+libggml-cpu.0.dylib[0x9beb8] <+3256>: 0x3d80b3e0   str    q0, [sp, #0x2c0]
+libggml-cpu.0.dylib[0x9bebc] <+3260>: 0x4eab1d69   mov.16b v9, v11
+libggml-cpu.0.dylib[0x9bec0] <+3264>: 0xf9414be9   ldr    x9, [sp, #0x290]
+libggml-cpu.0.dylib[0x9bec4] <+3268>: 0xb4ffe7a9   cbz    x9, 0x9bbb8               ; <+2488>
+libggml-cpu.0.dylib[0x9bec8] <+3272>: 0xf85583a8   ldur   x8, [x29, #-0xa8]
+libggml-cpu.0.dylib[0x9becc] <+3276>: 0x9b0852e8   madd   x8, x23, x8, x20
+libggml-cpu.0.dylib[0x9bed0] <+3280>: 0xf94123ea   ldr    x10, [sp, #0x240]
+libggml-cpu.0.dylib[0x9bed4] <+3284>: 0x8b0a0100   add    x0, x8, x10
+libggml-cpu.0.dylib[0x9bed8] <+3288>: 0xf9414fe1   ldr    x1, [sp, #0x298]
+libggml-cpu.0.dylib[0x9bedc] <+3292>: 0xf85403b4   ldur   x20, [x29, #-0xc0]
+libggml-cpu.0.dylib[0x9bee0] <+3296>: 0xaa1403e2   mov    x2, x20
+libggml-cpu.0.dylib[0x9bee4] <+3300>: 0x3d80abfb   str    q27, [sp, #0x2a0]
+libggml-cpu.0.dylib[0x9bee8] <+3304>: 0xd63f0120   blr    x9
+libggml-cpu.0.dylib[0x9beec] <+3308>: 0x3dc0abfb   ldr    q27, [sp, #0x2a0]
+libggml-cpu.0.dylib[0x9bef0] <+3312>: 0xaa1403e4   mov    x4, x20
+libggml-cpu.0.dylib[0x9bef4] <+3316>: 0x7100409f   cmp    w4, #0x10
+libggml-cpu.0.dylib[0x9bef8] <+3320>: 0x540002eb   b.lt   0x9bf54                   ; <+3412>
+libggml-cpu.0.dylib[0x9befc] <+3324>: 0xd2800008   mov    x8, #0x0                  ; =0 
+libggml-cpu.0.dylib[0x9bf00] <+3328>: 0xf9411be9   ldr    x9, [sp, #0x230]
+libggml-cpu.0.dylib[0x9bf04] <+3332>: 0xf9414fea   ldr    x10, [sp, #0x298]
+libggml-cpu.0.dylib[0x9bf08] <+3336>: 0x3dc00140   ldr    q0, [x10]
+libggml-cpu.0.dylib[0x9bf0c] <+3340>: 0xad7f0921   ldp    q1, q2, [x9, #-0x20]
+libggml-cpu.0.dylib[0x9bf10] <+3344>: 0x4f9b1001   fmla.4s v1, v0, v27[0]
+libggml-cpu.0.dylib[0x9bf14] <+3348>: 0x3c9e0121   stur   q1, [x9, #-0x20]
+libggml-cpu.0.dylib[0x9bf18] <+3352>: 0x3dc00540   ldr    q0, [x10, #0x10]
+libggml-cpu.0.dylib[0x9bf1c] <+3356>: 0x4f9b1002   fmla.4s v2, v0, v27[0]
+libggml-cpu.0.dylib[0x9bf20] <+3360>: 0x3c9f0122   stur   q2, [x9, #-0x10]
+libggml-cpu.0.dylib[0x9bf24] <+3364>: 0x3dc00940   ldr    q0, [x10, #0x20]
+libggml-cpu.0.dylib[0x9bf28] <+3368>: 0xad400921   ldp    q1, q2, [x9]
+libggml-cpu.0.dylib[0x9bf2c] <+3372>: 0x4f9b1001   fmla.4s v1, v0, v27[0]
+libggml-cpu.0.dylib[0x9bf30] <+3376>: 0x3d800121   str    q1, [x9]
+libggml-cpu.0.dylib[0x9bf34] <+3380>: 0x3dc00d40   ldr    q0, [x10, #0x30]
+libggml-cpu.0.dylib[0x9bf38] <+3384>: 0x4f9b1002   fmla.4s v2, v0, v27[0]
+libggml-cpu.0.dylib[0x9bf3c] <+3388>: 0x3d800522   str    q2, [x9, #0x10]
+libggml-cpu.0.dylib[0x9bf40] <+3392>: 0x91004108   add    x8, x8, #0x10
+libggml-cpu.0.dylib[0x9bf44] <+3396>: 0x9101014a   add    x10, x10, #0x40
+libggml-cpu.0.dylib[0x9bf48] <+3400>: 0x91010129   add    x9, x9, #0x40
+libggml-cpu.0.dylib[0x9bf4c] <+3404>: 0xeb13011f   cmp    x8, x19
+libggml-cpu.0.dylib[0x9bf50] <+3408>: 0x54fffdc3   b.lo   0x9bf08                   ; <+3336>
+libggml-cpu.0.dylib[0x9bf54] <+3412>: 0xf85103ab   ldur   x11, [x29, #-0xf0]
+libggml-cpu.0.dylib[0x9bf58] <+3416>: 0x6b04017f   cmp    w11, w4
+libggml-cpu.0.dylib[0x9bf5c] <+3420>: 0xf85383a2   ldur   x2, [x29, #-0xc8]
+libggml-cpu.0.dylib[0x9bf60] <+3424>: 0xf85483a3   ldur   x3, [x29, #-0xb8]
+libggml-cpu.0.dylib[0x9bf64] <+3428>: 0x3dc0b3fa   ldr    q26, [sp, #0x2c0]
+libggml-cpu.0.dylib[0x9bf68] <+3432>: 0x54ffca00   b.eq   0x9b8a8                   ; <+1704>
+libggml-cpu.0.dylib[0x9bf6c] <+3436>: 0xaa0b03e8   mov    x8, x11
+libggml-cpu.0.dylib[0x9bf70] <+3440>: 0xf9415fe9   ldr    x9, [sp, #0x2b8]
+libggml-cpu.0.dylib[0x9bf74] <+3444>: 0xf100113f   cmp    x9, #0x4
+libggml-cpu.0.dylib[0x9bf78] <+3448>: 0x54000503   b.lo   0x9c018                   ; <+3608>
+libggml-cpu.0.dylib[0x9bf7c] <+3452>: 0xf9415fe8   ldr    x8, [sp, #0x2b8]
+libggml-cpu.0.dylib[0x9bf80] <+3456>: 0xf100411f   cmp    x8, #0x10
+libggml-cpu.0.dylib[0x9bf84] <+3460>: 0x54000062   b.hs   0x9bf90                   ; <+3472>
+libggml-cpu.0.dylib[0x9bf88] <+3464>: 0xd2800009   mov    x9, #0x0                  ; =0 
+libggml-cpu.0.dylib[0x9bf8c] <+3468>: 0x14000016   b      0x9bfe4                   ; <+3556>
+libggml-cpu.0.dylib[0x9bf90] <+3472>: 0xf940a3e8   ldr    x8, [sp, #0x140]
+libggml-cpu.0.dylib[0x9bf94] <+3476>: 0xf94087e9   ldr    x9, [sp, #0x108]
+libggml-cpu.0.dylib[0x9bf98] <+3480>: 0x8b02010a   add    x10, x8, x2
+libggml-cpu.0.dylib[0x9bf9c] <+3484>: 0xad7e8540   ldp    q0, q1, [x10, #-0x30]
+libggml-cpu.0.dylib[0x9bfa0] <+3488>: 0xad7f8d42   ldp    q2, q3, [x10, #-0x10]
+libggml-cpu.0.dylib[0x9bfa4] <+3492>: 0xad7e9504   ldp    q4, q5, [x8, #-0x30]
+libggml-cpu.0.dylib[0x9bfa8] <+3496>: 0xad7f9d06   ldp    q6, q7, [x8, #-0x10]
+libggml-cpu.0.dylib[0x9bfac] <+3500>: 0x4f9b1004   fmla.4s v4, v0, v27[0]
+libggml-cpu.0.dylib[0x9bfb0] <+3504>: 0x4f9b1025   fmla.4s v5, v1, v27[0]
+libggml-cpu.0.dylib[0x9bfb4] <+3508>: 0x4f9b1046   fmla.4s v6, v2, v27[0]
+libggml-cpu.0.dylib[0x9bfb8] <+3512>: 0x4f9b1067   fmla.4s v7, v3, v27[0]
+libggml-cpu.0.dylib[0x9bfbc] <+3516>: 0xad3e9504   stp    q4, q5, [x8, #-0x30]
+libggml-cpu.0.dylib[0x9bfc0] <+3520>: 0xad3f9d06   stp    q6, q7, [x8, #-0x10]
+libggml-cpu.0.dylib[0x9bfc4] <+3524>: 0x91010108   add    x8, x8, #0x40
+libggml-cpu.0.dylib[0x9bfc8] <+3528>: 0xb1004129   adds   x9, x9, #0x10
+libggml-cpu.0.dylib[0x9bfcc] <+3532>: 0x54fffe61   b.ne   0x9bf98                   ; <+3480>
+libggml-cpu.0.dylib[0x9bfd0] <+3536>: 0xf9408bea   ldr    x10, [sp, #0x110]
+libggml-cpu.0.dylib[0x9bfd4] <+3540>: 0xb4ffc6aa   cbz    x10, 0x9b8a8              ; <+1704>
+libggml-cpu.0.dylib[0x9bfd8] <+3544>: 0xa944a7e8   ldp    x8, x9, [sp, #0x48]
+libggml-cpu.0.dylib[0x9bfdc] <+3548>: 0xf100115f   cmp    x10, #0x4
+libggml-cpu.0.dylib[0x9bfe0] <+3552>: 0x540001c3   b.lo   0x9c018                   ; <+3608>
+libggml-cpu.0.dylib[0x9bfe4] <+3556>: 0xf94097e8   ldr    x8, [sp, #0x128]
+libggml-cpu.0.dylib[0x9bfe8] <+3560>: 0x8b090108   add    x8, x8, x9
+libggml-cpu.0.dylib[0x9bfec] <+3564>: 0x8b090169   add    x9, x11, x9
+libggml-cpu.0.dylib[0x9bff0] <+3568>: 0xf94117ea   ldr    x10, [sp, #0x228]
+libggml-cpu.0.dylib[0x9bff4] <+3572>: 0x8b090949   add    x9, x10, x9, lsl #2
+libggml-cpu.0.dylib[0x9bff8] <+3576>: 0x3ce26920   ldr    q0, [x9, x2]
+libggml-cpu.0.dylib[0x9bffc] <+3580>: 0x3dc00121   ldr    q1, [x9]
+libggml-cpu.0.dylib[0x9c000] <+3584>: 0x4f9b1001   fmla.4s v1, v0, v27[0]
+libggml-cpu.0.dylib[0x9c004] <+3588>: 0x3c810521   str    q1, [x9], #0x10
+libggml-cpu.0.dylib[0x9c008] <+3592>: 0xb1001108   adds   x8, x8, #0x4
+libggml-cpu.0.dylib[0x9c00c] <+3596>: 0x54ffff61   b.ne   0x9bff8                   ; <+3576>
+libggml-cpu.0.dylib[0x9c010] <+3600>: 0xa95327e8   ldp    x8, x9, [sp, #0x130]
+libggml-cpu.0.dylib[0x9c014] <+3604>: 0xb4ffc4a9   cbz    x9, 0x9b8a8               ; <+1704>
+libggml-cpu.0.dylib[0x9c018] <+3608>: 0xd2800009   mov    x9, #0x0                  ; =0 
+libggml-cpu.0.dylib[0x9c01c] <+3612>: 0xf94117ea   ldr    x10, [sp, #0x228]
+libggml-cpu.0.dylib[0x9c020] <+3616>: 0x8b08094a   add    x10, x10, x8, lsl #2
+libggml-cpu.0.dylib[0x9c024] <+3620>: 0x8b02014b   add    x11, x10, x2
+libggml-cpu.0.dylib[0x9c028] <+3624>: 0xbc697960   ldr    s0, [x11, x9, lsl #2]
+libggml-cpu.0.dylib[0x9c02c] <+3628>: 0xbc697941   ldr    s1, [x10, x9, lsl #2]
+libggml-cpu.0.dylib[0x9c030] <+3632>: 0x1f1b0400   fmadd  s0, s0, s27, s1
+libggml-cpu.0.dylib[0x9c034] <+3636>: 0xbc297940   str    s0, [x10, x9, lsl #2]
+libggml-cpu.0.dylib[0x9c038] <+3640>: 0x91000529   add    x9, x9, #0x1
+libggml-cpu.0.dylib[0x9c03c] <+3644>: 0x8b09010c   add    x12, x8, x9
+libggml-cpu.0.dylib[0x9c040] <+3648>: 0xeb1c019f   cmp    x12, x28
+libggml-cpu.0.dylib[0x9c044] <+3652>: 0x54ffff2b   b.lt   0x9c028                   ; <+3624>
+libggml-cpu.0.dylib[0x9c048] <+3656>: 0x17fffe18   b      0x9b8a8                   ; <+1704>
+libggml-cpu.0.dylib[0x9c04c] <+3660>: 0x8b180288   add    x8, x20, x24
+libggml-cpu.0.dylib[0x9c050] <+3664>: 0xf94093e9   ldr    x9, [sp, #0x120]
+libggml-cpu.0.dylib[0x9c054] <+3668>: 0xf94087ea   ldr    x10, [sp, #0x108]
+libggml-cpu.0.dylib[0x9c058] <+3672>: 0xad7f0500   ldp    q0, q1, [x8, #-0x20]
+libggml-cpu.0.dylib[0x9c05c] <+3676>: 0xacc20d02   ldp    q2, q3, [x8], #0x40
+libggml-cpu.0.dylib[0x9c060] <+3680>: 0xad7f1524   ldp    q4, q5, [x9, #-0x20]
+libggml-cpu.0.dylib[0x9c064] <+3684>: 0xad401d26   ldp    q6, q7, [x9]
+libggml-cpu.0.dylib[0x9c068] <+3688>: 0x4f9b1004   fmla.4s v4, v0, v27[0]
+libggml-cpu.0.dylib[0x9c06c] <+3692>: 0x4f9b1025   fmla.4s v5, v1, v27[0]
+libggml-cpu.0.dylib[0x9c070] <+3696>: 0x4f9b1046   fmla.4s v6, v2, v27[0]
+libggml-cpu.0.dylib[0x9c074] <+3700>: 0x4f9b1067   fmla.4s v7, v3, v27[0]
+libggml-cpu.0.dylib[0x9c078] <+3704>: 0xad3f1524   stp    q4, q5, [x9, #-0x20]
+libggml-cpu.0.dylib[0x9c07c] <+3708>: 0xac821d26   stp    q6, q7, [x9], #0x40
+libggml-cpu.0.dylib[0x9c080] <+3712>: 0xb100414a   adds   x10, x10, #0x10
+libggml-cpu.0.dylib[0x9c084] <+3716>: 0x54fffea1   b.ne   0x9c058                   ; <+3672>
+libggml-cpu.0.dylib[0x9c088] <+3720>: 0xf9408bea   ldr    x10, [sp, #0x110]
+libggml-cpu.0.dylib[0x9c08c] <+3724>: 0xb4ffc0ea   cbz    x10, 0x9b8a8              ; <+1704>
+libggml-cpu.0.dylib[0x9c090] <+3728>: 0xa944a7e8   ldp    x8, x9, [sp, #0x48]
+libggml-cpu.0.dylib[0x9c094] <+3732>: 0xf100115f   cmp    x10, #0x4
+libggml-cpu.0.dylib[0x9c098] <+3736>: 0x54000223   b.lo   0x9c0dc                   ; <+3804>
+libggml-cpu.0.dylib[0x9c09c] <+3740>: 0xf94097e8   ldr    x8, [sp, #0x128]
+libggml-cpu.0.dylib[0x9c0a0] <+3744>: 0x8b090108   add    x8, x8, x9
+libggml-cpu.0.dylib[0x9c0a4] <+3748>: 0x8b090169   add    x9, x11, x9
+libggml-cpu.0.dylib[0x9c0a8] <+3752>: 0xd37ef52a   lsl    x10, x9, #2
+libggml-cpu.0.dylib[0x9c0ac] <+3756>: 0xf94117e9   ldr    x9, [sp, #0x228]
+libggml-cpu.0.dylib[0x9c0b0] <+3760>: 0x8b0a0129   add    x9, x9, x10
+libggml-cpu.0.dylib[0x9c0b4] <+3764>: 0x8b16028b   add    x11, x20, x22
+libggml-cpu.0.dylib[0x9c0b8] <+3768>: 0x8b0a016a   add    x10, x11, x10
+libggml-cpu.0.dylib[0x9c0bc] <+3772>: 0x3cc10540   ldr    q0, [x10], #0x10
+libggml-cpu.0.dylib[0x9c0c0] <+3776>: 0x3dc00121   ldr    q1, [x9]
+libggml-cpu.0.dylib[0x9c0c4] <+3780>: 0x4f9b1001   fmla.4s v1, v0, v27[0]
+libggml-cpu.0.dylib[0x9c0c8] <+3784>: 0x3c810521   str    q1, [x9], #0x10
+libggml-cpu.0.dylib[0x9c0cc] <+3788>: 0xb1001108   adds   x8, x8, #0x4
+libggml-cpu.0.dylib[0x9c0d0] <+3792>: 0x54ffff61   b.ne   0x9c0bc                   ; <+3772>
+libggml-cpu.0.dylib[0x9c0d4] <+3796>: 0xa95327e8   ldp    x8, x9, [sp, #0x130]
+libggml-cpu.0.dylib[0x9c0d8] <+3800>: 0xb4ffbe89   cbz    x9, 0x9b8a8               ; <+1704>
+libggml-cpu.0.dylib[0x9c0dc] <+3804>: 0x8b160289   add    x9, x20, x22
+libggml-cpu.0.dylib[0x9c0e0] <+3808>: 0xbc687920   ldr    s0, [x9, x8, lsl #2]
+libggml-cpu.0.dylib[0x9c0e4] <+3812>: 0xbc687861   ldr    s1, [x3, x8, lsl #2]
+libggml-cpu.0.dylib[0x9c0e8] <+3816>: 0x1f1b0400   fmadd  s0, s0, s27, s1
+libggml-cpu.0.dylib[0x9c0ec] <+3820>: 0xbc287860   str    s0, [x3, x8, lsl #2]
+libggml-cpu.0.dylib[0x9c0f0] <+3824>: 0x91000508   add    x8, x8, #0x1
+libggml-cpu.0.dylib[0x9c0f4] <+3828>: 0xeb1c011f   cmp    x8, x28
+libggml-cpu.0.dylib[0x9c0f8] <+3832>: 0x54ffff4b   b.lt   0x9c0e0                   ; <+3808>
+libggml-cpu.0.dylib[0x9c0fc] <+3836>: 0x17fffdeb   b      0x9b8a8                   ; <+1704>
+libggml-cpu.0.dylib[0x9c100] <+3840>: 0x6f00e408   movi.2d v8, #0000000000000000
+libggml-cpu.0.dylib[0x9c104] <+3844>: 0x52bff008   mov    w8, #-0x800000            ; =-8388608 
+libggml-cpu.0.dylib[0x9c108] <+3848>: 0x1e27010b   fmov   s11, w8
+libggml-cpu.0.dylib[0x9c10c] <+3852>: 0xa97393a2   ldp    x2, x4, [x29, #-0xc8]
+libggml-cpu.0.dylib[0x9c110] <+3856>: 0xf85483a3   ldur   x3, [x29, #-0xb8]
+libggml-cpu.0.dylib[0x9c114] <+3860>: 0xf85283b6   ldur   x22, [x29, #-0xd8]
+libggml-cpu.0.dylib[0x9c118] <+3864>: 0xb94002c8   ldr    w8, [x22]
+libggml-cpu.0.dylib[0x9c11c] <+3868>: 0x7100051f   cmp    w8, #0x1
+libggml-cpu.0.dylib[0x9c120] <+3872>: 0xf940e3f8   ldr    x24, [sp, #0x1c0]
+libggml-cpu.0.dylib[0x9c124] <+3876>: 0xf9410bf5   ldr    x21, [sp, #0x210]
+libggml-cpu.0.dylib[0x9c128] <+3880>: 0xf94107fb   ldr    x27, [sp, #0x208]
+libggml-cpu.0.dylib[0x9c12c] <+3884>: 0xf94103ec   ldr    x12, [sp, #0x200]
+libggml-cpu.0.dylib[0x9c130] <+3888>: 0x540008a1   b.ne   0x9c244                   ; <+4164>
+libggml-cpu.0.dylib[0x9c134] <+3892>: 0xf100049f   cmp    x4, #0x1
+libggml-cpu.0.dylib[0x9c138] <+3896>: 0x5400086b   b.lt   0x9c244                   ; <+4164>
+libggml-cpu.0.dylib[0x9c13c] <+3900>: 0xf1000c9f   cmp    x4, #0x3
+libggml-cpu.0.dylib[0x9c140] <+3904>: 0x54000068   b.hi   0x9c14c                   ; <+3916>
+libggml-cpu.0.dylib[0x9c144] <+3908>: 0xd280000a   mov    x10, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c148] <+3912>: 0x14000033   b      0x9c214                   ; <+4116>
+libggml-cpu.0.dylib[0x9c14c] <+3916>: 0xf100809f   cmp    x4, #0x20
+libggml-cpu.0.dylib[0x9c150] <+3920>: 0x54000062   b.hs   0x9c15c                   ; <+3932>
+libggml-cpu.0.dylib[0x9c154] <+3924>: 0xd280000b   mov    x11, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c158] <+3928>: 0x1400001e   b      0x9c1d0                   ; <+4048>
+libggml-cpu.0.dylib[0x9c15c] <+3932>: 0xa941a3e9   ldp    x9, x8, [sp, #0x18]
+libggml-cpu.0.dylib[0x9c160] <+3936>: 0xf9410fea   ldr    x10, [sp, #0x218]
+libggml-cpu.0.dylib[0x9c164] <+3940>: 0x8b080148   add    x8, x10, x8
+libggml-cpu.0.dylib[0x9c168] <+3944>: 0x8b090149   add    x9, x10, x9
+libggml-cpu.0.dylib[0x9c16c] <+3948>: 0xf94023ea   ldr    x10, [sp, #0x40]
+libggml-cpu.0.dylib[0x9c170] <+3952>: 0xad7f0500   ldp    q0, q1, [x8, #-0x20]
+libggml-cpu.0.dylib[0x9c174] <+3956>: 0xacc20d02   ldp    q2, q3, [x8], #0x40
+libggml-cpu.0.dylib[0x9c178] <+3960>: 0x0e217804   fcvtl  v4.4s, v0.4h
+libggml-cpu.0.dylib[0x9c17c] <+3964>: 0x4e217800   fcvtl2 v0.4s, v0.8h
+libggml-cpu.0.dylib[0x9c180] <+3968>: 0x0e217825   fcvtl  v5.4s, v1.4h
+libggml-cpu.0.dylib[0x9c184] <+3972>: 0x4e217821   fcvtl2 v1.4s, v1.8h
+libggml-cpu.0.dylib[0x9c188] <+3976>: 0x0e217846   fcvtl  v6.4s, v2.4h
+libggml-cpu.0.dylib[0x9c18c] <+3980>: 0x4e217842   fcvtl2 v2.4s, v2.8h
+libggml-cpu.0.dylib[0x9c190] <+3984>: 0x0e217867   fcvtl  v7.4s, v3.4h
+libggml-cpu.0.dylib[0x9c194] <+3988>: 0x4e217863   fcvtl2 v3.4s, v3.8h
+libggml-cpu.0.dylib[0x9c198] <+3992>: 0xad3e0124   stp    q4, q0, [x9, #-0x40]
+libggml-cpu.0.dylib[0x9c19c] <+3996>: 0xad3f0525   stp    q5, q1, [x9, #-0x20]
+libggml-cpu.0.dylib[0x9c1a0] <+4000>: 0xad000926   stp    q6, q2, [x9]
+libggml-cpu.0.dylib[0x9c1a4] <+4004>: 0xad010d27   stp    q7, q3, [x9, #0x20]
+libggml-cpu.0.dylib[0x9c1a8] <+4008>: 0x91020129   add    x9, x9, #0x80
+libggml-cpu.0.dylib[0x9c1ac] <+4012>: 0xf100814a   subs   x10, x10, #0x20
+libggml-cpu.0.dylib[0x9c1b0] <+4016>: 0x54fffe01   b.ne   0x9c170                   ; <+3952>
+libggml-cpu.0.dylib[0x9c1b4] <+4020>: 0xf94023e8   ldr    x8, [sp, #0x40]
+libggml-cpu.0.dylib[0x9c1b8] <+4024>: 0xeb08009f   cmp    x4, x8
+libggml-cpu.0.dylib[0x9c1bc] <+4028>: 0x54000440   b.eq   0x9c244                   ; <+4164>
+libggml-cpu.0.dylib[0x9c1c0] <+4032>: 0xf94023eb   ldr    x11, [sp, #0x40]
+libggml-cpu.0.dylib[0x9c1c4] <+4036>: 0xaa0b03ea   mov    x10, x11
+libggml-cpu.0.dylib[0x9c1c8] <+4040>: 0xf9400be8   ldr    x8, [sp, #0x10]
+libggml-cpu.0.dylib[0x9c1cc] <+4044>: 0xb4000248   cbz    x8, 0x9c214               ; <+4116>
+libggml-cpu.0.dylib[0x9c1d0] <+4048>: 0xf94017e8   ldr    x8, [sp, #0x28]
+libggml-cpu.0.dylib[0x9c1d4] <+4052>: 0x8b0b0108   add    x8, x8, x11
+libggml-cpu.0.dylib[0x9c1d8] <+4056>: 0xa956a7ea   ldp    x10, x9, [sp, #0x168]
+libggml-cpu.0.dylib[0x9c1dc] <+4060>: 0xf9410fed   ldr    x13, [sp, #0x218]
+libggml-cpu.0.dylib[0x9c1e0] <+4064>: 0x8b0901a9   add    x9, x13, x9
+libggml-cpu.0.dylib[0x9c1e4] <+4068>: 0x8b0b0929   add    x9, x9, x11, lsl #2
+libggml-cpu.0.dylib[0x9c1e8] <+4072>: 0x8b0a01aa   add    x10, x13, x10
+libggml-cpu.0.dylib[0x9c1ec] <+4076>: 0x8b0b054a   add    x10, x10, x11, lsl #1
+libggml-cpu.0.dylib[0x9c1f0] <+4080>: 0xfc408540   ldr    d0, [x10], #0x8
+libggml-cpu.0.dylib[0x9c1f4] <+4084>: 0x0e217800   fcvtl  v0.4s, v0.4h
+libggml-cpu.0.dylib[0x9c1f8] <+4088>: 0x3c810520   str    q0, [x9], #0x10
+libggml-cpu.0.dylib[0x9c1fc] <+4092>: 0xb1001108   adds   x8, x8, #0x4
+libggml-cpu.0.dylib[0x9c200] <+4096>: 0x54ffff81   b.ne   0x9c1f0                   ; <+4080>
+libggml-cpu.0.dylib[0x9c204] <+4100>: 0xf9401be8   ldr    x8, [sp, #0x30]
+libggml-cpu.0.dylib[0x9c208] <+4104>: 0xaa0803ea   mov    x10, x8
+libggml-cpu.0.dylib[0x9c20c] <+4108>: 0xeb08009f   cmp    x4, x8
+libggml-cpu.0.dylib[0x9c210] <+4112>: 0x540001a0   b.eq   0x9c244                   ; <+4164>
+libggml-cpu.0.dylib[0x9c214] <+4116>: 0xcb0a0088   sub    x8, x4, x10
+libggml-cpu.0.dylib[0x9c218] <+4120>: 0xa956a7eb   ldp    x11, x9, [sp, #0x168]
+libggml-cpu.0.dylib[0x9c21c] <+4124>: 0xf9410fed   ldr    x13, [sp, #0x218]
+libggml-cpu.0.dylib[0x9c220] <+4128>: 0x8b0901a9   add    x9, x13, x9
+libggml-cpu.0.dylib[0x9c224] <+4132>: 0x8b0a0929   add    x9, x9, x10, lsl #2
+libggml-cpu.0.dylib[0x9c228] <+4136>: 0x8b0b01ab   add    x11, x13, x11
+libggml-cpu.0.dylib[0x9c22c] <+4140>: 0x8b0a056a   add    x10, x11, x10, lsl #1
+libggml-cpu.0.dylib[0x9c230] <+4144>: 0x7c402540   ldr    h0, [x10], #0x2
+libggml-cpu.0.dylib[0x9c234] <+4148>: 0x1ee24000   fcvt   s0, h0
+libggml-cpu.0.dylib[0x9c238] <+4152>: 0xbc004520   str    s0, [x9], #0x4
+libggml-cpu.0.dylib[0x9c23c] <+4156>: 0xf1000508   subs   x8, x8, #0x1
+libggml-cpu.0.dylib[0x9c240] <+4160>: 0x54ffff81   b.ne   0x9c230                   ; <+4144>
+libggml-cpu.0.dylib[0x9c244] <+4164>: 0xb9414fe8   ldr    w8, [sp, #0x14c]
+libggml-cpu.0.dylib[0x9c248] <+4168>: 0x34ff9de8   cbz    w8, 0x9b604               ; <+1028>
+libggml-cpu.0.dylib[0x9c24c] <+4172>: 0xf94083e8   ldr    x8, [sp, #0x100]
+libggml-cpu.0.dylib[0x9c250] <+4176>: 0xf9407d08   ldr    x8, [x8, #0xf8]
+libggml-cpu.0.dylib[0x9c254] <+4180>: 0xbc6c5909   ldr    s9, [x8, w12, uxtw #2]
+libggml-cpu.0.dylib[0x9c258] <+4184>: 0x1e2b2120   fcmp   s9, s11
+libggml-cpu.0.dylib[0x9c25c] <+4188>: 0xf940b3f4   ldr    x20, [sp, #0x160]
+libggml-cpu.0.dylib[0x9c260] <+4192>: 0x5400028d   b.le   0x9c2b0                   ; <+4272>
+libggml-cpu.0.dylib[0x9c264] <+4196>: 0x1e293960   fsub   s0, s11, s9
+libggml-cpu.0.dylib[0x9c268] <+4200>: 0x940093db   bl     0xc11d4                   ; symbol stub for: expf
+libggml-cpu.0.dylib[0x9c26c] <+4204>: 0x4ea01c0a   mov.16b v10, v0
+libggml-cpu.0.dylib[0x9c270] <+4208>: 0xbc1643a0   stur   s0, [x29, #-0x9c]
+libggml-cpu.0.dylib[0x9c274] <+4212>: 0xd10273a2   sub    x2, x29, #0x9c
+libggml-cpu.0.dylib[0x9c278] <+4216>: 0xf85483a0   ldur   x0, [x29, #-0xb8]
+libggml-cpu.0.dylib[0x9c27c] <+4220>: 0x52800021   mov    w1, #0x1                  ; =1 
+libggml-cpu.0.dylib[0x9c280] <+4224>: 0xaa0003e3   mov    x3, x0
+libggml-cpu.0.dylib[0x9c284] <+4228>: 0x52800024   mov    w4, #0x1                  ; =1 
+libggml-cpu.0.dylib[0x9c288] <+4232>: 0xaa1c03e5   mov    x5, x28
+libggml-cpu.0.dylib[0x9c28c] <+4236>: 0x94009504   bl     0xc169c                   ; symbol stub for: vDSP_vsmul
+libggml-cpu.0.dylib[0x9c290] <+4240>: 0x1e2e1000   fmov   s0, #1.00000000
+libggml-cpu.0.dylib[0x9c294] <+4244>: 0x4ea91d2b   mov.16b v11, v9
+libggml-cpu.0.dylib[0x9c298] <+4248>: 0x1f0a0108   fmadd  s8, s8, s10, s0
+libggml-cpu.0.dylib[0x9c29c] <+4252>: 0xf940d7e9   ldr    x9, [sp, #0x1a8]
+libggml-cpu.0.dylib[0x9c2a0] <+4256>: 0xf85383a2   ldur   x2, [x29, #-0xc8]
+libggml-cpu.0.dylib[0x9c2a4] <+4260>: 0xf85483a3   ldur   x3, [x29, #-0xb8]
+libggml-cpu.0.dylib[0x9c2a8] <+4264>: 0xb5ff9b49   cbnz   x9, 0x9b610               ; <+1040>
+libggml-cpu.0.dylib[0x9c2ac] <+4268>: 0x14000009   b      0x9c2d0                   ; <+4304>
+libggml-cpu.0.dylib[0x9c2b0] <+4272>: 0x1e2b3920   fsub   s0, s9, s11
+libggml-cpu.0.dylib[0x9c2b4] <+4276>: 0x940093c8   bl     0xc11d4                   ; symbol stub for: expf
+libggml-cpu.0.dylib[0x9c2b8] <+4280>: 0x1e2e100a   fmov   s10, #1.00000000
+libggml-cpu.0.dylib[0x9c2bc] <+4284>: 0x1f0a0108   fmadd  s8, s8, s10, s0
+libggml-cpu.0.dylib[0x9c2c0] <+4288>: 0xf940d7e9   ldr    x9, [sp, #0x1a8]
+libggml-cpu.0.dylib[0x9c2c4] <+4292>: 0xf85383a2   ldur   x2, [x29, #-0xc8]
+libggml-cpu.0.dylib[0x9c2c8] <+4296>: 0xf85483a3   ldur   x3, [x29, #-0xb8]
+libggml-cpu.0.dylib[0x9c2cc] <+4300>: 0xb5ff9a29   cbnz   x9, 0x9b610               ; <+1040>
+libggml-cpu.0.dylib[0x9c2d0] <+4304>: 0x1e2e1000   fmov   s0, #1.00000000
+libggml-cpu.0.dylib[0x9c2d4] <+4308>: 0x1e281800   fdiv   s0, s0, s8
+libggml-cpu.0.dylib[0x9c2d8] <+4312>: 0x1e202108   fcmp   s8, #0.0
+libggml-cpu.0.dylib[0x9c2dc] <+4316>: 0x6f00e401   movi.2d v1, #0000000000000000
+libggml-cpu.0.dylib[0x9c2e0] <+4320>: 0x1e200c20   fcsel  s0, s1, s0, eq
+libggml-cpu.0.dylib[0x9c2e4] <+4324>: 0xbc1643a0   stur   s0, [x29, #-0x9c]
+libggml-cpu.0.dylib[0x9c2e8] <+4328>: 0xd10273a2   sub    x2, x29, #0x9c
+libggml-cpu.0.dylib[0x9c2ec] <+4332>: 0xaa0303e0   mov    x0, x3
+libggml-cpu.0.dylib[0x9c2f0] <+4336>: 0x52800021   mov    w1, #0x1                  ; =1 
+libggml-cpu.0.dylib[0x9c2f4] <+4340>: 0xaa0303f7   mov    x23, x3
+libggml-cpu.0.dylib[0x9c2f8] <+4344>: 0x52800024   mov    w4, #0x1                  ; =1 
+libggml-cpu.0.dylib[0x9c2fc] <+4348>: 0xaa1c03e5   mov    x5, x28
+libggml-cpu.0.dylib[0x9c300] <+4352>: 0x940094e7   bl     0xc169c                   ; symbol stub for: vDSP_vsmul
+libggml-cpu.0.dylib[0x9c304] <+4356>: 0xa94623e2   ldp    x2, x8, [sp, #0x60]
+libggml-cpu.0.dylib[0x9c308] <+4360>: 0xf9407d08   ldr    x8, [x8, #0xf8]
+libggml-cpu.0.dylib[0x9c30c] <+4364>: 0x9b187f69   mul    x9, x27, x24
+libggml-cpu.0.dylib[0x9c310] <+4368>: 0xf940ebea   ldr    x10, [sp, #0x1d0]
+libggml-cpu.0.dylib[0x9c314] <+4372>: 0x8b090149   add    x9, x10, x9
+libggml-cpu.0.dylib[0x9c318] <+4376>: 0xf9402fea   ldr    x10, [sp, #0x58]
+libggml-cpu.0.dylib[0x9c31c] <+4380>: 0x9b0a7d29   mul    x9, x9, x10
+libggml-cpu.0.dylib[0x9c320] <+4384>: 0xf940efea   ldr    x10, [sp, #0x1d8]
+libggml-cpu.0.dylib[0x9c324] <+4388>: 0x8b0a0129   add    x9, x9, x10
+libggml-cpu.0.dylib[0x9c328] <+4392>: 0x9b022120   madd   x0, x9, x2, x8
+libggml-cpu.0.dylib[0x9c32c] <+4396>: 0xaa1703e1   mov    x1, x23
+libggml-cpu.0.dylib[0x9c330] <+4400>: 0x94009448   bl     0xc1450                   ; symbol stub for: memcpy
+libggml-cpu.0.dylib[0x9c334] <+4404>: 0x910006b5   add    x21, x21, #0x1
+libggml-cpu.0.dylib[0x9c338] <+4408>: 0xb941cfe8   ldr    w8, [sp, #0x1cc]
+libggml-cpu.0.dylib[0x9c33c] <+4412>: 0x6b15011f   cmp    w8, w21
+libggml-cpu.0.dylib[0x9c340] <+4416>: 0xf85403ac   ldur   x12, [x29, #-0xc0]
+libggml-cpu.0.dylib[0x9c344] <+4420>: 0x54ff97e1   b.ne   0x9b640                   ; <+1088>
+libggml-cpu.0.dylib[0x9c348] <+4424>: 0x910d43ff   add    sp, sp, #0x350
+libggml-cpu.0.dylib[0x9c34c] <+4428>: 0xa9497bfd   ldp    x29, x30, [sp, #0x90]
+libggml-cpu.0.dylib[0x9c350] <+4432>: 0xa9484ff4   ldp    x20, x19, [sp, #0x80]
+libggml-cpu.0.dylib[0x9c354] <+4436>: 0xa94757f6   ldp    x22, x21, [sp, #0x70]
+libggml-cpu.0.dylib[0x9c358] <+4440>: 0xa9465ff8   ldp    x24, x23, [sp, #0x60]
+libggml-cpu.0.dylib[0x9c35c] <+4444>: 0xa94567fa   ldp    x26, x25, [sp, #0x50]
+libggml-cpu.0.dylib[0x9c360] <+4448>: 0xa9446ffc   ldp    x28, x27, [sp, #0x40]
+libggml-cpu.0.dylib[0x9c364] <+4452>: 0x6d4323e9   ldp    d9, d8, [sp, #0x30]
+libggml-cpu.0.dylib[0x9c368] <+4456>: 0x6d422beb   ldp    d11, d10, [sp, #0x20]
+libggml-cpu.0.dylib[0x9c36c] <+4460>: 0x6d4133ed   ldp    d13, d12, [sp, #0x10]
+libggml-cpu.0.dylib[0x9c370] <+4464>: 0x6cca3bef   ldp    d15, d14, [sp], #0xa0
+libggml-cpu.0.dylib[0x9c374] <+4468>: 0xd65f03c0   ret    
+libggml-cpu.0.dylib[0x9c378] <+4472>: 0xf900d3ff   str    xzr, [sp, #0x1a0]
+libggml-cpu.0.dylib[0x9c37c] <+4476>: 0xd2800015   mov    x21, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c380] <+4480>: 0xd2800017   mov    x23, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c384] <+4484>: 0xf81203bf   stur   xzr, [x29, #-0xe0]
+libggml-cpu.0.dylib[0x9c388] <+4488>: 0xd280000b   mov    x11, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c38c] <+4492>: 0xd280000d   mov    x13, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c390] <+4496>: 0xa9197fff   stp    xzr, xzr, [sp, #0x190]
+libggml-cpu.0.dylib[0x9c394] <+4500>: 0xf900dfe4   str    x4, [sp, #0x1b8]
+libggml-cpu.0.dylib[0x9c398] <+4504>: 0xb5ff7716   cbnz   x22, 0x9b278              ; <+120>
+libggml-cpu.0.dylib[0x9c39c] <+4508>: 0xf9007fff   str    xzr, [sp, #0xf8]
+libggml-cpu.0.dylib[0x9c3a0] <+4512>: 0xd280001b   mov    x27, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c3a4] <+4516>: 0xd2800010   mov    x16, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c3a8] <+4520>: 0xd280001c   mov    x28, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c3ac] <+4524>: 0xd2800011   mov    x17, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c3b0] <+4528>: 0xf81003bf   stur   xzr, [x29, #-0x100]
+libggml-cpu.0.dylib[0x9c3b4] <+4532>: 0xf9007bff   str    xzr, [sp, #0xf0]
+libggml-cpu.0.dylib[0x9c3b8] <+4536>: 0xb5ff772a   cbnz   x10, 0x9b29c              ; <+156>
+libggml-cpu.0.dylib[0x9c3bc] <+4540>: 0xf90077ff   str    xzr, [sp, #0xe8]
+libggml-cpu.0.dylib[0x9c3c0] <+4544>: 0xd2800013   mov    x19, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c3c4] <+4548>: 0xd2800000   mov    x0, #0x0                  ; =0 
+libggml-cpu.0.dylib[0x9c3c8] <+4552>: 0xd280000c   mov    x12, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c3cc] <+4556>: 0xd280000f   mov    x15, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x9c3d0] <+4560>: 0xf81583bf   stur   xzr, [x29, #-0xa8]
+libggml-cpu.0.dylib[0x9c3d4] <+4564>: 0xf90073ff   str    xzr, [sp, #0xe0]
+libggml-cpu.0.dylib[0x9c3d8] <+4568>: 0xf9400828   ldr    x8, [x1, #0x10]
+libggml-cpu.0.dylib[0x9c3dc] <+4572>: 0xeb0c011f   cmp    x8, x12
+libggml-cpu.0.dylib[0x9c3e0] <+4576>: 0x54ff7740   b.eq   0x9b2c8                   ; <+200>
+libggml-cpu.0.dylib[0x9c3e4] <+4580>: 0xd0000208   adrp   x8, 66
+libggml-cpu.0.dylib[0x9c3e8] <+4584>: 0x913c7508   add    x8, x8, #0xf1d            ; "ne0 == DV"
+libggml-cpu.0.dylib[0x9c3ec] <+4588>: 0xd0000200   adrp   x0, 66
+libggml-cpu.0.dylib[0x9c3f0] <+4592>: 0x91037800   add    x0, x0, #0xde             ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/ops.cpp"
+libggml-cpu.0.dylib[0x9c3f4] <+4596>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0x9c3f8] <+4600>: 0xb0000202   adrp   x2, 65
+libggml-cpu.0.dylib[0x9c3fc] <+4604>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0x9c400] <+4608>: 0x52843821   mov    w1, #0x21c1               ; =8641 
+libggml-cpu.0.dylib[0x9c404] <+4612>: 0x94009380   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0x9c408] <+4616>: 0xd0000208   adrp   x8, 66
+libggml-cpu.0.dylib[0x9c40c] <+4620>: 0x913c9d08   add    x8, x8, #0xf27            ; "ne2 == N"
+libggml-cpu.0.dylib[0x9c410] <+4624>: 0xd0000200   adrp   x0, 66
+libggml-cpu.0.dylib[0x9c414] <+4628>: 0x91037800   add    x0, x0, #0xde             ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/ops.cpp"
+libggml-cpu.0.dylib[0x9c418] <+4632>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0x9c41c] <+4636>: 0xb0000202   adrp   x2, 65
+libggml-cpu.0.dylib[0x9c420] <+4640>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0x9c424] <+4644>: 0x52843841   mov    w1, #0x21c2               ; =8642 
+libggml-cpu.0.dylib[0x9c428] <+4648>: 0x94009377   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0x9c42c] <+4652>: 0xd0000208   adrp   x8, 66
+libggml-cpu.0.dylib[0x9c430] <+4656>: 0x913cc108   add    x8, x8, #0xf30            ; "nbq0 == ggml_type_size(q->type)"
+libggml-cpu.0.dylib[0x9c434] <+4660>: 0xd0000200   adrp   x0, 66
+libggml-cpu.0.dylib[0x9c438] <+4664>: 0x91037800   add    x0, x0, #0xde             ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/ops.cpp"
+libggml-cpu.0.dylib[0x9c43c] <+4668>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0x9c440] <+4672>: 0xb0000202   adrp   x2, 65
+libggml-cpu.0.dylib[0x9c444] <+4676>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0x9c448] <+4680>: 0x528438a1   mov    w1, #0x21c5               ; =8645 
+libggml-cpu.0.dylib[0x9c44c] <+4684>: 0x9400936e   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0x9c450] <+4688>: 0xd0000208   adrp   x8, 66
+libggml-cpu.0.dylib[0x9c454] <+4692>: 0x913d4108   add    x8, x8, #0xf50            ; "nbk0 == ggml_type_size(k->type)"
+libggml-cpu.0.dylib[0x9c458] <+4696>: 0xd0000200   adrp   x0, 66
+libggml-cpu.0.dylib[0x9c45c] <+4700>: 0x91037800   add    x0, x0, #0xde             ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/ops.cpp"
+libggml-cpu.0.dylib[0x9c460] <+4704>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0x9c464] <+4708>: 0xb0000202   adrp   x2, 65
+libggml-cpu.0.dylib[0x9c468] <+4712>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0x9c46c] <+4716>: 0x528438c1   mov    w1, #0x21c6               ; =8646 
+libggml-cpu.0.dylib[0x9c470] <+4720>: 0x94009365   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0x9c474] <+4724>: 0xd0000208   adrp   x8, 66
+libggml-cpu.0.dylib[0x9c478] <+4728>: 0x913dc108   add    x8, x8, #0xf70            ; "nbv0 == ggml_type_size(v->type)"
+libggml-cpu.0.dylib[0x9c47c] <+4732>: 0xd0000200   adrp   x0, 66
+libggml-cpu.0.dylib[0x9c480] <+4736>: 0x91037800   add    x0, x0, #0xde             ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/ops.cpp"
+libggml-cpu.0.dylib[0x9c484] <+4740>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0x9c488] <+4744>: 0xb0000202   adrp   x2, 65
+libggml-cpu.0.dylib[0x9c48c] <+4748>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0x9c490] <+4752>: 0x528438e1   mov    w1, #0x21c7               ; =8647 
+libggml-cpu.0.dylib[0x9c494] <+4756>: 0x9400935c   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0x9c498] <+4760>: 0xd0000208   adrp   x8, 66
+libggml-cpu.0.dylib[0x9c49c] <+4764>: 0x913e4108   add    x8, x8, #0xf90            ; "neq0 == DK"
+libggml-cpu.0.dylib[0x9c4a0] <+4768>: 0xd0000200   adrp   x0, 66
+libggml-cpu.0.dylib[0x9c4a4] <+4772>: 0x91037800   add    x0, x0, #0xde             ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/ops.cpp"
+libggml-cpu.0.dylib[0x9c4a8] <+4776>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0x9c4ac] <+4780>: 0xb0000202   adrp   x2, 65
+libggml-cpu.0.dylib[0x9c4b0] <+4784>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0x9c4b4] <+4788>: 0x52843921   mov    w1, #0x21c9               ; =8649 
+libggml-cpu.0.dylib[0x9c4b8] <+4792>: 0x94009353   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0x9c4bc] <+4796>: 0xb0000208   adrp   x8, 65
+libggml-cpu.0.dylib[0x9c4c0] <+4800>: 0x91067d08   add    x8, x8, #0x19f            ; "nb0 == sizeof(float)"
+libggml-cpu.0.dylib[0x9c4c4] <+4804>: 0xd0000200   adrp   x0, 66
+libggml-cpu.0.dylib[0x9c4c8] <+4808>: 0x91037800   add    x0, x0, #0xde             ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/ops.cpp"
+libggml-cpu.0.dylib[0x9c4cc] <+4812>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0x9c4d0] <+4816>: 0xb0000202   adrp   x2, 65
+libggml-cpu.0.dylib[0x9c4d4] <+4820>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0x9c4d8] <+4824>: 0x52843a01   mov    w1, #0x21d0               ; =8656 
+libggml-cpu.0.dylib[0x9c4dc] <+4828>: 0x9400934a   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0x9c4e0] <+4832>: 0xb0000208   adrp   x8, 65
+libggml-cpu.0.dylib[0x9c4e4] <+4836>: 0x9106d108   add    x8, x8, #0x1b4            ; "nb0 <= nb1"
+libggml-cpu.0.dylib[0x9c4e8] <+4840>: 0xd0000200   adrp   x0, 66
+libggml-cpu.0.dylib[0x9c4ec] <+4844>: 0x91037800   add    x0, x0, #0xde             ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/ops.cpp"
+libggml-cpu.0.dylib[0x9c4f0] <+4848>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0x9c4f4] <+4852>: 0xb0000202   adrp   x2, 65
+libggml-cpu.0.dylib[0x9c4f8] <+4856>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0x9c4fc] <+4860>: 0x52843a21   mov    w1, #0x21d1               ; =8657 
+libggml-cpu.0.dylib[0x9c500] <+4864>: 0x94009341   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0x9c504] <+4868>: 0xb0000208   adrp   x8, 65
+libggml-cpu.0.dylib[0x9c508] <+4872>: 0x9106fd08   add    x8, x8, #0x1bf            ; "nb1 <= nb2"
+libggml-cpu.0.dylib[0x9c50c] <+4876>: 0xd0000200   adrp   x0, 66
+libggml-cpu.0.dylib[0x9c510] <+4880>: 0x91037800   add    x0, x0, #0xde             ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/ops.cpp"
+libggml-cpu.0.dylib[0x9c514] <+4884>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0x9c518] <+4888>: 0xb0000202   adrp   x2, 65
+libggml-cpu.0.dylib[0x9c51c] <+4892>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0x9c520] <+4896>: 0x52843a41   mov    w1, #0x21d2               ; =8658 
+libggml-cpu.0.dylib[0x9c524] <+4900>: 0x94009338   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0x9c528] <+4904>: 0xb0000208   adrp   x8, 65
+libggml-cpu.0.dylib[0x9c52c] <+4908>: 0x91072908   add    x8, x8, #0x1ca            ; "nb2 <= nb3"
+libggml-cpu.0.dylib[0x9c530] <+4912>: 0xd0000200   adrp   x0, 66
+libggml-cpu.0.dylib[0x9c534] <+4916>: 0x91037800   add    x0, x0, #0xde             ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/ops.cpp"
+libggml-cpu.0.dylib[0x9c538] <+4920>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0x9c53c] <+4924>: 0xb0000202   adrp   x2, 65
+libggml-cpu.0.dylib[0x9c540] <+4928>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0x9c544] <+4932>: 0x52843a61   mov    w1, #0x21d3               ; =8659 
+libggml-cpu.0.dylib[0x9c548] <+4936>: 0x9400932f   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0x9c54c] <+4940>: 0xd0000208   adrp   x8, 66
+libggml-cpu.0.dylib[0x9c550] <+4944>: 0x913e6d08   add    x8, x8, #0xf9b            ; "( q_to_vec_dot) && "fattn: unsupported K-type""
+libggml-cpu.0.dylib[0x9c554] <+4948>: 0xd0000200   adrp   x0, 66
+libggml-cpu.0.dylib[0x9c558] <+4952>: 0x91037800   add    x0, x0, #0xde             ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/ops.cpp"
+libggml-cpu.0.dylib[0x9c55c] <+4956>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0x9c560] <+4960>: 0xb0000202   adrp   x2, 65
+libggml-cpu.0.dylib[0x9c564] <+4964>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0x9c568] <+4968>: 0x52843ea1   mov    w1, #0x21f5               ; =8693 
+libggml-cpu.0.dylib[0x9c56c] <+4972>: 0x94009326   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0x9c570] <+4976>: 0xd0000208   adrp   x8, 66
+libggml-cpu.0.dylib[0x9c574] <+4980>: 0x913f2908   add    x8, x8, #0xfca            ; "(v->type == GGML_TYPE_F32 || v_to_float ) && "fattn: unsupported V-type""
+libggml-cpu.0.dylib[0x9c578] <+4984>: 0xd0000200   adrp   x0, 66
+libggml-cpu.0.dylib[0x9c57c] <+4988>: 0x91037800   add    x0, x0, #0xde             ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/ops.cpp"
+libggml-cpu.0.dylib[0x9c580] <+4992>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0x9c584] <+4996>: 0xb0000202   adrp   x2, 65
+libggml-cpu.0.dylib[0x9c588] <+5000>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0x9c58c] <+5004>: 0x52843ec1   mov    w1, #0x21f6               ; =8694 
+libggml-cpu.0.dylib[0x9c590] <+5008>: 0x9400931d   bl     0xc1204                   ; symbol stub for: ggml_abort
+(lldb) image lookup -a 0xb0d3c
+      Address: benchmark-whisper[0x00000000000b0d3c] (benchmark-whisper.__PAGEZERO + 724284)
+      Summary: 
+      Address: libggml-base.0.dylib[0x00000000000b0d3c] (libggml-base.0.dylib.__LINKEDIT + 118076)
+      Summary: 
+      Address: libggml-cpu.0.dylib[0x00000000000b0d3c] (libggml-cpu.0.dylib.__TEXT.__text + 717228)
+      Summary: libggml-cpu.0.dylib`void (anonymous namespace)::tinyBLAS<4, __simd128_float32_t, __simd128_float32_t, unsigned short, float, float>::gemm<4, 1, 2>(long long, long long, long long)
+(lldb) disassemble -b -a 0xb0d3c
+libggml-cpu.0.dylib`(anonymous namespace)::tinyBLAS<4, __simd128_float32_t, __simd128_float32_t, unsigned short, float, float>::gemm<4, 1, 2>:
+libggml-cpu.0.dylib[0xb0d3c] <+0>:    0xd10283ff   sub    sp, sp, #0xa0
+libggml-cpu.0.dylib[0xb0d40] <+4>:    0xa9046ffc   stp    x28, x27, [sp, #0x40]
+libggml-cpu.0.dylib[0xb0d44] <+8>:    0xa90567fa   stp    x26, x25, [sp, #0x50]
+libggml-cpu.0.dylib[0xb0d48] <+12>:   0xa9065ff8   stp    x24, x23, [sp, #0x60]
+libggml-cpu.0.dylib[0xb0d4c] <+16>:   0xa90757f6   stp    x22, x21, [sp, #0x70]
+libggml-cpu.0.dylib[0xb0d50] <+20>:   0xa9084ff4   stp    x20, x19, [sp, #0x80]
+libggml-cpu.0.dylib[0xb0d54] <+24>:   0xa9097bfd   stp    x29, x30, [sp, #0x90]
+libggml-cpu.0.dylib[0xb0d58] <+28>:   0x910243fd   add    x29, sp, #0x90
+libggml-cpu.0.dylib[0xb0d5c] <+32>:   0xf240083f   tst    x1, #0x7
+libggml-cpu.0.dylib[0xb0d60] <+36>:   0x54001d01   b.ne   0xb1100                   ; <+964>
+libggml-cpu.0.dylib[0xb0d64] <+40>:   0xaa0203f3   mov    x19, x2
+libggml-cpu.0.dylib[0xb0d68] <+44>:   0xaa0003f4   mov    x20, x0
+libggml-cpu.0.dylib[0xb0d6c] <+48>:   0x52800028   mov    w8, #0x1                  ; =1 
+libggml-cpu.0.dylib[0xb0d70] <+52>:   0x91001849   add    x9, x2, #0x6
+libggml-cpu.0.dylib[0xb0d74] <+56>:   0xb201f3ea   mov    x10, #-0x5555555555555556 ; =-6148914691236517206 
+libggml-cpu.0.dylib[0xb0d78] <+60>:   0xf295556a   movk   x10, #0xaaab
+libggml-cpu.0.dylib[0xb0d7c] <+64>:   0x9bca7d29   umulh  x9, x9, x10
+libggml-cpu.0.dylib[0xb0d80] <+68>:   0xd343fd29   lsr    x9, x9, #3
+libggml-cpu.0.dylib[0xb0d84] <+72>:   0xf100305f   cmp    x2, #0xc
+libggml-cpu.0.dylib[0xb0d88] <+76>:   0x9a89b117   csel   x23, x8, x9, lt
+libggml-cpu.0.dylib[0xb0d8c] <+80>:   0x9ad70c48   sdiv   x8, x2, x23
+libggml-cpu.0.dylib[0xb0d90] <+84>:   0x9b178909   msub   x9, x8, x23, x2
+libggml-cpu.0.dylib[0xb0d94] <+88>:   0xf100013f   cmp    x9, #0x0
+libggml-cpu.0.dylib[0xb0d98] <+92>:   0x9a880515   cinc   x21, x8, ne
+libggml-cpu.0.dylib[0xb0d9c] <+96>:   0xcb0203e8   neg    x8, x2
+libggml-cpu.0.dylib[0xb0da0] <+100>:  0x9b1722a9   madd   x9, x21, x23, x8
+libggml-cpu.0.dylib[0xb0da4] <+104>:  0xcb0902f6   sub    x22, x23, x9
+libggml-cpu.0.dylib[0xb0da8] <+108>:  0xf9400008   ldr    x8, [x0]
+libggml-cpu.0.dylib[0xb0dac] <+112>:  0xb940010a   ldr    w10, [x8]
+libggml-cpu.0.dylib[0xb0db0] <+116>:  0x3500018a   cbnz   w10, 0xb0de0              ; <+164>
+libggml-cpu.0.dylib[0xb0db4] <+120>:  0xd10006aa   sub    x10, x21, #0x1
+libggml-cpu.0.dylib[0xb0db8] <+124>:  0x9b0a7d29   mul    x9, x9, x10
+libggml-cpu.0.dylib[0xb0dbc] <+128>:  0x9b1526c9   madd   x9, x22, x21, x9
+libggml-cpu.0.dylib[0xb0dc0] <+132>:  0xeb13013f   cmp    x9, x19
+libggml-cpu.0.dylib[0xb0dc4] <+136>:  0x54001b01   b.ne   0xb1124                   ; <+1000>
+libggml-cpu.0.dylib[0xb0dc8] <+140>:  0xaa0103f8   mov    x24, x1
+libggml-cpu.0.dylib[0xb0dcc] <+144>:  0xf9400d00   ldr    x0, [x8, #0x18]
+libggml-cpu.0.dylib[0xb0dd0] <+148>:  0xb9400501   ldr    w1, [x8, #0x4]
+libggml-cpu.0.dylib[0xb0dd4] <+152>:  0x97fd4389   bl     0x1bf8                    ; ggml_threadpool_chunk_set
+libggml-cpu.0.dylib[0xb0dd8] <+156>:  0xf9400288   ldr    x8, [x20]
+libggml-cpu.0.dylib[0xb0ddc] <+160>:  0xaa1803e1   mov    x1, x24
+libggml-cpu.0.dylib[0xb0de0] <+164>:  0x9343fc38   asr    x24, x1, #3
+libggml-cpu.0.dylib[0xb0de4] <+168>:  0x9b187ef7   mul    x23, x23, x24
+libggml-cpu.0.dylib[0xb0de8] <+172>:  0xf9400d00   ldr    x0, [x8, #0x18]
+libggml-cpu.0.dylib[0xb0dec] <+176>:  0x97fd436e   bl     0x1ba4                    ; ggml_barrier
+libggml-cpu.0.dylib[0xb0df0] <+180>:  0xf9400288   ldr    x8, [x20]
+libggml-cpu.0.dylib[0xb0df4] <+184>:  0xb980010c   ldrsw  x12, [x8]
+libggml-cpu.0.dylib[0xb0df8] <+188>:  0xeb0c02ff   cmp    x23, x12
+libggml-cpu.0.dylib[0xb0dfc] <+192>:  0x540015ed   b.le   0xb10b8                   ; <+892>
+libggml-cpu.0.dylib[0xb0e00] <+196>:  0x9b157ed9   mul    x25, x22, x21
+libggml-cpu.0.dylib[0xb0e04] <+200>:  0xd10006ba   sub    x26, x21, #0x1
+libggml-cpu.0.dylib[0xb0e08] <+204>:  0xd37beb08   lsl    x8, x24, #5
+libggml-cpu.0.dylib[0xb0e0c] <+208>:  0xa902dfe8   stp    x8, x23, [sp, #0x28]
+libggml-cpu.0.dylib[0xb0e10] <+212>:  0x6f00e400   movi.2d v0, #0000000000000000
+libggml-cpu.0.dylib[0xb0e14] <+216>:  0x6e20d400   faddp.4s v0, v0, v0
+libggml-cpu.0.dylib[0xb0e18] <+220>:  0x3d8007e0   str    q0, [sp, #0x10]
+libggml-cpu.0.dylib[0xb0e1c] <+224>:  0xf9001ff8   str    x24, [sp, #0x38]
+libggml-cpu.0.dylib[0xb0e20] <+228>:  0x1400000a   b      0xb0e48                   ; <+268>
+libggml-cpu.0.dylib[0xb0e24] <+232>:  0xeb08013f   cmp    x9, x8
+libggml-cpu.0.dylib[0xb0e28] <+236>:  0x540015a1   b.ne   0xb10dc                   ; <+928>
+libggml-cpu.0.dylib[0xb0e2c] <+240>:  0xf9400288   ldr    x8, [x20]
+libggml-cpu.0.dylib[0xb0e30] <+244>:  0xf9400d00   ldr    x0, [x8, #0x18]
+libggml-cpu.0.dylib[0xb0e34] <+248>:  0x52800021   mov    w1, #0x1                  ; =1 
+libggml-cpu.0.dylib[0xb0e38] <+252>:  0x97fd4372   bl     0x1c00                    ; ggml_threadpool_chunk_add
+libggml-cpu.0.dylib[0xb0e3c] <+256>:  0x93407c0c   sxtw   x12, w0
+libggml-cpu.0.dylib[0xb0e40] <+260>:  0xeb0c02ff   cmp    x23, x12
+libggml-cpu.0.dylib[0xb0e44] <+264>:  0x5400138d   b.le   0xb10b4                   ; <+888>
+libggml-cpu.0.dylib[0xb0e48] <+268>:  0x9ad80d8d   sdiv   x13, x12, x24
+libggml-cpu.0.dylib[0xb0e4c] <+272>:  0x9b157da8   mul    x8, x13, x21
+libggml-cpu.0.dylib[0xb0e50] <+276>:  0xeb1601a9   subs   x9, x13, x22
+libggml-cpu.0.dylib[0xb0e54] <+280>:  0x9b1a6529   madd   x9, x9, x26, x25
+libggml-cpu.0.dylib[0xb0e58] <+284>:  0x9a89b10a   csel   x10, x8, x9, lt
+libggml-cpu.0.dylib[0xb0e5c] <+288>:  0x910005a8   add    x8, x13, #0x1
+libggml-cpu.0.dylib[0xb0e60] <+292>:  0x9b157d09   mul    x9, x8, x21
+libggml-cpu.0.dylib[0xb0e64] <+296>:  0xeb160108   subs   x8, x8, x22
+libggml-cpu.0.dylib[0xb0e68] <+300>:  0x9b1a6508   madd   x8, x8, x26, x25
+libggml-cpu.0.dylib[0xb0e6c] <+304>:  0x9a88b129   csel   x9, x9, x8, lt
+libggml-cpu.0.dylib[0xb0e70] <+308>:  0xeb13015f   cmp    x10, x19
+libggml-cpu.0.dylib[0xb0e74] <+312>:  0x9a93b148   csel   x8, x10, x19, lt
+libggml-cpu.0.dylib[0xb0e78] <+316>:  0xeb13013f   cmp    x9, x19
+libggml-cpu.0.dylib[0xb0e7c] <+320>:  0x9a93b129   csel   x9, x9, x19, lt
+libggml-cpu.0.dylib[0xb0e80] <+324>:  0xeb09015f   cmp    x10, x9
+libggml-cpu.0.dylib[0xb0e84] <+328>:  0x54fffd0a   b.ge   0xb0e24                   ; <+232>
+libggml-cpu.0.dylib[0xb0e88] <+332>:  0xa941ae8e   ldp    x14, x11, [x20, #0x18]
+libggml-cpu.0.dylib[0xb0e8c] <+336>:  0xf9401e8a   ldr    x10, [x20, #0x38]
+libggml-cpu.0.dylib[0xb0e90] <+340>:  0xf100057f   cmp    x11, #0x1
+libggml-cpu.0.dylib[0xb0e94] <+344>:  0x54000e4b   b.lt   0xb105c                   ; <+800>
+libggml-cpu.0.dylib[0xb0e98] <+348>:  0x9b18b1ac   msub   x12, x13, x24, x12
+libggml-cpu.0.dylib[0xb0e9c] <+352>:  0xd37df190   lsl    x16, x12, #3
+libggml-cpu.0.dylib[0xb0ea0] <+356>:  0xa940b68f   ldp    x15, x13, [x20, #0x8]
+libggml-cpu.0.dylib[0xb0ea4] <+360>:  0xa942b291   ldp    x17, x12, [x20, #0x28]
+libggml-cpu.0.dylib[0xb0ea8] <+364>:  0xb2400201   orr    x1, x16, #0x1
+libggml-cpu.0.dylib[0xb0eac] <+368>:  0xb27f0202   orr    x2, x16, #0x2
+libggml-cpu.0.dylib[0xb0eb0] <+372>:  0xb2400603   orr    x3, x16, #0x3
+libggml-cpu.0.dylib[0xb0eb4] <+376>:  0x8b1009c0   add    x0, x14, x16, lsl #2
+libggml-cpu.0.dylib[0xb0eb8] <+380>:  0xd37ffa31   lsl    x17, x17, #1
+libggml-cpu.0.dylib[0xb0ebc] <+384>:  0x9b033e37   madd   x23, x17, x3, x15
+libggml-cpu.0.dylib[0xb0ec0] <+388>:  0x9b023e38   madd   x24, x17, x2, x15
+libggml-cpu.0.dylib[0xb0ec4] <+392>:  0x9b013e3b   madd   x27, x17, x1, x15
+libggml-cpu.0.dylib[0xb0ec8] <+396>:  0x9b103e3c   madd   x28, x17, x16, x15
+libggml-cpu.0.dylib[0xb0ecc] <+400>:  0xd37ef58c   lsl    x12, x12, #2
+libggml-cpu.0.dylib[0xb0ed0] <+404>:  0x9b08358d   madd   x13, x12, x8, x13
+libggml-cpu.0.dylib[0xb0ed4] <+408>:  0xaa0d03e5   mov    x5, x13
+libggml-cpu.0.dylib[0xb0ed8] <+412>:  0xaa0803e6   mov    x6, x8
+libggml-cpu.0.dylib[0xb0edc] <+416>:  0xd2800007   mov    x7, #0x0                  ; =0 
+libggml-cpu.0.dylib[0xb0ee0] <+420>:  0x6f00e400   movi.2d v0, #0000000000000000
+libggml-cpu.0.dylib[0xb0ee4] <+424>:  0xaa0503fe   mov    x30, x5
+libggml-cpu.0.dylib[0xb0ee8] <+428>:  0xaa1c03e4   mov    x4, x28
+libggml-cpu.0.dylib[0xb0eec] <+432>:  0xaa1b03e3   mov    x3, x27
+libggml-cpu.0.dylib[0xb0ef0] <+436>:  0x6f00e401   movi.2d v1, #0000000000000000
+libggml-cpu.0.dylib[0xb0ef4] <+440>:  0xaa1803e2   mov    x2, x24
+libggml-cpu.0.dylib[0xb0ef8] <+444>:  0xaa1703e1   mov    x1, x23
+libggml-cpu.0.dylib[0xb0efc] <+448>:  0x6f00e402   movi.2d v2, #0000000000000000
+libggml-cpu.0.dylib[0xb0f00] <+452>:  0x6f00e403   movi.2d v3, #0000000000000000
+libggml-cpu.0.dylib[0xb0f04] <+456>:  0x3cc107c4   ldr    q4, [x30], #0x10
+libggml-cpu.0.dylib[0xb0f08] <+460>:  0xfc408485   ldr    d5, [x4], #0x8
+libggml-cpu.0.dylib[0xb0f0c] <+464>:  0x0e2178a5   fcvtl  v5.4s, v5.4h
+libggml-cpu.0.dylib[0xb0f10] <+468>:  0x4e24cca3   fmla.4s v3, v5, v4
+libggml-cpu.0.dylib[0xb0f14] <+472>:  0xfc408465   ldr    d5, [x3], #0x8
+libggml-cpu.0.dylib[0xb0f18] <+476>:  0x0e2178a5   fcvtl  v5.4s, v5.4h
+libggml-cpu.0.dylib[0xb0f1c] <+480>:  0x4e24cca2   fmla.4s v2, v5, v4
+libggml-cpu.0.dylib[0xb0f20] <+484>:  0xfc408445   ldr    d5, [x2], #0x8
+libggml-cpu.0.dylib[0xb0f24] <+488>:  0x0e2178a5   fcvtl  v5.4s, v5.4h
+libggml-cpu.0.dylib[0xb0f28] <+492>:  0x4e24cca1   fmla.4s v1, v5, v4
+libggml-cpu.0.dylib[0xb0f2c] <+496>:  0xfc408425   ldr    d5, [x1], #0x8
+libggml-cpu.0.dylib[0xb0f30] <+500>:  0x0e2178a5   fcvtl  v5.4s, v5.4h
+libggml-cpu.0.dylib[0xb0f34] <+504>:  0x4e24cca0   fmla.4s v0, v5, v4
+libggml-cpu.0.dylib[0xb0f38] <+508>:  0x910010e7   add    x7, x7, #0x4
+libggml-cpu.0.dylib[0xb0f3c] <+512>:  0xeb0b00ff   cmp    x7, x11
+libggml-cpu.0.dylib[0xb0f40] <+516>:  0x54fffe2b   b.lt   0xb0f04                   ; <+456>
+libggml-cpu.0.dylib[0xb0f44] <+520>:  0x9b067d41   mul    x1, x10, x6
+libggml-cpu.0.dylib[0xb0f48] <+524>:  0x8b010801   add    x1, x0, x1, lsl #2
+libggml-cpu.0.dylib[0xb0f4c] <+528>:  0x6e23d463   faddp.4s v3, v3, v3
+libggml-cpu.0.dylib[0xb0f50] <+532>:  0x7e30d863   faddp.2s s3, v3
+libggml-cpu.0.dylib[0xb0f54] <+536>:  0x6e22d442   faddp.4s v2, v2, v2
+libggml-cpu.0.dylib[0xb0f58] <+540>:  0x7e30d842   faddp.2s s2, v2
+libggml-cpu.0.dylib[0xb0f5c] <+544>:  0x2d000823   stp    s3, s2, [x1]
+libggml-cpu.0.dylib[0xb0f60] <+548>:  0x6e21d421   faddp.4s v1, v1, v1
+libggml-cpu.0.dylib[0xb0f64] <+552>:  0x7e30d821   faddp.2s s1, v1
+libggml-cpu.0.dylib[0xb0f68] <+556>:  0x6e20d400   faddp.4s v0, v0, v0
+libggml-cpu.0.dylib[0xb0f6c] <+560>:  0x7e30d800   faddp.2s s0, v0
+libggml-cpu.0.dylib[0xb0f70] <+564>:  0x2d010021   stp    s1, s0, [x1, #0x8]
+libggml-cpu.0.dylib[0xb0f74] <+568>:  0x910004c6   add    x6, x6, #0x1
+libggml-cpu.0.dylib[0xb0f78] <+572>:  0x8b0c00a5   add    x5, x5, x12
+libggml-cpu.0.dylib[0xb0f7c] <+576>:  0xeb0900df   cmp    x6, x9
+libggml-cpu.0.dylib[0xb0f80] <+580>:  0x54fffae1   b.ne   0xb0edc                   ; <+416>
+libggml-cpu.0.dylib[0xb0f84] <+584>:  0xb27e0202   orr    x2, x16, #0x4
+libggml-cpu.0.dylib[0xb0f88] <+588>:  0x528000a0   mov    w0, #0x5                  ; =5 
+libggml-cpu.0.dylib[0xb0f8c] <+592>:  0xaa000201   orr    x1, x16, x0
+libggml-cpu.0.dylib[0xb0f90] <+596>:  0xb27f0600   orr    x0, x16, #0x6
+libggml-cpu.0.dylib[0xb0f94] <+600>:  0xb2400a10   orr    x16, x16, #0x7
+libggml-cpu.0.dylib[0xb0f98] <+604>:  0x8b0209ce   add    x14, x14, x2, lsl #2
+libggml-cpu.0.dylib[0xb0f9c] <+608>:  0x9b103e30   madd   x16, x17, x16, x15
+libggml-cpu.0.dylib[0xb0fa0] <+612>:  0x9b003e20   madd   x0, x17, x0, x15
+libggml-cpu.0.dylib[0xb0fa4] <+616>:  0x9b013e21   madd   x1, x17, x1, x15
+libggml-cpu.0.dylib[0xb0fa8] <+620>:  0x9b023e2f   madd   x15, x17, x2, x15
+libggml-cpu.0.dylib[0xb0fac] <+624>:  0xa94363f7   ldp    x23, x24, [sp, #0x30]
+libggml-cpu.0.dylib[0xb0fb0] <+628>:  0xd2800011   mov    x17, #0x0                 ; =0 
+libggml-cpu.0.dylib[0xb0fb4] <+632>:  0x6f00e400   movi.2d v0, #0000000000000000
+libggml-cpu.0.dylib[0xb0fb8] <+636>:  0xaa0d03e2   mov    x2, x13
+libggml-cpu.0.dylib[0xb0fbc] <+640>:  0xaa0f03e3   mov    x3, x15
+libggml-cpu.0.dylib[0xb0fc0] <+644>:  0xaa0103e4   mov    x4, x1
+libggml-cpu.0.dylib[0xb0fc4] <+648>:  0x6f00e401   movi.2d v1, #0000000000000000
+libggml-cpu.0.dylib[0xb0fc8] <+652>:  0xaa0003e5   mov    x5, x0
+libggml-cpu.0.dylib[0xb0fcc] <+656>:  0xaa1003e6   mov    x6, x16
+libggml-cpu.0.dylib[0xb0fd0] <+660>:  0x6f00e402   movi.2d v2, #0000000000000000
+libggml-cpu.0.dylib[0xb0fd4] <+664>:  0x6f00e403   movi.2d v3, #0000000000000000
+libggml-cpu.0.dylib[0xb0fd8] <+668>:  0x3cc10444   ldr    q4, [x2], #0x10
+libggml-cpu.0.dylib[0xb0fdc] <+672>:  0xfc408465   ldr    d5, [x3], #0x8
+libggml-cpu.0.dylib[0xb0fe0] <+676>:  0x0e2178a5   fcvtl  v5.4s, v5.4h
+libggml-cpu.0.dylib[0xb0fe4] <+680>:  0x4e24cca3   fmla.4s v3, v5, v4
+libggml-cpu.0.dylib[0xb0fe8] <+684>:  0xfc408485   ldr    d5, [x4], #0x8
+libggml-cpu.0.dylib[0xb0fec] <+688>:  0x0e2178a5   fcvtl  v5.4s, v5.4h
+libggml-cpu.0.dylib[0xb0ff0] <+692>:  0x4e24cca2   fmla.4s v2, v5, v4
+libggml-cpu.0.dylib[0xb0ff4] <+696>:  0xfc4084a5   ldr    d5, [x5], #0x8
+libggml-cpu.0.dylib[0xb0ff8] <+700>:  0x0e2178a5   fcvtl  v5.4s, v5.4h
+libggml-cpu.0.dylib[0xb0ffc] <+704>:  0x4e24cca1   fmla.4s v1, v5, v4
+libggml-cpu.0.dylib[0xb1000] <+708>:  0xfc4084c5   ldr    d5, [x6], #0x8
+libggml-cpu.0.dylib[0xb1004] <+712>:  0x0e2178a5   fcvtl  v5.4s, v5.4h
+libggml-cpu.0.dylib[0xb1008] <+716>:  0x4e24cca0   fmla.4s v0, v5, v4
+libggml-cpu.0.dylib[0xb100c] <+720>:  0x91001231   add    x17, x17, #0x4
+libggml-cpu.0.dylib[0xb1010] <+724>:  0xeb0b023f   cmp    x17, x11
+libggml-cpu.0.dylib[0xb1014] <+728>:  0x54fffe2b   b.lt   0xb0fd8                   ; <+668>
+libggml-cpu.0.dylib[0xb1018] <+732>:  0x9b087d51   mul    x17, x10, x8
+libggml-cpu.0.dylib[0xb101c] <+736>:  0x8b1109d1   add    x17, x14, x17, lsl #2
+libggml-cpu.0.dylib[0xb1020] <+740>:  0x6e23d463   faddp.4s v3, v3, v3
+libggml-cpu.0.dylib[0xb1024] <+744>:  0x7e30d863   faddp.2s s3, v3
+libggml-cpu.0.dylib[0xb1028] <+748>:  0x6e22d442   faddp.4s v2, v2, v2
+libggml-cpu.0.dylib[0xb102c] <+752>:  0x7e30d842   faddp.2s s2, v2
+libggml-cpu.0.dylib[0xb1030] <+756>:  0x2d000a23   stp    s3, s2, [x17]
+libggml-cpu.0.dylib[0xb1034] <+760>:  0x6e21d421   faddp.4s v1, v1, v1
+libggml-cpu.0.dylib[0xb1038] <+764>:  0x7e30d821   faddp.2s s1, v1
+libggml-cpu.0.dylib[0xb103c] <+768>:  0x6e20d400   faddp.4s v0, v0, v0
+libggml-cpu.0.dylib[0xb1040] <+772>:  0x7e30d800   faddp.2s s0, v0
+libggml-cpu.0.dylib[0xb1044] <+776>:  0x2d010221   stp    s1, s0, [x17, #0x8]
+libggml-cpu.0.dylib[0xb1048] <+780>:  0x91000508   add    x8, x8, #0x1
+libggml-cpu.0.dylib[0xb104c] <+784>:  0x8b0c01ad   add    x13, x13, x12
+libggml-cpu.0.dylib[0xb1050] <+788>:  0xeb09011f   cmp    x8, x9
+libggml-cpu.0.dylib[0xb1054] <+792>:  0x54fffae1   b.ne   0xb0fb0                   ; <+628>
+libggml-cpu.0.dylib[0xb1058] <+796>:  0x17ffff75   b      0xb0e2c                   ; <+240>
+libggml-cpu.0.dylib[0xb105c] <+800>:  0x3dc007e0   ldr    q0, [sp, #0x10]
+libggml-cpu.0.dylib[0xb1060] <+804>:  0x7e30d800   faddp.2s s0, v0
+libggml-cpu.0.dylib[0xb1064] <+808>:  0x4e040400   dup.4s v0, v0[0]
+libggml-cpu.0.dylib[0xb1068] <+812>:  0xcb080129   sub    x9, x9, x8
+libggml-cpu.0.dylib[0xb106c] <+816>:  0xd37ef54a   lsl    x10, x10, #2
+libggml-cpu.0.dylib[0xb1070] <+820>:  0x9b087d48   mul    x8, x10, x8
+libggml-cpu.0.dylib[0xb1074] <+824>:  0x8b0c1508   add    x8, x8, x12, lsl #5
+libggml-cpu.0.dylib[0xb1078] <+828>:  0xf94017eb   ldr    x11, [sp, #0x28]
+libggml-cpu.0.dylib[0xb107c] <+832>:  0x9b0da168   msub   x8, x11, x13, x8
+libggml-cpu.0.dylib[0xb1080] <+836>:  0x8b0801cb   add    x11, x14, x8
+libggml-cpu.0.dylib[0xb1084] <+840>:  0xaa0903ec   mov    x12, x9
+libggml-cpu.0.dylib[0xb1088] <+844>:  0x3d800160   str    q0, [x11]
+libggml-cpu.0.dylib[0xb108c] <+848>:  0x8b0a016b   add    x11, x11, x10
+libggml-cpu.0.dylib[0xb1090] <+852>:  0xf100058c   subs   x12, x12, #0x1
+libggml-cpu.0.dylib[0xb1094] <+856>:  0x54ffffa1   b.ne   0xb1088                   ; <+844>
+libggml-cpu.0.dylib[0xb1098] <+860>:  0x8b0801c8   add    x8, x14, x8
+libggml-cpu.0.dylib[0xb109c] <+864>:  0x91004108   add    x8, x8, #0x10
+libggml-cpu.0.dylib[0xb10a0] <+868>:  0x3d800100   str    q0, [x8]
+libggml-cpu.0.dylib[0xb10a4] <+872>:  0x8b0a0108   add    x8, x8, x10
+libggml-cpu.0.dylib[0xb10a8] <+876>:  0xf1000529   subs   x9, x9, #0x1
+libggml-cpu.0.dylib[0xb10ac] <+880>:  0x54ffffa1   b.ne   0xb10a0                   ; <+868>
+libggml-cpu.0.dylib[0xb10b0] <+884>:  0x17ffff5f   b      0xb0e2c                   ; <+240>
+libggml-cpu.0.dylib[0xb10b4] <+888>:  0xf9400288   ldr    x8, [x20]
+libggml-cpu.0.dylib[0xb10b8] <+892>:  0xf9400d00   ldr    x0, [x8, #0x18]
+libggml-cpu.0.dylib[0xb10bc] <+896>:  0xa9497bfd   ldp    x29, x30, [sp, #0x90]
+libggml-cpu.0.dylib[0xb10c0] <+900>:  0xa9484ff4   ldp    x20, x19, [sp, #0x80]
+libggml-cpu.0.dylib[0xb10c4] <+904>:  0xa94757f6   ldp    x22, x21, [sp, #0x70]
+libggml-cpu.0.dylib[0xb10c8] <+908>:  0xa9465ff8   ldp    x24, x23, [sp, #0x60]
+libggml-cpu.0.dylib[0xb10cc] <+912>:  0xa94567fa   ldp    x26, x25, [sp, #0x50]
+libggml-cpu.0.dylib[0xb10d0] <+916>:  0xa9446ffc   ldp    x28, x27, [sp, #0x40]
+libggml-cpu.0.dylib[0xb10d4] <+920>:  0x910283ff   add    sp, sp, #0xa0
+libggml-cpu.0.dylib[0xb10d8] <+924>:  0x17fd42b3   b      0x1ba4                    ; ggml_barrier
+libggml-cpu.0.dylib[0xb10dc] <+928>:  0xd0000168   adrp   x8, 46
+libggml-cpu.0.dylib[0xb10e0] <+932>:  0x912b0508   add    x8, x8, #0xac1            ; "jj == jj2"
+libggml-cpu.0.dylib[0xb10e4] <+936>:  0xd0000160   adrp   x0, 46
+libggml-cpu.0.dylib[0xb10e8] <+940>:  0x91283800   add    x0, x0, #0xa0e            ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/llamafile/sgemm.cpp"
+libggml-cpu.0.dylib[0xb10ec] <+944>:  0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0xb10f0] <+948>:  0x90000162   adrp   x2, 44
+libggml-cpu.0.dylib[0xb10f4] <+952>:  0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0xb10f8] <+956>:  0x52804e01   mov    w1, #0x270                ; =624 
+libggml-cpu.0.dylib[0xb10fc] <+960>:  0x94004042   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0xb1100] <+964>:  0xd0000168   adrp   x8, 46
+libggml-cpu.0.dylib[0xb1104] <+968>:  0x9129c908   add    x8, x8, #0xa72            ; "m % (RM * BM) == 0"
+libggml-cpu.0.dylib[0xb1108] <+972>:  0xd0000160   adrp   x0, 46
+libggml-cpu.0.dylib[0xb110c] <+976>:  0x91283800   add    x0, x0, #0xa0e            ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/llamafile/sgemm.cpp"
+libggml-cpu.0.dylib[0xb1110] <+980>:  0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0xb1114] <+984>:  0x90000162   adrp   x2, 44
+libggml-cpu.0.dylib[0xb1118] <+988>:  0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0xb111c] <+992>:  0x52804901   mov    w1, #0x248                ; =584 
+libggml-cpu.0.dylib[0xb1120] <+996>:  0x94004039   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0xb1124] <+1000>: 0xd0000168   adrp   x8, 46
+libggml-cpu.0.dylib[0xb1128] <+1004>: 0x912a1508   add    x8, x8, #0xa85            ; "jj_BN * SIZE_BN + (NB_BN - jj_BN) * (SIZE_BN - 1) == xtiles"
+libggml-cpu.0.dylib[0xb112c] <+1008>: 0xd0000160   adrp   x0, 46
+libggml-cpu.0.dylib[0xb1130] <+1012>: 0x91283800   add    x0, x0, #0xa0e            ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/llamafile/sgemm.cpp"
+libggml-cpu.0.dylib[0xb1134] <+1016>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0xb1138] <+1020>: 0x90000162   adrp   x2, 44
+libggml-cpu.0.dylib[0xb113c] <+1024>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0xb1140] <+1028>: 0x52804a81   mov    w1, #0x254                ; =596 
+libggml-cpu.0.dylib[0xb1144] <+1032>: 0x94004030   bl     0xc1204                   ; symbol stub for: ggml_abort
+(lldb) image lookup -a 0xb07c0
+      Address: benchmark-whisper[0x00000000000b07c0] (benchmark-whisper.__PAGEZERO + 722880)
+      Summary: 
+      Address: libggml-base.0.dylib[0x00000000000b07c0] (libggml-base.0.dylib.__LINKEDIT + 116672)
+      Summary: 
+      Address: libggml-cpu.0.dylib[0x00000000000b07c0] (libggml-cpu.0.dylib.__TEXT.__text + 715824)
+      Summary: libggml-cpu.0.dylib`void (anonymous namespace)::tinyBLAS<4, __simd128_float32_t, __simd128_float32_t, unsigned short, float, float>::gemm<4, 2, 2>(long long, long long, long long)
+(lldb) disassemble -b -a 0xb07c0
+libggml-cpu.0.dylib`(anonymous namespace)::tinyBLAS<4, __simd128_float32_t, __simd128_float32_t, unsigned short, float, float>::gemm<4, 2, 2>:
+libggml-cpu.0.dylib[0xb07c0] <+0>:    0xd10383ff   sub    sp, sp, #0xe0
+libggml-cpu.0.dylib[0xb07c4] <+4>:    0xa9086ffc   stp    x28, x27, [sp, #0x80]
+libggml-cpu.0.dylib[0xb07c8] <+8>:    0xa90967fa   stp    x26, x25, [sp, #0x90]
+libggml-cpu.0.dylib[0xb07cc] <+12>:   0xa90a5ff8   stp    x24, x23, [sp, #0xa0]
+libggml-cpu.0.dylib[0xb07d0] <+16>:   0xa90b57f6   stp    x22, x21, [sp, #0xb0]
+libggml-cpu.0.dylib[0xb07d4] <+20>:   0xa90c4ff4   stp    x20, x19, [sp, #0xc0]
+libggml-cpu.0.dylib[0xb07d8] <+24>:   0xa90d7bfd   stp    x29, x30, [sp, #0xd0]
+libggml-cpu.0.dylib[0xb07dc] <+28>:   0x910343fd   add    x29, sp, #0xd0
+libggml-cpu.0.dylib[0xb07e0] <+32>:   0xf240083f   tst    x1, #0x7
+libggml-cpu.0.dylib[0xb07e4] <+36>:   0x54002881   b.ne   0xb0cf4                   ; <+1332>
+libggml-cpu.0.dylib[0xb07e8] <+40>:   0xaa0203f4   mov    x20, x2
+libggml-cpu.0.dylib[0xb07ec] <+44>:   0xaa0003f3   mov    x19, x0
+libggml-cpu.0.dylib[0xb07f0] <+48>:   0x91000448   add    x8, x2, #0x1
+libggml-cpu.0.dylib[0xb07f4] <+52>:   0x8b48fd16   add    x22, x8, x8, lsr #63
+libggml-cpu.0.dylib[0xb07f8] <+56>:   0x9341fed5   asr    x21, x22, #1
+libggml-cpu.0.dylib[0xb07fc] <+60>:   0x52800028   mov    w8, #0x1                  ; =1 
+libggml-cpu.0.dylib[0xb0800] <+64>:   0x91001aa9   add    x9, x21, #0x6
+libggml-cpu.0.dylib[0xb0804] <+68>:   0xb201f3ea   mov    x10, #-0x5555555555555556 ; =-6148914691236517206 
+libggml-cpu.0.dylib[0xb0808] <+72>:   0xf295556a   movk   x10, #0xaaab
+libggml-cpu.0.dylib[0xb080c] <+76>:   0x9bca7d29   umulh  x9, x9, x10
+libggml-cpu.0.dylib[0xb0810] <+80>:   0xd343fd29   lsr    x9, x9, #3
+libggml-cpu.0.dylib[0xb0814] <+84>:   0xf1005c5f   cmp    x2, #0x17
+libggml-cpu.0.dylib[0xb0818] <+88>:   0x9a89b117   csel   x23, x8, x9, lt
+libggml-cpu.0.dylib[0xb081c] <+92>:   0x9ad70ea8   sdiv   x8, x21, x23
+libggml-cpu.0.dylib[0xb0820] <+96>:   0x9b17d509   msub   x9, x8, x23, x21
+libggml-cpu.0.dylib[0xb0824] <+100>:  0xf100013f   cmp    x9, #0x0
+libggml-cpu.0.dylib[0xb0828] <+104>:  0x9a880519   cinc   x25, x8, ne
+libggml-cpu.0.dylib[0xb082c] <+108>:  0xcb1503e8   neg    x8, x21
+libggml-cpu.0.dylib[0xb0830] <+112>:  0x9b172329   madd   x9, x25, x23, x8
+libggml-cpu.0.dylib[0xb0834] <+116>:  0xcb0902f8   sub    x24, x23, x9
+libggml-cpu.0.dylib[0xb0838] <+120>:  0xf9400008   ldr    x8, [x0]
+libggml-cpu.0.dylib[0xb083c] <+124>:  0xb940010a   ldr    w10, [x8]
+libggml-cpu.0.dylib[0xb0840] <+128>:  0xf90033f8   str    x24, [sp, #0x60]
+libggml-cpu.0.dylib[0xb0844] <+132>:  0x350001aa   cbnz   w10, 0xb0878              ; <+184>
+libggml-cpu.0.dylib[0xb0848] <+136>:  0xd100072a   sub    x10, x25, #0x1
+libggml-cpu.0.dylib[0xb084c] <+140>:  0x9b0a7d29   mul    x9, x9, x10
+libggml-cpu.0.dylib[0xb0850] <+144>:  0x9b192709   madd   x9, x24, x25, x9
+libggml-cpu.0.dylib[0xb0854] <+148>:  0xeb15013f   cmp    x9, x21
+libggml-cpu.0.dylib[0xb0858] <+152>:  0x54002601   b.ne   0xb0d18                   ; <+1368>
+libggml-cpu.0.dylib[0xb085c] <+156>:  0xaa0103f8   mov    x24, x1
+libggml-cpu.0.dylib[0xb0860] <+160>:  0xf9400d00   ldr    x0, [x8, #0x18]
+libggml-cpu.0.dylib[0xb0864] <+164>:  0xb9400501   ldr    w1, [x8, #0x4]
+libggml-cpu.0.dylib[0xb0868] <+168>:  0x97fd44e4   bl     0x1bf8                    ; ggml_threadpool_chunk_set
+libggml-cpu.0.dylib[0xb086c] <+172>:  0xf9400268   ldr    x8, [x19]
+libggml-cpu.0.dylib[0xb0870] <+176>:  0xaa1803e1   mov    x1, x24
+libggml-cpu.0.dylib[0xb0874] <+180>:  0xf94033f8   ldr    x24, [sp, #0x60]
+libggml-cpu.0.dylib[0xb0878] <+184>:  0x9343fc29   asr    x9, x1, #3
+libggml-cpu.0.dylib[0xb087c] <+188>:  0x9b097efa   mul    x26, x23, x9
+libggml-cpu.0.dylib[0xb0880] <+192>:  0xaa0903f7   mov    x23, x9
+libggml-cpu.0.dylib[0xb0884] <+196>:  0xf9400d00   ldr    x0, [x8, #0x18]
+libggml-cpu.0.dylib[0xb0888] <+200>:  0x97fd44c7   bl     0x1ba4                    ; ggml_barrier
+libggml-cpu.0.dylib[0xb088c] <+204>:  0xf9400268   ldr    x8, [x19]
+libggml-cpu.0.dylib[0xb0890] <+208>:  0xb980010c   ldrsw  x12, [x8]
+libggml-cpu.0.dylib[0xb0894] <+212>:  0xf9002ffa   str    x26, [sp, #0x58]
+libggml-cpu.0.dylib[0xb0898] <+216>:  0xeb0c035f   cmp    x26, x12
+libggml-cpu.0.dylib[0xb089c] <+220>:  0x5400208d   b.le   0xb0cac                   ; <+1260>
+libggml-cpu.0.dylib[0xb08a0] <+224>:  0x927ffac8   and    x8, x22, #0xfffffffffffffffe
+libggml-cpu.0.dylib[0xb08a4] <+228>:  0xcb080288   sub    x8, x20, x8
+libggml-cpu.0.dylib[0xb08a8] <+232>:  0x8b150108   add    x8, x8, x21
+libggml-cpu.0.dylib[0xb08ac] <+236>:  0x9b197f0a   mul    x10, x24, x25
+libggml-cpu.0.dylib[0xb08b0] <+240>:  0xd1000729   sub    x9, x25, #0x1
+libggml-cpu.0.dylib[0xb08b4] <+244>:  0xa9042be9   stp    x9, x10, [sp, #0x40]
+libggml-cpu.0.dylib[0xb08b8] <+248>:  0xf9002be8   str    x8, [sp, #0x50]
+libggml-cpu.0.dylib[0xb08bc] <+252>:  0xd37ff909   lsl    x9, x8, #1
+libggml-cpu.0.dylib[0xb08c0] <+256>:  0xd37df2e8   lsl    x8, x23, #3
+libggml-cpu.0.dylib[0xb08c4] <+260>:  0xa90327e8   stp    x8, x9, [sp, #0x30]
+libggml-cpu.0.dylib[0xb08c8] <+264>:  0x6f00e400   movi.2d v0, #0000000000000000
+libggml-cpu.0.dylib[0xb08cc] <+268>:  0x6e20d414   faddp.4s v20, v0, v0
+libggml-cpu.0.dylib[0xb08d0] <+272>:  0xa90267f7   stp    x23, x25, [sp, #0x20]
+libggml-cpu.0.dylib[0xb08d4] <+276>:  0x3d8007f4   str    q20, [sp, #0x10]
+libggml-cpu.0.dylib[0xb08d8] <+280>:  0xd2800002   mov    x2, #0x0                  ; =0 
+libggml-cpu.0.dylib[0xb08dc] <+284>:  0x9ad70d8d   sdiv   x13, x12, x23
+libggml-cpu.0.dylib[0xb08e0] <+288>:  0x9b17b1a8   msub   x8, x13, x23, x12
+libggml-cpu.0.dylib[0xb08e4] <+292>:  0xd37df108   lsl    x8, x8, #3
+libggml-cpu.0.dylib[0xb08e8] <+296>:  0x9b197da9   mul    x9, x13, x25
+libggml-cpu.0.dylib[0xb08ec] <+300>:  0xeb1801aa   subs   x10, x13, x24
+libggml-cpu.0.dylib[0xb08f0] <+304>:  0xa9442fef   ldp    x15, x11, [sp, #0x40]
+libggml-cpu.0.dylib[0xb08f4] <+308>:  0x9b0f2d4a   madd   x10, x10, x15, x11
+libggml-cpu.0.dylib[0xb08f8] <+312>:  0x9a8ab12e   csel   x14, x9, x10, lt
+libggml-cpu.0.dylib[0xb08fc] <+316>:  0x910005a9   add    x9, x13, #0x1
+libggml-cpu.0.dylib[0xb0900] <+320>:  0x9b197d2a   mul    x10, x9, x25
+libggml-cpu.0.dylib[0xb0904] <+324>:  0xeb180129   subs   x9, x9, x24
+libggml-cpu.0.dylib[0xb0908] <+328>:  0x9b0f2d29   madd   x9, x9, x15, x11
+libggml-cpu.0.dylib[0xb090c] <+332>:  0x9a89b149   csel   x9, x10, x9, lt
+libggml-cpu.0.dylib[0xb0910] <+336>:  0xd37ff9cb   lsl    x11, x14, #1
+libggml-cpu.0.dylib[0xb0914] <+340>:  0xf9402bf1   ldr    x17, [sp, #0x50]
+libggml-cpu.0.dylib[0xb0918] <+344>:  0x8b0e022f   add    x15, x17, x14
+libggml-cpu.0.dylib[0xb091c] <+348>:  0xd37ff92a   lsl    x10, x9, #1
+libggml-cpu.0.dylib[0xb0920] <+352>:  0x8b090230   add    x16, x17, x9
+libggml-cpu.0.dylib[0xb0924] <+356>:  0xeb11013f   cmp    x9, x17
+libggml-cpu.0.dylib[0xb0928] <+360>:  0x9a90b149   csel   x9, x10, x16, lt
+libggml-cpu.0.dylib[0xb092c] <+364>:  0xf9401fea   ldr    x10, [sp, #0x38]
+libggml-cpu.0.dylib[0xb0930] <+368>:  0xeb0a013f   cmp    x9, x10
+libggml-cpu.0.dylib[0xb0934] <+372>:  0x9a8ab12a   csel   x10, x9, x10, lt
+libggml-cpu.0.dylib[0xb0938] <+376>:  0xeb1101df   cmp    x14, x17
+libggml-cpu.0.dylib[0xb093c] <+380>:  0x9a8fb16b   csel   x11, x11, x15, lt
+libggml-cpu.0.dylib[0xb0940] <+384>:  0x9a91b1cf   csel   x15, x14, x17, lt
+libggml-cpu.0.dylib[0xb0944] <+388>:  0x8b0f01ce   add    x14, x14, x15
+libggml-cpu.0.dylib[0xb0948] <+392>:  0xd37ef5ce   lsl    x14, x14, #2
+libggml-cpu.0.dylib[0xb094c] <+396>:  0x910011ce   add    x14, x14, #0x4
+libggml-cpu.0.dylib[0xb0950] <+400>:  0xf81a83ae   stur   x14, [x29, #-0x58]
+libggml-cpu.0.dylib[0xb0954] <+404>:  0xd37df18c   lsl    x12, x12, #3
+libggml-cpu.0.dylib[0xb0958] <+408>:  0xf9401bee   ldr    x14, [sp, #0x30]
+libggml-cpu.0.dylib[0xb095c] <+412>:  0x9b0db1cd   msub   x13, x14, x13, x12
+libggml-cpu.0.dylib[0xb0960] <+416>:  0xd37ef56e   lsl    x14, x11, #2
+libggml-cpu.0.dylib[0xb0964] <+420>:  0x91000daf   add    x15, x13, #0x3
+libggml-cpu.0.dylib[0xb0968] <+424>:  0x910009ac   add    x12, x13, #0x2
+libggml-cpu.0.dylib[0xb096c] <+428>:  0xf81a03ac   stur   x12, [x29, #-0x60]
+libggml-cpu.0.dylib[0xb0970] <+432>:  0x910005ac   add    x12, x13, #0x1
+libggml-cpu.0.dylib[0xb0974] <+436>:  0xf90037ec   str    x12, [sp, #0x68]
+libggml-cpu.0.dylib[0xb0978] <+440>:  0x5280002c   mov    w12, #0x1                 ; =1 
+libggml-cpu.0.dylib[0xb097c] <+444>:  0xaa0c03e0   mov    x0, x12
+libggml-cpu.0.dylib[0xb0980] <+448>:  0xaa0b03e1   mov    x1, x11
+libggml-cpu.0.dylib[0xb0984] <+452>:  0xeb0a017f   cmp    x11, x10
+libggml-cpu.0.dylib[0xb0988] <+456>:  0x54000d6a   b.ge   0xb0b34                   ; <+884>
+libggml-cpu.0.dylib[0xb098c] <+460>:  0xa9419270   ldp    x16, x4, [x19, #0x18]
+libggml-cpu.0.dylib[0xb0990] <+464>:  0xf9401e63   ldr    x3, [x19, #0x38]
+libggml-cpu.0.dylib[0xb0994] <+468>:  0xf100049f   cmp    x4, #0x1
+libggml-cpu.0.dylib[0xb0998] <+472>:  0x54000b0b   b.lt   0xb0af8                   ; <+824>
+libggml-cpu.0.dylib[0xb099c] <+476>:  0xaa08004c   orr    x12, x2, x8
+libggml-cpu.0.dylib[0xb09a0] <+480>:  0x8b0c0a05   add    x5, x16, x12, lsl #2
+libggml-cpu.0.dylib[0xb09a4] <+484>:  0xa9408666   ldp    x6, x1, [x19, #0x8]
+libggml-cpu.0.dylib[0xb09a8] <+488>:  0xa9429e6c   ldp    x12, x7, [x19, #0x28]
+libggml-cpu.0.dylib[0xb09ac] <+492>:  0xd37ff994   lsl    x20, x12, #1
+libggml-cpu.0.dylib[0xb09b0] <+496>:  0x8b0201ec   add    x12, x15, x2
+libggml-cpu.0.dylib[0xb09b4] <+500>:  0x9b0c1a8c   madd   x12, x20, x12, x6
+libggml-cpu.0.dylib[0xb09b8] <+504>:  0xf85a03b0   ldur   x16, [x29, #-0x60]
+libggml-cpu.0.dylib[0xb09bc] <+508>:  0x8b020210   add    x16, x16, x2
+libggml-cpu.0.dylib[0xb09c0] <+512>:  0x9b101a91   madd   x17, x20, x16, x6
+libggml-cpu.0.dylib[0xb09c4] <+516>:  0xf94037f0   ldr    x16, [sp, #0x68]
+libggml-cpu.0.dylib[0xb09c8] <+520>:  0x8b020210   add    x16, x16, x2
+libggml-cpu.0.dylib[0xb09cc] <+524>:  0x9b101a90   madd   x16, x20, x16, x6
+libggml-cpu.0.dylib[0xb09d0] <+528>:  0x8b0201b5   add    x21, x13, x2
+libggml-cpu.0.dylib[0xb09d4] <+532>:  0x9b151a94   madd   x20, x20, x21, x6
+libggml-cpu.0.dylib[0xb09d8] <+536>:  0xf85a83a6   ldur   x6, [x29, #-0x58]
+libggml-cpu.0.dylib[0xb09dc] <+540>:  0x9b0704d7   madd   x23, x6, x7, x1
+libggml-cpu.0.dylib[0xb09e0] <+544>:  0xd37df0f6   lsl    x22, x7, #3
+libggml-cpu.0.dylib[0xb09e4] <+548>:  0x9b0705db   madd   x27, x14, x7, x1
+libggml-cpu.0.dylib[0xb09e8] <+552>:  0xaa0b03e1   mov    x1, x11
+libggml-cpu.0.dylib[0xb09ec] <+556>:  0xd2800015   mov    x21, #0x0                 ; =0 
+libggml-cpu.0.dylib[0xb09f0] <+560>:  0x9100043a   add    x26, x1, #0x1
+libggml-cpu.0.dylib[0xb09f4] <+564>:  0x6f00e400   movi.2d v0, #0000000000000000
+libggml-cpu.0.dylib[0xb09f8] <+568>:  0x6f00e402   movi.2d v2, #0000000000000000
+libggml-cpu.0.dylib[0xb09fc] <+572>:  0xaa1b03f9   mov    x25, x27
+libggml-cpu.0.dylib[0xb0a00] <+576>:  0xaa1703f8   mov    x24, x23
+libggml-cpu.0.dylib[0xb0a04] <+580>:  0xaa1403fc   mov    x28, x20
+libggml-cpu.0.dylib[0xb0a08] <+584>:  0xaa1003fe   mov    x30, x16
+libggml-cpu.0.dylib[0xb0a0c] <+588>:  0x6f00e404   movi.2d v4, #0000000000000000
+libggml-cpu.0.dylib[0xb0a10] <+592>:  0xaa1103e7   mov    x7, x17
+libggml-cpu.0.dylib[0xb0a14] <+596>:  0xaa0c03e6   mov    x6, x12
+libggml-cpu.0.dylib[0xb0a18] <+600>:  0x6f00e405   movi.2d v5, #0000000000000000
+libggml-cpu.0.dylib[0xb0a1c] <+604>:  0x6f00e406   movi.2d v6, #0000000000000000
+libggml-cpu.0.dylib[0xb0a20] <+608>:  0x6f00e407   movi.2d v7, #0000000000000000
+libggml-cpu.0.dylib[0xb0a24] <+612>:  0x6f00e403   movi.2d v3, #0000000000000000
+libggml-cpu.0.dylib[0xb0a28] <+616>:  0x6f00e401   movi.2d v1, #0000000000000000
+libggml-cpu.0.dylib[0xb0a2c] <+620>:  0x3cc10730   ldr    q16, [x25], #0x10
+libggml-cpu.0.dylib[0xb0a30] <+624>:  0x3cc10711   ldr    q17, [x24], #0x10
+libggml-cpu.0.dylib[0xb0a34] <+628>:  0xfc408792   ldr    d18, [x28], #0x8
+libggml-cpu.0.dylib[0xb0a38] <+632>:  0x0e217a52   fcvtl  v18.4s, v18.4h
+libggml-cpu.0.dylib[0xb0a3c] <+636>:  0x4e30ce47   fmla.4s v7, v18, v16
+libggml-cpu.0.dylib[0xb0a40] <+640>:  0x4e31ce42   fmla.4s v2, v18, v17
+libggml-cpu.0.dylib[0xb0a44] <+644>:  0xfc4087d2   ldr    d18, [x30], #0x8
+libggml-cpu.0.dylib[0xb0a48] <+648>:  0x0e217a52   fcvtl  v18.4s, v18.4h
+libggml-cpu.0.dylib[0xb0a4c] <+652>:  0x4e30ce46   fmla.4s v6, v18, v16
+libggml-cpu.0.dylib[0xb0a50] <+656>:  0x4e31ce40   fmla.4s v0, v18, v17
+libggml-cpu.0.dylib[0xb0a54] <+660>:  0xfc4084f2   ldr    d18, [x7], #0x8
+libggml-cpu.0.dylib[0xb0a58] <+664>:  0x0e217a52   fcvtl  v18.4s, v18.4h
+libggml-cpu.0.dylib[0xb0a5c] <+668>:  0x4e30ce45   fmla.4s v5, v18, v16
+libggml-cpu.0.dylib[0xb0a60] <+672>:  0xfc4084d3   ldr    d19, [x6], #0x8
+libggml-cpu.0.dylib[0xb0a64] <+676>:  0x4e31ce43   fmla.4s v3, v18, v17
+libggml-cpu.0.dylib[0xb0a68] <+680>:  0x0e217a72   fcvtl  v18.4s, v19.4h
+libggml-cpu.0.dylib[0xb0a6c] <+684>:  0x4e30ce44   fmla.4s v4, v18, v16
+libggml-cpu.0.dylib[0xb0a70] <+688>:  0x4e31ce41   fmla.4s v1, v18, v17
+libggml-cpu.0.dylib[0xb0a74] <+692>:  0x910012b5   add    x21, x21, #0x4
+libggml-cpu.0.dylib[0xb0a78] <+696>:  0xeb0402bf   cmp    x21, x4
+libggml-cpu.0.dylib[0xb0a7c] <+700>:  0x54fffd8b   b.lt   0xb0a2c                   ; <+620>
+libggml-cpu.0.dylib[0xb0a80] <+704>:  0x9b017c66   mul    x6, x3, x1
+libggml-cpu.0.dylib[0xb0a84] <+708>:  0x8b0608a6   add    x6, x5, x6, lsl #2
+libggml-cpu.0.dylib[0xb0a88] <+712>:  0x6e27d4e7   faddp.4s v7, v7, v7
+libggml-cpu.0.dylib[0xb0a8c] <+716>:  0x7e30d8e7   faddp.2s s7, v7
+libggml-cpu.0.dylib[0xb0a90] <+720>:  0x6e26d4c6   faddp.4s v6, v6, v6
+libggml-cpu.0.dylib[0xb0a94] <+724>:  0x7e30d8c6   faddp.2s s6, v6
+libggml-cpu.0.dylib[0xb0a98] <+728>:  0x2d0018c7   stp    s7, s6, [x6]
+libggml-cpu.0.dylib[0xb0a9c] <+732>:  0x6e25d4a5   faddp.4s v5, v5, v5
+libggml-cpu.0.dylib[0xb0aa0] <+736>:  0x7e30d8a5   faddp.2s s5, v5
+libggml-cpu.0.dylib[0xb0aa4] <+740>:  0x6e24d484   faddp.4s v4, v4, v4
+libggml-cpu.0.dylib[0xb0aa8] <+744>:  0x7e30d884   faddp.2s s4, v4
+libggml-cpu.0.dylib[0xb0aac] <+748>:  0x2d0110c5   stp    s5, s4, [x6, #0x8]
+libggml-cpu.0.dylib[0xb0ab0] <+752>:  0x9b1a7c66   mul    x6, x3, x26
+libggml-cpu.0.dylib[0xb0ab4] <+756>:  0x8b0608a6   add    x6, x5, x6, lsl #2
+libggml-cpu.0.dylib[0xb0ab8] <+760>:  0x6e22d442   faddp.4s v2, v2, v2
+libggml-cpu.0.dylib[0xb0abc] <+764>:  0x7e30d842   faddp.2s s2, v2
+libggml-cpu.0.dylib[0xb0ac0] <+768>:  0x6e20d400   faddp.4s v0, v0, v0
+libggml-cpu.0.dylib[0xb0ac4] <+772>:  0x7e30d800   faddp.2s s0, v0
+libggml-cpu.0.dylib[0xb0ac8] <+776>:  0x2d0000c2   stp    s2, s0, [x6]
+libggml-cpu.0.dylib[0xb0acc] <+780>:  0x6e23d460   faddp.4s v0, v3, v3
+libggml-cpu.0.dylib[0xb0ad0] <+784>:  0x7e30d800   faddp.2s s0, v0
+libggml-cpu.0.dylib[0xb0ad4] <+788>:  0x6e21d421   faddp.4s v1, v1, v1
+libggml-cpu.0.dylib[0xb0ad8] <+792>:  0x7e30d821   faddp.2s s1, v1
+libggml-cpu.0.dylib[0xb0adc] <+796>:  0x2d0104c0   stp    s0, s1, [x6, #0x8]
+libggml-cpu.0.dylib[0xb0ae0] <+800>:  0x91000821   add    x1, x1, #0x2
+libggml-cpu.0.dylib[0xb0ae4] <+804>:  0x8b1602f7   add    x23, x23, x22
+libggml-cpu.0.dylib[0xb0ae8] <+808>:  0x8b16037b   add    x27, x27, x22
+libggml-cpu.0.dylib[0xb0aec] <+812>:  0xeb0a003f   cmp    x1, x10
+libggml-cpu.0.dylib[0xb0af0] <+816>:  0x54fff7eb   b.lt   0xb09ec                   ; <+556>
+libggml-cpu.0.dylib[0xb0af4] <+820>:  0x14000010   b      0xb0b34                   ; <+884>
+libggml-cpu.0.dylib[0xb0af8] <+824>:  0x7e30da80   faddp.2s s0, v20
+libggml-cpu.0.dylib[0xb0afc] <+828>:  0x4e040400   dup.4s v0, v0[0]
+libggml-cpu.0.dylib[0xb0b00] <+832>:  0xf85a83ac   ldur   x12, [x29, #-0x58]
+libggml-cpu.0.dylib[0xb0b04] <+836>:  0x9b037d8c   mul    x12, x12, x3
+libggml-cpu.0.dylib[0xb0b08] <+840>:  0x8b0201b1   add    x17, x13, x2
+libggml-cpu.0.dylib[0xb0b0c] <+844>:  0x8b110a10   add    x16, x16, x17, lsl #2
+libggml-cpu.0.dylib[0xb0b10] <+848>:  0xd37df071   lsl    x17, x3, #3
+libggml-cpu.0.dylib[0xb0b14] <+852>:  0x9b037dc3   mul    x3, x14, x3
+libggml-cpu.0.dylib[0xb0b18] <+856>:  0xaa0b03e1   mov    x1, x11
+libggml-cpu.0.dylib[0xb0b1c] <+860>:  0x3ca36a00   str    q0, [x16, x3]
+libggml-cpu.0.dylib[0xb0b20] <+864>:  0x3cac6a00   str    q0, [x16, x12]
+libggml-cpu.0.dylib[0xb0b24] <+868>:  0x91000821   add    x1, x1, #0x2
+libggml-cpu.0.dylib[0xb0b28] <+872>:  0x8b110210   add    x16, x16, x17
+libggml-cpu.0.dylib[0xb0b2c] <+876>:  0xeb0a003f   cmp    x1, x10
+libggml-cpu.0.dylib[0xb0b30] <+880>:  0x54ffff6b   b.lt   0xb0b1c                   ; <+860>
+libggml-cpu.0.dylib[0xb0b34] <+884>:  0xeb09003f   cmp    x1, x9
+libggml-cpu.0.dylib[0xb0b38] <+888>:  0x540009aa   b.ge   0xb0c6c                   ; <+1196>
+libggml-cpu.0.dylib[0xb0b3c] <+892>:  0xa941926c   ldp    x12, x4, [x19, #0x18]
+libggml-cpu.0.dylib[0xb0b40] <+896>:  0xf9401e63   ldr    x3, [x19, #0x38]
+libggml-cpu.0.dylib[0xb0b44] <+900>:  0xf100049f   cmp    x4, #0x1
+libggml-cpu.0.dylib[0xb0b48] <+904>:  0x5400078b   b.lt   0xb0c38                   ; <+1144>
+libggml-cpu.0.dylib[0xb0b4c] <+908>:  0xaa080050   orr    x16, x2, x8
+libggml-cpu.0.dylib[0xb0b50] <+912>:  0x8b100985   add    x5, x12, x16, lsl #2
+libggml-cpu.0.dylib[0xb0b54] <+916>:  0xb27f020c   orr    x12, x16, #0x2
+libggml-cpu.0.dylib[0xb0b58] <+920>:  0xb2400210   orr    x16, x16, #0x1
+libggml-cpu.0.dylib[0xb0b5c] <+924>:  0xa940c674   ldp    x20, x17, [x19, #0x8]
+libggml-cpu.0.dylib[0xb0b60] <+928>:  0xa942d666   ldp    x6, x21, [x19, #0x28]
+libggml-cpu.0.dylib[0xb0b64] <+932>:  0xd37ff8d7   lsl    x23, x6, #1
+libggml-cpu.0.dylib[0xb0b68] <+936>:  0x8b0201e6   add    x6, x15, x2
+libggml-cpu.0.dylib[0xb0b6c] <+940>:  0x9b0652e6   madd   x6, x23, x6, x20
+libggml-cpu.0.dylib[0xb0b70] <+944>:  0x9b0c52e7   madd   x7, x23, x12, x20
+libggml-cpu.0.dylib[0xb0b74] <+948>:  0x9b1052f6   madd   x22, x23, x16, x20
+libggml-cpu.0.dylib[0xb0b78] <+952>:  0x8b0201ac   add    x12, x13, x2
+libggml-cpu.0.dylib[0xb0b7c] <+956>:  0x9b0c52e2   madd   x2, x23, x12, x20
+libggml-cpu.0.dylib[0xb0b80] <+960>:  0x9b157c2c   mul    x12, x1, x21
+libggml-cpu.0.dylib[0xb0b84] <+964>:  0x8b0c0a38   add    x24, x17, x12, lsl #2
+libggml-cpu.0.dylib[0xb0b88] <+968>:  0xd37ef6b9   lsl    x25, x21, #2
+libggml-cpu.0.dylib[0xb0b8c] <+972>:  0xd280000c   mov    x12, #0x0                 ; =0 
+libggml-cpu.0.dylib[0xb0b90] <+976>:  0x6f00e400   movi.2d v0, #0000000000000000
+libggml-cpu.0.dylib[0xb0b94] <+980>:  0xaa1803f0   mov    x16, x24
+libggml-cpu.0.dylib[0xb0b98] <+984>:  0xaa0203f1   mov    x17, x2
+libggml-cpu.0.dylib[0xb0b9c] <+988>:  0xaa1603f4   mov    x20, x22
+libggml-cpu.0.dylib[0xb0ba0] <+992>:  0x6f00e401   movi.2d v1, #0000000000000000
+libggml-cpu.0.dylib[0xb0ba4] <+996>:  0xaa0703f5   mov    x21, x7
+libggml-cpu.0.dylib[0xb0ba8] <+1000>: 0xaa0603f7   mov    x23, x6
+libggml-cpu.0.dylib[0xb0bac] <+1004>: 0x6f00e402   movi.2d v2, #0000000000000000
+libggml-cpu.0.dylib[0xb0bb0] <+1008>: 0x6f00e403   movi.2d v3, #0000000000000000
+libggml-cpu.0.dylib[0xb0bb4] <+1012>: 0x3cc10604   ldr    q4, [x16], #0x10
+libggml-cpu.0.dylib[0xb0bb8] <+1016>: 0xfc408625   ldr    d5, [x17], #0x8
+libggml-cpu.0.dylib[0xb0bbc] <+1020>: 0x0e2178a5   fcvtl  v5.4s, v5.4h
+libggml-cpu.0.dylib[0xb0bc0] <+1024>: 0x4e24cca3   fmla.4s v3, v5, v4
+libggml-cpu.0.dylib[0xb0bc4] <+1028>: 0xfc408685   ldr    d5, [x20], #0x8
+libggml-cpu.0.dylib[0xb0bc8] <+1032>: 0x0e2178a5   fcvtl  v5.4s, v5.4h
+libggml-cpu.0.dylib[0xb0bcc] <+1036>: 0x4e24cca2   fmla.4s v2, v5, v4
+libggml-cpu.0.dylib[0xb0bd0] <+1040>: 0xfc4086a5   ldr    d5, [x21], #0x8
+libggml-cpu.0.dylib[0xb0bd4] <+1044>: 0x0e2178a5   fcvtl  v5.4s, v5.4h
+libggml-cpu.0.dylib[0xb0bd8] <+1048>: 0x4e24cca1   fmla.4s v1, v5, v4
+libggml-cpu.0.dylib[0xb0bdc] <+1052>: 0xfc4086e5   ldr    d5, [x23], #0x8
+libggml-cpu.0.dylib[0xb0be0] <+1056>: 0x0e2178a5   fcvtl  v5.4s, v5.4h
+libggml-cpu.0.dylib[0xb0be4] <+1060>: 0x4e24cca0   fmla.4s v0, v5, v4
+libggml-cpu.0.dylib[0xb0be8] <+1064>: 0x9100118c   add    x12, x12, #0x4
+libggml-cpu.0.dylib[0xb0bec] <+1068>: 0xeb04019f   cmp    x12, x4
+libggml-cpu.0.dylib[0xb0bf0] <+1072>: 0x54fffe2b   b.lt   0xb0bb4                   ; <+1012>
+libggml-cpu.0.dylib[0xb0bf4] <+1076>: 0x9b017c6c   mul    x12, x3, x1
+libggml-cpu.0.dylib[0xb0bf8] <+1080>: 0x8b0c08ac   add    x12, x5, x12, lsl #2
+libggml-cpu.0.dylib[0xb0bfc] <+1084>: 0x6e23d463   faddp.4s v3, v3, v3
+libggml-cpu.0.dylib[0xb0c00] <+1088>: 0x7e30d863   faddp.2s s3, v3
+libggml-cpu.0.dylib[0xb0c04] <+1092>: 0x6e22d442   faddp.4s v2, v2, v2
+libggml-cpu.0.dylib[0xb0c08] <+1096>: 0x7e30d842   faddp.2s s2, v2
+libggml-cpu.0.dylib[0xb0c0c] <+1100>: 0x2d000983   stp    s3, s2, [x12]
+libggml-cpu.0.dylib[0xb0c10] <+1104>: 0x6e21d421   faddp.4s v1, v1, v1
+libggml-cpu.0.dylib[0xb0c14] <+1108>: 0x7e30d821   faddp.2s s1, v1
+libggml-cpu.0.dylib[0xb0c18] <+1112>: 0x6e20d400   faddp.4s v0, v0, v0
+libggml-cpu.0.dylib[0xb0c1c] <+1116>: 0x7e30d800   faddp.2s s0, v0
+libggml-cpu.0.dylib[0xb0c20] <+1120>: 0x2d010181   stp    s1, s0, [x12, #0x8]
+libggml-cpu.0.dylib[0xb0c24] <+1124>: 0x91000421   add    x1, x1, #0x1
+libggml-cpu.0.dylib[0xb0c28] <+1128>: 0x8b190318   add    x24, x24, x25
+libggml-cpu.0.dylib[0xb0c2c] <+1132>: 0xeb09003f   cmp    x1, x9
+libggml-cpu.0.dylib[0xb0c30] <+1136>: 0x54fffaeb   b.lt   0xb0b8c                   ; <+972>
+libggml-cpu.0.dylib[0xb0c34] <+1140>: 0x1400000e   b      0xb0c6c                   ; <+1196>
+libggml-cpu.0.dylib[0xb0c38] <+1144>: 0x7e30da80   faddp.2s s0, v20
+libggml-cpu.0.dylib[0xb0c3c] <+1148>: 0x4e040400   dup.4s v0, v0[0]
+libggml-cpu.0.dylib[0xb0c40] <+1152>: 0x9b037c30   mul    x16, x1, x3
+libggml-cpu.0.dylib[0xb0c44] <+1156>: 0xd37ef610   lsl    x16, x16, #2
+libggml-cpu.0.dylib[0xb0c48] <+1160>: 0x8b0201b1   add    x17, x13, x2
+libggml-cpu.0.dylib[0xb0c4c] <+1164>: 0x8b110a10   add    x16, x16, x17, lsl #2
+libggml-cpu.0.dylib[0xb0c50] <+1168>: 0x8b10018c   add    x12, x12, x16
+libggml-cpu.0.dylib[0xb0c54] <+1172>: 0xd37ef470   lsl    x16, x3, #2
+libggml-cpu.0.dylib[0xb0c58] <+1176>: 0x3d800180   str    q0, [x12]
+libggml-cpu.0.dylib[0xb0c5c] <+1180>: 0x91000421   add    x1, x1, #0x1
+libggml-cpu.0.dylib[0xb0c60] <+1184>: 0x8b10018c   add    x12, x12, x16
+libggml-cpu.0.dylib[0xb0c64] <+1188>: 0xeb09003f   cmp    x1, x9
+libggml-cpu.0.dylib[0xb0c68] <+1192>: 0x54ffff8b   b.lt   0xb0c58                   ; <+1176>
+libggml-cpu.0.dylib[0xb0c6c] <+1196>: 0xeb09003f   cmp    x1, x9
+libggml-cpu.0.dylib[0xb0c70] <+1200>: 0x54000301   b.ne   0xb0cd0                   ; <+1296>
+libggml-cpu.0.dylib[0xb0c74] <+1204>: 0x5280000c   mov    w12, #0x0                 ; =0 
+libggml-cpu.0.dylib[0xb0c78] <+1208>: 0x52800082   mov    w2, #0x4                  ; =4 
+libggml-cpu.0.dylib[0xb0c7c] <+1212>: 0x3707e800   tbnz   w0, #0x0, 0xb097c         ; <+444>
+libggml-cpu.0.dylib[0xb0c80] <+1216>: 0xf9400268   ldr    x8, [x19]
+libggml-cpu.0.dylib[0xb0c84] <+1220>: 0xf9400d00   ldr    x0, [x8, #0x18]
+libggml-cpu.0.dylib[0xb0c88] <+1224>: 0x52800021   mov    w1, #0x1                  ; =1 
+libggml-cpu.0.dylib[0xb0c8c] <+1228>: 0x97fd43dd   bl     0x1c00                    ; ggml_threadpool_chunk_add
+libggml-cpu.0.dylib[0xb0c90] <+1232>: 0x3dc007f4   ldr    q20, [sp, #0x10]
+libggml-cpu.0.dylib[0xb0c94] <+1236>: 0x93407c0c   sxtw   x12, w0
+libggml-cpu.0.dylib[0xb0c98] <+1240>: 0xa945e3e8   ldp    x8, x24, [sp, #0x58]
+libggml-cpu.0.dylib[0xb0c9c] <+1244>: 0xeb0c011f   cmp    x8, x12
+libggml-cpu.0.dylib[0xb0ca0] <+1248>: 0xa94267f7   ldp    x23, x25, [sp, #0x20]
+libggml-cpu.0.dylib[0xb0ca4] <+1252>: 0x54ffe1ac   b.gt   0xb08d8                   ; <+280>
+libggml-cpu.0.dylib[0xb0ca8] <+1256>: 0xf9400268   ldr    x8, [x19]
+libggml-cpu.0.dylib[0xb0cac] <+1260>: 0xf9400d00   ldr    x0, [x8, #0x18]
+libggml-cpu.0.dylib[0xb0cb0] <+1264>: 0xa94d7bfd   ldp    x29, x30, [sp, #0xd0]
+libggml-cpu.0.dylib[0xb0cb4] <+1268>: 0xa94c4ff4   ldp    x20, x19, [sp, #0xc0]
+libggml-cpu.0.dylib[0xb0cb8] <+1272>: 0xa94b57f6   ldp    x22, x21, [sp, #0xb0]
+libggml-cpu.0.dylib[0xb0cbc] <+1276>: 0xa94a5ff8   ldp    x24, x23, [sp, #0xa0]
+libggml-cpu.0.dylib[0xb0cc0] <+1280>: 0xa94967fa   ldp    x26, x25, [sp, #0x90]
+libggml-cpu.0.dylib[0xb0cc4] <+1284>: 0xa9486ffc   ldp    x28, x27, [sp, #0x80]
+libggml-cpu.0.dylib[0xb0cc8] <+1288>: 0x910383ff   add    sp, sp, #0xe0
+libggml-cpu.0.dylib[0xb0ccc] <+1292>: 0x17fd43b6   b      0x1ba4                    ; ggml_barrier
+libggml-cpu.0.dylib[0xb0cd0] <+1296>: 0xf0000168   adrp   x8, 47
+libggml-cpu.0.dylib[0xb0cd4] <+1300>: 0x912b0508   add    x8, x8, #0xac1            ; "jj == jj2"
+libggml-cpu.0.dylib[0xb0cd8] <+1304>: 0xf0000160   adrp   x0, 47
+libggml-cpu.0.dylib[0xb0cdc] <+1308>: 0x91283800   add    x0, x0, #0xa0e            ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/llamafile/sgemm.cpp"
+libggml-cpu.0.dylib[0xb0ce0] <+1312>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0xb0ce4] <+1316>: 0xb0000162   adrp   x2, 45
+libggml-cpu.0.dylib[0xb0ce8] <+1320>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0xb0cec] <+1324>: 0x52804e01   mov    w1, #0x270                ; =624 
+libggml-cpu.0.dylib[0xb0cf0] <+1328>: 0x94004145   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0xb0cf4] <+1332>: 0xf0000168   adrp   x8, 47
+libggml-cpu.0.dylib[0xb0cf8] <+1336>: 0x9129c908   add    x8, x8, #0xa72            ; "m % (RM * BM) == 0"
+libggml-cpu.0.dylib[0xb0cfc] <+1340>: 0xf0000160   adrp   x0, 47
+libggml-cpu.0.dylib[0xb0d00] <+1344>: 0x91283800   add    x0, x0, #0xa0e            ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/llamafile/sgemm.cpp"
+libggml-cpu.0.dylib[0xb0d04] <+1348>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0xb0d08] <+1352>: 0xb0000162   adrp   x2, 45
+libggml-cpu.0.dylib[0xb0d0c] <+1356>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0xb0d10] <+1360>: 0x52804901   mov    w1, #0x248                ; =584 
+libggml-cpu.0.dylib[0xb0d14] <+1364>: 0x9400413c   bl     0xc1204                   ; symbol stub for: ggml_abort
+libggml-cpu.0.dylib[0xb0d18] <+1368>: 0xf0000168   adrp   x8, 47
+libggml-cpu.0.dylib[0xb0d1c] <+1372>: 0x912a1508   add    x8, x8, #0xa85            ; "jj_BN * SIZE_BN + (NB_BN - jj_BN) * (SIZE_BN - 1) == xtiles"
+libggml-cpu.0.dylib[0xb0d20] <+1376>: 0xf0000160   adrp   x0, 47
+libggml-cpu.0.dylib[0xb0d24] <+1380>: 0x91283800   add    x0, x0, #0xa0e            ; "/Users/yeren/ane/whisper/vendor/whisper-macos-decoder-profile/ggml/src/ggml-cpu/llamafile/sgemm.cpp"
+libggml-cpu.0.dylib[0xb0d28] <+1384>: 0xf90003e8   str    x8, [sp]
+libggml-cpu.0.dylib[0xb0d2c] <+1388>: 0xb0000162   adrp   x2, 45
+libggml-cpu.0.dylib[0xb0d30] <+1392>: 0x91008c42   add    x2, x2, #0x23             ; "GGML_ASSERT(%s) failed"
+libggml-cpu.0.dylib[0xb0d34] <+1396>: 0x52804a81   mov    w1, #0x254                ; =596 
+libggml-cpu.0.dylib[0xb0d38] <+1400>: 0x94004133   bl     0xc1204                   ; symbol stub for: ggml_abort
+(lldb) image lookup -n ggml_vec_dot_f32
+1 match found in /Users/yeren/ane/whisper/build/macos-decoder-profile/bin/libggml-cpu.0.dylib:
+        Address: libggml-cpu.0.dylib[0x000000000005c8ac] (libggml-cpu.0.dylib.__TEXT.__text + 371996)
+        Summary: libggml-cpu.0.dylib`ggml_vec_dot_f32
+(lldb) disassemble -b -n ggml_vec_dot_f32
+libggml-cpu.0.dylib`ggml_vec_dot_f32:
+libggml-cpu.0.dylib[0x5c8ac] <+0>:   0x121c6c08   and    w8, w0, #0xfffffff0
+libggml-cpu.0.dylib[0x5c8b0] <+4>:   0x6f00e400   movi.2d v0, #0000000000000000
+libggml-cpu.0.dylib[0x5c8b4] <+8>:   0x7100401f   cmp    w0, #0x10
+libggml-cpu.0.dylib[0x5c8b8] <+12>:  0x540002ab   b.lt   0x5c90c                   ; <+96>
+libggml-cpu.0.dylib[0x5c8bc] <+16>:  0xd2800009   mov    x9, #0x0                  ; =0 
+libggml-cpu.0.dylib[0x5c8c0] <+20>:  0x9100806a   add    x10, x3, #0x20
+libggml-cpu.0.dylib[0x5c8c4] <+24>:  0x910080ab   add    x11, x5, #0x20
+libggml-cpu.0.dylib[0x5c8c8] <+28>:  0x6f00e401   movi.2d v1, #0000000000000000
+libggml-cpu.0.dylib[0x5c8cc] <+32>:  0x6f00e402   movi.2d v2, #0000000000000000
+libggml-cpu.0.dylib[0x5c8d0] <+36>:  0x6f00e403   movi.2d v3, #0000000000000000
+libggml-cpu.0.dylib[0x5c8d4] <+40>:  0xad7f1544   ldp    q4, q5, [x10, #-0x20]
+libggml-cpu.0.dylib[0x5c8d8] <+44>:  0xad7f1d66   ldp    q6, q7, [x11, #-0x20]
+libggml-cpu.0.dylib[0x5c8dc] <+48>:  0x4e24ccc3   fmla.4s v3, v6, v4
+libggml-cpu.0.dylib[0x5c8e0] <+52>:  0x4e25cce2   fmla.4s v2, v7, v5
+libggml-cpu.0.dylib[0x5c8e4] <+56>:  0xacc21544   ldp    q4, q5, [x10], #0x40
+libggml-cpu.0.dylib[0x5c8e8] <+60>:  0xacc21d66   ldp    q6, q7, [x11], #0x40
+libggml-cpu.0.dylib[0x5c8ec] <+64>:  0x4e24ccc1   fmla.4s v1, v6, v4
+libggml-cpu.0.dylib[0x5c8f0] <+68>:  0x4e25cce0   fmla.4s v0, v7, v5
+libggml-cpu.0.dylib[0x5c8f4] <+72>:  0x91004129   add    x9, x9, #0x10
+libggml-cpu.0.dylib[0x5c8f8] <+76>:  0xeb08013f   cmp    x9, x8
+libggml-cpu.0.dylib[0x5c8fc] <+80>:  0x54fffec3   b.lo   0x5c8d4                   ; <+40>
+libggml-cpu.0.dylib[0x5c900] <+84>:  0x4e21d461   fadd.4s v1, v3, v1
+libggml-cpu.0.dylib[0x5c904] <+88>:  0x4e20d440   fadd.4s v0, v2, v0
+libggml-cpu.0.dylib[0x5c908] <+92>:  0x4e20d420   fadd.4s v0, v1, v0
+libggml-cpu.0.dylib[0x5c90c] <+96>:  0x6e20d400   faddp.4s v0, v0, v0
+libggml-cpu.0.dylib[0x5c910] <+100>: 0x7e30d800   faddp.2s s0, v0
+libggml-cpu.0.dylib[0x5c914] <+104>: 0x6b00011f   cmp    w8, w0
+libggml-cpu.0.dylib[0x5c918] <+108>: 0x54000bc0   b.eq   0x5ca90                   ; <+484>
+libggml-cpu.0.dylib[0x5c91c] <+112>: 0x93407d09   sxtw   x9, w8
+libggml-cpu.0.dylib[0x5c920] <+116>: 0x93407c08   sxtw   x8, w0
+libggml-cpu.0.dylib[0x5c924] <+120>: 0xb240012a   orr    x10, x9, #0x1
+libggml-cpu.0.dylib[0x5c928] <+124>: 0xeb08015f   cmp    x10, x8
+libggml-cpu.0.dylib[0x5c92c] <+128>: 0x9a89d50a   csinc  x10, x8, x9, le
+libggml-cpu.0.dylib[0x5c930] <+132>: 0xcb09014b   sub    x11, x10, x9
+libggml-cpu.0.dylib[0x5c934] <+136>: 0xf1000d7f   cmp    x11, #0x3
+libggml-cpu.0.dylib[0x5c938] <+140>: 0x54000068   b.hi   0x5c944                   ; <+152>
+libggml-cpu.0.dylib[0x5c93c] <+144>: 0xaa0903eb   mov    x11, x9
+libggml-cpu.0.dylib[0x5c940] <+148>: 0x1400004e   b      0x5ca78                   ; <+460>
+libggml-cpu.0.dylib[0x5c944] <+152>: 0xf100417f   cmp    x11, #0x10
+libggml-cpu.0.dylib[0x5c948] <+156>: 0x54000062   b.hs   0x5c954                   ; <+168>
+libggml-cpu.0.dylib[0x5c94c] <+160>: 0xd280000c   mov    x12, #0x0                 ; =0 
+libggml-cpu.0.dylib[0x5c950] <+164>: 0x14000034   b      0x5ca20                   ; <+372>
+libggml-cpu.0.dylib[0x5c954] <+168>: 0x92400d4d   and    x13, x10, #0xf
+libggml-cpu.0.dylib[0x5c958] <+172>: 0xcb0d016c   sub    x12, x11, x13
+libggml-cpu.0.dylib[0x5c95c] <+176>: 0x8b0d012e   add    x14, x9, x13
+libggml-cpu.0.dylib[0x5c960] <+180>: 0xcb0a01ce   sub    x14, x14, x10
+libggml-cpu.0.dylib[0x5c964] <+184>: 0xd37ef52f   lsl    x15, x9, #2
+libggml-cpu.0.dylib[0x5c968] <+188>: 0x910081f0   add    x16, x15, #0x20
+libggml-cpu.0.dylib[0x5c96c] <+192>: 0x8b10006f   add    x15, x3, x16
+libggml-cpu.0.dylib[0x5c970] <+196>: 0x8b1000b0   add    x16, x5, x16
+libggml-cpu.0.dylib[0x5c974] <+200>: 0xad7f09e1   ldp    q1, q2, [x15, #-0x20]
+libggml-cpu.0.dylib[0x5c978] <+204>: 0xacc211e3   ldp    q3, q4, [x15], #0x40
+libggml-cpu.0.dylib[0x5c97c] <+208>: 0xad7f1a05   ldp    q5, q6, [x16, #-0x20]
+libggml-cpu.0.dylib[0x5c980] <+212>: 0xacc24207   ldp    q7, q16, [x16], #0x40
+libggml-cpu.0.dylib[0x5c984] <+216>: 0x6e25dc21   fmul.4s v1, v1, v5
+libggml-cpu.0.dylib[0x5c988] <+220>: 0x5e1c0425   mov    s5, v1[3]
+libggml-cpu.0.dylib[0x5c98c] <+224>: 0x5e140431   mov    s17, v1[2]
+libggml-cpu.0.dylib[0x5c990] <+228>: 0x5e0c0432   mov    s18, v1[1]
+libggml-cpu.0.dylib[0x5c994] <+232>: 0x6e26dc42   fmul.4s v2, v2, v6
+libggml-cpu.0.dylib[0x5c998] <+236>: 0x5e1c0446   mov    s6, v2[3]
+libggml-cpu.0.dylib[0x5c99c] <+240>: 0x5e140453   mov    s19, v2[2]
+libggml-cpu.0.dylib[0x5c9a0] <+244>: 0x5e0c0454   mov    s20, v2[1]
+libggml-cpu.0.dylib[0x5c9a4] <+248>: 0x6e27dc63   fmul.4s v3, v3, v7
+libggml-cpu.0.dylib[0x5c9a8] <+252>: 0x5e1c0467   mov    s7, v3[3]
+libggml-cpu.0.dylib[0x5c9ac] <+256>: 0x5e140475   mov    s21, v3[2]
+libggml-cpu.0.dylib[0x5c9b0] <+260>: 0x5e0c0476   mov    s22, v3[1]
+libggml-cpu.0.dylib[0x5c9b4] <+264>: 0x6e30dc84   fmul.4s v4, v4, v16
+libggml-cpu.0.dylib[0x5c9b8] <+268>: 0x5e1c0490   mov    s16, v4[3]
+libggml-cpu.0.dylib[0x5c9bc] <+272>: 0x5e140497   mov    s23, v4[2]
+libggml-cpu.0.dylib[0x5c9c0] <+276>: 0x5e0c0498   mov    s24, v4[1]
+libggml-cpu.0.dylib[0x5c9c4] <+280>: 0x1e212800   fadd   s0, s0, s1
+libggml-cpu.0.dylib[0x5c9c8] <+284>: 0x1e322800   fadd   s0, s0, s18
+libggml-cpu.0.dylib[0x5c9cc] <+288>: 0x1e312800   fadd   s0, s0, s17
+libggml-cpu.0.dylib[0x5c9d0] <+292>: 0x1e252800   fadd   s0, s0, s5
+libggml-cpu.0.dylib[0x5c9d4] <+296>: 0x1e222800   fadd   s0, s0, s2
+libggml-cpu.0.dylib[0x5c9d8] <+300>: 0x1e342800   fadd   s0, s0, s20
+libggml-cpu.0.dylib[0x5c9dc] <+304>: 0x1e332800   fadd   s0, s0, s19
+libggml-cpu.0.dylib[0x5c9e0] <+308>: 0x1e262800   fadd   s0, s0, s6
+libggml-cpu.0.dylib[0x5c9e4] <+312>: 0x1e232800   fadd   s0, s0, s3
+libggml-cpu.0.dylib[0x5c9e8] <+316>: 0x1e362800   fadd   s0, s0, s22
+libggml-cpu.0.dylib[0x5c9ec] <+320>: 0x1e352800   fadd   s0, s0, s21
+libggml-cpu.0.dylib[0x5c9f0] <+324>: 0x1e272800   fadd   s0, s0, s7
+libggml-cpu.0.dylib[0x5c9f4] <+328>: 0x1e242800   fadd   s0, s0, s4
+libggml-cpu.0.dylib[0x5c9f8] <+332>: 0x1e382800   fadd   s0, s0, s24
+libggml-cpu.0.dylib[0x5c9fc] <+336>: 0x1e372800   fadd   s0, s0, s23
+libggml-cpu.0.dylib[0x5ca00] <+340>: 0x1e302800   fadd   s0, s0, s16
+libggml-cpu.0.dylib[0x5ca04] <+344>: 0xb10041ce   adds   x14, x14, #0x10
+libggml-cpu.0.dylib[0x5ca08] <+348>: 0x54fffb61   b.ne   0x5c974                   ; <+200>
+libggml-cpu.0.dylib[0x5ca0c] <+352>: 0xb400042d   cbz    x13, 0x5ca90              ; <+484>
+libggml-cpu.0.dylib[0x5ca10] <+356>: 0xf10011bf   cmp    x13, #0x4
+libggml-cpu.0.dylib[0x5ca14] <+360>: 0x54000062   b.hs   0x5ca20                   ; <+372>
+libggml-cpu.0.dylib[0x5ca18] <+364>: 0x8b09018b   add    x11, x12, x9
+libggml-cpu.0.dylib[0x5ca1c] <+368>: 0x14000017   b      0x5ca78                   ; <+460>
+libggml-cpu.0.dylib[0x5ca20] <+372>: 0x9240054d   and    x13, x10, #0x3
+libggml-cpu.0.dylib[0x5ca24] <+376>: 0xcb0d016b   sub    x11, x11, x13
+libggml-cpu.0.dylib[0x5ca28] <+380>: 0x8b09016b   add    x11, x11, x9
+libggml-cpu.0.dylib[0x5ca2c] <+384>: 0x8b09018c   add    x12, x12, x9
+libggml-cpu.0.dylib[0x5ca30] <+388>: 0x8b0d0189   add    x9, x12, x13
+libggml-cpu.0.dylib[0x5ca34] <+392>: 0xcb0a0129   sub    x9, x9, x10
+libggml-cpu.0.dylib[0x5ca38] <+396>: 0xd37ef58c   lsl    x12, x12, #2
+libggml-cpu.0.dylib[0x5ca3c] <+400>: 0x8b0c00aa   add    x10, x5, x12
+libggml-cpu.0.dylib[0x5ca40] <+404>: 0x8b0c006c   add    x12, x3, x12
+libggml-cpu.0.dylib[0x5ca44] <+408>: 0x3cc10581   ldr    q1, [x12], #0x10
+libggml-cpu.0.dylib[0x5ca48] <+412>: 0x3cc10542   ldr    q2, [x10], #0x10
+libggml-cpu.0.dylib[0x5ca4c] <+416>: 0x6e22dc21   fmul.4s v1, v1, v2
+libggml-cpu.0.dylib[0x5ca50] <+420>: 0x5e1c0422   mov    s2, v1[3]
+libggml-cpu.0.dylib[0x5ca54] <+424>: 0x5e140423   mov    s3, v1[2]
+libggml-cpu.0.dylib[0x5ca58] <+428>: 0x5e0c0424   mov    s4, v1[1]
+libggml-cpu.0.dylib[0x5ca5c] <+432>: 0x1e212800   fadd   s0, s0, s1
+libggml-cpu.0.dylib[0x5ca60] <+436>: 0x1e242800   fadd   s0, s0, s4
+libggml-cpu.0.dylib[0x5ca64] <+440>: 0x1e232800   fadd   s0, s0, s3
+libggml-cpu.0.dylib[0x5ca68] <+444>: 0x1e222800   fadd   s0, s0, s2
+libggml-cpu.0.dylib[0x5ca6c] <+448>: 0xb1001129   adds   x9, x9, #0x4
+libggml-cpu.0.dylib[0x5ca70] <+452>: 0x54fffea1   b.ne   0x5ca44                   ; <+408>
+libggml-cpu.0.dylib[0x5ca74] <+456>: 0xb40000ed   cbz    x13, 0x5ca90              ; <+484>
+libggml-cpu.0.dylib[0x5ca78] <+460>: 0xbc6b7861   ldr    s1, [x3, x11, lsl #2]
+libggml-cpu.0.dylib[0x5ca7c] <+464>: 0xbc6b78a2   ldr    s2, [x5, x11, lsl #2]
+libggml-cpu.0.dylib[0x5ca80] <+468>: 0x1f020020   fmadd  s0, s1, s2, s0
+libggml-cpu.0.dylib[0x5ca84] <+472>: 0x9100056b   add    x11, x11, #0x1
+libggml-cpu.0.dylib[0x5ca88] <+476>: 0xeb08017f   cmp    x11, x8
+libggml-cpu.0.dylib[0x5ca8c] <+480>: 0x54ffff6b   b.lt   0x5ca78                   ; <+460>
+libggml-cpu.0.dylib[0x5ca90] <+484>: 0xbd000020   str    s0, [x1]
+libggml-cpu.0.dylib[0x5ca94] <+488>: 0xd65f03c0   ret    
+(lldb) image lookup -n expf
+1 match found in /usr/lib/system/libsystem_m.dylib:
+        Address: libsystem_m.dylib[0x00000001913ffb00] (libsystem_m.dylib.__TEXT.__text + 21824)
+        Summary: libsystem_m.dylib`expf
+(lldb) disassemble -b -n expf
+libsystem_m.dylib`expf:
+libsystem_m.dylib[0x1913ffb00] <+0>:   0xd503237f   pacibsp 
+libsystem_m.dylib[0x1913ffb04] <+4>:   0xa9bf7bfd   stp    x29, x30, [sp, #-0x10]!
+libsystem_m.dylib[0x1913ffb08] <+8>:   0x910003fd   mov    x29, sp
+libsystem_m.dylib[0x1913ffb0c] <+12>:  0x1e260000   fmov   w0, s0
+libsystem_m.dylib[0x1913ffb10] <+16>:  0x53177804   ubfx   w4, w0, #23, #8
+libsystem_m.dylib[0x1913ffb14] <+20>:  0x7102189f   cmp    w4, #0x86
+libsystem_m.dylib[0x1913ffb18] <+24>:  0x540002a2   b.hs   0x1913ffb6c               ; <+108>
+libsystem_m.dylib[0x1913ffb1c] <+28>:  0x5c000423   ldr    d3, 0x1913ffba0           ; <+160>
+libsystem_m.dylib[0x1913ffb20] <+32>:  0x5c000442   ldr    d2, 0x1913ffba8           ; <+168>
+libsystem_m.dylib[0x1913ffb24] <+36>:  0x1e22c000   fcvt   d0, s0
+libsystem_m.dylib[0x1913ffb28] <+40>:  0x1f400861   fmadd  d1, d3, d0, d2
+libsystem_m.dylib[0x1913ffb2c] <+44>:  0x9e660021   fmov   x1, d1
+libsystem_m.dylib[0x1913ffb30] <+48>:  0x1e623821   fsub   d1, d1, d2
+libsystem_m.dylib[0x1913ffb34] <+52>:  0x90000140   adrp   x0, 40
+libsystem_m.dylib[0x1913ffb38] <+56>:  0x9129c000   add    x0, x0, #0xa70            ; _FE_DFL_DISABLE_DENORMS_ENV + 48
+libsystem_m.dylib[0x1913ffb3c] <+60>:  0x1f608460   fnmsub d0, d3, d0, d1
+libsystem_m.dylib[0x1913ffb40] <+64>:  0x92401822   and    x2, x1, #0x7f
+libsystem_m.dylib[0x1913ffb44] <+68>:  0xf8627802   ldr    x2, [x0, x2, lsl #3]
+libsystem_m.dylib[0x1913ffb48] <+72>:  0x8b01b441   add    x1, x2, x1, lsl #45
+libsystem_m.dylib[0x1913ffb4c] <+76>:  0x6d7f0402   ldp    d2, d1, [x0, #-0x10]
+libsystem_m.dylib[0x1913ffb50] <+80>:  0x1f400441   fmadd  d1, d2, d0, d1
+libsystem_m.dylib[0x1913ffb54] <+84>:  0x9e670023   fmov   d3, x1
+libsystem_m.dylib[0x1913ffb58] <+88>:  0x1e600820   fmul   d0, d1, d0
+libsystem_m.dylib[0x1913ffb5c] <+92>:  0x1f430c00   fmadd  d0, d0, d3, d3
+libsystem_m.dylib[0x1913ffb60] <+96>:  0x1e624000   fcvt   s0, d0
+libsystem_m.dylib[0x1913ffb64] <+100>: 0xa8c17bfd   ldp    x29, x30, [sp], #0x10
+libsystem_m.dylib[0x1913ffb68] <+104>: 0xd65f0fff   retab  
+libsystem_m.dylib[0x1913ffb6c] <+108>: 0x1e202008   fcmp   s0, #0.0
+libsystem_m.dylib[0x1913ffb70] <+112>: 0x54000105   b.pl   0x1913ffb90               ; <+144>
+libsystem_m.dylib[0x1913ffb74] <+116>: 0x52a01001   mov    w1, #0x800000             ; =8388608 
+libsystem_m.dylib[0x1913ffb78] <+120>: 0x2b00003f   cmn    w1, w0
+libsystem_m.dylib[0x1913ffb7c] <+124>: 0x1a8123e1   csel   w1, wzr, w1, hs
+libsystem_m.dylib[0x1913ffb80] <+128>: 0x1e270020   fmov   s0, w1
+libsystem_m.dylib[0x1913ffb84] <+132>: 0x1e200800   fmul   s0, s0, s0
+libsystem_m.dylib[0x1913ffb88] <+136>: 0xa8c17bfd   ldp    x29, x30, [sp], #0x10
+libsystem_m.dylib[0x1913ffb8c] <+140>: 0xd65f0fff   retab  
+libsystem_m.dylib[0x1913ffb90] <+144>: 0x1c000101   ldr    s1, 0x1913ffbb0           ; <+176>
+libsystem_m.dylib[0x1913ffb94] <+148>: 0x1e210800   fmul   s0, s0, s1
+libsystem_m.dylib[0x1913ffb98] <+152>: 0xa8c17bfd   ldp    x29, x30, [sp], #0x10
+libsystem_m.dylib[0x1913ffb9c] <+156>: 0xd65f0fff   retab  
+libsystem_m.dylib[0x1913ffba0] <+160>: 0x652b82fe   <unknown> 
+libsystem_m.dylib[0x1913ffba4] <+164>: 0x40671547   <unknown> 
+libsystem_m.dylib[0x1913ffba8] <+168>: 0x00000000   udf    #0x0
+libsystem_m.dylib[0x1913ffbac] <+172>: 0x43380000   <unknown> 
+libsystem_m.dylib[0x1913ffbb0] <+176>: 0x7f7fffff   fcvtzu d31, d31, #0x1
+(lldb) image lookup -n logf
+1 match found in /usr/lib/system/libsystem_m.dylib:
+        Address: libsystem_m.dylib[0x00000001913ffa18] (libsystem_m.dylib.__TEXT.__text + 21592)
+        Summary: libsystem_m.dylib`logf
+(lldb) disassemble -b -n logf
+libsystem_m.dylib`logf:
+libsystem_m.dylib[0x1913ffa18] <+0>:   0xd503237f   pacibsp 
+libsystem_m.dylib[0x1913ffa1c] <+4>:   0xa9bf7bfd   stp    x29, x30, [sp, #-0x10]!
+libsystem_m.dylib[0x1913ffa20] <+8>:   0x910003fd   mov    x29, sp
+libsystem_m.dylib[0x1913ffa24] <+12>:  0x1e260000   fmov   w0, s0
+libsystem_m.dylib[0x1913ffa28] <+16>:  0x51600002   sub    w2, w0, #0x800, lsl #12   ; =0x800000 
+libsystem_m.dylib[0x1913ffa2c] <+20>:  0x52afe001   mov    w1, #0x7f000000           ; =2130706432 
+libsystem_m.dylib[0x1913ffa30] <+24>:  0x6b01005f   cmp    w2, w1
+libsystem_m.dylib[0x1913ffa34] <+28>:  0x54000342   b.hs   0x1913ffa9c               ; <+132>
+libsystem_m.dylib[0x1913ffa38] <+32>:  0x12005802   and    w2, w0, #0x7fffff
+libsystem_m.dylib[0x1913ffa3c] <+36>:  0x11402042   add    w2, w2, #0x8, lsl #12     ; =0x8000 
+libsystem_m.dylib[0x1913ffa40] <+40>:  0x53107c42   lsr    w2, w2, #16
+libsystem_m.dylib[0x1913ffa44] <+44>:  0xb2692404   orr    x4, x0, #0x1ff800000
+libsystem_m.dylib[0x1913ffa48] <+48>:  0xd3638884   lsl    x4, x4, #29
+libsystem_m.dylib[0x1913ffa4c] <+52>:  0x9e670080   fmov   d0, x4
+libsystem_m.dylib[0x1913ffa50] <+56>:  0xd0000141   adrp   x1, 42
+libsystem_m.dylib[0x1913ffa54] <+60>:  0x913c8021   add    x1, x1, #0xf20            ; _FE_DFL_DISABLE_DENORMS_ENV + 9440
+libsystem_m.dylib[0x1913ffa58] <+64>:  0x0cdf2c30   ld1.1d { v16, v17, v18, v19 }, [x1], #32
+libsystem_m.dylib[0x1913ffa5c] <+68>:  0x8b021021   add    x1, x1, x2, lsl #4
+libsystem_m.dylib[0x1913ffa60] <+72>:  0x6d400c22   ldp    d2, d3, [x1]
+libsystem_m.dylib[0x1913ffa64] <+76>:  0x1e6e1001   fmov   d1, #1.00000000
+libsystem_m.dylib[0x1913ffa68] <+80>:  0x1f628401   fnmsub d1, d0, d2, d1
+libsystem_m.dylib[0x1913ffa6c] <+84>:  0x18000443   ldr    w3, 0x1913ffaf4           ; <+220>
+libsystem_m.dylib[0x1913ffa70] <+88>:  0x4b030003   sub    w3, w0, w3
+libsystem_m.dylib[0x1913ffa74] <+92>:  0x13177c63   asr    w3, w3, #23
+libsystem_m.dylib[0x1913ffa78] <+96>:  0x1e620060   scvtf  d0, w3
+libsystem_m.dylib[0x1913ffa7c] <+100>: 0x1e610822   fmul   d2, d1, d1
+libsystem_m.dylib[0x1913ffa80] <+104>: 0x1f530c00   fmadd  d0, d0, d19, d3
+libsystem_m.dylib[0x1913ffa84] <+108>: 0x1f504431   fmadd  d17, d1, d16, d17
+libsystem_m.dylib[0x1913ffa88] <+112>: 0x1f520020   fmadd  d0, d1, d18, d0
+libsystem_m.dylib[0x1913ffa8c] <+116>: 0x1f510040   fmadd  d0, d2, d17, d0
+libsystem_m.dylib[0x1913ffa90] <+120>: 0x1e624000   fcvt   s0, d0
+libsystem_m.dylib[0x1913ffa94] <+124>: 0xa8c17bfd   ldp    x29, x30, [sp], #0x10
+libsystem_m.dylib[0x1913ffa98] <+128>: 0xd65f0fff   retab  
+libsystem_m.dylib[0x1913ffa9c] <+132>: 0x1e202008   fcmp   s0, #0.0
+libsystem_m.dylib[0x1913ffaa0] <+136>: 0x540001c6   b.vs   0x1913ffad8               ; <+192>
+libsystem_m.dylib[0x1913ffaa4] <+140>: 0x540001e0   b.eq   0x1913ffae0               ; <+200>
+libsystem_m.dylib[0x1913ffaa8] <+144>: 0x5400014b   b.lt   0x1913ffad0               ; <+184>
+libsystem_m.dylib[0x1913ffaac] <+148>: 0x6a02005f   tst    w2, w2
+libsystem_m.dylib[0x1913ffab0] <+152>: 0x54000145   b.pl   0x1913ffad8               ; <+192>
+libsystem_m.dylib[0x1913ffab4] <+156>: 0x1e2e1001   fmov   s1, #1.00000000
+libsystem_m.dylib[0x1913ffab8] <+160>: 0x0ea11c00   orr.8b v0, v0, v1
+libsystem_m.dylib[0x1913ffabc] <+164>: 0x1e213800   fsub   s0, s0, s1
+libsystem_m.dylib[0x1913ffac0] <+168>: 0x1e260000   fmov   w0, s0
+libsystem_m.dylib[0x1913ffac4] <+172>: 0x52b82001   mov    w1, #-0x3f000000          ; =-1056964608 
+libsystem_m.dylib[0x1913ffac8] <+176>: 0x0b010000   add    w0, w0, w1
+libsystem_m.dylib[0x1913ffacc] <+180>: 0x17ffffdb   b      0x1913ffa38               ; <+32>
+libsystem_m.dylib[0x1913ffad0] <+184>: 0x1c000141   ldr    s1, 0x1913ffaf8           ; <+224>
+libsystem_m.dylib[0x1913ffad4] <+188>: 0x1e213820   fsub   s0, s1, s1
+libsystem_m.dylib[0x1913ffad8] <+192>: 0xa8c17bfd   ldp    x29, x30, [sp], #0x10
+libsystem_m.dylib[0x1913ffadc] <+196>: 0xd65f0fff   retab  
+libsystem_m.dylib[0x1913ffae0] <+200>: 0x1e3e1000   fmov   s0, #-1.00000000
+libsystem_m.dylib[0x1913ffae4] <+204>: 0x1e2703e1   fmov   s1, wzr
+libsystem_m.dylib[0x1913ffae8] <+208>: 0x1e211800   fdiv   s0, s0, s1
+libsystem_m.dylib[0x1913ffaec] <+212>: 0xa8c17bfd   ldp    x29, x30, [sp], #0x10
+libsystem_m.dylib[0x1913ffaf0] <+216>: 0xd65f0fff   retab  
+libsystem_m.dylib[0x1913ffaf4] <+220>: 0x3f3f8000   <unknown> 
+libsystem_m.dylib[0x1913ffaf8] <+224>: 0x7f800000   <unknown> 
+libsystem_m.dylib[0x1913ffafc] <+228>: 0x00000000   udf    #0x0

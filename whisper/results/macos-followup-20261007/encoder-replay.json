@@ -1,0 +1,550 @@
+{
+  "status": "pass_encoder_replay",
+  "host": "macOS-27.0.1-arm64-arm-64bit",
+  "utc": "2026-10-07T13:23:20.840567+00:00",
+  "checkpoint_sha256": "db59695928ded6043adaef491a53ef4e12da9611184d77c53baa691a60b958ad",
+  "backend": "macos",
+  "warmups": 2,
+  "runs": 10,
+  "scope": "Complete encoder only. No CPU cross-K/V, decoder or whole-transcription timing. Python readback is a reference, not the optimized native four-worker implementation.",
+  "metric_notes": {
+    "prepare_ms": "FP16 conversion, backend input packing/upload, Asahi scratch reset and output sentinel",
+    "dispatch_ms": "Blocking backend execute only: DRM ioctl on Asahi, E5RT execute on macOS; includes runtime/driver work, scheduling/wait and ANE execution",
+    "readback_ms": "Logical FP16 read, copy and finite-output check",
+    "total_ms": "Sum of the three replay stages"
+  },
+  "decoder_gate": "not measured; original fast Mac graph fails the 0.005 full-logit gate",
+  "records": [
+    {
+      "audio": "jfk",
+      "audio_seconds": 11.0,
+      "mel_sha256": "6b901b7dcbbf287d544281f33075f293e110e2045be417e227ff1dc51d1547da",
+      "matches_mac_input": true,
+      "input_source": "captured fixture",
+      "expected_mac_output_sha256": "40288494a79f9ecce2dd7921081b6e7b8550150ff7902ef39497ce4cb9eb59df",
+      "kernels": "tiny-en-encoder-fast",
+      "task_count": 1779,
+      "timings": [
+        {
+          "prepare_ms": 0.2903749999632055,
+          "dispatch_ms": 10.870958000054998,
+          "readback_ms": 0.6917499999872234,
+          "total_ms": 11.853083000005427
+        },
+        {
+          "prepare_ms": 0.3332080000291171,
+          "dispatch_ms": 10.914083999978175,
+          "readback_ms": 0.7550410000476404,
+          "total_ms": 12.002333000054932
+        },
+        {
+          "prepare_ms": 0.2759579999747075,
+          "dispatch_ms": 10.928541999987829,
+          "readback_ms": 0.6756249999853026,
+          "total_ms": 11.880124999947839
+        },
+        {
+          "prepare_ms": 0.2719169999636506,
+          "dispatch_ms": 10.908166000035635,
+          "readback_ms": 0.6998339999881864,
+          "total_ms": 11.879916999987472
+        },
+        {
+          "prepare_ms": 0.28204199998072,
+          "dispatch_ms": 10.98899999999503,
+          "readback_ms": 0.6968750000169166,
+          "total_ms": 11.967916999992667
+        },
+        {
+          "prepare_ms": 0.2818340000203534,
+          "dispatch_ms": 10.996957999964252,
+          "readback_ms": 0.7349580000663991,
+          "total_ms": 12.013750000051004
+        },
+        {
+          "prepare_ms": 0.2815839999357195,
+          "dispatch_ms": 11.012916000026962,
+          "readback_ms": 0.6704170000375598,
+          "total_ms": 11.964917000000241
+        },
+        {
+          "prepare_ms": 0.2832499999385618,
+          "dispatch_ms": 10.967790999984572,
+          "readback_ms": 0.6936670000641243,
+          "total_ms": 11.944707999987259
+        },
+        {
+          "prepare_ms": 0.2859589999388845,
+          "dispatch_ms": 11.03550000004816,
+          "readback_ms": 0.7076659999256663,
+          "total_ms": 12.02912499991271
+        },
+        {
+          "prepare_ms": 0.2965839998978481,
+          "dispatch_ms": 11.110250000001543,
+          "readback_ms": 0.7387910000034026,
+          "total_ms": 12.145624999902793
+        }
+      ],
+      "median_ms": {
+        "prepare_ms": 0.2826459999596409,
+        "dispatch_ms": 10.978395499989801,
+        "readback_ms": 0.6983545000025515,
+        "total_ms": 11.966416999996454
+      },
+      "output_sha256": "40288494a79f9ecce2dd7921081b6e7b8550150ff7902ef39497ce4cb9eb59df",
+      "all_match_mac_output": true,
+      "all_match_first_package": true,
+      "hf_encoder_cosine": 0.9999558853116128,
+      "pass_encoder_gate": true,
+      "backend": "macos"
+    },
+    {
+      "audio": "jfk-first-5s",
+      "audio_seconds": 5.0,
+      "mel_sha256": "63a32c860aafe2aca626b651c0528f0b51593dd758fcbe723bfcc737282f22e4",
+      "matches_mac_input": true,
+      "input_source": "captured fixture",
+      "expected_mac_output_sha256": "f02406a35e32aea2623c957116752461711b2a153dcad9f3e98187738842331e",
+      "kernels": "tiny-en-encoder-fast",
+      "task_count": 1779,
+      "timings": [
+        {
+          "prepare_ms": 0.29549999999289867,
+          "dispatch_ms": 10.86637499997778,
+          "readback_ms": 0.6682910000108677,
+          "total_ms": 11.830165999981546
+        },
+        {
+          "prepare_ms": 0.28449999990698416,
+          "dispatch_ms": 10.94908300001407,
+          "readback_ms": 0.6907499999897482,
+          "total_ms": 11.924332999910803
+        },
+        {
+          "prepare_ms": 0.2820409999912954,
+          "dispatch_ms": 10.88058400000591,
+          "readback_ms": 0.6684999999606589,
+          "total_ms": 11.831124999957865
+        },
+        {
+          "prepare_ms": 0.28258300005745696,
+          "dispatch_ms": 11.00250000001779,
+          "readback_ms": 0.6977499999720749,
+          "total_ms": 11.982833000047322
+        },
+        {
+          "prepare_ms": 0.29254200001105346,
+          "dispatch_ms": 11.144833000003018,
+          "readback_ms": 0.6706670000085069,
+          "total_ms": 12.108042000022579
+        },
+        {
+          "prepare_ms": 0.2952920000325321,
+          "dispatch_ms": 11.115207999978338,
+          "readback_ms": 0.6928750000270156,
+          "total_ms": 12.103375000037886
+        },
+        {
+          "prepare_ms": 0.2953329999400012,
+          "dispatch_ms": 11.077500000055807,
+          "readback_ms": 0.6696250000004511,
+          "total_ms": 12.042457999996259
+        },
+        {
+          "prepare_ms": 0.28125000005729817,
+          "dispatch_ms": 11.122832999944876,
+          "readback_ms": 0.6934589999900709,
+          "total_ms": 12.097541999992245
+        },
+        {
+          "prepare_ms": 0.2960419999453734,
+          "dispatch_ms": 11.076750000029278,
+          "readback_ms": 0.6676670000160811,
+          "total_ms": 12.040458999990733
+        },
+        {
+          "prepare_ms": 0.28150000002824527,
+          "dispatch_ms": 11.068541999975423,
+          "readback_ms": 0.6972920000407612,
+          "total_ms": 12.04733400004443
+        }
+      ],
+      "median_ms": {
+        "prepare_ms": 0.2885209999590188,
+        "dispatch_ms": 11.07264600000235,
+        "readback_ms": 0.6807084999991275,
+        "total_ms": 12.041458499993496
+      },
+      "output_sha256": "f02406a35e32aea2623c957116752461711b2a153dcad9f3e98187738842331e",
+      "all_match_mac_output": true,
+      "all_match_first_package": true,
+      "hf_encoder_cosine": 0.9999153487973237,
+      "pass_encoder_gate": true,
+      "backend": "macos"
+    },
+    {
+      "audio": "jfk-repeat",
+      "audio_seconds": 23.0,
+      "mel_sha256": "aaa5138e387d0430b6755ef1310c0d52adcd66998796647845e1e89ce4bba949",
+      "matches_mac_input": true,
+      "input_source": "captured fixture",
+      "expected_mac_output_sha256": "69d91f5eca44ea8016315724f06a62bd630e6bbbd6c490ce4b4682f2bf331651",
+      "kernels": "tiny-en-encoder-fast",
+      "task_count": 1779,
+      "timings": [
+        {
+          "prepare_ms": 0.3014159999565891,
+          "dispatch_ms": 11.003708999965056,
+          "readback_ms": 0.6697500000427681,
+          "total_ms": 11.974874999964413
+        },
+        {
+          "prepare_ms": 0.2895839999155214,
+          "dispatch_ms": 11.103875000003427,
+          "readback_ms": 0.7398330000114584,
+          "total_ms": 12.133291999930407
+        },
+        {
+          "prepare_ms": 0.2958329999955822,
+          "dispatch_ms": 11.128834000032839,
+          "readback_ms": 0.6690829999342895,
+          "total_ms": 12.09374999996271
+        },
+        {
+          "prepare_ms": 0.29566700004579616,
+          "dispatch_ms": 11.075249999976222,
+          "readback_ms": 0.6910829999924317,
+          "total_ms": 12.06200000001445
+        },
+        {
+          "prepare_ms": 0.28254200003630103,
+          "dispatch_ms": 11.139583000044695,
+          "readback_ms": 0.6910839999818563,
+          "total_ms": 12.113209000062852
+        },
+        {
+          "prepare_ms": 0.29549999999289867,
+          "dispatch_ms": 11.082083000019338,
+          "readback_ms": 0.6663750000370783,
+          "total_ms": 12.043958000049315
+        },
+        {
+          "prepare_ms": 0.2853340000683602,
+          "dispatch_ms": 11.142290999941906,
+          "readback_ms": 0.6885840000450116,
+          "total_ms": 12.116209000055278
+        },
+        {
+          "prepare_ms": 0.296458999969218,
+          "dispatch_ms": 11.129332999985309,
+          "readback_ms": 0.6685829999923953,
+          "total_ms": 12.094374999946922
+        },
+        {
+          "prepare_ms": 0.2957909999850017,
+          "dispatch_ms": 11.081084000011288,
+          "readback_ms": 0.6914159999951153,
+          "total_ms": 12.068290999991405
+        },
+        {
+          "prepare_ms": 0.2816249999568754,
+          "dispatch_ms": 11.349792000032721,
+          "readback_ms": 0.6745829999772468,
+          "total_ms": 12.305999999966843
+        }
+      ],
+      "median_ms": {
+        "prepare_ms": 0.2955835000193474,
+        "dispatch_ms": 11.116354500018133,
+        "readback_ms": 0.6815835000111292,
+        "total_ms": 12.094062499954816
+      },
+      "output_sha256": "69d91f5eca44ea8016315724f06a62bd630e6bbbd6c490ce4b4682f2bf331651",
+      "all_match_mac_output": true,
+      "all_match_first_package": true,
+      "hf_encoder_cosine": 0.9997104093561877,
+      "pass_encoder_gate": true,
+      "backend": "macos"
+    },
+    {
+      "audio": "jfk",
+      "audio_seconds": 11.0,
+      "mel_sha256": "6b901b7dcbbf287d544281f33075f293e110e2045be417e227ff1dc51d1547da",
+      "matches_mac_input": true,
+      "input_source": "captured fixture",
+      "expected_mac_output_sha256": "40288494a79f9ecce2dd7921081b6e7b8550150ff7902ef39497ce4cb9eb59df",
+      "kernels": "tiny-en-encoder",
+      "task_count": 1783,
+      "timings": [
+        {
+          "prepare_ms": 0.288791000002675,
+          "dispatch_ms": 12.250458999915281,
+          "readback_ms": 0.6961249999903885,
+          "total_ms": 13.235374999908345
+        },
+        {
+          "prepare_ms": 0.2726249999795982,
+          "dispatch_ms": 12.296375000005355,
+          "readback_ms": 0.7190000000036889,
+          "total_ms": 13.287999999988642
+        },
+        {
+          "prepare_ms": 0.27866600009929243,
+          "dispatch_ms": 12.27208399996016,
+          "readback_ms": 0.6677909999552867,
+          "total_ms": 13.218541000014739
+        },
+        {
+          "prepare_ms": 0.28174999999919237,
+          "dispatch_ms": 12.373874999980217,
+          "readback_ms": 0.6956670000590748,
+          "total_ms": 13.351292000038484
+        },
+        {
+          "prepare_ms": 0.28237499998340354,
+          "dispatch_ms": 12.39999999995689,
+          "readback_ms": 0.6961249999903885,
+          "total_ms": 13.378499999930682
+        },
+        {
+          "prepare_ms": 0.28254100004687643,
+          "dispatch_ms": 12.42029200000161,
+          "readback_ms": 0.7401670000035665,
+          "total_ms": 13.443000000052052
+        },
+        {
+          "prepare_ms": 0.2807500000017171,
+          "dispatch_ms": 12.444458000004488,
+          "readback_ms": 0.668874999973923,
+          "total_ms": 13.394082999980128
+        },
+        {
+          "prepare_ms": 0.280290999967292,
+          "dispatch_ms": 12.317917000018497,
+          "readback_ms": 0.6966249999322827,
+          "total_ms": 13.294832999918071
+        },
+        {
+          "prepare_ms": 0.29408300008526567,
+          "dispatch_ms": 12.5814169999785,
+          "readback_ms": 0.6969579999349662,
+          "total_ms": 13.572457999998733
+        },
+        {
+          "prepare_ms": 0.2989580000303249,
+          "dispatch_ms": 12.562458999923365,
+          "readback_ms": 0.7330830000000788,
+          "total_ms": 13.594499999953769
+        }
+      ],
+      "median_ms": {
+        "prepare_ms": 0.28206249999129795,
+        "dispatch_ms": 12.386937499968553,
+        "readback_ms": 0.6963749999613356,
+        "total_ms": 13.364895999984583
+      },
+      "output_sha256": "40288494a79f9ecce2dd7921081b6e7b8550150ff7902ef39497ce4cb9eb59df",
+      "all_match_mac_output": true,
+      "all_match_first_package": true,
+      "hf_encoder_cosine": 0.9999558853116128,
+      "pass_encoder_gate": true,
+      "backend": "macos"
+    },
+    {
+      "audio": "jfk-first-5s",
+      "audio_seconds": 5.0,
+      "mel_sha256": "63a32c860aafe2aca626b651c0528f0b51593dd758fcbe723bfcc737282f22e4",
+      "matches_mac_input": true,
+      "input_source": "captured fixture",
+      "expected_mac_output_sha256": "f02406a35e32aea2623c957116752461711b2a153dcad9f3e98187738842331e",
+      "kernels": "tiny-en-encoder",
+      "task_count": 1783,
+      "timings": [
+        {
+          "prepare_ms": 0.34762499990392826,
+          "dispatch_ms": 12.641833000088809,
+          "readback_ms": 0.899249999974927,
+          "total_ms": 13.888707999967664
+        },
+        {
+          "prepare_ms": 0.5072080000445567,
+          "dispatch_ms": 12.691041999914887,
+          "readback_ms": 0.8687910000162447,
+          "total_ms": 14.067040999975688
+        },
+        {
+          "prepare_ms": 0.5213329999378402,
+          "dispatch_ms": 13.002124999957232,
+          "readback_ms": 0.8800830000836868,
+          "total_ms": 14.403540999978759
+        },
+        {
+          "prepare_ms": 0.5199579999271009,
+          "dispatch_ms": 12.777125000070555,
+          "readback_ms": 0.7864589999826421,
+          "total_ms": 14.083541999980298
+        },
+        {
+          "prepare_ms": 0.35091699999156845,
+          "dispatch_ms": 13.220333000049322,
+          "readback_ms": 0.8116669999935766,
+          "total_ms": 14.382917000034467
+        },
+        {
+          "prepare_ms": 0.2952920000325321,
+          "dispatch_ms": 13.117957999952523,
+          "readback_ms": 0.8587089999991804,
+          "total_ms": 14.271958999984236
+        },
+        {
+          "prepare_ms": 0.37758299993129185,
+          "dispatch_ms": 12.892250000049899,
+          "readback_ms": 0.8147089999965829,
+          "total_ms": 14.084541999977773
+        },
+        {
+          "prepare_ms": 0.42445799999768496,
+          "dispatch_ms": 12.963542000079542,
+          "readback_ms": 0.9025409999594558,
+          "total_ms": 14.290541000036683
+        },
+        {
+          "prepare_ms": 0.3061250000655491,
+          "dispatch_ms": 12.733708000041588,
+          "readback_ms": 0.8265419999133883,
+          "total_ms": 13.866375000020525
+        },
+        {
+          "prepare_ms": 0.3678329999274865,
+          "dispatch_ms": 12.894958000060797,
+          "readback_ms": 1.0282499999902939,
+          "total_ms": 14.291040999978577
+        }
+      ],
+      "median_ms": {
+        "prepare_ms": 0.3727079999293892,
+        "dispatch_ms": 12.893604000055348,
+        "readback_ms": 0.8637500000077125,
+        "total_ms": 14.178250499981004
+      },
+      "output_sha256": "f02406a35e32aea2623c957116752461711b2a153dcad9f3e98187738842331e",
+      "all_match_mac_output": true,
+      "all_match_first_package": true,
+      "hf_encoder_cosine": 0.9999153487973237,
+      "pass_encoder_gate": true,
+      "backend": "macos"
+    },
+    {
+      "audio": "jfk-repeat",
+      "audio_seconds": 23.0,
+      "mel_sha256": "aaa5138e387d0430b6755ef1310c0d52adcd66998796647845e1e89ce4bba949",
+      "matches_mac_input": true,
+      "input_source": "captured fixture",
+      "expected_mac_output_sha256": "69d91f5eca44ea8016315724f06a62bd630e6bbbd6c490ce4b4682f2bf331651",
+      "kernels": "tiny-en-encoder",
+      "task_count": 1783,
+      "timings": [
+        {
+          "prepare_ms": 0.3404999999929714,
+          "dispatch_ms": 12.552540999990924,
+          "readback_ms": 1.760834000037903,
+          "total_ms": 14.653875000021799
+        },
+        {
+          "prepare_ms": 0.39258399999653193,
+          "dispatch_ms": 12.675166000008176,
+          "readback_ms": 0.8025419999739825,
+          "total_ms": 13.87029199997869
+        },
+        {
+          "prepare_ms": 0.3818329998921399,
+          "dispatch_ms": 12.783917000092515,
+          "readback_ms": 0.7783749999816791,
+          "total_ms": 13.944124999966334
+        },
+        {
+          "prepare_ms": 0.29612499997710984,
+          "dispatch_ms": 12.690834000068207,
+          "readback_ms": 0.8553750000146465,
+          "total_ms": 13.842334000059964
+        },
+        {
+          "prepare_ms": 0.49520799996116693,
+          "dispatch_ms": 12.587707999955455,
+          "readback_ms": 0.8305420000169761,
+          "total_ms": 13.913457999933598
+        },
+        {
+          "prepare_ms": 0.32854200003384904,
+          "dispatch_ms": 12.640041999929963,
+          "readback_ms": 0.9059160000788324,
+          "total_ms": 13.874500000042644
+        },
+        {
+          "prepare_ms": 0.320167000040783,
+          "dispatch_ms": 12.4836669999695,
+          "readback_ms": 0.7443330000569404,
+          "total_ms": 13.548167000067224
+        },
+        {
+          "prepare_ms": 0.3320420000818558,
+          "dispatch_ms": 12.381624999989072,
+          "readback_ms": 0.7808749999185238,
+          "total_ms": 13.494541999989451
+        },
+        {
+          "prepare_ms": 0.28083400002287817,
+          "dispatch_ms": 12.27449999998953,
+          "readback_ms": 0.6714160000456104,
+          "total_ms": 13.226750000058018
+        },
+        {
+          "prepare_ms": 0.290416999973786,
+          "dispatch_ms": 12.434958000085317,
+          "readback_ms": 0.7917499999621214,
+          "total_ms": 13.517125000021224
+        }
+      ],
+      "median_ms": {
+        "prepare_ms": 0.3302920000578524,
+        "dispatch_ms": 12.57012449997319,
+        "readback_ms": 0.7971459999680519,
+        "total_ms": 13.856313000019327
+      },
+      "output_sha256": "69d91f5eca44ea8016315724f06a62bd630e6bbbd6c490ce4b4682f2bf331651",
+      "all_match_mac_output": true,
+      "all_match_first_package": true,
+      "hf_encoder_cosine": 0.9997104093561877,
+      "pass_encoder_gate": true,
+      "backend": "macos"
+    }
+  ],
+  "input_checks": [
+    {
+      "audio": "jfk",
+      "audio_seconds": 11.0,
+      "mel_sha256": "6b901b7dcbbf287d544281f33075f293e110e2045be417e227ff1dc51d1547da",
+      "matches_mac_input": true,
+      "input_source": "captured fixture",
+      "expected_mac_output_sha256": "40288494a79f9ecce2dd7921081b6e7b8550150ff7902ef39497ce4cb9eb59df"
+    },
+    {
+      "audio": "jfk-first-5s",
+      "audio_seconds": 5.0,
+      "mel_sha256": "63a32c860aafe2aca626b651c0528f0b51593dd758fcbe723bfcc737282f22e4",
+      "matches_mac_input": true,
+      "input_source": "captured fixture",
+      "expected_mac_output_sha256": "f02406a35e32aea2623c957116752461711b2a153dcad9f3e98187738842331e"
+    },
+    {
+      "audio": "jfk-repeat",
+      "audio_seconds": 23.0,
+      "mel_sha256": "aaa5138e387d0430b6755ef1310c0d52adcd66998796647845e1e89ce4bba949",
+      "matches_mac_input": true,
+      "input_source": "captured fixture",
+      "expected_mac_output_sha256": "69d91f5eca44ea8016315724f06a62bd630e6bbbd6c490ce4b4682f2bf331651"
+    }
+  ],
+  "mac_comparison_valid": true
+}

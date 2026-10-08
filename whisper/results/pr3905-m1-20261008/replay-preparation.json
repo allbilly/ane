@@ -1,0 +1,544 @@
+{
+  "status": "PASS_HOST_REPLAY_PREPARATION",
+  "models": {
+    "tiny": {
+      "status": "PASS_HOST_REPLAY_PREPARATION",
+      "plan": {
+        "format": "whisper-pr3905-drm-replay/v1",
+        "model": "tiny",
+        "target": "apple,t8103",
+        "dimensions": {
+          "state": 384,
+          "heads": 6,
+          "layers": 4,
+          "context": 1500,
+          "mels": 80,
+          "frames": 3000
+        },
+        "hwx_sha256": "405a659494c647b85ea01813b330c97aadad5216d3bc80f0c1a2a1235a95ec42",
+        "source_mil_sha256": "e7320a59f2988a48add91afe6eda18beec615006cae1e613ff68041f6b2c91ed",
+        "td_count": 1779,
+        "td_size": 504,
+        "command_bytes": 1277952,
+        "bank_map": {
+          "0": 0,
+          "1": 2,
+          "3": 3,
+          "4": 4,
+          "5": 5,
+          "6": 6,
+          "7": 1
+        },
+        "buffers": [
+          {
+            "bank": 0,
+            "size": 16728065,
+            "role": "commands+coefficients"
+          },
+          {
+            "bank": 2,
+            "size": 26112,
+            "role": "constants"
+          },
+          {
+            "bank": 3,
+            "size": 8093696,
+            "role": "scratch"
+          },
+          {
+            "bank": 4,
+            "size": 1163264,
+            "role": "input"
+          },
+          {
+            "bank": 5,
+            "size": 491520,
+            "role": "input"
+          },
+          {
+            "bank": 6,
+            "size": 1163264,
+            "role": "output"
+          }
+        ],
+        "ports": {
+          "mel": {
+            "role": "input",
+            "name": "t1",
+            "compiler_layout": {
+              "BatchStride": 481280,
+              "Batches": 1,
+              "Channels": 80,
+              "Depth": 1,
+              "DepthStride": 481280,
+              "Height": 1,
+              "Interleave": 1,
+              "Name": "t1",
+              "PlaneCount": 80,
+              "PlaneStride": 6016,
+              "RowStride": 6016,
+              "Symbol": "t1",
+              "Type": "Float16",
+              "Width": 3000
+            },
+            "original_bank": 5,
+            "byte_offset": 0,
+            "replay_bank": 5
+          },
+          "positions": {
+            "role": "input",
+            "name": "t0",
+            "compiler_layout": {
+              "BatchStride": 1155072,
+              "Batches": 1,
+              "Channels": 384,
+              "Depth": 1,
+              "DepthStride": 1155072,
+              "Height": 1,
+              "Interleave": 1,
+              "Name": "t0",
+              "PlaneCount": 384,
+              "PlaneStride": 3008,
+              "RowStride": 3008,
+              "Symbol": "t0",
+              "Type": "Float16",
+              "Width": 1500
+            },
+            "original_bank": 4,
+            "byte_offset": 0,
+            "replay_bank": 4
+          },
+          "output": {
+            "role": "output",
+            "name": "t1383",
+            "compiler_layout": {
+              "BatchStride": 1152000,
+              "Batches": 1,
+              "Channels": 1,
+              "Depth": 1,
+              "DepthStride": 1152000,
+              "Height": 1500,
+              "Interleave": 1,
+              "Name": "t1383@output",
+              "PlaneCount": 1,
+              "PlaneStride": 1152000,
+              "RowStride": 768,
+              "Symbol": "t1383@output",
+              "Type": "Float16",
+              "Width": 384
+            },
+            "original_bank": 6,
+            "byte_offset": 0,
+            "replay_bank": 6
+          }
+        },
+        "coefficient_banks": [
+          {
+            "original_bank": 7,
+            "replay_bank": 1,
+            "payload": "coefficients-1",
+            "bytes": 15450112,
+            "sha256": "0279e2089fff53a10dd05fcbb4906b14b351f1b606e1cf420c1c3453681c59ca"
+          }
+        ],
+        "payloads": {
+          "commands": {
+            "bytes": 1277952,
+            "sha256": "29610cac184b8c8d4a062de764ffd10f376a93e9908ae51d11889f8634041666"
+          },
+          "constants": {
+            "bytes": 26112,
+            "sha256": "066797151963c8a30a11a65979317f3ca4dd3d52e6d94efcbc9e336164c556ef"
+          },
+          "positions": {
+            "bytes": 1152000,
+            "sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238"
+          },
+          "coefficients-1": {
+            "bytes": 15450112,
+            "sha256": "0279e2089fff53a10dd05fcbb4906b14b351f1b606e1cf420c1c3453681c59ca"
+          },
+          "bootstrap": {
+            "bytes": 504,
+            "sha256": "373fe84dffa3225eb4754e2172cd8d4b0f0150abf1cf3a768f10a4d54cb0275d"
+          }
+        },
+        "hardware_validation": "pending native Asahi; plan validation is not execution"
+      },
+      "fixtures_checked": 4,
+      "all_port_bits_preserved": true,
+      "all_original_coefficient_bank_hashes_match": true,
+      "source_receipt_sha256": "57f58b721e8378c4f0f117ab3cadaeb3ccf34c92f39e0f8ddaf2d8dd46a3d129",
+      "hardware_execution": "not attempted; requires Asahi"
+    },
+    "base": {
+      "status": "PASS_HOST_REPLAY_PREPARATION",
+      "plan": {
+        "format": "whisper-pr3905-drm-replay/v1",
+        "model": "base",
+        "target": "apple,t8103",
+        "dimensions": {
+          "state": 512,
+          "heads": 8,
+          "layers": 6,
+          "context": 1500,
+          "mels": 80,
+          "frames": 3000
+        },
+        "hwx_sha256": "2106568eeecefcab3569d22b8ff3eed6d555a23dd6044c911c9f4998ee5af82d",
+        "source_mil_sha256": "47dde15e321dd57b6e2183508f35b464bc79705ce1b83f7d34327de4e2e23e12",
+        "td_count": 3434,
+        "td_size": 504,
+        "command_bytes": 2473984,
+        "bank_map": {
+          "0": 0,
+          "1": 2,
+          "3": 3,
+          "4": 4,
+          "5": 5,
+          "6": 6,
+          "7": 1
+        },
+        "buffers": [
+          {
+            "bank": 0,
+            "size": 42434561,
+            "role": "commands+coefficients"
+          },
+          {
+            "bank": 2,
+            "size": 51200,
+            "role": "constants"
+          },
+          {
+            "bank": 3,
+            "size": 9617408,
+            "role": "scratch"
+          },
+          {
+            "bank": 4,
+            "size": 1540096,
+            "role": "input"
+          },
+          {
+            "bank": 5,
+            "size": 491520,
+            "role": "input"
+          },
+          {
+            "bank": 6,
+            "size": 1540096,
+            "role": "output"
+          }
+        ],
+        "ports": {
+          "mel": {
+            "role": "input",
+            "name": "t1",
+            "compiler_layout": {
+              "BatchStride": 481280,
+              "Batches": 1,
+              "Channels": 80,
+              "Depth": 1,
+              "DepthStride": 481280,
+              "Height": 1,
+              "Interleave": 1,
+              "Name": "t1",
+              "PlaneCount": 80,
+              "PlaneStride": 6016,
+              "RowStride": 6016,
+              "Symbol": "t1",
+              "Type": "Float16",
+              "Width": 3000
+            },
+            "original_bank": 5,
+            "byte_offset": 0,
+            "replay_bank": 5
+          },
+          "positions": {
+            "role": "input",
+            "name": "t0",
+            "compiler_layout": {
+              "BatchStride": 1540096,
+              "Batches": 1,
+              "Channels": 512,
+              "Depth": 1,
+              "DepthStride": 1540096,
+              "Height": 1,
+              "Interleave": 1,
+              "Name": "t0",
+              "PlaneCount": 512,
+              "PlaneStride": 3008,
+              "RowStride": 3008,
+              "Symbol": "t0",
+              "Type": "Float16",
+              "Width": 1500
+            },
+            "original_bank": 4,
+            "byte_offset": 0,
+            "replay_bank": 4
+          },
+          "output": {
+            "role": "output",
+            "name": "t2727",
+            "compiler_layout": {
+              "BatchStride": 1536000,
+              "Batches": 1,
+              "Channels": 1,
+              "Depth": 1,
+              "DepthStride": 1536000,
+              "Height": 1500,
+              "Interleave": 1,
+              "Name": "t2727@output",
+              "PlaneCount": 1,
+              "PlaneStride": 1536000,
+              "RowStride": 1024,
+              "Symbol": "t2727@output",
+              "Type": "Float16",
+              "Width": 512
+            },
+            "original_bank": 6,
+            "byte_offset": 0,
+            "replay_bank": 6
+          }
+        },
+        "coefficient_banks": [
+          {
+            "original_bank": 7,
+            "replay_bank": 1,
+            "payload": "coefficients-1",
+            "bytes": 39960576,
+            "sha256": "0c660f2eb432eb8a2c69e916cb7f86e0fbb7a000e768300ed8058cb59f07e549"
+          }
+        ],
+        "payloads": {
+          "commands": {
+            "bytes": 2473984,
+            "sha256": "add0ebc4732a6dee46d30ada747fd28ad1b50587d1d809327f3f053c3dcf0d51"
+          },
+          "constants": {
+            "bytes": 51200,
+            "sha256": "c7ec64d698343c25f84417507316ed6d1dd3a865ca55867744725c315f26806c"
+          },
+          "positions": {
+            "bytes": 1536000,
+            "sha256": "9f47c17da903831a0ac200785875961a464997d0ed9a0f2e16f9dc2768f02902"
+          },
+          "coefficients-1": {
+            "bytes": 39960576,
+            "sha256": "0c660f2eb432eb8a2c69e916cb7f86e0fbb7a000e768300ed8058cb59f07e549"
+          },
+          "bootstrap": {
+            "bytes": 504,
+            "sha256": "373fe84dffa3225eb4754e2172cd8d4b0f0150abf1cf3a768f10a4d54cb0275d"
+          }
+        },
+        "hardware_validation": "pending native Asahi; plan validation is not execution"
+      },
+      "fixtures_checked": 4,
+      "all_port_bits_preserved": true,
+      "all_original_coefficient_bank_hashes_match": true,
+      "source_receipt_sha256": "611d8a8d5375881eff52846daf79eba5127e77b165aaf172b648f17c04148b60",
+      "hardware_execution": "not attempted; requires Asahi"
+    },
+    "small": {
+      "status": "PASS_HOST_REPLAY_PREPARATION",
+      "plan": {
+        "format": "whisper-pr3905-drm-replay/v1",
+        "model": "small",
+        "target": "apple,t8103",
+        "dimensions": {
+          "state": 768,
+          "heads": 12,
+          "layers": 12,
+          "context": 1500,
+          "mels": 80,
+          "frames": 3000
+        },
+        "hwx_sha256": "f281f0d9d618a119e2f6e44826f91978d4ddf5eccd5d89e6f21fa06c5f2b4d08",
+        "source_mil_sha256": "df4be42fe1f3fb37f279af5ab0016184369b925fb59dfae5fc46636854532237",
+        "td_count": 10015,
+        "td_size": 504,
+        "command_bytes": 7258112,
+        "bank_map": {
+          "0": 0,
+          "1": 2,
+          "3": 3,
+          "4": 4,
+          "5": 5,
+          "6": 6,
+          "7": 1,
+          "8": 8
+        },
+        "buffers": [
+          {
+            "bank": 0,
+            "size": 141459457,
+            "role": "commands+coefficients"
+          },
+          {
+            "bank": 2,
+            "size": 144384,
+            "role": "constants"
+          },
+          {
+            "bank": 3,
+            "size": 13828096,
+            "role": "scratch"
+          },
+          {
+            "bank": 4,
+            "size": 2310144,
+            "role": "input"
+          },
+          {
+            "bank": 5,
+            "size": 491520,
+            "role": "input"
+          },
+          {
+            "bank": 6,
+            "size": 2310144,
+            "role": "output"
+          },
+          {
+            "bank": 8,
+            "size": 40599552,
+            "role": "coefficients"
+          }
+        ],
+        "ports": {
+          "mel": {
+            "role": "input",
+            "name": "t1",
+            "compiler_layout": {
+              "BatchStride": 481280,
+              "Batches": 1,
+              "Channels": 80,
+              "Depth": 1,
+              "DepthStride": 481280,
+              "Height": 1,
+              "Interleave": 1,
+              "Name": "t1",
+              "PlaneCount": 80,
+              "PlaneStride": 6016,
+              "RowStride": 6016,
+              "Symbol": "t1",
+              "Type": "Float16",
+              "Width": 3000
+            },
+            "original_bank": 5,
+            "byte_offset": 0,
+            "replay_bank": 5
+          },
+          "positions": {
+            "role": "input",
+            "name": "t0",
+            "compiler_layout": {
+              "BatchStride": 2310144,
+              "Batches": 1,
+              "Channels": 768,
+              "Depth": 1,
+              "DepthStride": 2310144,
+              "Height": 1,
+              "Interleave": 1,
+              "Name": "t0",
+              "PlaneCount": 768,
+              "PlaneStride": 3008,
+              "RowStride": 3008,
+              "Symbol": "t0",
+              "Type": "Float16",
+              "Width": 1500
+            },
+            "original_bank": 4,
+            "byte_offset": 0,
+            "replay_bank": 4
+          },
+          "output": {
+            "role": "output",
+            "name": "t8079",
+            "compiler_layout": {
+              "BatchStride": 2304000,
+              "Batches": 1,
+              "Channels": 1,
+              "Depth": 1,
+              "DepthStride": 2304000,
+              "Height": 1500,
+              "Interleave": 1,
+              "Name": "t8079@output",
+              "PlaneCount": 1,
+              "PlaneStride": 2304000,
+              "RowStride": 1536,
+              "Symbol": "t8079@output",
+              "Type": "Float16",
+              "Width": 768
+            },
+            "original_bank": 6,
+            "byte_offset": 0,
+            "replay_bank": 6
+          }
+        },
+        "coefficient_banks": [
+          {
+            "original_bank": 7,
+            "replay_bank": 1,
+            "payload": "coefficients-1",
+            "bytes": 134201344,
+            "sha256": "b832d0928b7594ca4b708e444b4761d961f2ef6bbab3b76684a4a810bbb3c6cc"
+          },
+          {
+            "original_bank": 8,
+            "replay_bank": 8,
+            "payload": "coefficients-8",
+            "bytes": 40599552,
+            "sha256": "6b04e5644410cac861ff54c9dd03859e0cd597032e26aebf185e615e0c3d139a"
+          }
+        ],
+        "payloads": {
+          "commands": {
+            "bytes": 7258112,
+            "sha256": "a6b2e23f42f45d017205afc9a8667ae5aa71e0708bb35a12fe487b970b1fde45"
+          },
+          "constants": {
+            "bytes": 144384,
+            "sha256": "a65af56eb8d4aec4045f744238617af6e64ffc84ddbd73eb1fc1e4c49fd018f9"
+          },
+          "positions": {
+            "bytes": 2304000,
+            "sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384"
+          },
+          "coefficients-1": {
+            "bytes": 134201344,
+            "sha256": "b832d0928b7594ca4b708e444b4761d961f2ef6bbab3b76684a4a810bbb3c6cc"
+          },
+          "coefficients-8": {
+            "bytes": 40599552,
+            "sha256": "6b04e5644410cac861ff54c9dd03859e0cd597032e26aebf185e615e0c3d139a"
+          },
+          "bootstrap": {
+            "bytes": 504,
+            "sha256": "45a2d39a4e2e1b56239bc8ee7ea1c56f1e52a50b998bd91075d79355a959ba94"
+          }
+        },
+        "hardware_validation": "pending native Asahi; plan validation is not execution"
+      },
+      "fixtures_checked": 4,
+      "all_port_bits_preserved": true,
+      "all_original_coefficient_bank_hashes_match": true,
+      "source_receipt_sha256": "2d01dd6637fec204e20b79c9010c07bb286f74fd833e6476814af5aec5d6f707",
+      "hardware_execution": "not attempted; requires Asahi"
+    }
+  },
+  "hardware_validation": "pending",
+  "CLI": {
+    "prepare_safetensors": {
+      "status": "PASS_REPLAY_PLAN_PREPARATION",
+      "model": "tiny",
+      "tasks": 1779,
+      "coefficient_banks": 1,
+      "hardware_validation": "pending"
+    },
+    "all_written_payload_hashes_match": true,
+    "mac_verify_rejected_before_device_access": true
+  }
+}

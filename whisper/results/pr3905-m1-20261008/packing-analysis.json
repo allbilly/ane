@@ -1,0 +1,55 @@
+{
+  "status": "PASS_PACKING_ANALYSIS",
+  "method": "Change the first FP16 gamma/beta value in layer 5/11 final_layer_norm by one ULP and compile the unchanged MIL. Both complete affine blocks then match gamma and 2*beta/gamma, interleaved across 16 engines, byte for byte.",
+  "original_hwx_sha256": "f281f0d9d618a119e2f6e44826f91978d4ddf5eccd5d89e6f21fa06c5f2b4d08",
+  "probe_hwx_sha256": "456a6acdd998f758a8c43bd87dd3d414a954cdca480fd3d05fbfdc30e25dff91",
+  "source_mil_sha256": "df4be42fe1f3fb37f279af5ab0016184369b925fb59dfae5fc46636854532237",
+  "probe_source_weights_sha256": "5fe9418cd3123b8903ea8d200cd250f3d96afc94c197d97553b8b5fcc9a1d22c",
+  "changed_bytes": 347181,
+  "segments": [
+    {
+      "name": "__PAGEZERO",
+      "changed_bytes": 0,
+      "first_changed_file_offsets": []
+    },
+    {
+      "name": "__DATA",
+      "changed_bytes": 0,
+      "first_changed_file_offsets": []
+    },
+    {
+      "name": "__FVMLIB",
+      "changed_bytes": 0,
+      "first_changed_file_offsets": []
+    },
+    {
+      "name": "__FVMLIB",
+      "changed_bytes": 0,
+      "first_changed_file_offsets": []
+    },
+    {
+      "name": "__FVMLIB",
+      "changed_bytes": 0,
+      "first_changed_file_offsets": []
+    },
+    {
+      "name": "__TEXT",
+      "changed_bytes": 0,
+      "first_changed_file_offsets": []
+    },
+    {
+      "name": "__KERN_0",
+      "changed_bytes": 3,
+      "first_changed_file_offsets": [
+        87944320,
+        141932672,
+        141932674
+      ]
+    },
+    {
+      "name": "__KERN_1",
+      "changed_bytes": 0,
+      "first_changed_file_offsets": []
+    }
+  ]
+}

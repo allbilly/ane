@@ -1,0 +1,888 @@
+{
+  "format": "whisper-pr3905-h13g/v1",
+  "target": "apple,t8103",
+  "generation": "H13G",
+  "dimensions": {
+    "state": 512,
+    "heads": 8,
+    "layers": 6,
+    "context": 1500,
+    "mels": 80,
+    "frames": 3000
+  },
+  "checkpoint": {
+    "model": "base",
+    "format": "whisper.cpp GGML F16",
+    "sha256": "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe"
+  },
+  "hwx_sha256": "2106568eeecefcab3569d22b8ff3eed6d555a23dd6044c911c9f4998ee5af82d",
+  "position_sha256": "9f47c17da903831a0ac200785875961a464997d0ed9a0f2e16f9dc2768f02902",
+  "source_mil_sha256": "47dde15e321dd57b6e2183508f35b464bc79705ce1b83f7d34327de4e2e23e12",
+  "source_weights_sha256": "1913fee30572e99d53fdffbf7cffcb9adf1b60a68b550d0254d9f2ce36847bab",
+  "template": {
+    "file": "model.hwx.template.zlib",
+    "bytes": 42598400,
+    "sha256": "afedd26f9c087c6fc43e38498c02761cf54839325c4b50aaf43c69bfd4a1ef78"
+  },
+  "packing": {
+    "file": "packing.json.zlib",
+    "bytes": 430495,
+    "sha256": "23ae0a37f7c9e8c918c782cc0d6198020b68ac7623b7f590785667f481f8dd40"
+  },
+  "scatter": {
+    "file": "conv2-offsets.i32.zlib",
+    "bytes": 1572864,
+    "sha256": "634e7b271fed7ae10edc84cadc4b3bf9c5096082130dda775b3a77ad737022c7"
+  },
+  "layout": {
+    "thread": {
+      "bars": [
+        818495488,
+        820906496,
+        0,
+        805306368,
+        814923776,
+        816463872,
+        816955392,
+        820969472,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "entry": 818495488,
+      "td_size": 504,
+      "td_count": 3434
+    },
+    "segments": [
+      {
+        "name": "__PAGEZERO",
+        "vmaddr": 0,
+        "vmsize": 16384,
+        "fileoff": 0,
+        "filesize": 0
+      },
+      {
+        "name": "__DATA",
+        "vmaddr": 805306368,
+        "vmsize": 9617408,
+        "fileoff": 0,
+        "filesize": 0
+      },
+      {
+        "name": "__FVMLIB",
+        "vmaddr": 814923776,
+        "vmsize": 1540096,
+        "fileoff": 0,
+        "filesize": 0
+      },
+      {
+        "name": "__FVMLIB",
+        "vmaddr": 816463872,
+        "vmsize": 491520,
+        "fileoff": 0,
+        "filesize": 0
+      },
+      {
+        "name": "__FVMLIB",
+        "vmaddr": 816955392,
+        "vmsize": 1540096,
+        "fileoff": 0,
+        "filesize": 0
+      },
+      {
+        "name": "__TEXT",
+        "vmaddr": 818495488,
+        "vmsize": 2473984,
+        "fileoff": 163840,
+        "filesize": 2473984
+      },
+      {
+        "name": "__KERN_0",
+        "vmaddr": 820969472,
+        "vmsize": 39960576,
+        "fileoff": 2637824,
+        "filesize": 39960576
+      }
+    ],
+    "sections": [
+      {
+        "name": "__bss",
+        "segment": "__DATA",
+        "addr": 805306368,
+        "size": 9614080,
+        "offset": 0
+      },
+      {
+        "name": "__const",
+        "segment": "__FVMLIB",
+        "addr": 814923776,
+        "size": 1540096,
+        "offset": 0
+      },
+      {
+        "name": "__const",
+        "segment": "__FVMLIB",
+        "addr": 816463872,
+        "size": 481280,
+        "offset": 0
+      },
+      {
+        "name": "__data",
+        "segment": "__FVMLIB",
+        "addr": 816955392,
+        "size": 1536000,
+        "offset": 0
+      },
+      {
+        "name": "__text",
+        "segment": "__TEXT",
+        "addr": 818495488,
+        "size": 2411000,
+        "offset": 163840
+      },
+      {
+        "name": "__const",
+        "segment": "__TEXT",
+        "addr": 820906496,
+        "size": 51200,
+        "offset": 2574848
+      },
+      {
+        "name": "__kern_0",
+        "segment": "__KERN_0",
+        "addr": 820969472,
+        "size": 39959680,
+        "offset": 2637824
+      }
+    ],
+    "ports": [
+      {
+        "role": "input",
+        "name": "t0",
+        "compiler_layout": {
+          "BatchStride": 1540096,
+          "Batches": 1,
+          "Channels": 512,
+          "Depth": 1,
+          "DepthStride": 1540096,
+          "Height": 1,
+          "Interleave": 1,
+          "Name": "t0",
+          "PlaneCount": 512,
+          "PlaneStride": 3008,
+          "RowStride": 3008,
+          "Symbol": "t0",
+          "Type": "Float16",
+          "Width": 1500
+        },
+        "original_bank": 4,
+        "byte_offset": 0
+      },
+      {
+        "role": "input",
+        "name": "t1",
+        "compiler_layout": {
+          "BatchStride": 481280,
+          "Batches": 1,
+          "Channels": 80,
+          "Depth": 1,
+          "DepthStride": 481280,
+          "Height": 1,
+          "Interleave": 1,
+          "Name": "t1",
+          "PlaneCount": 80,
+          "PlaneStride": 6016,
+          "RowStride": 6016,
+          "Symbol": "t1",
+          "Type": "Float16",
+          "Width": 3000
+        },
+        "original_bank": 5,
+        "byte_offset": 0
+      },
+      {
+        "role": "output",
+        "name": "t2727",
+        "compiler_layout": {
+          "BatchStride": 1536000,
+          "Batches": 1,
+          "Channels": 1,
+          "Depth": 1,
+          "DepthStride": 1536000,
+          "Height": 1500,
+          "Interleave": 1,
+          "Name": "t2727@output",
+          "PlaneCount": 1,
+          "PlaneStride": 1536000,
+          "RowStride": 1024,
+          "Symbol": "t2727@output",
+          "Type": "Float16",
+          "Width": 512
+        },
+        "original_bank": 6,
+        "byte_offset": 0
+      }
+    ],
+    "coefficient_banks": [
+      {
+        "segment": {
+          "name": "__KERN_0",
+          "vmaddr": 820969472,
+          "vmsize": 39960576,
+          "fileoff": 2637824,
+          "filesize": 39960576
+        },
+        "bank": 7
+      }
+    ]
+  },
+  "linux_hardware_validation": "pending",
+  "accuracy_validation": "not performed in this speed-only benchmark",
+  "executable_identity_limit": "E5RT and offline HWX compile the same MIL/weights separately; offline HWX has not executed.",
+  "encoder_tensors": {
+    "model.encoder.conv1.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "17396f7de62d3a8e72b16f23e5a4ee0abe06adade5fb4c0d5ed7016d17e8d579"
+    },
+    "model.encoder.conv1.weight": {
+      "shape": [
+        512,
+        80,
+        3
+      ],
+      "sha256": "b645f0244a13e4667041fd54f3ffb9a34f1e9d278df46663057f8bd37017c79d"
+    },
+    "model.encoder.conv2.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "1084536653df975830291584b9ab1de53983a570397c55ddfa02fc2b4a7e2669"
+    },
+    "model.encoder.conv2.weight": {
+      "shape": [
+        512,
+        512,
+        3
+      ],
+      "sha256": "f3d7c87629dffecfec68c82a369a9c6d40fcc412eebeb6fcbdbd6b3265da50df"
+    },
+    "model.encoder.embed_positions.weight": {
+      "shape": [
+        1500,
+        512
+      ],
+      "sha256": "9a2eb6deed8e9048ab1c45d24f31681f3b6970ab57ae6e951d7a3586a8d96bbc"
+    },
+    "model.encoder.layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "3676b6dc851e40130cc144cf389c2bc1978f4475ac90504096d20c4a71a8a22b"
+    },
+    "model.encoder.layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "e71eaf6ab280d83fe78c493af976f3d75f3f21073dc8a5e1de0610702f0a1b5b"
+    },
+    "model.encoder.layers.0.fc1.bias": {
+      "shape": [
+        2048
+      ],
+      "sha256": "634ad34a525f0dd56a075aad43759fa1079723569009b598945f6504b99c27bd"
+    },
+    "model.encoder.layers.0.fc1.weight": {
+      "shape": [
+        2048,
+        512
+      ],
+      "sha256": "5e5c8a4850c4adb16a51dc43d769f94d830ea19f8e51f9607fc7ac3fff1fb979"
+    },
+    "model.encoder.layers.0.fc2.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "fb64c07a0ee90ea632a336b7feb4e681a5a6e282b475aaf955717c3c3d94d02e"
+    },
+    "model.encoder.layers.0.fc2.weight": {
+      "shape": [
+        512,
+        2048
+      ],
+      "sha256": "527a5628e4a8d18a2ec301503c9ee5b0eea0a851d3250d70a09671e5c9611db9"
+    },
+    "model.encoder.layers.0.final_layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "83be5f47510045dc86408c6845a87479afbc8217eaf5ce19b986c8cf064c0d9a"
+    },
+    "model.encoder.layers.0.final_layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "6050dca7e9314466750b924d333c8ae5b87e9126d6afd611c22d13baa5b47cb7"
+    },
+    "model.encoder.layers.0.self_attn.k_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "49ce5318286e031e7187563c71cc829a440892ccd3ec6be6f16dbee69aa1a2c7"
+    },
+    "model.encoder.layers.0.self_attn.out_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "b2d1de7416858237672dc489a81c3e8dec131480cf5f0005a5a892f37808e473"
+    },
+    "model.encoder.layers.0.self_attn.out_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "57d4d42319c12accc705f70feda37687adb1d7275987e45c7118195acd93794f"
+    },
+    "model.encoder.layers.0.self_attn.q_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "90429c4fbeabffd01557f75b860b8e059871188c7a489c68ecc4e8383d47189f"
+    },
+    "model.encoder.layers.0.self_attn.q_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "a67b6ed0d2e630fa6a363fbfbdd72786a3f51b57cc6f39b350d582e325082e9c"
+    },
+    "model.encoder.layers.0.self_attn.v_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "93ae7802cc43502a0ef2dc4797a63d3ddc98a519bcbd9aa07097ce1bcd9d305c"
+    },
+    "model.encoder.layers.0.self_attn.v_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "63601c2daa0ea6ef3e93e797bc3d8f1c868e9e1d9fce7c0f9a480525814cfcfb"
+    },
+    "model.encoder.layers.0.self_attn_layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "5465ec61d5f72e23dfae5cfbfef65447a37de7d39eabc996415aa8e753d677ca"
+    },
+    "model.encoder.layers.0.self_attn_layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "e30622e014f95a12fdba85f055a8f1c02f5cfcbdb137a89e228db568ef0fe457"
+    },
+    "model.encoder.layers.1.fc1.bias": {
+      "shape": [
+        2048
+      ],
+      "sha256": "f3935adfe808bd5162ef28934c70a6439318a3d5b453112b95b6a93ba7fc2c7c"
+    },
+    "model.encoder.layers.1.fc1.weight": {
+      "shape": [
+        2048,
+        512
+      ],
+      "sha256": "89b5b3f09b3ba4f769419ed1dc6969934d89361987bec53790d2c3575c485745"
+    },
+    "model.encoder.layers.1.fc2.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "9d9b8b7c471dc2200d181f4103336060f3d28830d5ac8b59ccbe93000db9ce32"
+    },
+    "model.encoder.layers.1.fc2.weight": {
+      "shape": [
+        512,
+        2048
+      ],
+      "sha256": "70d6c83e136fc91b168dc5771a1a20e19b0d2825404782c5c7019885ab7d9a23"
+    },
+    "model.encoder.layers.1.final_layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "ded969ca0f10f176ecafef146a840efc31b4e6f0e3b3d47f67ec607c7bf70d3d"
+    },
+    "model.encoder.layers.1.final_layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "4d271dccc365ed4683bd07c39131e81aa688a6616f12ab5ac51a8481afccf300"
+    },
+    "model.encoder.layers.1.self_attn.k_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "f2a1bed3a6d30a0c26081dbd746bd05479f2ed86855727ec96b562c84c96799b"
+    },
+    "model.encoder.layers.1.self_attn.out_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "4274fd523a85d4b7983d90ee7e8936a50b720e938d6727bd71c593e99637c585"
+    },
+    "model.encoder.layers.1.self_attn.out_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "fa86bdbea0787a793aee3e6eabf0ad2f97cd0709c53d445a7824236144dccaff"
+    },
+    "model.encoder.layers.1.self_attn.q_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "db28d12beae75a079aad564e1cd8e941ddcc76c7ed2c1e153e81783b37b74f08"
+    },
+    "model.encoder.layers.1.self_attn.q_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "2b309ff4cb76091576a8cd71ba8229cafecd27d83933fe491c61574b16e1d0a4"
+    },
+    "model.encoder.layers.1.self_attn.v_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "30b541c6c8cc29d5aa167949af5ebca7aaada93d144da096b43c8190b19236eb"
+    },
+    "model.encoder.layers.1.self_attn.v_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "46f99054a2a2c07b3e7dde51a126d2a80fdf0a8ef549df8902fb23c2f3234d83"
+    },
+    "model.encoder.layers.1.self_attn_layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "b0c687622ba411e820449d1631525196071f55d58a85913ef60ea14b4376fd3f"
+    },
+    "model.encoder.layers.1.self_attn_layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "1ba81d77d591bf472fbf3eb247ce722f9f78aeb8635448efb52644fead8b6448"
+    },
+    "model.encoder.layers.2.fc1.bias": {
+      "shape": [
+        2048
+      ],
+      "sha256": "c2e7a63b19cf0cc6986ebc0c8fc4631ddb0ecd5cb820df0849268690eeba8135"
+    },
+    "model.encoder.layers.2.fc1.weight": {
+      "shape": [
+        2048,
+        512
+      ],
+      "sha256": "ceb4291d154c3393f5ea31c76864d3a15ff02f4db14aa2db5ae9d1a0b624f59c"
+    },
+    "model.encoder.layers.2.fc2.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "0a97e9d3d5ca358d0d9a8458c3faf6eae7241cb590d0b6fca709cf9822b85d65"
+    },
+    "model.encoder.layers.2.fc2.weight": {
+      "shape": [
+        512,
+        2048
+      ],
+      "sha256": "4cfccbcee1191de9d35de70bc4faf03cfc18133ab8907789301473642b8307e4"
+    },
+    "model.encoder.layers.2.final_layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "7ac1b72726b2d36ad1cbf97d9d55c31204196af9d3ce4b24a4a5dd7fdd441828"
+    },
+    "model.encoder.layers.2.final_layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "e21893587c4c6ad28a2c005d8c9a46c15ea76762a569c007a058a3376eaf4d2c"
+    },
+    "model.encoder.layers.2.self_attn.k_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "8ae6a9f9f37d2f810f632eb01a338d44b201d71a503c07207257cb0d20bb83d0"
+    },
+    "model.encoder.layers.2.self_attn.out_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "78c2f926ea2afdd60a57de2256bd4d362ebd7fd7dafd680c9829541116c581a1"
+    },
+    "model.encoder.layers.2.self_attn.out_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "8363047c052f9c99f43e4f554e79f35756a641256d768a195a58a92af1ba8692"
+    },
+    "model.encoder.layers.2.self_attn.q_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "a6dac621ae4c49494245b54ab3a6dc57422763afeab03f6c4b1a0fc01db81d2b"
+    },
+    "model.encoder.layers.2.self_attn.q_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "714bc32db952c795f8dadea063a19564b871f162ed4ee4bbde65892cf06c5934"
+    },
+    "model.encoder.layers.2.self_attn.v_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "0a5a78549862766f2a95f09123cd64df22ff1674b8edf6319e175117ab8a7bf7"
+    },
+    "model.encoder.layers.2.self_attn.v_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "b6a76a533c923a9e5763b55080a43ec2c33b2a27e00cfc1ac83ff88cf4d4c7d6"
+    },
+    "model.encoder.layers.2.self_attn_layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "cb1ae515dc875c77a5bf604a20c7f17dac7de328f9d79515ff59085c1a602ec8"
+    },
+    "model.encoder.layers.2.self_attn_layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "4b64e678de8a1e28a4e1ec0a7b38f7162a0b9a94e004df28c78465d4fc86f677"
+    },
+    "model.encoder.layers.3.fc1.bias": {
+      "shape": [
+        2048
+      ],
+      "sha256": "5a862116b8ce8df640fe550deaa6ef4f0c3db229babc7fd7abad06ff24decb0e"
+    },
+    "model.encoder.layers.3.fc1.weight": {
+      "shape": [
+        2048,
+        512
+      ],
+      "sha256": "6068ef6962c23db25292af994b7d8f27488f4207f48a3afaa169d05f4b670ce7"
+    },
+    "model.encoder.layers.3.fc2.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "c6038835cfd5d11f74381b19b468c68db51d9a9e6d9ff79c09fc6967402d6446"
+    },
+    "model.encoder.layers.3.fc2.weight": {
+      "shape": [
+        512,
+        2048
+      ],
+      "sha256": "eda4b4344c3c8427c80d3acc340d6ea52d3166587faacc86fb9933cbb4157444"
+    },
+    "model.encoder.layers.3.final_layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "4516f2423a4018967d85518f4dbe98531329f4446a0053907bf27db76f3296c0"
+    },
+    "model.encoder.layers.3.final_layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "36b13869318580da5393300f38633e2d988fce08a5fdb40e2f1fdb1c8d7d45f2"
+    },
+    "model.encoder.layers.3.self_attn.k_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "445941145449ce93a98fcbcc4097e4c89978bfa29d99e9c2049151744c845071"
+    },
+    "model.encoder.layers.3.self_attn.out_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "d25d6fc4e55cfaa28fadeb49de5543af7b90320f4d304e9694555ec16671e038"
+    },
+    "model.encoder.layers.3.self_attn.out_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "3cb6a7e3e22c18623a51e9da2fb9dd4bfce6659be713c212d8ffdb6b7ef818f9"
+    },
+    "model.encoder.layers.3.self_attn.q_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "6932ea6a09aa46dd54c00727e2e6937542aed29a0906483aa14f3ff4501bd703"
+    },
+    "model.encoder.layers.3.self_attn.q_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "95708d1b25567ff514d530e3c2f8af136b3729032e88ce1c3f795ffcc70e7d7c"
+    },
+    "model.encoder.layers.3.self_attn.v_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "a1cea4583f1f01630a9f84546f99271095f885d8bff515f0b8e4826c1c0bd53f"
+    },
+    "model.encoder.layers.3.self_attn.v_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "5ce67840415d4f2e2615ee2f541647cfef651439476a957b82d0490c21c3d4fe"
+    },
+    "model.encoder.layers.3.self_attn_layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "52a7e98c1c3ea961c64fdba97614af4957dae387f00d41eb567fcd36ae2ad576"
+    },
+    "model.encoder.layers.3.self_attn_layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "67e9b4902bbbf4dad0bd532a241f26c5001b8a8b886091ed938fd60d6f482f6e"
+    },
+    "model.encoder.layers.4.fc1.bias": {
+      "shape": [
+        2048
+      ],
+      "sha256": "bedc4cbe6df41a4f9e0beba289e4f6da4bebdb85dfc0f1c90c47dee8a1180c09"
+    },
+    "model.encoder.layers.4.fc1.weight": {
+      "shape": [
+        2048,
+        512
+      ],
+      "sha256": "f208abbf7cb1d21964d18360e37978d40a5c44de8bfc3a9f4982827705fffdac"
+    },
+    "model.encoder.layers.4.fc2.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "84f49d101042d217c76255126cd2494df40b8da7f71ed8b61219363bdef9fb6a"
+    },
+    "model.encoder.layers.4.fc2.weight": {
+      "shape": [
+        512,
+        2048
+      ],
+      "sha256": "3be915ae3d48c0e9806e94529dfa6dcc101e434670bfc194ea2a49439ab8436b"
+    },
+    "model.encoder.layers.4.final_layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "f02cc63399cccafe1c9bebd05f301dca2e195f8ce2dddce157e7d779de20e522"
+    },
+    "model.encoder.layers.4.final_layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "882e49d1f4a9ffd87929572a63f6453e7f30f0e713fa1f14b67533229407685a"
+    },
+    "model.encoder.layers.4.self_attn.k_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "05b491ac46795ad10a7223b7dd0b410a949ed17d24bf7bb601dac13ca5d3c3d9"
+    },
+    "model.encoder.layers.4.self_attn.out_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "d8120500914d45b59717a95f9e799a022adaa371b2f7b590e5e0a823cbe27783"
+    },
+    "model.encoder.layers.4.self_attn.out_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "55919624fefc3fec7d7bc67e534efaa0ab1ec551364f6a3380598e440de7fd30"
+    },
+    "model.encoder.layers.4.self_attn.q_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "ed200bba8be2169df7123c0f85b97fc6e19d1eed050d284fde44dc4f6ec50fe2"
+    },
+    "model.encoder.layers.4.self_attn.q_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "0a6930e42f3256979d03bc7f8109005b0634bd54176bccea44fdbea3f595df72"
+    },
+    "model.encoder.layers.4.self_attn.v_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "02eb5b5cfbb7283112fc808f57fab0447af4590ce4c19b18022a3ef7d74b3ded"
+    },
+    "model.encoder.layers.4.self_attn.v_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "ad146c66dd30bb5cea3f26e3f3499a713b9b6961bdda9b67b4ac5da1b7ed4147"
+    },
+    "model.encoder.layers.4.self_attn_layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "de76619781deaecac9b5129b9fa716001fc94af5354daa2db34da3db8cc91a34"
+    },
+    "model.encoder.layers.4.self_attn_layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "1c47a8d730c1752fefd11ec22828f8faec3d2e20cb875d005240725153fe43bb"
+    },
+    "model.encoder.layers.5.fc1.bias": {
+      "shape": [
+        2048
+      ],
+      "sha256": "8356f8e0e98551b362293c7f5859e4fb5e717138da0b3eb485d5e42f3572249f"
+    },
+    "model.encoder.layers.5.fc1.weight": {
+      "shape": [
+        2048,
+        512
+      ],
+      "sha256": "a39f78e1219c068fa3d122f5ad6c4a67f7c6e994562d3a490c8db5e99f009aac"
+    },
+    "model.encoder.layers.5.fc2.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "a0e62d4dfbd86e6e885c12199f9d14f78a9ec4ffa46d5f9687249dcaeab3c3f5"
+    },
+    "model.encoder.layers.5.fc2.weight": {
+      "shape": [
+        512,
+        2048
+      ],
+      "sha256": "807fc07091068711a78d10919ec1b60cdd09a51b1b5abd103ef5e259fed9dfb7"
+    },
+    "model.encoder.layers.5.final_layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "47c1f4407a68309e96bf4a58207cdeb12b5cd42c873dfc729046180618e46c41"
+    },
+    "model.encoder.layers.5.final_layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "7a856215e3ca0a889d1435806b23bbbaddd741667abfef147a6687ca4e6c1c78"
+    },
+    "model.encoder.layers.5.self_attn.k_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "e48b63dced644f18db7e21bc5c37b5e9969b4480f5be7369b67d5219474ce894"
+    },
+    "model.encoder.layers.5.self_attn.out_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "88b6eed7687b28be6d587b64b4fcfb511267c415905bb278f834af8e942b75a0"
+    },
+    "model.encoder.layers.5.self_attn.out_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "a212873130bdf721eac32f17d428a91a56aa7f3e7ec5d881adf355b368aff6f2"
+    },
+    "model.encoder.layers.5.self_attn.q_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "d2b774b1999be4cc9aba373071caa30207651eb26c46efbcf63b991741f81e1a"
+    },
+    "model.encoder.layers.5.self_attn.q_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "31844b4b55593dbc24775bbc4f8625dda80b6355086b1deefe5dbe7e7b6d0bd9"
+    },
+    "model.encoder.layers.5.self_attn.v_proj.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "ae3bf79cdd8a37fa4df7402a532d8ffad8bc4922d275a5fe3f8d45e39f479233"
+    },
+    "model.encoder.layers.5.self_attn.v_proj.weight": {
+      "shape": [
+        512,
+        512
+      ],
+      "sha256": "cb0b8712b8b65db94a6ac78f65e5131aeb9d69f167867e10a9e01569ea4e5e64"
+    },
+    "model.encoder.layers.5.self_attn_layer_norm.bias": {
+      "shape": [
+        512
+      ],
+      "sha256": "255dd06a365e1f6b996d79b7416f2755649288f47dae259a03dd31e2701aa8e9"
+    },
+    "model.encoder.layers.5.self_attn_layer_norm.weight": {
+      "shape": [
+        512
+      ],
+      "sha256": "d121ff5a460d899ae8f01c9b9bc5004aa3e181bceacfdadabef587776565bd9c"
+    }
+  }
+}

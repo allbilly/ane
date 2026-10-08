@@ -1,0 +1,237 @@
+Analysis of sampling benchmark-whisper (pid 43005) every 1 millisecond
+Process:         benchmark-whisper [43005]
+Path:            /Users/USER/*/benchmark-whisper
+Load Address:    0x102f40000
+Identifier:      benchmark-whisper
+Version:         0
+Code Type:       ARM64
+Platform:        macOS
+Parent Process:  Python [42977]
+Target Type:     live task
+
+Date/Time:       2026-10-08 00:30:27.248 +0800
+Launch Time:     2026-10-08 00:30:20.280 +0800
+OS Version:      macOS 27.0.1 (26A434)
+Report Version:  7
+Analysis Tool:   /usr/bin/sample
+
+Physical footprint:         159.4M
+Physical footprint (peak):  159.5M
+Idle exit:                  untracked
+----
+
+
+Representative stack paths. Aggregate parent nodes may occur in multiple paths; counts must not be added across these excerpts.
+
+Role: whisper_profile_vocabulary_token; leaf: (anonymous namespace)::tinyBLAS<4, __simd128_float32_t, __simd128_float32_t, unsigned short, float, float>::gemm<4, 1, 2>(long long, long long, long long)
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      4906 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 14368  [0x102fc9e84]
+        4824 whisper_decode_internal(whisper_context&, whisper_state&, whisper_batch const&, int, bool, bool (*)(void*), void*)  (in libwhisper.1.9.4.dylib) + 1604  [0x102fc0af8]
+          4824 ggml_graph_compute_helper(ggml_backend_sched*, ggml_cgraph*, int, bool)  (in libwhisper.1.9.4.dylib) + 160  [0x102fc5824]
+            4824 ggml_backend_sched_graph_compute  (in libggml-base.0.25.1.dylib) + 28  [0x1032c9968]
+              4824 ggml_backend_sched_graph_compute_async  (in libggml-base.0.25.1.dylib) + 2608  [0x1032ca44c]
+                4820 ggml_backend_cpu_graph_compute(ggml_backend*, ggml_cgraph*)  (in libggml-cpu.0.25.1.dylib) + 120  [0x103130b88]
+                  4684 ggml_graph_compute  (in libggml-cpu.0.25.1.dylib) + 444  [0x10312d840]
+                    2222 ggml_graph_compute_thread  (in libggml-cpu.0.25.1.dylib) + 2328  [0x10312e9b4]
+                      2122 whisper_profile_vocabulary_token  (in libggml-cpu.0.25.1.dylib) + 36  [0x10312f408]
+                        2121 ggml_compute_forward_mul_mat  (in libggml-cpu.0.25.1.dylib) + 668  [0x10312bb24]
+                          2121 llamafile_sgemm  (in libggml-cpu.0.25.1.dylib) + 1232  [0x1031c4a64]
+                            2014 (anonymous namespace)::tinyBLAS<4, __simd128_float32_t, __simd128_float32_t, unsigned short, float, float>::gemm<4, 1, 2>(long long, long long, long long)  (in libggml-cpu.0.25.1.dylib) + 500,712,...  [0x1031d8f30,0x1031d9004,...]
+
+Role: whisper_profile_vocabulary_token; leaf: ggml_barrier
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      4906 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 14368  [0x102fc9e84]
+        4824 whisper_decode_internal(whisper_context&, whisper_state&, whisper_batch const&, int, bool, bool (*)(void*), void*)  (in libwhisper.1.9.4.dylib) + 1604  [0x102fc0af8]
+          4824 ggml_graph_compute_helper(ggml_backend_sched*, ggml_cgraph*, int, bool)  (in libwhisper.1.9.4.dylib) + 160  [0x102fc5824]
+            4824 ggml_backend_sched_graph_compute  (in libggml-base.0.25.1.dylib) + 28  [0x1032c9968]
+              4824 ggml_backend_sched_graph_compute_async  (in libggml-base.0.25.1.dylib) + 2608  [0x1032ca44c]
+                4820 ggml_backend_cpu_graph_compute(ggml_backend*, ggml_cgraph*)  (in libggml-cpu.0.25.1.dylib) + 120  [0x103130b88]
+                  4684 ggml_graph_compute  (in libggml-cpu.0.25.1.dylib) + 444  [0x10312d840]
+                    2222 ggml_graph_compute_thread  (in libggml-cpu.0.25.1.dylib) + 2328  [0x10312e9b4]
+                      2122 whisper_profile_vocabulary_token  (in libggml-cpu.0.25.1.dylib) + 36  [0x10312f408]
+                        2121 ggml_compute_forward_mul_mat  (in libggml-cpu.0.25.1.dylib) + 668  [0x10312bb24]
+                          2121 llamafile_sgemm  (in libggml-cpu.0.25.1.dylib) + 1232  [0x1031c4a64]
+                            6 ggml_barrier  (in libggml-cpu.0.25.1.dylib) + 68,56  [0x103129be8,0x103129bdc]
+
+Role: whisper_profile_vocabulary_token; leaf: ggml_threadpool_chunk_add
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      4906 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 14368  [0x102fc9e84]
+        4824 whisper_decode_internal(whisper_context&, whisper_state&, whisper_batch const&, int, bool, bool (*)(void*), void*)  (in libwhisper.1.9.4.dylib) + 1604  [0x102fc0af8]
+          4824 ggml_graph_compute_helper(ggml_backend_sched*, ggml_cgraph*, int, bool)  (in libwhisper.1.9.4.dylib) + 160  [0x102fc5824]
+            4824 ggml_backend_sched_graph_compute  (in libggml-base.0.25.1.dylib) + 28  [0x1032c9968]
+              4824 ggml_backend_sched_graph_compute_async  (in libggml-base.0.25.1.dylib) + 2608  [0x1032ca44c]
+                4820 ggml_backend_cpu_graph_compute(ggml_backend*, ggml_cgraph*)  (in libggml-cpu.0.25.1.dylib) + 120  [0x103130b88]
+                  4684 ggml_graph_compute  (in libggml-cpu.0.25.1.dylib) + 444  [0x10312d840]
+                    2222 ggml_graph_compute_thread  (in libggml-cpu.0.25.1.dylib) + 2328  [0x10312e9b4]
+                      2122 whisper_profile_vocabulary_token  (in libggml-cpu.0.25.1.dylib) + 36  [0x10312f408]
+                        2121 ggml_compute_forward_mul_mat  (in libggml-cpu.0.25.1.dylib) + 668  [0x10312bb24]
+                          2121 llamafile_sgemm  (in libggml-cpu.0.25.1.dylib) + 1232  [0x1031c4a64]
+                            101 (anonymous namespace)::tinyBLAS<4, __simd128_float32_t, __simd128_float32_t, unsigned short, float, float>::gemm<4, 1, 2>(long long, long long, long long)  (in libggml-cpu.0.25.1.dylib) + 256  [0x1031d8e3c]
+                              101 ggml_threadpool_chunk_add  (in libggml-cpu.0.25.1.dylib) + 8,0,...  [0x103129c08,0x103129c00,...]
+
+Role: whisper_profile_vocabulary_prompt; leaf: (anonymous namespace)::tinyBLAS<4, __simd128_float32_t, __simd128_float32_t, unsigned short, float, float>::gemm<4, 2, 2>(long long, long long, long long)
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      263 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 5996  [0x102fc7dd0]
+        259 whisper_decode_internal(whisper_context&, whisper_state&, whisper_batch const&, int, bool, bool (*)(void*), void*)  (in libwhisper.1.9.4.dylib) + 1604  [0x102fc0af8]
+          259 ggml_graph_compute_helper(ggml_backend_sched*, ggml_cgraph*, int, bool)  (in libwhisper.1.9.4.dylib) + 160  [0x102fc5824]
+            259 ggml_backend_sched_graph_compute  (in libggml-base.0.25.1.dylib) + 28  [0x1032c9968]
+              259 ggml_backend_sched_graph_compute_async  (in libggml-base.0.25.1.dylib) + 2608  [0x1032ca44c]
+                259 ggml_backend_cpu_graph_compute(ggml_backend*, ggml_cgraph*)  (in libggml-cpu.0.25.1.dylib) + 120  [0x103130b88]
+                  254 ggml_graph_compute  (in libggml-cpu.0.25.1.dylib) + 444  [0x10312d840]
+                    91 ggml_graph_compute_thread  (in libggml-cpu.0.25.1.dylib) + 2336  [0x10312e9bc]
+                      87 whisper_profile_vocabulary_prompt  (in libggml-cpu.0.25.1.dylib) + 36  [0x10312f43c]
+                        87 ggml_compute_forward_mul_mat  (in libggml-cpu.0.25.1.dylib) + 668  [0x10312bb24]
+                          87 llamafile_sgemm  (in libggml-cpu.0.25.1.dylib) + 1168  [0x1031c4a24]
+                            82 (anonymous namespace)::tinyBLAS<4, __simd128_float32_t, __simd128_float32_t, unsigned short, float, float>::gemm<4, 2, 2>(long long, long long, long long)  (in libggml-cpu.0.25.1.dylib) + 676,620,...  [0x1031d8a64,0x1031d8a2c,...]
+
+Role: whisper_profile_vocabulary_prompt; leaf: ggml_barrier
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      263 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 5996  [0x102fc7dd0]
+        259 whisper_decode_internal(whisper_context&, whisper_state&, whisper_batch const&, int, bool, bool (*)(void*), void*)  (in libwhisper.1.9.4.dylib) + 1604  [0x102fc0af8]
+          259 ggml_graph_compute_helper(ggml_backend_sched*, ggml_cgraph*, int, bool)  (in libwhisper.1.9.4.dylib) + 160  [0x102fc5824]
+            259 ggml_backend_sched_graph_compute  (in libggml-base.0.25.1.dylib) + 28  [0x1032c9968]
+              259 ggml_backend_sched_graph_compute_async  (in libggml-base.0.25.1.dylib) + 2608  [0x1032ca44c]
+                259 ggml_backend_cpu_graph_compute(ggml_backend*, ggml_cgraph*)  (in libggml-cpu.0.25.1.dylib) + 120  [0x103130b88]
+                  254 ggml_graph_compute  (in libggml-cpu.0.25.1.dylib) + 444  [0x10312d840]
+                    91 ggml_graph_compute_thread  (in libggml-cpu.0.25.1.dylib) + 2336  [0x10312e9bc]
+                      87 whisper_profile_vocabulary_prompt  (in libggml-cpu.0.25.1.dylib) + 36  [0x10312f43c]
+                        87 ggml_compute_forward_mul_mat  (in libggml-cpu.0.25.1.dylib) + 668  [0x10312bb24]
+                          87 llamafile_sgemm  (in libggml-cpu.0.25.1.dylib) + 1168  [0x1031c4a24]
+                            1 ggml_barrier  (in libggml-cpu.0.25.1.dylib) + 56  [0x103129bdc]
+
+Role: whisper_profile_vocabulary_prompt; leaf: ggml_threadpool_chunk_add
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      263 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 5996  [0x102fc7dd0]
+        259 whisper_decode_internal(whisper_context&, whisper_state&, whisper_batch const&, int, bool, bool (*)(void*), void*)  (in libwhisper.1.9.4.dylib) + 1604  [0x102fc0af8]
+          259 ggml_graph_compute_helper(ggml_backend_sched*, ggml_cgraph*, int, bool)  (in libwhisper.1.9.4.dylib) + 160  [0x102fc5824]
+            259 ggml_backend_sched_graph_compute  (in libggml-base.0.25.1.dylib) + 28  [0x1032c9968]
+              259 ggml_backend_sched_graph_compute_async  (in libggml-base.0.25.1.dylib) + 2608  [0x1032ca44c]
+                259 ggml_backend_cpu_graph_compute(ggml_backend*, ggml_cgraph*)  (in libggml-cpu.0.25.1.dylib) + 120  [0x103130b88]
+                  254 ggml_graph_compute  (in libggml-cpu.0.25.1.dylib) + 444  [0x10312d840]
+                    91 ggml_graph_compute_thread  (in libggml-cpu.0.25.1.dylib) + 2336  [0x10312e9bc]
+                      87 whisper_profile_vocabulary_prompt  (in libggml-cpu.0.25.1.dylib) + 36  [0x10312f43c]
+                        87 ggml_compute_forward_mul_mat  (in libggml-cpu.0.25.1.dylib) + 668  [0x10312bb24]
+                          87 llamafile_sgemm  (in libggml-cpu.0.25.1.dylib) + 1168  [0x1031c4a24]
+                            4 (anonymous namespace)::tinyBLAS<4, __simd128_float32_t, __simd128_float32_t, unsigned short, float, float>::gemm<4, 2, 2>(long long, long long, long long)  (in libggml-cpu.0.25.1.dylib) + 1232  [0x1031d8c90]
+                              4 ggml_threadpool_chunk_add  (in libggml-cpu.0.25.1.dylib) + 8  [0x103129c08]
+
+Role: whisper_compute_logprobs; leaf: whisper_compute_logprobs(std::vector<float> const&, int, std::vector<float>&)
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      509 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 14500  [0x102fc9f08]
+        372 whisper_process_logits(whisper_context&, whisper_state&, whisper_decoder&, whisper_full_params, float)  (in libwhisper.1.9.4.dylib) + 2996  [0x102fce280]
+          122 whisper_compute_logprobs(std::vector<float> const&, int, std::vector<float>&)  (in libwhisper.1.9.4.dylib) + 84,148,...  [0x102fcd484,0x102fcd4c4,...]
+
+Role: whisper_compute_logprobs; leaf: expf
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      509 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 14500  [0x102fc9f08]
+        372 whisper_process_logits(whisper_context&, whisper_state&, whisper_decoder&, whisper_full_params, float)  (in libwhisper.1.9.4.dylib) + 2996  [0x102fce280]
+          121 whisper_compute_logprobs(std::vector<float> const&, int, std::vector<float>&)  (in libwhisper.1.9.4.dylib) + 180  [0x102fcd4e4]
+            71 expf  (in libsystem_m.dylib) + 100,84,...  [0x198d7bb64,0x198d7bb54,...]
+
+Role: whisper_compute_logprobs; leaf: DYLD-STUB$$expf
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      509 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 14500  [0x102fc9f08]
+        372 whisper_process_logits(whisper_context&, whisper_state&, whisper_decoder&, whisper_full_params, float)  (in libwhisper.1.9.4.dylib) + 2996  [0x102fce280]
+          121 whisper_compute_logprobs(std::vector<float> const&, int, std::vector<float>&)  (in libwhisper.1.9.4.dylib) + 180  [0x102fcd4e4]
+            50 DYLD-STUB$$expf  (in libwhisper.1.9.4.dylib) + 4,8  [0x102ff7de4,0x102ff7de8]
+
+Role: whisper_compute_probs; leaf: expf
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      509 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 14500  [0x102fc9f08]
+        132 whisper_process_logits(whisper_context&, whisper_state&, whisper_decoder&, whisper_full_params, float)  (in libwhisper.1.9.4.dylib) + 4704  [0x102fce92c]
+          85 whisper_compute_probs(std::vector<float> const&, int, std::vector<float> const&, std::vector<float>&)  (in libwhisper.1.9.4.dylib) + 96  [0x102fcd6b4]
+            59 expf  (in libsystem_m.dylib) + 100,76,...  [0x198d7bb64,0x198d7bb4c,...]
+
+Role: whisper_compute_probs; leaf: whisper_compute_probs(std::vector<float> const&, int, std::vector<float> const&, std::vector<float>&)
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      509 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 14500  [0x102fc9f08]
+        132 whisper_process_logits(whisper_context&, whisper_state&, whisper_decoder&, whisper_full_params, float)  (in libwhisper.1.9.4.dylib) + 4704  [0x102fce92c]
+          46 whisper_compute_probs(std::vector<float> const&, int, std::vector<float> const&, std::vector<float>&)  (in libwhisper.1.9.4.dylib) + 60,76,...  [0x102fcd690,0x102fcd6a0,...]
+
+Role: whisper_compute_probs; leaf: DYLD-STUB$$expf
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      509 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 14500  [0x102fc9f08]
+        132 whisper_process_logits(whisper_context&, whisper_state&, whisper_decoder&, whisper_full_params, float)  (in libwhisper.1.9.4.dylib) + 4704  [0x102fce92c]
+          85 whisper_compute_probs(std::vector<float> const&, int, std::vector<float> const&, std::vector<float>&)  (in libwhisper.1.9.4.dylib) + 96  [0x102fcd6b4]
+            26 DYLD-STUB$$expf  (in libwhisper.1.9.4.dylib) + 4,8  [0x102ff7de4,0x102ff7de8]
+
+Role: ggml_compute_forward_flash_attn_ext_f16_one_chunk; leaf: ggml_compute_forward_flash_attn_ext_f16_one_chunk(ggml_compute_params const*, ggml_tensor*, int, int, long long, long long, float*, long long)
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      4906 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 14368  [0x102fc9e84]
+        4824 whisper_decode_internal(whisper_context&, whisper_state&, whisper_batch const&, int, bool, bool (*)(void*), void*)  (in libwhisper.1.9.4.dylib) + 1604  [0x102fc0af8]
+          4824 ggml_graph_compute_helper(ggml_backend_sched*, ggml_cgraph*, int, bool)  (in libwhisper.1.9.4.dylib) + 160  [0x102fc5824]
+            4824 ggml_backend_sched_graph_compute  (in libggml-base.0.25.1.dylib) + 28  [0x1032c9968]
+              4824 ggml_backend_sched_graph_compute_async  (in libggml-base.0.25.1.dylib) + 2608  [0x1032ca44c]
+                4820 ggml_backend_cpu_graph_compute(ggml_backend*, ggml_cgraph*)  (in libggml-cpu.0.25.1.dylib) + 120  [0x103130b88]
+                  4684 ggml_graph_compute  (in libggml-cpu.0.25.1.dylib) + 444  [0x10312d840]
+                    1351 ggml_graph_compute_thread  (in libggml-cpu.0.25.1.dylib) + 1508  [0x10312e680]
+                      1079 ggml_compute_forward_flash_attn_ext  (in libggml-cpu.0.25.1.dylib) + 520  [0x1031b0268]
+                        617 ggml_compute_forward_flash_attn_ext_f16_one_chunk(ggml_compute_params const*, ggml_tensor*, int, int, long long, long long, float*, long long)  (in libggml-cpu.0.25.1.dylib) + 3248  [0x1031c3eb0]
+                          572 ggml_compute_forward_flash_attn_ext_f16_one_chunk(ggml_compute_params const*, ggml_tensor*, int, int, long long, long long, float*, long long)  (in libggml-cpu.0.25.1.dylib) + 2568,1704,...  [0x1031c3c08,0x1031c38a8,...]
+
+Role: ggml_compute_forward_flash_attn_ext_f16_one_chunk; leaf: ggml_vec_dot_f32
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      4906 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 14368  [0x102fc9e84]
+        4824 whisper_decode_internal(whisper_context&, whisper_state&, whisper_batch const&, int, bool, bool (*)(void*), void*)  (in libwhisper.1.9.4.dylib) + 1604  [0x102fc0af8]
+          4824 ggml_graph_compute_helper(ggml_backend_sched*, ggml_cgraph*, int, bool)  (in libwhisper.1.9.4.dylib) + 160  [0x102fc5824]
+            4824 ggml_backend_sched_graph_compute  (in libggml-base.0.25.1.dylib) + 28  [0x1032c9968]
+              4824 ggml_backend_sched_graph_compute_async  (in libggml-base.0.25.1.dylib) + 2608  [0x1032ca44c]
+                4820 ggml_backend_cpu_graph_compute(ggml_backend*, ggml_cgraph*)  (in libggml-cpu.0.25.1.dylib) + 120  [0x103130b88]
+                  4684 ggml_graph_compute  (in libggml-cpu.0.25.1.dylib) + 444  [0x10312d840]
+                    1351 ggml_graph_compute_thread  (in libggml-cpu.0.25.1.dylib) + 1508  [0x10312e680]
+                      1079 ggml_compute_forward_flash_attn_ext  (in libggml-cpu.0.25.1.dylib) + 520  [0x1031b0268]
+                        444 ggml_compute_forward_flash_attn_ext_f16_one_chunk(ggml_compute_params const*, ggml_tensor*, int, int, long long, long long, float*, long long)  (in libggml-cpu.0.25.1.dylib) + 1840  [0x1031c3930]
+                          249 ggml_vec_dot_f32  (in libggml-cpu.0.25.1.dylib) + 64,56,...  [0x1031848ec,0x1031848e4,...]
+
+Role: ggml_compute_forward_flash_attn_ext_f16_one_chunk; leaf: expf
+7149 start  (in dyld) + 6688  [0x187e33e80]
+  7142 main  (in benchmark-whisper) + 1604  [0x102f40c54]
+    7142 whisper_full  (in libwhisper.1.9.4.dylib) + 208  [0x102fd0f40]
+      4906 whisper_full_with_state  (in libwhisper.1.9.4.dylib) + 14368  [0x102fc9e84]
+        4824 whisper_decode_internal(whisper_context&, whisper_state&, whisper_batch const&, int, bool, bool (*)(void*), void*)  (in libwhisper.1.9.4.dylib) + 1604  [0x102fc0af8]
+          4824 ggml_graph_compute_helper(ggml_backend_sched*, ggml_cgraph*, int, bool)  (in libwhisper.1.9.4.dylib) + 160  [0x102fc5824]
+            4824 ggml_backend_sched_graph_compute  (in libggml-base.0.25.1.dylib) + 28  [0x1032c9968]
+              4824 ggml_backend_sched_graph_compute_async  (in libggml-base.0.25.1.dylib) + 2608  [0x1032ca44c]
+                4820 ggml_backend_cpu_graph_compute(ggml_backend*, ggml_cgraph*)  (in libggml-cpu.0.25.1.dylib) + 120  [0x103130b88]
+                  4684 ggml_graph_compute  (in libggml-cpu.0.25.1.dylib) + 444  [0x10312d840]
+                    1351 ggml_graph_compute_thread  (in libggml-cpu.0.25.1.dylib) + 1508  [0x10312e680]
+                      1079 ggml_compute_forward_flash_attn_ext  (in libggml-cpu.0.25.1.dylib) + 520  [0x1031b0268]
+                        617 ggml_compute_forward_flash_attn_ext_f16_one_chunk(ggml_compute_params const*, ggml_tensor*, int, int, long long, long long, float*, long long)  (in libggml-cpu.0.25.1.dylib) + 3248  [0x1031c3eb0]
+                          44 expf  (in libsystem_m.dylib) + 100,84,...  [0x198d7bb64,0x198d7bb54,...]
+
+Selected loaded images:
+       0x102f40000 -        0x102f41f4f +benchmark-whisper (0) <7EED1F84-A740-3781-90DE-EE8CE64C9C3B> /Users/*/benchmark-whisper
+       0x102f84000 -        0x102f887cb +libggml-blas.0.25.1.dylib (0) <F0EAC14A-3432-32B6-904B-30185D065EFB> /Users/*/libggml-blas.0.25.1.dylib
+       0x102fb8000 -        0x102ffee93 +libwhisper.1.9.4.dylib (0) <0564E61D-926D-3B48-939C-1F36907D45A3> /Users/*/libwhisper.1.9.4.dylib
+       0x103024000 -        0x103028963 +libane_e5rt_dispatch.dylib (0) <358E9857-BB38-3F7A-9DF5-378E026DDCF3> /Users/*/Desktop/*/libane_e5rt_dispatch.dylib
+       0x103128000 -        0x1032087df +libggml-cpu.0.25.1.dylib (0) <031D09F5-180E-3E79-8B6E-609B530FB3F4> /Users/*/libggml-cpu.0.25.1.dylib
+       0x188b89000 -        0x18935c7df  libBLAS.dylib (1617.1.1) <31104D4F-4A7E-3FA7-9E18-55937B2011F2> /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib
+       0x198d76000 -        0x198db3b27  libsystem_m.dylib (3326.0.1) <A3FB340F-3ED5-30F4-8B64-9D5860F64D35> /usr/lib/system/libsystem_m.dylib

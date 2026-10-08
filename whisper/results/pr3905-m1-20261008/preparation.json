@@ -1,0 +1,69 @@
+{
+  "tiny.en_loader_tensors": 67,
+  "tiny.en_max_checkpoint_abs_difference": 0.0,
+  "models": {
+    "tiny": {
+      "ggml_sha256": "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21",
+      "coreml_archive_sha256": "c88cbd2648e1f5415092bcf5256add463a0f19943e6938f46e8d4ffdebd47739",
+      "mil_sha256": "e7320a59f2988a48add91afe6eda18beec615006cae1e613ff68041f6b2c91ed",
+      "weights_sha256": "c496452e00169b19d9cf24c071e78e703d32bb8158db837b28d61b42014c29b4",
+      "pos_sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238",
+      "dims": {
+        "D": 384,
+        "LAYERS": 4,
+        "HEADS": 6,
+        "FFN": 1536,
+        "MELS": 80,
+        "CTX": 1500,
+        "FRAMES": 3000
+      },
+      "layout": "cf",
+      "q_tiles": 3,
+      "compress": null,
+      "source": "trained GGML F16 checkpoint, mapped with upstream convert-h5-to-ggml.py names",
+      "finite_zero_mel_output": true
+    },
+    "base": {
+      "ggml_sha256": "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe",
+      "coreml_archive_sha256": "7e6ab77041942572f239b5b602f8aaa1c3ed29d73e3d8f20abea03a773541089",
+      "mil_sha256": "47dde15e321dd57b6e2183508f35b464bc79705ce1b83f7d34327de4e2e23e12",
+      "weights_sha256": "1913fee30572e99d53fdffbf7cffcb9adf1b60a68b550d0254d9f2ce36847bab",
+      "pos_sha256": "9f47c17da903831a0ac200785875961a464997d0ed9a0f2e16f9dc2768f02902",
+      "dims": {
+        "D": 512,
+        "LAYERS": 6,
+        "HEADS": 8,
+        "FFN": 2048,
+        "MELS": 80,
+        "CTX": 1500,
+        "FRAMES": 3000
+      },
+      "layout": "cf",
+      "q_tiles": 3,
+      "compress": null,
+      "source": "trained GGML F16 checkpoint, mapped with upstream convert-h5-to-ggml.py names",
+      "finite_zero_mel_output": true
+    },
+    "small": {
+      "ggml_sha256": "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b",
+      "coreml_archive_sha256": "de43fb9fed471e95c19e60ae67575c2bf09e8fb607016da171b06ddad313988b",
+      "mil_sha256": "df4be42fe1f3fb37f279af5ab0016184369b925fb59dfae5fc46636854532237",
+      "weights_sha256": "fb39ffbc5d0e78bab48551b73ce73447e5558c84794b68b0066ba854be9f6159",
+      "pos_sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384",
+      "dims": {
+        "D": 768,
+        "LAYERS": 12,
+        "HEADS": 12,
+        "FFN": 3072,
+        "MELS": 80,
+        "CTX": 1500,
+        "FRAMES": 3000
+      },
+      "layout": "cf",
+      "q_tiles": 3,
+      "compress": null,
+      "source": "trained GGML F16 checkpoint, mapped with upstream convert-h5-to-ggml.py names",
+      "finite_zero_mel_output": true
+    }
+  }
+}

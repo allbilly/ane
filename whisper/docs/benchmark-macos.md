@@ -65,7 +65,8 @@ fully CPU-free GPU-only or ANE-only transcription.
 whisper.cpp has one `use_gpu` choice for its ggml backend and an external ANE
 encoder override. It does not expose independent CPU/GPU choices for both
 towers. Core ML's scheduler choosing among allowed devices is another runtime,
-not an explicit additional combination; that runtime remains unmeasured here.
+not an explicit additional combination. Core ML was not measured in this
+October 6 run; the October 8 encoder-only measurements below include it.
 
 ## Whisper versus LLM prefill/decode
 
@@ -165,3 +166,117 @@ Raw evidence:
 - [C++ driver](../scripts/benchmark_whisper.cpp),
   [C++ benchmark runner](../scripts/benchmark_macos.py), and
   [Python benchmark runner](../scripts/benchmark_python_whisper.py)
+
+
+## PR 3905 encoder-speed reference (2026-10-08)
+
+This reproduces the encoder comparison requested from upstream
+[PR #3905](https://github.com/ggml-org/whisper.cpp/pull/3905) and
+[its documentation PR #4073](https://github.com/ggml-org/whisper.cpp/pull/4073)
+on this M1. The fast channels-first, three-query-tile ANEForge graph is used,
+with trained multilingual tiny/base/small F16 checkpoints. Medium was excluded
+at the user's request. Upstream whisper.cpp source is unchanged. Both stock
+builds enable Apple Accelerate BLAS/vDSP and Metal; the CoreML build also
+enables CoreML.
+
+Each stock whisper-bench cell is the median of three separate processes. Each
+process performs its two built-in encoder warmups and decoder heating before
+one timed encoder call; backend order reverses in repetition two. These runs
+use four threads, flash attention, GPU enabled, synthetic zero mel and the full
+1500-position audio context. They measure the stock encode timer, including
+input staging and Metal cross-attention K/V, and exclude load/compile/decoder
+time. This is an encoder speed reference, not a whole-transcription benchmark
+or a strict full-logit accuracy pass.
+
+| Model | ANEForge encode | CoreML encode | Metal encode | vs CoreML | vs Metal |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| tiny | 30.64 ms | 41.23 ms | 59.90 ms | 1.35x | 1.95x |
+| base | 50.64 ms | 71.64 ms | 110.11 ms | 1.41x | 2.17x |
+| small | 148.16 ms | 203.09 ms | 338.55 ms | 1.37x | 2.29x |
+
+The companion ANEForge benchmark also times native ANE dispatch directly.
+Separate dispatch measurements here use the same MIL, trained weights, zero
+mel and positional input, with three warmups and 20 executions in a persistent
+program. Feed/read/compile and cross-K/V are excluded; the checked Python
+wrapper calls the same native E5RT execute function as the upstream C++ runner.
+
+| Model | ANE dispatch median | ANE dispatch mean |
+| --- | ---: | ---: |
+| tiny | 10.894 ms | 10.890 ms |
+| base | 23.292 ms | 23.292 ms |
+| small | 79.409 ms | 79.671 ms |
+
+CoreML uses stock MLComputeUnitsAll and downloaded precompiled bundles.
+Readiness is checked, but no per-operation device trace establishes exclusive
+ANE execution. Active desktop, power and clocks were not controlled. The
+exact original PR OS/build and CoreML conversion were not reproduced.
+
+For Asahi, retain both boundaries: native ANE execution alone and the complete
+whisper.cpp encode stage. Use the same checkpoint, MIL, zero mel, positional
+input, full context and warmup policy; host BLAS and the Linux driver must be
+measured separately. The earlier 328.84 ms figure was whole transcription in
+the experimental paired arithmetic path (205.92 ms encode), which is a
+different implementation from this fused fast graph.
+
+[Summary, 27 logs, hashes and exact benchmark commands](../results/pr3905-m1-20261008/summary.json),
+[direct dispatch measurements](../results/pr3905-m1-20261008/direct-dispatch.json),
+and [trained bundle preparation](../results/pr3905-m1-20261008/preparation.json).
+The GGML-to-encoder mapping used for preparation was first checked against
+the pinned tiny.en checkpoint: all 67 tensors matched exactly. Generated
+multilingual MIL/weights/ports are retained under build/pr3905-bundles.
+
+### CPU cross-K/V library substitution
+
+These additional runs keep the same fast ANE graph and use CPU cross-K/V,
+with Metal and vDSP disabled. Apple BLAS still links Accelerate; setting
+GGML_ACCELERATE=OFF disables vDSP, **not** Apple BLAS/AMX. The alternate build
+links OpenBLAS 0.3.34 with OpenMP, using its selected NEOVERSEN1 NEON SGEMM
+kernel, and has no Accelerate linkage. ANE hardware and the Mac E5RT driver
+remain enabled in both builds.
+
+| Model | ANE + Apple Accelerate BLAS | ANE + OpenBLAS NEON/OpenMP |
+| --- | ---: | ---: |
+| tiny | 17.17 ms | 28.65 ms |
+| base | 36.69 ms | 63.30 ms |
+| small | 142.51 ms | 334.71 ms |
+
+Each cell is the median of ten public whisper_encode calls across two
+persistent contexts, with two encoder warmups per context and four threads.
+The timer includes staging, the fused ANE encoder, and CPU cross-K/V;
+load/compile and decoder calls are excluded. This isolated harness avoids the
+stock benchmark's prolonged CPU decoder heating. Earlier CPU stock-bench runs
+are retained as diagnostic evidence, with substantial small-model variation;
+they are not used in this table. The stock GPU comparison above has a different
+warmup procedure and cross-K/V backend, so its timings are not interchangeable.
+
+The OpenBLAS column is a **measured Mac host-library surrogate**, useful as a
+conditional Asahi target if Linux ANE and CPU timings match. It is not an
+Asahi measurement or a system-wide AMX-off test. The CPU/ANE split was not
+timed separately here; clocks, desktop load and thermal state were uncontrolled.
+The small OpenBLAS measurements span 296.50–405.67 ms. No transcript or strict
+decoder-logit gate was performed for these speed-reference runs.
+
+[All samples, flags, linkage and exact commands](../results/pr3905-m1-20261008/host-encode-only.json),
+[isolated timing harness](../results/pr3905-m1-20261008/benchmark_encode.cpp),
+[selected NEON SGEMM assembly](../results/pr3905-m1-20261008/openblas-sgemm-neon.txt).
+
+### Compact kernel handoff
+
+The exact tiny/base/small MIL and weights were exported to offline M1/H13G
+HWX, with 1,779 / 3,434 / 10,015 tasks. Small has two coefficient banks.
+All three complete HWX files and position buffers now rebuild byte for byte
+from external checkpoints. Only stripped templates, offset recipes and small
+metadata are retained under kernels/pr3905; raw HWX, packed coefficients,
+MIL weights and checkpoints remain in ignored build/models directories.
+
+See [the packing instructions](pr3905-packing.md),
+[export receipts](../results/pr3905-m1-20261008/kernel-exports.json), and
+[format/reconstruction verification](../results/pr3905-m1-20261008/packing-verification.json).
+The offline HWX and E5RT compile the same graph separately; identical executed
+instructions are not established. A Python replay loader now prepares all
+three task chains, including small's second coefficient bank, and 12 exact
+Mac input/output fixtures are retained locally. Host preparation and 24 unit
+tests pass. A native whisper.cpp adapter also checks all 12 transfers through
+a fake transport; its actual Linux build, hardware replay, accuracy and
+performance still require Asahi validation. See
+[replay preparation](../results/pr3905-m1-20261008/replay-preparation.json).

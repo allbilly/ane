@@ -1,0 +1,757 @@
+{
+  "status": "PASS_RUNTIME_AND_TIMING",
+  "utc": "2026-10-07T17:43:45.783657+00:00",
+  "chip": "Apple M1",
+  "machine": "arm64",
+  "macos": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434",
+  "whisper_cpp_commit": "60c0be6ac8fa71b1a2ae2dd938a31a34a508e774",
+  "aneforge_commit": "d0c666192ebd8d0428e0647fc4d87f57c11759fa",
+  "encoder_builder_sha256": "1aa8d6ed860dcffd98fbb6dfffb09838d34ddd9faf22f31f5f86e8d140200832",
+  "dylib_sha256": "017fbc08675e8773e73f5c0c44f6e6b040c14257342fdf4c0f19914044008587",
+  "builds": {
+    "metal": {
+      "binary": "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+      "binary_sha256": "d528256b6294dfdf2a705f9e34ad9affb63833fb0bb275edbadad7bd487d186d",
+      "library_sha256": "a7685dbaee53f21ecb68dba475a31f2116ba03f16be82feb446dc41b1a234f62",
+      "cache_sha256": "2d1638e6f1d6dc6e105ba883c41a3e8c67efc83830200ec6d266876308c13f7b"
+    },
+    "coreml": {
+      "binary": "/Users/yeren/ane/whisper/build/coreml/bin/whisper-bench",
+      "binary_sha256": "60d3d4237d8fe31bbeb1354381b1a3ebb4e654852fd157066c063abb6cb8deb3",
+      "library_sha256": "163cacdc3b9b100a9f24578a6d37f1e11b7ca2c6840b8f2fa03b6b6c00103be5",
+      "cache_sha256": "c22df1327aec5512c7ff5862f4d44dc1b7eae4595b9bad3930442f30e48787b0"
+    }
+  },
+  "threads": 4,
+  "flash_attn": true,
+  "ggml_gpu": true,
+  "libraries": {
+    "ggml_blas": "Apple Accelerate",
+    "ggml_accelerate_vdsp": true,
+    "ggml_metal": true,
+    "coreml_compute_units": "stock MLComputeUnitsAll; allowed CPU/GPU/ANE, no per-operation device tracing"
+  },
+  "method": "Unmodified whisper-bench -w 0, 2 built-in encoder warmups plus decoder heating, one timed encoder call per process, three serial repetitions with backend order reversed in the second repetition. Trained multilingual tiny/base/small. No real speech in this benchmark: synthetic zero mel, full 1500-position context.",
+  "metric": "whisper.cpp encode timer includes input staging, audio encoder and cross-attention K/V preparation; loading, compilation and decoder evaluation excluded",
+  "accuracy": "speed reference only; whisper-bench does not evaluate transcripts or full decoder logit accuracy",
+  "limitations": "Active desktop; power and clocks not fixed. Downloaded precompiled CoreML bundles; exact original PR build/OS and CoreML conversion are not reproduced. ANEForge uses dense F16 weights and three query tiles, matching the companion benchmark method for these three sizes.",
+  "backends": {
+    "tiny": {
+      "aneforge": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 30.93,
+            "log": "tiny-aneforge-1.log",
+            "log_sha256": "403e3efa32f15a677eedb4984f60df48b00445e8d302fb1b8af235fa4dc4be30",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib"
+            }
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 30.64,
+            "log": "tiny-aneforge-2.log",
+            "log_sha256": "7ce28e43364df0e8387f05384350008e130e2ce48a41c0ec2f5a63a5c297d3ae",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib"
+            }
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 30.57,
+            "log": "tiny-aneforge-3.log",
+            "log_sha256": "a5fd3a770d4e930508eb8052ef35557484d27d1ff161f09c41a1020760e05a55",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib"
+            }
+          }
+        ],
+        "median_encode_ms": 30.64,
+        "range_encode_ms": [
+          30.57,
+          30.93
+        ]
+      },
+      "coreml": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 44.44,
+            "log": "tiny-coreml-1.log",
+            "log_sha256": "e7aba2e6a604ca249d4d201a5df86f6ead6ff783438f9c852c8f44db9f36f28e",
+            "command": [
+              "/Users/yeren/ane/whisper/build/coreml/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 41.23,
+            "log": "tiny-coreml-2.log",
+            "log_sha256": "a48006316a1b0350ebc8e17bc5e341a7cda714f74115f5a7b5fb12681f39a1df",
+            "command": [
+              "/Users/yeren/ane/whisper/build/coreml/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 38.11,
+            "log": "tiny-coreml-3.log",
+            "log_sha256": "ecd8a517d65ca6198e8bb91d96a4ca8222f5c130dc0a62492a03397bc18d5173",
+            "command": [
+              "/Users/yeren/ane/whisper/build/coreml/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          }
+        ],
+        "median_encode_ms": 41.23,
+        "range_encode_ms": [
+          38.11,
+          44.44
+        ]
+      },
+      "metal": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 60.84,
+            "log": "tiny-metal-1.log",
+            "log_sha256": "a54d3c71203321663beb92a9505d7ae7e06c5106e9fd0441a2e745d56ddd0ea0",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 59.45,
+            "log": "tiny-metal-2.log",
+            "log_sha256": "e647d1e2e1730be02616526504dc22f8d8f5c9b1dbf1cf0bf50358425c331f5e",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 59.9,
+            "log": "tiny-metal-3.log",
+            "log_sha256": "63b1b9e71677378cd117af32c03e751265ebaabf00c595537354fa4b30fd8363",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-tiny.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          }
+        ],
+        "median_encode_ms": 59.9,
+        "range_encode_ms": [
+          59.45,
+          60.84
+        ]
+      }
+    },
+    "base": {
+      "aneforge": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 50.64,
+            "log": "base-aneforge-1.log",
+            "log_sha256": "4624043cabcbd864c204c1336afc3e85b022ba0a06a66e6d6ef0eef89a946d21",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/base",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib"
+            }
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 49.98,
+            "log": "base-aneforge-2.log",
+            "log_sha256": "958bfc77162f03cd164582865ff6ca144964d14cbd8eb7c3d3d6b09b3114d09d",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/base",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib"
+            }
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 51.61,
+            "log": "base-aneforge-3.log",
+            "log_sha256": "4a2f9873c448a1e5d4c0719265d92378cf53b3794e784c080730263a578fbab0",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/base",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib"
+            }
+          }
+        ],
+        "median_encode_ms": 50.64,
+        "range_encode_ms": [
+          49.98,
+          51.61
+        ]
+      },
+      "coreml": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 69.87,
+            "log": "base-coreml-1.log",
+            "log_sha256": "03365adf6ccede757b6b5f4136a477f1ce92e21189f79fe0f653f3bc20ec090d",
+            "command": [
+              "/Users/yeren/ane/whisper/build/coreml/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 71.64,
+            "log": "base-coreml-2.log",
+            "log_sha256": "b4701afb7e0fdad7043ae91b033ccf3b981a1970d3cb17af4b257a6bd55a6496",
+            "command": [
+              "/Users/yeren/ane/whisper/build/coreml/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 71.84,
+            "log": "base-coreml-3.log",
+            "log_sha256": "0c7d67110e1a8477e77075dc433d3bfac7de2731e3f17dad8d44997f97c5f9bf",
+            "command": [
+              "/Users/yeren/ane/whisper/build/coreml/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          }
+        ],
+        "median_encode_ms": 71.64,
+        "range_encode_ms": [
+          69.87,
+          71.84
+        ]
+      },
+      "metal": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 110.11,
+            "log": "base-metal-1.log",
+            "log_sha256": "682f301dc2252510e6bd759af256ac22de2f58eee3dc77786cfc6cd6ff8a4ea4",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 110.12,
+            "log": "base-metal-2.log",
+            "log_sha256": "294df9c0a733ce3787c8a21c552ca854aa5cd133ac0fa9a3ed235129207db5a4",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 107.7,
+            "log": "base-metal-3.log",
+            "log_sha256": "5e3849bff77648047cebde1212bbe313a5dcca5870829daa1c10638682c2bbf5",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-base.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          }
+        ],
+        "median_encode_ms": 110.11,
+        "range_encode_ms": [
+          107.7,
+          110.12
+        ]
+      }
+    },
+    "small": {
+      "aneforge": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 144.94,
+            "log": "small-aneforge-1.log",
+            "log_sha256": "b8f7d9a816eb69c7cdaeb694c7cf172db52b2f1360c339b3e5956998b740307f",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/small",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib"
+            }
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 148.16,
+            "log": "small-aneforge-2.log",
+            "log_sha256": "1c32fb0273752084416733b45f0da006d18b5fac327c46de1a0dcfd5824c6098",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/small",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib"
+            }
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 155.01,
+            "log": "small-aneforge-3.log",
+            "log_sha256": "4e6a2950e1b580ba0e4e098e776d734fe33f3dbbebe60eaf1d37cf63a1e18cce",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {
+              "ANEFORGE_ENCODER": "/Users/yeren/ane/whisper/build/pr3905-bundles/small",
+              "ANEFORGE_DYLIB": "/Users/yeren/Desktop/ANEForge/aneforge/_lib/libane_e5rt_dispatch.dylib"
+            }
+          }
+        ],
+        "median_encode_ms": 148.16,
+        "range_encode_ms": [
+          144.94,
+          155.01
+        ]
+      },
+      "coreml": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 204.45,
+            "log": "small-coreml-1.log",
+            "log_sha256": "d8e6d8fdadef01282e0db5eefe8cd50e3c5f691461216fb40c368da4c8e939bf",
+            "command": [
+              "/Users/yeren/ane/whisper/build/coreml/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 200.0,
+            "log": "small-coreml-2.log",
+            "log_sha256": "7bf9e6e3fd327893a58e5c5e0db2966a3b6533ebdb2fc3318ceb33af25ea669f",
+            "command": [
+              "/Users/yeren/ane/whisper/build/coreml/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 203.09,
+            "log": "small-coreml-3.log",
+            "log_sha256": "8127b0ac3371e551889f7a46e7437d58457c3e3a726aa1cf24e5f82bb1d5f61d",
+            "command": [
+              "/Users/yeren/ane/whisper/build/coreml/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          }
+        ],
+        "median_encode_ms": 203.09,
+        "range_encode_ms": [
+          200.0,
+          204.45
+        ]
+      },
+      "metal": {
+        "runs": [
+          {
+            "repetition": 1,
+            "encode_ms": 338.55,
+            "log": "small-metal-1.log",
+            "log_sha256": "74fdb35191ae3da57d9318f9c08402856e9c6d2e2b76de0a8631d3a7d2f50890",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          },
+          {
+            "repetition": 2,
+            "encode_ms": 340.67,
+            "log": "small-metal-2.log",
+            "log_sha256": "f57c7a493eb7a9017be5ddefc19b20a03562ef6750fcbecd352b6d9d51bf4e14",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          },
+          {
+            "repetition": 3,
+            "encode_ms": 331.92,
+            "log": "small-metal-3.log",
+            "log_sha256": "bf7e815cd6eaa0aa5e9ed0cb03fd07948f5971d89a5727644286fd889a87ccdb",
+            "command": [
+              "/Users/yeren/ane/whisper/build/metal/bin/whisper-bench",
+              "-m",
+              "/Users/yeren/ane/whisper/models/ggml-small.bin",
+              "-t",
+              "4",
+              "-fa"
+            ],
+            "env_overrides": {}
+          }
+        ],
+        "median_encode_ms": 338.55,
+        "range_encode_ms": [
+          331.92,
+          340.67
+        ]
+      }
+    }
+  },
+  "models": [
+    "tiny",
+    "base",
+    "small"
+  ],
+  "excluded_models": {
+    "medium": "user requested omission"
+  },
+  "preparation": {
+    "tiny.en_loader_tensors": 67,
+    "tiny.en_max_checkpoint_abs_difference": 0.0,
+    "models": {
+      "tiny": {
+        "ggml_sha256": "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21",
+        "coreml_archive_sha256": "c88cbd2648e1f5415092bcf5256add463a0f19943e6938f46e8d4ffdebd47739",
+        "mil_sha256": "e7320a59f2988a48add91afe6eda18beec615006cae1e613ff68041f6b2c91ed",
+        "weights_sha256": "c496452e00169b19d9cf24c071e78e703d32bb8158db837b28d61b42014c29b4",
+        "pos_sha256": "37c1c23c805ce506ccd01bb1e1187b275ac2ab1b08304d4fa77a850e1efcd238",
+        "dims": {
+          "D": 384,
+          "LAYERS": 4,
+          "HEADS": 6,
+          "FFN": 1536,
+          "MELS": 80,
+          "CTX": 1500,
+          "FRAMES": 3000
+        },
+        "layout": "cf",
+        "q_tiles": 3,
+        "compress": null,
+        "source": "trained GGML F16 checkpoint, mapped with upstream convert-h5-to-ggml.py names",
+        "finite_zero_mel_output": true
+      },
+      "base": {
+        "ggml_sha256": "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe",
+        "coreml_archive_sha256": "7e6ab77041942572f239b5b602f8aaa1c3ed29d73e3d8f20abea03a773541089",
+        "mil_sha256": "47dde15e321dd57b6e2183508f35b464bc79705ce1b83f7d34327de4e2e23e12",
+        "weights_sha256": "1913fee30572e99d53fdffbf7cffcb9adf1b60a68b550d0254d9f2ce36847bab",
+        "pos_sha256": "9f47c17da903831a0ac200785875961a464997d0ed9a0f2e16f9dc2768f02902",
+        "dims": {
+          "D": 512,
+          "LAYERS": 6,
+          "HEADS": 8,
+          "FFN": 2048,
+          "MELS": 80,
+          "CTX": 1500,
+          "FRAMES": 3000
+        },
+        "layout": "cf",
+        "q_tiles": 3,
+        "compress": null,
+        "source": "trained GGML F16 checkpoint, mapped with upstream convert-h5-to-ggml.py names",
+        "finite_zero_mel_output": true
+      },
+      "small": {
+        "ggml_sha256": "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b",
+        "coreml_archive_sha256": "de43fb9fed471e95c19e60ae67575c2bf09e8fb607016da171b06ddad313988b",
+        "mil_sha256": "df4be42fe1f3fb37f279af5ab0016184369b925fb59dfae5fc46636854532237",
+        "weights_sha256": "fb39ffbc5d0e78bab48551b73ce73447e5558c84794b68b0066ba854be9f6159",
+        "pos_sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384",
+        "dims": {
+          "D": 768,
+          "LAYERS": 12,
+          "HEADS": 12,
+          "FFN": 3072,
+          "MELS": 80,
+          "CTX": 1500,
+          "FRAMES": 3000
+        },
+        "layout": "cf",
+        "q_tiles": 3,
+        "compress": null,
+        "source": "trained GGML F16 checkpoint, mapped with upstream convert-h5-to-ggml.py names",
+        "finite_zero_mel_output": true
+      }
+    }
+  },
+  "direct_dispatch": {
+    "method": "E5RT native execute only, same trained MIL/weights and synthetic zero mel as stock whisper-bench. Three warmups, then 20 serial measured executions per persistent program. Input feed and output read, graph compilation and all cross-K/V work are outside timing. The Python wrapper calls the same checked C entry point as the upstream C++ standalone runner; Python loop/timer overhead remains.",
+    "warmups": 3,
+    "measured_calls": 20,
+    "models": {
+      "tiny": {
+        "median_ms": 10.8935835,
+        "mean_ms": 10.8901938,
+        "range_ms": [
+          10.799208,
+          11.029209
+        ],
+        "runs_ms": [
+          10.862167,
+          11.029209,
+          10.856833,
+          10.81525,
+          10.987083,
+          10.896833,
+          10.850625,
+          10.912583,
+          10.833959,
+          10.931542,
+          10.874167,
+          10.914042,
+          10.890334,
+          10.945333,
+          10.950875,
+          10.897,
+          10.812583,
+          10.924916,
+          10.819334,
+          10.799208
+        ],
+        "mel_elements": 240000,
+        "mel_fp16_zero_sha256": "baf1862a3e57a773bc10ba4920cffaa69d698720cf8c6ae105ae307533ba5a29",
+        "pos_elements": 576000,
+        "output_elements": 576000,
+        "output_fp16_sha256": "2fcb97e0034e5bf845c3797802fa154eb4463a148ac07b173ea26eaaa942b3eb",
+        "output_finite": true,
+        "repeated_output_identical": true,
+        "mil_sha256": "e7320a59f2988a48add91afe6eda18beec615006cae1e613ff68041f6b2c91ed"
+      },
+      "base": {
+        "median_ms": 23.292354000000003,
+        "mean_ms": 23.2919645,
+        "range_ms": [
+          23.21075,
+          23.389292
+        ],
+        "runs_ms": [
+          23.297167,
+          23.252625,
+          23.31275,
+          23.241917,
+          23.301875,
+          23.21075,
+          23.250208,
+          23.382708,
+          23.311666,
+          23.287541,
+          23.218334,
+          23.231625,
+          23.344833,
+          23.310375,
+          23.247583,
+          23.272459,
+          23.266583,
+          23.344083,
+          23.389292,
+          23.364916
+        ],
+        "mel_elements": 240000,
+        "mel_fp16_zero_sha256": "baf1862a3e57a773bc10ba4920cffaa69d698720cf8c6ae105ae307533ba5a29",
+        "pos_elements": 768000,
+        "output_elements": 768000,
+        "output_fp16_sha256": "d4e427c9dee2219036c78a38ab161d0d922e9343dc0aa6867456571bdd0f2a80",
+        "output_finite": true,
+        "repeated_output_identical": true,
+        "mil_sha256": "47dde15e321dd57b6e2183508f35b464bc79705ce1b83f7d34327de4e2e23e12"
+      },
+      "small": {
+        "median_ms": 79.408896,
+        "mean_ms": 79.67058535,
+        "range_ms": [
+          79.127833,
+          81.035792
+        ],
+        "runs_ms": [
+          79.619125,
+          80.229083,
+          81.035792,
+          80.325167,
+          79.346833,
+          79.509375,
+          79.23425,
+          79.198458,
+          79.176125,
+          79.127833,
+          79.357167,
+          80.657708,
+          79.690417,
+          80.874958,
+          79.62725,
+          79.2475,
+          79.460625,
+          79.198833,
+          79.189458,
+          79.30575
+        ],
+        "mel_elements": 240000,
+        "mel_fp16_zero_sha256": "baf1862a3e57a773bc10ba4920cffaa69d698720cf8c6ae105ae307533ba5a29",
+        "pos_elements": 1152000,
+        "output_elements": 1152000,
+        "output_fp16_sha256": "05af62d504bbb1c7ccb84ca14213dcc77f6145795ff1cf64aacba1583b97b013",
+        "output_finite": true,
+        "repeated_output_identical": true,
+        "mil_sha256": "df4be42fe1f3fb37f279af5ab0016184369b925fb59dfae5fc46636854532237"
+      }
+    }
+  }
+}

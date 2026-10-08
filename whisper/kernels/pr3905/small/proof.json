@@ -1,0 +1,18 @@
+{
+  "status": "PASS_BYTE_EXACT_REPACK",
+  "model": "small",
+  "task_count": 10015,
+  "coefficient_banks": 2,
+  "hwx_bytes": 182550528,
+  "hwx_sha256": "f281f0d9d618a119e2f6e44826f91978d4ddf5eccd5d89e6f21fa06c5f2b4d08",
+  "stripped_bytes": 174004212,
+  "omitted_zero_conv2_bytes": 12,
+  "package_bytes_excluding_proof": 716970,
+  "all_matrix_bias_and_layer_norm_values_external": true,
+  "linux_hardware_validation": "pending",
+  "verified_input_formats": [
+    "safetensors_F16",
+    "GGUF_F16",
+    "GGML_F16"
+  ]
+}

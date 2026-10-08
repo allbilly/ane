@@ -1,0 +1,57 @@
+[  2%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o
+[  5%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-alloc.c.o
+[  7%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml.cpp.o
+[ 10%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend.cpp.o
+[ 12%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend-meta.cpp.o
+[ 15%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-opt.cpp.o
+[ 17%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o
+[ 20%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o
+[ 23%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/gguf.cpp.o
+[ 25%] Linking CXX shared library ../../bin/libggml-base.dylib
+[ 25%] Built target ggml-base
+[ 30%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.cpp.o
+[ 30%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o
+[ 33%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/repack.cpp.o
+[ 35%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/iqp.cpp.o
+[ 38%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/hbm.cpp.o
+[ 41%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/quants.c.o
+[ 43%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/traits.cpp.o
+[ 46%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/amx.cpp.o
+[ 48%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/mmq.cpp.o
+[ 51%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/binary-ops.cpp.o
+[ 53%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/unary-ops.cpp.o
+[ 56%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/vec.cpp.o
+[ 58%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ops.cpp.o
+[ 61%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/arm/quants.c.o
+[ 64%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/arm/repack.cpp.o
+[ 66%] Linking CXX shared library ../../bin/libggml-cpu.dylib
+[ 66%] Built target ggml-cpu
+[ 71%] Building CXX object ggml/src/CMakeFiles/ggml.dir/ggml-backend-reg.cpp.o
+[ 71%] Building CXX object ggml/src/CMakeFiles/ggml.dir/ggml-backend-dl.cpp.o
+[ 74%] Linking CXX shared library ../../bin/libggml.dylib
+[ 74%] Built target ggml
+[ 79%] Building CXX object src/CMakeFiles/whisper.dir/Users/yeren/ane/whisper/asahi_full_encoder.cpp.o
+[ 79%] Building CXX object src/CMakeFiles/whisper.dir/whisper.cpp.o
+[ 82%] Linking CXX shared library ../bin/libwhisper.dylib
+[ 82%] Built target whisper
+[ 92%] Building CXX object examples/CMakeFiles/common.dir/common-ggml.cpp.o
+[ 92%] Building CXX object examples/CMakeFiles/common.dir/common.cpp.o
+[ 92%] Building CXX object examples/CMakeFiles/common.dir/common-whisper.cpp.o
+[ 92%] Building CXX object examples/CMakeFiles/common.dir/grammar-parser.cpp.o
+[ 94%] Linking CXX static library libcommon.a
+[ 94%] Built target common
+[ 97%] Building CXX object examples/cli/CMakeFiles/whisper-cli.dir/cli.cpp.o
+[100%] Linking CXX executable ../../bin/whisper-cli
+[100%] Built target whisper-cli
+[ 29%] Built target ggml-base
+[ 76%] Built target ggml-cpu
+[ 85%] Built target ggml
+[ 94%] Built target whisper
+[ 97%] Building CXX object examples/bench/CMakeFiles/whisper-bench.dir/bench.cpp.o
+[100%] Linking CXX executable ../../bin/whisper-bench
+[100%] Built target whisper-bench
+In file included from /Users/yeren/ane/whisper/vendor/whisper-asahi-pr3905/examples/common-whisper.cpp:247:
+/Users/yeren/ane/whisper/vendor/whisper-asahi-pr3905/examples/stb_vorbis.c:1404:75: warning: pointer comparison always evaluates to false [-Wtautological-compare]
+ 1404 |       if (f->stream_start + loc >= f->stream_end || f->stream_start + loc < f->stream_start) {
+      |                                                                           ^
+1 warning generated.

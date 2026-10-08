@@ -17,6 +17,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from whisper.validation import compare, digest, logits_records, parse_runs, words, hardware_locks, matrix_profiles
+from whisper.attention import add_attention_profiles, attention_profiles
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = "And so my fellow Americans ask not what your country can do for you ask what you can do for your country"
@@ -52,14 +53,15 @@ def check_runtime(log, mode, expected_encodes, task_count=1779):
         raise ValueError("CPU baseline unexpectedly used ANE")
 
 
-def parse_warm_runs(result, mode, expected_words, task_count=1779, audio_seconds=11):
+def parse_warm_runs(result, mode, expected_words, task_count=1779, audio_seconds=11,
+                    matrix_layout="separate"):
     marker = "ASAHI_FULL_ANE encoder:" if mode == 2 else "ASAHI_ANE encoder:" if mode else None
     return parse_runs(result, audio_seconds, expected_words,
         check_runtime=lambda log, count: check_runtime(log, mode, count, task_count),
-        encoder_marker=marker)
+        encoder_marker=marker, matrix_layout=matrix_layout)
 
 
-def parse_audio_runs(result, mode, correctness, task_count, backend="asahi"):
+def parse_audio_runs(result, mode, correctness, task_count, backend="asahi", matrix_layout="separate"):
     stdout, stderr = result.stdout.split("BENCH_AUDIO\t"), result.stderr.split("BENCH_AUDIO\t")
     if len(stdout) != len(correctness) + 1 or len(stderr) != len(stdout):
         raise ValueError("missing warm audio boundaries")
@@ -72,11 +74,12 @@ def parse_audio_runs(result, mode, correctness, task_count, backend="asahi"):
         clip = subprocess.CompletedProcess(result.args, result.returncode, out, stderr[0] + err)
         if backend == "macos":
             from whisper.scripts.benchmark_macos import parse_runs as parse_macos_runs
-            records[expected["audio"]] = parse_macos_runs(clip, "ane_cpu" if mode else "cpu_cpu",
-                expected["audio_seconds"], words(expected["cpu_transcript"]), require_dispatch=True)
+            records[expected["audio"]] = parse_macos_runs(clip, "precision_cpu" if mode == 3 else "ane_cpu" if mode else "cpu_cpu",
+                expected["audio_seconds"], words(expected["cpu_transcript"]), require_dispatch=True,
+                matrix_layout=matrix_layout)
         else:
             records[expected["audio"]] = parse_warm_runs(clip, mode, words(expected["cpu_transcript"]),
-                task_count, expected["audio_seconds"])
+                task_count, expected["audio_seconds"], matrix_layout=matrix_layout)
     return records
 
 
@@ -93,14 +96,23 @@ def run(default_backend="auto", default_encoder="complete"):
     parser.add_argument("--warmups", type=int, default=2)
     parser.add_argument("--runs", type=int, default=5)
     parser.add_argument("--rounds", type=int, default=2)
-    parser.add_argument("--encoder", choices=("projections", "complete"), default=default_encoder)
+    parser.add_argument("--encoder", choices=("projections", "complete", "paired"), default=default_encoder)
+    parser.add_argument("--precision-programs", type=Path, help="Checkpoint-verified paired Mac projection programs")
     parser.add_argument("--payloads", type=Path, help="SHA-256 checked whisper.encoder_kernel output for complete replay")
     parser.add_argument("--kernels", type=Path, default=ROOT / "kernels/tiny-en-encoder-fast")
     parser.add_argument("--diagnostic-timings", action="store_true",
                         help="collect numerical failures and unvalidated warm timings; failed gates still exit with FAIL")
     parser.add_argument("--profile-stages", action="store_true", help="Log encoder host stages and CPU cross-K/V on both hosts")
-    parser.add_argument("--profile-matmul", action="store_true", help="Profile all eight cross-K/V BLAS products and retain one activation input per context")
+    parser.add_argument("--profile-matmul", action="store_true", help="Profile the requested cross-K/V BLAS products and retain one activation input per context")
+    parser.add_argument("--fused-cross-kv", action="store_true",
+                        help="Use the opt-in cached FP32 cross-K/V fusion; requires prepare_cross_kv")
+    parser.add_argument("--encoder-attention", choices=("flash", "blas"), default="flash",
+                        help="Opt-in contiguous batched encoder attention; decoder attention remains unchanged")
     args = parser.parse_args()
+    if args.fused_cross_kv and not args.profile_matmul:
+        parser.error("--fused-cross-kv requires --profile-matmul to verify actual fused execution")
+    if args.encoder_attention == "blas" and (not args.profile_matmul or args.encoder == "complete"):
+        parser.error("batched encoder attention requires --profile-matmul and a projection encoder")
     if args.backend == "auto":
         args.backend = "macos" if platform.system() == "Darwin" else "asahi"
     if args.backend == "asahi":
@@ -121,11 +133,21 @@ def run(default_backend="auto", default_encoder="complete"):
             or 'ggml_gelu(ctx0, cur)' in source_text
             or 'n_state_head, n_audio_ctx_pad, n_head' in source_text):
         parser.error("prepare this worktree with whisper.scripts.prepare_native --precision fp32")
-    if args.backend == "macos" and (args.encoder != "complete" or not args.dylib or not args.dylib.is_file()):
-        parser.error("macOS requires --encoder complete and --dylib")
+    if args.fused_cross_kv and 'WhisperCrossKV::view(ctx0, fused' not in source_text:
+        parser.error("prepare this worktree with whisper.scripts.prepare_cross_kv first")
+    if args.encoder_attention == "blas" and 'whisper.encoder_attention.%d.qk' not in source_text:
+        parser.error("prepare this worktree with whisper.scripts.prepare_encoder_attention first")
+    matrix_layout = "fused" if args.fused_cross_kv else "separate"
+    if args.backend == "macos" and (args.encoder not in ("complete", "paired") or not args.dylib or not args.dylib.is_file()):
+        parser.error("macOS requires --encoder complete/paired and --dylib")
+    if args.encoder == "paired":
+        if args.backend != "macos" or not args.precision_programs or 'WhisperMacPrecision' not in source_text:
+            parser.error("paired encoder requires the prepared Mac precision worktree and --precision-programs")
+        from whisper.scripts.prepare_macos_precision import validate_programs
+        precision_manifest = validate_programs(args.precision_programs, args.hf_model / "model.safetensors")
     args.kernels = args.kernels.resolve()
-    ane_mode = 2 if args.encoder == "complete" else 1
-    ane_label = "ane_complete_cpu" if ane_mode == 2 else "ane_projections_cpu"
+    ane_mode = 3 if args.encoder == "paired" else 2 if args.encoder == "complete" else 1
+    ane_label = "ane_precision_cpu" if ane_mode == 3 else "ane_complete_cpu" if ane_mode == 2 else "ane_projections_cpu"
     if ane_mode == 2:
         if not args.payloads:
             parser.error("--encoder complete requires --payloads")
@@ -161,6 +183,10 @@ def run(default_backend="auto", default_encoder="complete"):
     env.pop("WHISPER_PROFILE", None)
     env.pop("WHISPER_PROFILE_MATMUL", None)
     env.pop("WHISPER_PROFILE_INPUT", None)
+    env.pop("WHISPER_FUSED_CROSS_KV", None)
+    env.pop("WHISPER_MACOS_PRECISION", None)
+    env.pop("WHISPER_ENCODER_BLAS_ATTENTION", None)
+    env.pop("WHISPER_PROFILE_ENCODER_ATTENTION", None)
     env.update(OPENBLAS_NUM_THREADS="1", OMP_WAIT_POLICY="PASSIVE", HF_HUB_OFFLINE="1")
     if args.profile_stages:
         env["WHISPER_PROFILE"] = "1"
@@ -168,6 +194,10 @@ def run(default_backend="auto", default_encoder="complete"):
             env["WHISPER_ASAHI_PROFILE"] = "1"
     if args.profile_matmul:
         env["WHISPER_PROFILE_MATMUL"] = "1"
+    if args.fused_cross_kv:
+        env["WHISPER_FUSED_CROSS_KV"] = "1"
+    if args.encoder_attention == "blas":
+        env.update(WHISPER_ENCODER_BLAS_ATTENTION="1", WHISPER_PROFILE_ENCODER_ATTENTION="1")
     report = dict(status="RUNNING", utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                   kernel=platform.release(), host_backend=args.backend, cpu_precision="fp32", model_sha256=digest(args.model),
                   hf_checkpoint_sha256=digest(args.hf_model / "model.safetensors"),
@@ -175,13 +205,19 @@ def run(default_backend="auto", default_encoder="complete"):
                   cpu_affinity=sorted(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else None,
                   encoder_backend=args.encoder,
                   scope="ANE encoder dense projections, 32 audio positions per submission, one rounding grid; vectorized host scaling and four-worker uncached output reads; CPU convolution, attention, normalizations, exact GELU, cross-K/V and decoder; FP32 K/V caches and activations with F16 weights, widened FP32 NEON dot and tiled matrix accumulation including mixed-precision GEMV, GCC NEON attention kernel selection fix, and real-length encoder K/V views in both modes",
-                  encoder_cpu_gate_nrmse=.005 if ane_mode == 1 else None,
+                  encoder_cpu_gate_nrmse=.005 if ane_mode in (1, 3) else None,
                   full_logit_gate_nrmse=.005, hf_encoder_gate_cosine=.999,
                   warmups_per_context=args.warmups, runs_per_context=args.runs, rounds=args.rounds,
                   method="Persistent contexts, warmup excluded, reversed backend order in round two; four workers, greedy English, no timestamps/fallback, full 30-second encoder context. Decoder total includes prompt plus token evaluation; whole timer includes host work and sampling.",
                   limitations="Active desktop, clocks not fixed; native ggml CPU backend without BLAS. Both hosts use the shared FP32 CPU precision patches; BLAS, compiler and driver behavior can still differ.",
                   correctness=[], backends={name:dict(runs=[], warmups=[]) for name in ("cpu_cpu", ane_label)})
     report["profile_matmul_requested"] = args.profile_matmul
+    report["cross_kv_layout"] = matrix_layout
+    report["encoder_attention"] = args.encoder_attention
+    if args.fused_cross_kv:
+        report["cross_kv_cache"] = dict(weight_type="f32", dimensions=[384, 3072],
+            weight_bytes=384*3072*4, result_bytes=1500*3072*4,
+            conversion_scope="once per persistent decoder state during graph preparation")
     report.update(diagnostic_timings_requested=args.diagnostic_timings, numerical_failures=[],
                   timings_accepted=False)
     report["blas_enabled"] = "GGML_BLAS:BOOL=ON" in cache
@@ -193,12 +229,18 @@ def run(default_backend="auto", default_encoder="complete"):
         report["scope"] = f"Complete {meta['td_count']:,}-task tiny.en encoder in one ANE submission; FP16 mel/encoder output, CPU cross-K/V and decoder with F16 weights and FP32 activations/KV."
         report["payload_sha256"] = {name:hashlib.sha256(payloads[name]).hexdigest()
                                    for name in ("commands", "coefficients", "constants", "positions")}
+    elif ane_mode == 3:
+        report["scope"] = "24 native paired ANE projections; FP32 CPU convolution, attention, normalization, exact GELU, residuals, cross-K/V and decoder. Two input partitions and two high/residual rounding grids per projection, one submission per projection."
+        report["precision_programs"] = precision_manifest
+        report["precision_manifest_sha256"] = digest(args.precision_programs / "manifest.json")
     def backend_env(mode):
         run_env = dict(env)
         if args.backend == "asahi":
             run_env["WHISPER_ASAHI_ANE"] = "1" if mode == 1 else "0"
             if mode == 2:
                 run_env["WHISPER_ASAHI_ENCODER"] = str(args.payloads.resolve())
+        elif mode == 3:
+            run_env.update(WHISPER_MACOS_PRECISION=str(args.precision_programs.resolve()), ANEFORGE_DYLIB=str(args.dylib.resolve()))
         elif mode:
             run_env.update(ANEFORGE_ENCODER=str(args.payloads.resolve()), ANEFORGE_DYLIB=str(args.dylib.resolve()))
         return run_env
@@ -232,13 +274,14 @@ def run(default_backend="auto", default_encoder="complete"):
                 result = subprocess.run(command, env=run_env, capture_output=True, text=True, timeout=120)
                 write_log(directory / "run.log", result)
                 result.check_returncode()
+                attention_profiles(result.stderr, args.encoder_attention == "blas")
                 if args.profile_matmul:
-                    matrix_profiles(result.stderr, required=True)
+                    matrix_profiles(result.stderr, required=True, layout=matrix_layout)
                     captured = np.fromfile(directory / "cross-kv-input.f32", "<f4")
                     np.testing.assert_array_equal(captured, np.fromfile(directory / "encoder.f32", "<f4"))
                 if args.backend == "macos":
                     from whisper.scripts.benchmark_macos import check_runtime as check_macos_runtime
-                    check_macos_runtime(result.stderr, "ane_cpu" if mode else "cpu_cpu", 1, require_dispatch=True)
+                    check_macos_runtime(result.stderr, "precision_cpu" if mode == 3 else "ane_cpu" if mode else "cpu_cpu", 1, require_dispatch=True)
                 else:
                     check_runtime(result.stderr, mode, 1, meta["td_count"] if ane_mode == 2 else 1779)
                 transcripts.append(prefix.with_suffix(".txt").read_text().strip())
@@ -292,7 +335,7 @@ def run(default_backend="auto", default_encoder="complete"):
             # gate in replay_encoder.py. Its task-defined independent HF gate
             # is cosine >= .999; the FP32 CPU features remain diagnostic here.
             failures = []
-            if (ane_mode == 1 and feature_error["nrmse"] >= .005) or hf_error["cosine"] < .999 or cpu_hf_error["cosine"] < .999:
+            if (ane_mode in (1, 3) and feature_error["nrmse"] >= .005) or hf_error["cosine"] < .999 or cpu_hf_error["cosine"] < .999:
                 failures.append("encoder numerical gate failed: " + name)
             if any(x["nrmse"] >= .005 or not x["argmax_match"] for x in checks):
                 failures.append("full decoder logit gate failed: " + name)
@@ -305,7 +348,7 @@ def run(default_backend="auto", default_encoder="complete"):
                     raise ValueError(failures[0])
                 print(f"{name}: FAIL; collecting diagnostic timings, accuracy gates unchanged", flush=True)
                 continue
-            count = 1 if ane_mode == 2 else 1128
+            count = 24 if ane_mode == 3 else 1 if ane_mode == 2 else 1128
             print(f"{name}: PASS, {count} ANE submissions, {len(checks)} decoder vectors; HF cosine {hf_error['cosine']:.8f}", flush=True)
         del hf
         driver = (args.build / "bin/benchmark-whisper").resolve()
@@ -337,13 +380,15 @@ def run(default_backend="auto", default_encoder="complete"):
                     str(args.warmups), str(args.runs), *map(str, pcm_paths[1:])], env=run_env, capture_output=True, text=True, timeout=180)
                 write_log(output / f"{name}-{round_index + 1}.log", result)
                 result.check_returncode()
-                clips = parse_audio_runs(result, mode, report["correctness"], meta["td_count"] if ane_mode == 2 else 1779, args.backend)
+                clips = parse_audio_runs(result, mode, report["correctness"], meta["td_count"] if ane_mode == 2 else 1779,
+                                         args.backend, matrix_layout=matrix_layout)
+                add_attention_profiles(clips, result.stderr, args.encoder_attention == "blas")
                 for audio, records in clips.items():
                     if len(records) != args.warmups + args.runs:
                         raise ValueError("warm benchmark run count changed")
                     for row in records:
-                        if args.profile_matmul and len(row.get("cross_kv_matrices", [])) != 8:
-                            raise ValueError("timed run is missing its eight cross-K/V matrix profiles")
+                        if args.profile_matmul and len(row.get("cross_kv_matrices", [])) != (1 if args.fused_cross_kv else 8):
+                            raise ValueError("timed run is missing its requested cross-K/V matrix profiles")
                         row["round"] = round_index + 1
                         phase = "warmups" if row["phase"] == "warmup" else "runs"
                         report["backends"][name]["clips"][audio][phase].append(row)
@@ -383,6 +428,12 @@ def run(default_backend="auto", default_encoder="complete"):
         common_sources = [ROOT / name for name in (
             "encoder_kernel.py", "encoder_runtime.py", "validation.py", "validation.h", "native.py",
             "scripts/prepare_native.py", "scripts/benchmark_native.py", "scripts/benchmark_whisper.cpp")]
+        if args.fused_cross_kv:
+            common_sources.extend(ROOT / name for name in ("cross_kv.h", "scripts/prepare_cross_kv.py"))
+        if ane_mode == 3:
+            common_sources.extend(ROOT / name for name in ("macos_precision.cpp", "macos_precision.h", "scripts/prepare_macos_precision.py"))
+        if args.encoder_attention == "blas":
+            common_sources.extend(ROOT / name for name in ("attention.py", "scripts/prepare_encoder_attention.py"))
         native_sources = [args.source / name for name in (
             "src/whisper.cpp", "src/CMakeLists.txt", "ggml/src/ggml-cpu/simd-mappings.h",
             "ggml/src/ggml-cpu/llamafile/sgemm.cpp", "ggml/src/ggml-blas/ggml-blas.cpp")]

@@ -1,0 +1,107 @@
+{
+  "status": "OFFLINE_EXPORT_COMPLETE",
+  "models": {
+    "tiny": {
+      "command": [
+        "/Users/yeren/ane/gpt2/training/build/dump_hwx",
+        "/Users/yeren/ane/whisper/build/pr3905-bundles/tiny",
+        "/Users/yeren/ane/whisper/build/pr3905-hwx/tiny"
+      ],
+      "returncode": 0,
+      "mil_sha256": "e7320a59f2988a48add91afe6eda18beec615006cae1e613ff68041f6b2c91ed",
+      "source_weight_blobs": {
+        "weights.bin": "c496452e00169b19d9cf24c071e78e703d32bb8158db837b28d61b42014c29b4"
+      },
+      "export_method": "ANECCompile h13g offline export; runtime fixtures are captured separately",
+      "linux_hardware_replay": "pending; macOS export is not Linux execution",
+      "hwx_sha256": "405a659494c647b85ea01813b330c97aadad5216d3bc80f0c1a2a1235a95ec42",
+      "hwx_bytes": 16826368,
+      "task_count": 1779,
+      "td_size": 504,
+      "text_sha256": "4514b626f09bd363c454a2ef6de65d372999b5b6aeda06e8e21e68dba0377f7e",
+      "coefficient_segments": [
+        {
+          "name": "__KERN_0",
+          "vmaddr": 817496064,
+          "vmsize": 15450112,
+          "fileoff": 1376256,
+          "filesize": 15450112,
+          "sha256": "0279e2089fff53a10dd05fcbb4906b14b351f1b606e1cf420c1c3453681c59ca"
+        }
+      ],
+      "compiler_errors": [],
+      "status": "exported"
+    },
+    "base": {
+      "command": [
+        "/Users/yeren/ane/gpt2/training/build/dump_hwx",
+        "/Users/yeren/ane/whisper/build/pr3905-bundles/base",
+        "/Users/yeren/ane/whisper/build/pr3905-hwx/base"
+      ],
+      "returncode": 0,
+      "mil_sha256": "47dde15e321dd57b6e2183508f35b464bc79705ce1b83f7d34327de4e2e23e12",
+      "source_weight_blobs": {
+        "weights.bin": "1913fee30572e99d53fdffbf7cffcb9adf1b60a68b550d0254d9f2ce36847bab"
+      },
+      "export_method": "ANECCompile h13g offline export; runtime fixtures are captured separately",
+      "linux_hardware_replay": "pending; macOS export is not Linux execution",
+      "hwx_sha256": "2106568eeecefcab3569d22b8ff3eed6d555a23dd6044c911c9f4998ee5af82d",
+      "hwx_bytes": 42598400,
+      "task_count": 3434,
+      "td_size": 504,
+      "text_sha256": "9f4db08ed2eb99abb44535240c29c18a629c2140933ad6625afdc44c9695d9b7",
+      "coefficient_segments": [
+        {
+          "name": "__KERN_0",
+          "vmaddr": 820969472,
+          "vmsize": 39960576,
+          "fileoff": 2637824,
+          "filesize": 39960576,
+          "sha256": "0c660f2eb432eb8a2c69e916cb7f86e0fbb7a000e768300ed8058cb59f07e549"
+        }
+      ],
+      "compiler_errors": [],
+      "status": "exported"
+    },
+    "small": {
+      "command": [
+        "/Users/yeren/ane/gpt2/training/build/dump_hwx",
+        "/Users/yeren/ane/whisper/build/pr3905-bundles/small",
+        "/Users/yeren/ane/whisper/build/pr3905-hwx/small"
+      ],
+      "returncode": 0,
+      "mil_sha256": "df4be42fe1f3fb37f279af5ab0016184369b925fb59dfae5fc46636854532237",
+      "source_weight_blobs": {
+        "weights.bin": "fb39ffbc5d0e78bab48551b73ce73447e5558c84794b68b0066ba854be9f6159"
+      },
+      "export_method": "ANECCompile h13g offline export; runtime fixtures are captured separately",
+      "linux_hardware_replay": "pending; macOS export is not Linux execution",
+      "hwx_sha256": "f281f0d9d618a119e2f6e44826f91978d4ddf5eccd5d89e6f21fa06c5f2b4d08",
+      "hwx_bytes": 182550528,
+      "task_count": 10015,
+      "td_size": 504,
+      "text_sha256": "b3b4561103584b661a10d2125b9b0af22d8b4b3ae0a97048c50cf2686abd074c",
+      "coefficient_segments": [
+        {
+          "name": "__KERN_0",
+          "vmaddr": 831504384,
+          "vmsize": 134201344,
+          "fileoff": 7749632,
+          "filesize": 134201344,
+          "sha256": "b832d0928b7594ca4b708e444b4761d961f2ef6bbab3b76684a4a810bbb3c6cc"
+        },
+        {
+          "name": "__KERN_1",
+          "vmaddr": 965705728,
+          "vmsize": 40599552,
+          "fileoff": 141950976,
+          "filesize": 40599552,
+          "sha256": "6b04e5644410cac861ff54c9dd03859e0cd597032e26aebf185e615e0c3d139a"
+        }
+      ],
+      "compiler_errors": [],
+      "status": "exported"
+    }
+  },
+  "limits": "Raw H13G command/register and coefficient exports from the exact benchmark MIL. Exported HWX has not been executed on Linux or directly on Mac. Linux buffer/BAR integration, input/output parity and speed remain unverified. The byte-exact existing compact package is tiny.en, a different checkpoint."
+}

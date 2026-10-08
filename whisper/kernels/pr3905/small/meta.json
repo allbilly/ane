@@ -1,0 +1,1488 @@
+{
+  "format": "whisper-pr3905-h13g/v1",
+  "target": "apple,t8103",
+  "generation": "H13G",
+  "dimensions": {
+    "state": 768,
+    "heads": 12,
+    "layers": 12,
+    "context": 1500,
+    "mels": 80,
+    "frames": 3000
+  },
+  "checkpoint": {
+    "model": "small",
+    "format": "whisper.cpp GGML F16",
+    "sha256": "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b"
+  },
+  "encoder_tensors": {
+    "model.encoder.conv1.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "c44b215a322bcda242b9f19b077c9b55a17df7f447eb1417e0de12d4f8295658"
+    },
+    "model.encoder.conv1.weight": {
+      "shape": [
+        768,
+        80,
+        3
+      ],
+      "sha256": "7f07740f292c5454400c1e4a8ea4dc4de0ea36ae203e53924752bf1284d5ce35"
+    },
+    "model.encoder.conv2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "06ac080fa714a63b4b64f3160c152faf01c19ea8feb33f3e0d2a8f0997618aae"
+    },
+    "model.encoder.conv2.weight": {
+      "shape": [
+        768,
+        768,
+        3
+      ],
+      "sha256": "c7254284a79967803e6155f65378461fa60354b785955e8139fdfdc1409395a3"
+    },
+    "model.encoder.embed_positions.weight": {
+      "shape": [
+        1500,
+        768
+      ],
+      "sha256": "65e5c140dbcf0fc1c445d3430837e5a23c9579607ae2d6ee726488cba14660a9"
+    },
+    "model.encoder.layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "204924a17378c8be857b9281c2fb738b1a3114bed9b7df9ec7b90aad2819540c"
+    },
+    "model.encoder.layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "80248f6ecd4a5a8b7c4d0ad2e3c0dc3ce70866b506bfd4175297b61d45ccaff5"
+    },
+    "model.encoder.layers.0.fc1.bias": {
+      "shape": [
+        3072
+      ],
+      "sha256": "71424a00471dd92f83d7f5375763057dcebce268e86e08a3d682f9fa3d5941d3"
+    },
+    "model.encoder.layers.0.fc1.weight": {
+      "shape": [
+        3072,
+        768
+      ],
+      "sha256": "97571be6212d372f860508e77222379f8fc192cbda71cd6489ce739830a53588"
+    },
+    "model.encoder.layers.0.fc2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "4a942d75f3e1696dc4ef16d24801673b5898d59d3867163c1f01a69eda1598df"
+    },
+    "model.encoder.layers.0.fc2.weight": {
+      "shape": [
+        768,
+        3072
+      ],
+      "sha256": "4446c08dcb4b7ff1f180583afa696746e5050a42034c3a328a924e0fe4ffb631"
+    },
+    "model.encoder.layers.0.final_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "1325c5b3ab09b3a9b8d4b546256f0121f0fea25ef39b9d50fdb85850d178d328"
+    },
+    "model.encoder.layers.0.final_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "26f1fc7ccda1eb7c5135cc7cf0cdcdefa1e20a16333352313eee2555de1d94ce"
+    },
+    "model.encoder.layers.0.self_attn.k_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "9c49369d066c9292010bea90a3204b06bf0d7fcdd756464b236f1d97190ffb5a"
+    },
+    "model.encoder.layers.0.self_attn.out_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "6a4a3e6970b665214a355c5be27bd16177ba2cc452b9c63afdd14866c41e58d0"
+    },
+    "model.encoder.layers.0.self_attn.out_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "f558dde094d3ae92666a2a5a5140d2d1a02344cdf22b1446800959416174cd55"
+    },
+    "model.encoder.layers.0.self_attn.q_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "c9bc4eb63294f94b1c593b213d30eb4d8289c4ccaa83b9d7d55371a52c72fbbe"
+    },
+    "model.encoder.layers.0.self_attn.q_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "de65194f0556f9a75b3bd222f3660f29aca7ecf1ebe27a523aa67ef750d75cfe"
+    },
+    "model.encoder.layers.0.self_attn.v_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "e38d043cefeb0728e638d72baf6976f933b85882e695fb091ba944067f9a4239"
+    },
+    "model.encoder.layers.0.self_attn.v_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "91377c9dfe21e8430b03261ecb2c451544f0ff65292180992b573b29010b40a0"
+    },
+    "model.encoder.layers.0.self_attn_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "3cc6b048959540c16980a8c2272751b77336889804df6692bbf13ec1359fbb16"
+    },
+    "model.encoder.layers.0.self_attn_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "0377fee4a0bf4fc60e01efb3206fb314f742dcda7602bdbb5b710907c28f870f"
+    },
+    "model.encoder.layers.1.fc1.bias": {
+      "shape": [
+        3072
+      ],
+      "sha256": "66a6d956432c21d33134f9a01fa56e2351a1dc2bf72275c46d34d935a3c2f038"
+    },
+    "model.encoder.layers.1.fc1.weight": {
+      "shape": [
+        3072,
+        768
+      ],
+      "sha256": "fb0482dab8098fafba217570d8590f76cdbb1609d5e91c4623ef5f6b75dc78a5"
+    },
+    "model.encoder.layers.1.fc2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "58311e2e737a653434e8a9274c0238cbaf7528111e091abb131ecd3fcc0fd11a"
+    },
+    "model.encoder.layers.1.fc2.weight": {
+      "shape": [
+        768,
+        3072
+      ],
+      "sha256": "471d3cf08ce8e126c56785e321ca29cd0066008c17ec94e89af19a26f8a9608a"
+    },
+    "model.encoder.layers.1.final_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "b3b64cda15dd5e1c1f0d0b785004c84271a21905e5572f6daa2004c45ec99f3a"
+    },
+    "model.encoder.layers.1.final_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "cf1dae3674396e3cc1b72f9854e564cf44b15716c185d495ae882136213d8dcf"
+    },
+    "model.encoder.layers.1.self_attn.k_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "38bea29fa13de7359a23fcbf8c7c6ad8f009defe051b5a74311918fb667af721"
+    },
+    "model.encoder.layers.1.self_attn.out_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "5154cb56208c28ccc28d3b5bde2f3045b2d88089f67edd2be1cdbc7f0f16af6c"
+    },
+    "model.encoder.layers.1.self_attn.out_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "09a16721b1b2aa36dcb7dc3d5b22827c6bf78b2fe8b0dcdd47ae1447d28be619"
+    },
+    "model.encoder.layers.1.self_attn.q_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "2d978d27af1e3b7b97ee4c5cc27fbaa31f5e8abbeaf3c144e2a652bc7419ca2a"
+    },
+    "model.encoder.layers.1.self_attn.q_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "6dd2bcbc0651df57e3af31edd413b6d04194690e09ace93f30e9107fb9f3c5b1"
+    },
+    "model.encoder.layers.1.self_attn.v_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "1eba9540fb3ffdca61a4c85a2de59ccb9fd7150412c86daa77dbe330fcc700ca"
+    },
+    "model.encoder.layers.1.self_attn.v_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "ddbcba7a89f26f9c6315934b661ed69f35a2abcaa050b2f5a9ae67e4e20e6bad"
+    },
+    "model.encoder.layers.1.self_attn_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "394743e13ca7013a9eba5d4e3388e2578c4a01c959de6c75d826ffb147c3a0a8"
+    },
+    "model.encoder.layers.1.self_attn_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "927fe1e149cf3a3a7a93e99c52d70da97309a922ad7bc90cc92ab50f465ef28c"
+    },
+    "model.encoder.layers.10.fc1.bias": {
+      "shape": [
+        3072
+      ],
+      "sha256": "2ae3ea31ec0cca0faa01590b427f31c5b6277aa2e82bd98de161b33b807cb9ff"
+    },
+    "model.encoder.layers.10.fc1.weight": {
+      "shape": [
+        3072,
+        768
+      ],
+      "sha256": "ee60ab3126c8c766078fb5cfa8808425cec626e9bfd0ba17ea69bafe3eff5998"
+    },
+    "model.encoder.layers.10.fc2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "53d0cabdd6d599ddcad73c81129a383122959d58caff81a7ccd94a21d928aafe"
+    },
+    "model.encoder.layers.10.fc2.weight": {
+      "shape": [
+        768,
+        3072
+      ],
+      "sha256": "67710f4515a5d4fb94370e5e68364a61d24bf9fe464711252699d8ce2c798a22"
+    },
+    "model.encoder.layers.10.final_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "9c9b1d3a79b540dbf3c0cd51e04c1bbb5d1b680613c9564d8b72e0b60846d36b"
+    },
+    "model.encoder.layers.10.final_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "278fe991d24caf10b5a7d32f6f7c96c8c07e5044df5b7ed2ccfc50502209bb4f"
+    },
+    "model.encoder.layers.10.self_attn.k_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "33219091a8fd9264e9df120408e67e8ce9072614b1ce4b220ad76d8d4f095b2f"
+    },
+    "model.encoder.layers.10.self_attn.out_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "e450f3385693c3c62f8cc2a8cbd20638a829728b71a47887afe92998aebce600"
+    },
+    "model.encoder.layers.10.self_attn.out_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "730c2f752ee970b1c2e66b0100ab0aaacb305924037f724f424fa759e05fb909"
+    },
+    "model.encoder.layers.10.self_attn.q_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "24b6016569c4d80e02bb08c9f5d4d9d7d3f0a463872cb2f023ad789491b69cea"
+    },
+    "model.encoder.layers.10.self_attn.q_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "ba2ed34968f6c47fe74baac846105358b0b3a8cc8a91f95eb68a68cc29a250b0"
+    },
+    "model.encoder.layers.10.self_attn.v_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "dcebf06856f62bef450b82d64584438abf3fc88597046e35c1759920ce71b468"
+    },
+    "model.encoder.layers.10.self_attn.v_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "736d467c0df08d87a00bee145324dbfc09614ac81bae55c75c10fc8dcfc174d3"
+    },
+    "model.encoder.layers.10.self_attn_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "84f9489e48fa2522ea682651fb4709a9ab4c98d3306bf4f4cb951c621769c4b2"
+    },
+    "model.encoder.layers.10.self_attn_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "1376b0d6a1a4a102e4e0cfbe944a9c526695208053deccff6cea97d4a7a68c4e"
+    },
+    "model.encoder.layers.11.fc1.bias": {
+      "shape": [
+        3072
+      ],
+      "sha256": "4fe8e4544de3326ca045215878afd381158d9b0bcd7b1989d775fdb652fa85fd"
+    },
+    "model.encoder.layers.11.fc1.weight": {
+      "shape": [
+        3072,
+        768
+      ],
+      "sha256": "4aafdcffada602ea7bd4430f648c5561c06041d4d43aa7f866b8608bf8091a19"
+    },
+    "model.encoder.layers.11.fc2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "d0cc0c91fe96d5eb39101a1aafbb1c76dcbfc0167b79a9307ea7e0676525adfc"
+    },
+    "model.encoder.layers.11.fc2.weight": {
+      "shape": [
+        768,
+        3072
+      ],
+      "sha256": "52c5f5e9fc951fab115afcac7fdad0a04e4288f8466ded7866a7d9584e3114a4"
+    },
+    "model.encoder.layers.11.final_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "e1c28fe33b90bb2019d1afbf06bc08fd9bb5b69bcd13836e729b29fe8cc274c6"
+    },
+    "model.encoder.layers.11.final_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "f12f8822a8786ac0a5d7d359163c15d8664af69afc02068305cb067e3272351c"
+    },
+    "model.encoder.layers.11.self_attn.k_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "ea1fc61c5b984546210eb9d07a5a480fc87b9615f7db0d4bc4fe3c3009213ff0"
+    },
+    "model.encoder.layers.11.self_attn.out_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "ba2074246e6c7a7af717e9278c26ecea7cf82b26273496c49336cf5c7c335a2c"
+    },
+    "model.encoder.layers.11.self_attn.out_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "41e580e33e1a307eaf41563b984301abe520ba83fcf4dd9b35b19420e5f9f012"
+    },
+    "model.encoder.layers.11.self_attn.q_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "2de52643a641c33b9b8b04dc588d65f8753ce66545f13b663a42e9d5ed59caa0"
+    },
+    "model.encoder.layers.11.self_attn.q_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "049a73821a7db2f9627e65f7fabc7d62d43961ce2299b98af98517cb99e4de53"
+    },
+    "model.encoder.layers.11.self_attn.v_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "cc80b8e72a0432ef680634cfe0e2ab19f31e376b3363d43ead1c55eb3ba52ebb"
+    },
+    "model.encoder.layers.11.self_attn.v_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "1536ae8a0b3802874564c219a5cc5c1e77e1e91e05b5b964448f367b04634cc1"
+    },
+    "model.encoder.layers.11.self_attn_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "6d804c44d518725528b91f75fbc99ecbaa26c40a461192a8d8c2861aec15ef81"
+    },
+    "model.encoder.layers.11.self_attn_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "9bf4151ad395af3eb4ffc221f2e44e02dea7e7e731b016a3b2a4ed0441f72b17"
+    },
+    "model.encoder.layers.2.fc1.bias": {
+      "shape": [
+        3072
+      ],
+      "sha256": "525c0f3ef2ac8101cfebe832e19daf8c22ad5fd95d24d504c4193286ebbe0c1b"
+    },
+    "model.encoder.layers.2.fc1.weight": {
+      "shape": [
+        3072,
+        768
+      ],
+      "sha256": "0ae29d0ed7b6ca79a26b97c44a2e7541c1483ec8a3e9832792c8adeddf9bf16d"
+    },
+    "model.encoder.layers.2.fc2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "9f74f4ec9522f4d5489f9cea7c5505f1c58d31d17909144d96bc8638987e5f44"
+    },
+    "model.encoder.layers.2.fc2.weight": {
+      "shape": [
+        768,
+        3072
+      ],
+      "sha256": "5faa7a64f3dac988ded4af8ebc484cb56ece2cbbc882d381f33b809a009281a9"
+    },
+    "model.encoder.layers.2.final_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "24b7d5f0202d4f7fc7414475e802e979453b8894c21dc53684160191b965e053"
+    },
+    "model.encoder.layers.2.final_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "bb2ed0c4ff0701f3dd035f962c9e083ed5d43368ac43f401562f51086a74683b"
+    },
+    "model.encoder.layers.2.self_attn.k_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "65eb11f35b5a01015cd7e9ba671161ebcba7cb76fe6dfeb30d337f4b01d3a99a"
+    },
+    "model.encoder.layers.2.self_attn.out_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "6f069667e1241d5954912e08f76df1580131d479a68f114094173c4285594a11"
+    },
+    "model.encoder.layers.2.self_attn.out_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "ff87c180e20e0f36a4337115e2d15ffbe75404b5da96f1e3b2c343f9b558113f"
+    },
+    "model.encoder.layers.2.self_attn.q_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "b320fabba5c01a865050eb45db43768446807c33d020c11c32a85805fe223344"
+    },
+    "model.encoder.layers.2.self_attn.q_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "be7bbee848ef4c147ef66b80fc72ca7fc6fffcc3a82830aefc1983c2631c55c4"
+    },
+    "model.encoder.layers.2.self_attn.v_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "8ca3b4e269d78a079a95a1b9860c312df0716d0fe71db04f19b58b4f1054048f"
+    },
+    "model.encoder.layers.2.self_attn.v_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "1e33cb9b1dbb59bc4f1466f59ebe9d11a2721a862761f7c5fb971e7afa20e6ca"
+    },
+    "model.encoder.layers.2.self_attn_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "ff2789755d7a6a82f124969c49728a6bbfe678b30edee0f9f7abffef55eddf1b"
+    },
+    "model.encoder.layers.2.self_attn_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "8b3ce3a2928d729cc7e6dfcc85851f8053b37f3451b4a19430acee1de933513c"
+    },
+    "model.encoder.layers.3.fc1.bias": {
+      "shape": [
+        3072
+      ],
+      "sha256": "a1a71dc19bc36f9cbe17466972693e18648981cbc103311f5e9a5eb03eabb5b7"
+    },
+    "model.encoder.layers.3.fc1.weight": {
+      "shape": [
+        3072,
+        768
+      ],
+      "sha256": "0a1d30ef5a68040df309b000dcce57b68a9ba011426c4a96064252030b0eef07"
+    },
+    "model.encoder.layers.3.fc2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "2490239e63dc74473d86839607a779c7a81f7e4ed9e314e98cbd79b962e93573"
+    },
+    "model.encoder.layers.3.fc2.weight": {
+      "shape": [
+        768,
+        3072
+      ],
+      "sha256": "a9507b5aab150aa3c4ab573b5eeee80ed2c8b4777be79f66377384503d54b12b"
+    },
+    "model.encoder.layers.3.final_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "c5d70dc781465207cf050bd921b08e4d56b04b91a2f73233feece0f1df5b24a5"
+    },
+    "model.encoder.layers.3.final_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "1692d3690b6477940a65fdd06ab3873f18c7e212ebb5186238ce077391bf3f93"
+    },
+    "model.encoder.layers.3.self_attn.k_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "0c7a4421e82ef95ee885ad2ea7f6c936ec8a2298d9b84e76328cb77d0673be1d"
+    },
+    "model.encoder.layers.3.self_attn.out_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "d3dd6af8e5ef58dcb93dbd5846dbae49f5e54199aaa27fa88fe80a71257f67c8"
+    },
+    "model.encoder.layers.3.self_attn.out_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "ca6f5a29b97adec1e7859d07f89eb06f58402f78b18dc3ac63baad80d455e347"
+    },
+    "model.encoder.layers.3.self_attn.q_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "25a54b66d6f589b4197f3200b9b5f1a0f32a155869c6362426e12a6355fb3daa"
+    },
+    "model.encoder.layers.3.self_attn.q_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "24b479cdcbdb639b7ba38745e00db623ca87ed570912b80604705538ab149b0f"
+    },
+    "model.encoder.layers.3.self_attn.v_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "9e7c95f708258651039fea1d36ada8069630d2ea66950e213502cfa6065a949f"
+    },
+    "model.encoder.layers.3.self_attn.v_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "3ba04bec555469e556217d7e999ab12ff1a6bbc0fbc87a846b6c12919fa252ab"
+    },
+    "model.encoder.layers.3.self_attn_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "6602cc7e322adfd51a8cf5385e1e99b873055aac00914df6f5898dbf9c1a33b8"
+    },
+    "model.encoder.layers.3.self_attn_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "b5b3012d8c1d0ca3fa3a47977f2d6eee6c97c038a5150dde47bf6bb893047f4f"
+    },
+    "model.encoder.layers.4.fc1.bias": {
+      "shape": [
+        3072
+      ],
+      "sha256": "66a7d277b35e12f3c2dc0300d0ae62fff5d7ad9750904453781e6468274bd501"
+    },
+    "model.encoder.layers.4.fc1.weight": {
+      "shape": [
+        3072,
+        768
+      ],
+      "sha256": "d82049c0dc4fdd64270d0f55b249e882978a8a9118d64cabd30fcdfae0291e29"
+    },
+    "model.encoder.layers.4.fc2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "db43641904bad07d9ff58a659dab57814717fb38acf55eb1274553ee72d77cc7"
+    },
+    "model.encoder.layers.4.fc2.weight": {
+      "shape": [
+        768,
+        3072
+      ],
+      "sha256": "97309b0d524336b652191ac47885790240e9fff071a56d34acc1e58491f76ccb"
+    },
+    "model.encoder.layers.4.final_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "ca37a5ca0d28ee50b1a9faaee7ed0eb013010a900a89bd2d08c2a066779db712"
+    },
+    "model.encoder.layers.4.final_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "7a6fbee9f2fcc80e24bf5b42e7c5ac1e0be990e73a9cee1b4911af1ce2e7446e"
+    },
+    "model.encoder.layers.4.self_attn.k_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "5d4e8113619bcd960a011228a97f45c3eea807e6c5dbf8612e5e282757f3fce2"
+    },
+    "model.encoder.layers.4.self_attn.out_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "74a4c078ef7f6d1083b9bf2d035601ff94d43cd035f187cb3f29b229c8b86a56"
+    },
+    "model.encoder.layers.4.self_attn.out_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "fd20ea5be3fdb2dbfdf771af362cb86776dffa18c4b417287f7663b9837af183"
+    },
+    "model.encoder.layers.4.self_attn.q_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "6f9038a08c6cc5725920e6a3a608c25c386d75b57dceb25435b7e943f20456b9"
+    },
+    "model.encoder.layers.4.self_attn.q_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "cd042c9bb16a070ede1f7681b7476f75d870f1982c0c09c8e55c0a3b6e1fda5d"
+    },
+    "model.encoder.layers.4.self_attn.v_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "cf0141557b17c8cc763d1f1e4f1a8bb55a1a089ec2bbcaa3b171433ba101cceb"
+    },
+    "model.encoder.layers.4.self_attn.v_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "4f646dc6d88d8cfddd6f4761cae9ea0ed5b8e07aec84fb447a6209873aad4549"
+    },
+    "model.encoder.layers.4.self_attn_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "d8208f51f8c9f31d451d170f02198e11eb658bd899295787dad84e0d46f20649"
+    },
+    "model.encoder.layers.4.self_attn_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "a26597f77ca8e4c224b813334d7e7f1fa7ba154d6e3d82e6a7313325910826d8"
+    },
+    "model.encoder.layers.5.fc1.bias": {
+      "shape": [
+        3072
+      ],
+      "sha256": "b1f0a56cb01b462085245bd9cddc5219cb33b14dd3792c8d45303f97968bb91e"
+    },
+    "model.encoder.layers.5.fc1.weight": {
+      "shape": [
+        3072,
+        768
+      ],
+      "sha256": "cb5c77374bd33efb6cce4fb33fa12104fcaf25431a4fb848a58ce24ab3f83cf4"
+    },
+    "model.encoder.layers.5.fc2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "baa82ba25e1e2b83337f010209f2db83f8ace2728a125ea75ab3ffa7564a60d2"
+    },
+    "model.encoder.layers.5.fc2.weight": {
+      "shape": [
+        768,
+        3072
+      ],
+      "sha256": "73598f645a8f1c615999c4a0d9c39714e971c205660d470a863a93ceee126624"
+    },
+    "model.encoder.layers.5.final_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "7361f903fd4a37f8b73dfe84461f483d86f10f89b358e081bb05045efd405a32"
+    },
+    "model.encoder.layers.5.final_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "c47db1ea05e3cdd01c9405f177b79fd67a71377c573072f76e33d559f8b6dd71"
+    },
+    "model.encoder.layers.5.self_attn.k_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "3229c09df70feed36c63af2e8d33068eefedc442ce7cdedc7f06d50b7a23add9"
+    },
+    "model.encoder.layers.5.self_attn.out_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "410921743d2e7d2c27b354bb71235e55baeafc63a74c376376db545a8a96f4b6"
+    },
+    "model.encoder.layers.5.self_attn.out_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "b809f3364e443e7e526a4bed8adebc65d1950eeead4b16cc1a15f595a9814d8b"
+    },
+    "model.encoder.layers.5.self_attn.q_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "644a1cc0b2e29352556e028260c0911796cbb367e7a8053d9da25daa3278a92a"
+    },
+    "model.encoder.layers.5.self_attn.q_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "7c91765232649f555854c1f481be16950f567f5605cd6a4f9ac228185f64b2ee"
+    },
+    "model.encoder.layers.5.self_attn.v_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "c675aed38081c4d99b7d0533faa249899d3164535f8aa8670a7bf2e4775f856b"
+    },
+    "model.encoder.layers.5.self_attn.v_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "81d475b0542689a8dd33ee6bd2144592992daf93da7fb1c4ab86023e00052e3e"
+    },
+    "model.encoder.layers.5.self_attn_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "c4e7271ac2b545eba2c1a701d71944f76d76157b40b350c8256f6b3f70c85a59"
+    },
+    "model.encoder.layers.5.self_attn_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "cbc74a62eabd123159b0d670bf3af3bdfaeba3dfb526ceda505b00601796366d"
+    },
+    "model.encoder.layers.6.fc1.bias": {
+      "shape": [
+        3072
+      ],
+      "sha256": "72fb044dac5c05c35ba5315fefdab85f872abf709d7fb6618f18d21fd81f15e7"
+    },
+    "model.encoder.layers.6.fc1.weight": {
+      "shape": [
+        3072,
+        768
+      ],
+      "sha256": "6cc256f09d803a0d2749c2fc1fdf2edb6140af8e433c521e4c1677f06d6f8012"
+    },
+    "model.encoder.layers.6.fc2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "91b91c7517624529d94028d5b21b8353eb8a04e6807cce3dc61e77d55bdef9f9"
+    },
+    "model.encoder.layers.6.fc2.weight": {
+      "shape": [
+        768,
+        3072
+      ],
+      "sha256": "375f221968ffb43c60bfd9e452e806157ab6c7f3fa0a0813dd6ef1ca705ee0ad"
+    },
+    "model.encoder.layers.6.final_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "fcb86f226882cd102ee445ff72f63d9713318b912fd5e0168d19a470f5e33d07"
+    },
+    "model.encoder.layers.6.final_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "f97b061329e6144d931fb1c755c6b2a1953549a344335883d04aa1def860c2c8"
+    },
+    "model.encoder.layers.6.self_attn.k_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "4ae0771531df7a67d061aa4618a2ae937496149cad5c5e822c7065a93afa0090"
+    },
+    "model.encoder.layers.6.self_attn.out_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "8196f0392efa011e0796c1dca39bc1cd0845750db78fa0a4c594278b2addc23c"
+    },
+    "model.encoder.layers.6.self_attn.out_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "ec25b6f0c1e28a04e965098bb6bc3395ce7215e56cd862ff23dc03f121f8714d"
+    },
+    "model.encoder.layers.6.self_attn.q_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "61eb297c1b104d15809ba0700db7fd5b7b6eb8ff602263a8c343e0a66bb7168f"
+    },
+    "model.encoder.layers.6.self_attn.q_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "4151bdc580f3070d82a5788f3decee203688a11b2870f10a561c755fe6c74162"
+    },
+    "model.encoder.layers.6.self_attn.v_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "1bc4a98a124d58c8f3250a12cdf6d52beda217a783e6f53ca1200ecf0786d7b4"
+    },
+    "model.encoder.layers.6.self_attn.v_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "fa4687317f9458b669a0f12f8250f569811a8ef2f37e6e65a7394024d6e486c8"
+    },
+    "model.encoder.layers.6.self_attn_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "0173a9a838ee85643ccb9a47ff415656ebf71204e19199fecb89f9e30b6257d5"
+    },
+    "model.encoder.layers.6.self_attn_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "32d9b1f1d07ae3291f4b7e44601a679f5eabdfd82f204933e42f7b438dddaea9"
+    },
+    "model.encoder.layers.7.fc1.bias": {
+      "shape": [
+        3072
+      ],
+      "sha256": "8cf441557647fa6d1776608558675a0357695c400b5d1a113f3c41b92c096c57"
+    },
+    "model.encoder.layers.7.fc1.weight": {
+      "shape": [
+        3072,
+        768
+      ],
+      "sha256": "f2093012a41c080d7e380b02559c909199f118dada3abef90da4ea5a8e321542"
+    },
+    "model.encoder.layers.7.fc2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "7dde1cbc5cf0d0cb2361741048fdb60a8f6ee64adf402db2a39c3ac5fd098dfb"
+    },
+    "model.encoder.layers.7.fc2.weight": {
+      "shape": [
+        768,
+        3072
+      ],
+      "sha256": "7307fb18e8d7b63fb911a98d6ea0f72e02b04b7d5de12640b4b35cc1f4f7d087"
+    },
+    "model.encoder.layers.7.final_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "c896ef7349fbfac1b314c283edeec0095e8f5e8e4f2c9794dde733f4730af43b"
+    },
+    "model.encoder.layers.7.final_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "a1d0aa0fc6420f62af643a9eaee67d7298bfcb2a9796a00c7e02d14268c66071"
+    },
+    "model.encoder.layers.7.self_attn.k_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "c84652a73efc762bbc37beba4bae86631dc481e37f654e55fb82afcc5168a24c"
+    },
+    "model.encoder.layers.7.self_attn.out_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "465f360abbbccff56fe44e866b5788c3a50782ac2af265383403935dc7ecf0d5"
+    },
+    "model.encoder.layers.7.self_attn.out_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "03161172adeab2bfa6926b79adb6f1a3bfc2804a387a08a103fcd17ba29b6c0f"
+    },
+    "model.encoder.layers.7.self_attn.q_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "0c550f1ac56b1b5b8a4161fca19ccd657f6f625e25c1d931dbe18fb0278cda6e"
+    },
+    "model.encoder.layers.7.self_attn.q_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "ade01c6d006078f295115a67ac1edbd738fd88ba22ba35129e3f9e9e88357093"
+    },
+    "model.encoder.layers.7.self_attn.v_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "7d1975c2dc37c9eef838b5a7a3c70d0c0ed016ad7c11841a75b78f55e27a9f82"
+    },
+    "model.encoder.layers.7.self_attn.v_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "62c70b27b5ea9844ee9684c0faaa4c4e5f2881eb80c32e9fc2bb6d8cb47136f8"
+    },
+    "model.encoder.layers.7.self_attn_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "5a8b6f606eecff2c7abed5194f73774a67c2be6020863f44569f82bd8a73fa6c"
+    },
+    "model.encoder.layers.7.self_attn_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "25ed17bf7da12a3db30af0aad9849b6efc47f5de2d083d52fe68e8363d884cbc"
+    },
+    "model.encoder.layers.8.fc1.bias": {
+      "shape": [
+        3072
+      ],
+      "sha256": "c53ce91bc4d890919c29173bcbfded8b6eeb5158bbd854cb11b9cfde602f55a1"
+    },
+    "model.encoder.layers.8.fc1.weight": {
+      "shape": [
+        3072,
+        768
+      ],
+      "sha256": "2d2a4b0d0fed36c6ede29d6bcdf0175ccfbf37e67dd7869836a0fbb40ba77f28"
+    },
+    "model.encoder.layers.8.fc2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "1fcbd28f073e01c75178e34cc6fda1a7b18907d587cac209040a07ef1c774623"
+    },
+    "model.encoder.layers.8.fc2.weight": {
+      "shape": [
+        768,
+        3072
+      ],
+      "sha256": "f3eb8d4cab156de2790854e7be989d54dc83b32ac14780cf0c619f9add05cc80"
+    },
+    "model.encoder.layers.8.final_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "26fbf0d06adef07d4a9d5ff8723a2a06393d2b78da66cd6522d88b1ff3a63090"
+    },
+    "model.encoder.layers.8.final_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "843cc91e2911dd398484923daf453b2af23f24dc9d9176ecfa6612bb36812c89"
+    },
+    "model.encoder.layers.8.self_attn.k_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "b94bd16d1a55e09c281ecbc43c5e6212b360a8563c43c29014737d65f933a204"
+    },
+    "model.encoder.layers.8.self_attn.out_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "a2c161c1a5ec7f3ce977f736cb65dbbc8c2dbcfa214d8a4ecc6bef902a6c2890"
+    },
+    "model.encoder.layers.8.self_attn.out_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "3f5609b34f02e68dc3c793f2068f379a959c0e642548b9e4f6290aa2466b62f8"
+    },
+    "model.encoder.layers.8.self_attn.q_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "3fa1bca5f5aaae967f9f6abc4ec39863b094391a6852bca58e72a9213f16c6ba"
+    },
+    "model.encoder.layers.8.self_attn.q_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "06a701da73cdfc55192875d705944f2e624307f333433eb5afcd6a18b551487e"
+    },
+    "model.encoder.layers.8.self_attn.v_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "7481acb9cfd959f165923df081f22251028775ab8ddd2838daa9f09713b7db81"
+    },
+    "model.encoder.layers.8.self_attn.v_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "e662e6fa537559e8e4c7c2bd2e323f95de516de1dd6ed3be0e7adf7c22559715"
+    },
+    "model.encoder.layers.8.self_attn_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "26724e4f840a77003ed70edb5d10ba513302ac498489b13e148f23bab356c55d"
+    },
+    "model.encoder.layers.8.self_attn_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "40111cef56a1da4b3af5764a4799d8617a6586a9e0eff185abb648feb960ae04"
+    },
+    "model.encoder.layers.9.fc1.bias": {
+      "shape": [
+        3072
+      ],
+      "sha256": "d167387d4936186e1412934574b581e39d89f5b5405a8cac5cde1ae941972f9a"
+    },
+    "model.encoder.layers.9.fc1.weight": {
+      "shape": [
+        3072,
+        768
+      ],
+      "sha256": "f2a559ab5982e784ceef162a3c860c4259d8299f98086a09519fec53d5691e5b"
+    },
+    "model.encoder.layers.9.fc2.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "62f5d77cd3527fa49bd8ba8e425d26cd85cb38f0a3b3589cecdb76c89aa46c85"
+    },
+    "model.encoder.layers.9.fc2.weight": {
+      "shape": [
+        768,
+        3072
+      ],
+      "sha256": "08b9c8fbc1d9979549356e14b8d591e6168262aa202516c9b08f5c1392e61437"
+    },
+    "model.encoder.layers.9.final_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "b3d5bcb40676e2945b519e2ddc67382fa3e08c594abcadc62ae730632f8891bb"
+    },
+    "model.encoder.layers.9.final_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "846948c1291bc878b984b7336a687e156c1f655777b1580143e470116a7079f2"
+    },
+    "model.encoder.layers.9.self_attn.k_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "e324bab9d88ee505c67bc97ac6d6f8cce98ccf160758c718e8aa23201295ce3c"
+    },
+    "model.encoder.layers.9.self_attn.out_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "921ca46b4b8ef4652c8d3b81950c5aed4fe534922ac92cb63c9f7a24cb14b628"
+    },
+    "model.encoder.layers.9.self_attn.out_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "678ba2338c35ba44d1201d3e6d5a88988814fbb6bd4c91ba43434591245f86df"
+    },
+    "model.encoder.layers.9.self_attn.q_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "867635f498a907d304b2a3b2167a2dfc4d2d48ef6645ae51bb565dec8a013ec3"
+    },
+    "model.encoder.layers.9.self_attn.q_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "9715bd44d54a60ff69647b2d66f8aa5785702838e1c25339e4665be594881759"
+    },
+    "model.encoder.layers.9.self_attn.v_proj.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "31915333270b94054af757e5d4c9b2f40952a20e1cfe814418cd7bb37fe5e2cd"
+    },
+    "model.encoder.layers.9.self_attn.v_proj.weight": {
+      "shape": [
+        768,
+        768
+      ],
+      "sha256": "5fe2db0a84930d3ccd93a22827a8701187a1f90bfb387ec6f1fd00b6b3ab19af"
+    },
+    "model.encoder.layers.9.self_attn_layer_norm.bias": {
+      "shape": [
+        768
+      ],
+      "sha256": "cef70ea69ad42f0eddffc433ea7675b94cf1673447da224834d658a09fd4fe04"
+    },
+    "model.encoder.layers.9.self_attn_layer_norm.weight": {
+      "shape": [
+        768
+      ],
+      "sha256": "77fb9aa431e8ea719689660f9030c3ac7352cf5136cb07fa213abb05398b8a42"
+    }
+  },
+  "hwx_sha256": "f281f0d9d618a119e2f6e44826f91978d4ddf5eccd5d89e6f21fa06c5f2b4d08",
+  "position_sha256": "906bb78178b8a640dc183a1ffc70a25e2c4b0ccb298d580eb1ba9472ea9ea384",
+  "source_mil_sha256": "df4be42fe1f3fb37f279af5ab0016184369b925fb59dfae5fc46636854532237",
+  "source_weights_sha256": "fb39ffbc5d0e78bab48551b73ce73447e5558c84794b68b0066ba854be9f6159",
+  "template": {
+    "file": "model.hwx.template.zlib",
+    "bytes": 182550528,
+    "sha256": "eab1e107e2fbb0e99d5e6474c470f2db773e4780eef985a1f9e465837b0ed557"
+  },
+  "packing": {
+    "file": "packing.json.zlib",
+    "bytes": 1299539,
+    "sha256": "9f2a747112dc28bb484019f55e5bf8a76a65ff959ac2da660ab0e39639521ad0"
+  },
+  "scatter": {
+    "file": "conv2-offsets.i32.zlib",
+    "bytes": 3538944,
+    "sha256": "9a54c3dc57be74f8affa1d33fbd4db4957bb51b74ffdbf1ab80b1d3ab09326ba"
+  },
+  "layout": {
+    "thread": {
+      "bars": [
+        824246272,
+        831350784,
+        0,
+        805306368,
+        819134464,
+        821444608,
+        821936128,
+        831504384,
+        965705728,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "entry": 824246272,
+      "td_size": 504,
+      "td_count": 10015
+    },
+    "segments": [
+      {
+        "name": "__PAGEZERO",
+        "vmaddr": 0,
+        "vmsize": 16384,
+        "fileoff": 0,
+        "filesize": 0
+      },
+      {
+        "name": "__DATA",
+        "vmaddr": 805306368,
+        "vmsize": 13828096,
+        "fileoff": 0,
+        "filesize": 0
+      },
+      {
+        "name": "__FVMLIB",
+        "vmaddr": 819134464,
+        "vmsize": 2310144,
+        "fileoff": 0,
+        "filesize": 0
+      },
+      {
+        "name": "__FVMLIB",
+        "vmaddr": 821444608,
+        "vmsize": 491520,
+        "fileoff": 0,
+        "filesize": 0
+      },
+      {
+        "name": "__FVMLIB",
+        "vmaddr": 821936128,
+        "vmsize": 2310144,
+        "fileoff": 0,
+        "filesize": 0
+      },
+      {
+        "name": "__TEXT",
+        "vmaddr": 824246272,
+        "vmsize": 7258112,
+        "fileoff": 491520,
+        "filesize": 7258112
+      },
+      {
+        "name": "__KERN_0",
+        "vmaddr": 831504384,
+        "vmsize": 134201344,
+        "fileoff": 7749632,
+        "filesize": 134201344
+      },
+      {
+        "name": "__KERN_1",
+        "vmaddr": 965705728,
+        "vmsize": 40599552,
+        "fileoff": 141950976,
+        "filesize": 40599552
+      }
+    ],
+    "sections": [
+      {
+        "name": "__bss",
+        "segment": "__DATA",
+        "addr": 805306368,
+        "size": 13824000,
+        "offset": 0
+      },
+      {
+        "name": "__const",
+        "segment": "__FVMLIB",
+        "addr": 819134464,
+        "size": 2310144,
+        "offset": 0
+      },
+      {
+        "name": "__const",
+        "segment": "__FVMLIB",
+        "addr": 821444608,
+        "size": 481280,
+        "offset": 0
+      },
+      {
+        "name": "__data",
+        "segment": "__FVMLIB",
+        "addr": 821936128,
+        "size": 2304000,
+        "offset": 0
+      },
+      {
+        "name": "__text",
+        "segment": "__TEXT",
+        "addr": 824246272,
+        "size": 7104504,
+        "offset": 491520
+      },
+      {
+        "name": "__const",
+        "segment": "__TEXT",
+        "addr": 831350784,
+        "size": 144384,
+        "offset": 7596032
+      },
+      {
+        "name": "__kern_0",
+        "segment": "__KERN_0",
+        "addr": 831504384,
+        "size": 134186112,
+        "offset": 7749632
+      },
+      {
+        "name": "__kern_1",
+        "segment": "__KERN_1",
+        "addr": 965705728,
+        "size": 40588288,
+        "offset": 141950976
+      }
+    ],
+    "ports": [
+      {
+        "role": "input",
+        "name": "t0",
+        "compiler_layout": {
+          "BatchStride": 2310144,
+          "Batches": 1,
+          "Channels": 768,
+          "Depth": 1,
+          "DepthStride": 2310144,
+          "Height": 1,
+          "Interleave": 1,
+          "Name": "t0",
+          "PlaneCount": 768,
+          "PlaneStride": 3008,
+          "RowStride": 3008,
+          "Symbol": "t0",
+          "Type": "Float16",
+          "Width": 1500
+        },
+        "original_bank": 4,
+        "byte_offset": 0
+      },
+      {
+        "role": "input",
+        "name": "t1",
+        "compiler_layout": {
+          "BatchStride": 481280,
+          "Batches": 1,
+          "Channels": 80,
+          "Depth": 1,
+          "DepthStride": 481280,
+          "Height": 1,
+          "Interleave": 1,
+          "Name": "t1",
+          "PlaneCount": 80,
+          "PlaneStride": 6016,
+          "RowStride": 6016,
+          "Symbol": "t1",
+          "Type": "Float16",
+          "Width": 3000
+        },
+        "original_bank": 5,
+        "byte_offset": 0
+      },
+      {
+        "role": "output",
+        "name": "t8079",
+        "compiler_layout": {
+          "BatchStride": 2304000,
+          "Batches": 1,
+          "Channels": 1,
+          "Depth": 1,
+          "DepthStride": 2304000,
+          "Height": 1500,
+          "Interleave": 1,
+          "Name": "t8079@output",
+          "PlaneCount": 1,
+          "PlaneStride": 2304000,
+          "RowStride": 1536,
+          "Symbol": "t8079@output",
+          "Type": "Float16",
+          "Width": 768
+        },
+        "original_bank": 6,
+        "byte_offset": 0
+      }
+    ],
+    "coefficient_banks": [
+      {
+        "segment": {
+          "name": "__KERN_0",
+          "vmaddr": 831504384,
+          "vmsize": 134201344,
+          "fileoff": 7749632,
+          "filesize": 134201344
+        },
+        "bank": 7
+      },
+      {
+        "segment": {
+          "name": "__KERN_1",
+          "vmaddr": 965705728,
+          "vmsize": 40599552,
+          "fileoff": 141950976,
+          "filesize": 40599552
+        },
+        "bank": 8
+      }
+    ]
+  },
+  "linux_hardware_validation": "pending",
+  "accuracy_validation": "not performed in this speed-only benchmark",
+  "executable_identity_limit": "E5RT and offline HWX compile the same MIL/weights separately; offline HWX has not executed."
+}
